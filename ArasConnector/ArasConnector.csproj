@@ -92,11 +92,11 @@
   <ItemGroup>
     <Reference Include="ExpandableGridView, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\20120320\ArasConnector\bin\Debug\ExpandableGridView.dll</HintPath>
+      <HintPath>..\Binaries\ExpandableGridView.dll</HintPath>
     </Reference>
     <Reference Include="IOM, Version=9.2.0.5562, Culture=neutral, PublicKeyToken=524d880b05474146, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\20120320\ArasConnector\bin\Debug\IOM.dll</HintPath>
+      <HintPath>..\Binaries\IOM.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

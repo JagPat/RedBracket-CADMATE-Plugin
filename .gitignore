@@ -3,3 +3,14 @@
 ################################################################################
 
 /.vs
+/ArasConnector/bin/Debug
+/ArasConnector/obj/Debug/TempPE
+/AutocadPlugIn/bin/Debug
+/AutocadPlugIn/obj/Debug
+/CADController/bin/Debug
+/CADController/obj/Debug
+/Common/bin/Debug
+/RedBracketConnector/bin/Debug
+/Common/obj/Debug
+/RedBracketConnector/obj/Debug
+/ArasConnector/obj/Debug
