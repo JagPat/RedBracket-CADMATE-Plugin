@@ -28,7 +28,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                ////// Read the keys from the user registry and load it to the UI.
+                ////// Read the keys from the user registry and load it to the  UI.
                 ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
 
                 ////registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
