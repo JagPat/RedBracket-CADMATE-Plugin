@@ -1,0 +1,778 @@
+﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Windows.Media.Imaging;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using System.Collections.Specialized;
+using Autodesk.AutoCAD.EditorInput;
+//using Autodesk.Windows;
+//using Autodesk.AutoCAD.Runtime;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+//using Autodesk.AutoCAD.PlottingServices;
+//using Autodesk.AutoCAD.Publishing;
+//using Autodesk.AutoCAD.Geometry;
+using acadApp = Autodesk.AutoCAD.ApplicationServices.Application;
+using System.ComponentModel;
+using System.Data;
+using CADController;
+using Autodesk.AutoCAD.Runtime;
+
+namespace AutocadPlugIn
+{
+    public class AutoCADManager : ICADManager
+    {
+        Hashtable currentDocumentProperties;
+        public void SaveActiveDrawing()
+        {
+            try
+            {
+                String filePath = acadApp.DocumentManager.MdiActiveDocument.Database.Filename;
+                acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(filePath);
+                acadApp.DocumentManager.Open(filePath, true);
+            }
+            catch (Autodesk.AutoCAD.Runtime.Exception ex)
+            {
+                throw (new CADController.Exception.CADManagerException("CADController Exception : " + ex.Message.ToString()));
+            }
+        }
+
+        public void SetAttributes(Hashtable hashTable)
+        {
+            try
+            {
+                currentDocumentProperties = hashTable;
+                Document Doc = acadApp.DocumentManager.MdiActiveDocument;
+                Database Db = Doc.Database;
+                DocumentLock dl = Doc.LockDocument(DocumentLockMode.Write, null, null, true);
+                DatabaseSummaryInfoBuilder DbSib = new DatabaseSummaryInfoBuilder();
+
+                using (dl)
+                {
+                    Autodesk.AutoCAD.DatabaseServices.TransactionManager tm = Db.TransactionManager;
+                    using (Transaction aTran = tm.StartTransaction())
+                    {
+                        foreach (DictionaryEntry entry in currentDocumentProperties)
+                        {
+                            DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value.ToString());
+                        }
+                        Db.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
+                        aTran.Commit();
+                        if (Doc.IsReadOnly)
+                            Doc.UpgradeDocOpen();
+                    }
+                }
+            }
+            catch (System.Exception ex) { throw (new System.Exception("AutoCAD getting problem: AutoCADManager.cs setAttributes" + ex.Message)); }
+        }
+
+        public Hashtable GetAttributes()
+        {
+            Hashtable hastable = new Hashtable();
+            Document Doc = acadApp.DocumentManager.MdiActiveDocument;
+            Database Db = Doc.Database;
+            //DocumentLock dl = Doc.LockDocument(DocumentLockMode.Read, null, null, true);          
+            IDictionaryEnumerator en = Db.SummaryInfo.CustomProperties;
+
+            //using (dl)
+            //{
+            while (en.MoveNext())
+            {
+                //MessageBox.Show("GetAttribute:\n" + Convert.ToString(en.Key) + "------->" + Convert.ToString(en.Value));
+                hastable.Add(en.Key, en.Value);
+            }
+            //}
+
+            return hastable;
+        }
+
+        public void UpdateAttributes(Hashtable hashTable)
+        {
+
+            /*   Hashtable hastable = new Hashtable();
+
+
+               Document Doc = acadApp.DocumentManager.MdiActiveDocument;
+
+               Database Db = Doc.Database;
+
+               DocumentLock dl = Doc.LockDocument(DocumentLockMode.Write, null, null, true);
+
+               DatabaseSummaryInfoBuilder DbSib = new DatabaseSummaryInfoBuilder();
+
+               IDictionaryEnumerator ht = hastable.GetEnumerator();
+               IDictionaryEnumerator en = Db.SummaryInfo.CustomProperties;
+
+               using (dl)
+               {
+                   Autodesk.AutoCAD.DatabaseServices.TransactionManager tm = Db.TransactionManager;
+
+                       using (Transaction aTran = tm.StartTransaction())
+                       {
+                           while (en.MoveNext())
+                           {
+                               // MessageBox.Show(Convert.ToString(en.Key) + "------->" + Convert.ToString(en.Value));
+                               while(ht.MoveNext())
+                               {
+                                //   if (en.Key == ht.Key)
+
+                               }
+                           }
+
+                       }
+               }
+             */
+
+            Document Doc = acadApp.DocumentManager.MdiActiveDocument;
+
+            Database Db = Doc.Database;
+
+            DocumentLock dl = Doc.LockDocument(DocumentLockMode.Write, null, null, true);
+
+            DatabaseSummaryInfoBuilder DbSib = new DatabaseSummaryInfoBuilder();
+
+
+
+            using (dl)
+            {
+                Autodesk.AutoCAD.DatabaseServices.TransactionManager tm = Db.TransactionManager;
+
+                using (Transaction aTran = tm.StartTransaction())
+                {
+                    foreach (DictionaryEntry entry in hashTable)
+                    {
+                        //MessageBox.Show("UpdateAttribute:\n"+Convert.ToString(entry.Key) + "------->" + Convert.ToString(entry.Value));
+                        DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value.ToString());
+
+                    }
+
+                    Db.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
+
+                    aTran.Commit();
+
+                }
+            }
+            if (Doc.IsReadOnly)
+                Doc.UpgradeDocOpen();
+
+
+        }
+
+        [CommandMethod("OpenActiveDocument", CommandFlags.Session)]
+        public void OpenActiveDocument(String fileName, String openMode, Hashtable properties)
+        {
+            currentDocumentProperties = properties;
+            try
+            {
+                if (openMode == "Checkout")
+                {
+                    acadApp.DocumentManager.Open(fileName, false);
+                    this.SetAttributes(currentDocumentProperties);
+                    UpdateLayoutAttribute(currentDocumentProperties);
+                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
+                }
+                else if (openMode == "View")
+                {
+                    acadApp.DocumentManager.Open(fileName, false);
+                    this.SetAttributes(currentDocumentProperties);
+                    UpdateLayoutAttribute(currentDocumentProperties);
+                }
+                else if (openMode == "Edit")
+                {
+                    acadApp.DocumentManager.Open(fileName, false);
+                    this.SetAttributes(currentDocumentProperties);
+                    UpdateLayoutAttribute(currentDocumentProperties);
+                }
+                else if (openMode == "updtMainDrawing")
+                {
+                    this.SetAttributes(currentDocumentProperties);
+                    UpdateLayoutAttribute(currentDocumentProperties);
+                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
+                    acadApp.DocumentManager.Open(fileName, false);
+                }
+                else if (openMode == "updtXRDrawing")
+                {
+                    acadApp.DocumentManager.Open(fileName, false);
+                    this.SetAttributes(currentDocumentProperties);
+                    UpdateLayoutAttribute(currentDocumentProperties);
+                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
+            }
+        }
+
+        public void CloseActiveDocument(String fileName)
+        {
+            //acadApp.DocumentManager.CloseAll();// MdiActiveDocument.CloseAndSave(fileName);
+            //this.SetAttributes(properties);     
+            acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
+        }
+
+        public void DeleteActiveDocument(String fileName)
+        {
+            FileInfo file = new FileInfo(fileName);
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+        }
+
+        public void LockActiveDocument()
+        {
+            try
+            {
+                Document doc = acadApp.DocumentManager.MdiActiveDocument;
+                doc.UpgradeDocOpen();
+            }
+            catch (System.Exception ex)
+            {
+                throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
+            }
+        }
+
+        public void UnLockActiveDocument()
+        {
+            Document doc = acadApp.DocumentManager.MdiActiveDocument;
+            try
+            {
+                doc.DowngradeDocOpen(true);
+            }
+            catch (System.Exception ex)
+            {
+                throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
+            }
+        }
+
+        public System.Data.DataTable GetExternalRefreces()
+        {
+            System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
+            dtTreeGrid.Columns.Add("drawingname", typeof(String));
+            dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
+            dtTreeGrid.Columns.Add("classification", typeof(String));
+            dtTreeGrid.Columns.Add("revision", typeof(String));
+            dtTreeGrid.Columns.Add("drawingid", typeof(String));
+            dtTreeGrid.Columns.Add("filepath", typeof(String));
+            dtTreeGrid.Columns.Add("drawingstate", typeof(String));
+            dtTreeGrid.Columns.Add("generation", typeof(String));
+            dtTreeGrid.Columns.Add("type", typeof(String));
+            dtTreeGrid.Columns.Add("sourceid", typeof(String));
+            dtTreeGrid.Columns.Add("isroot", typeof(String));
+            dtTreeGrid.Columns.Add("projectname", typeof(String));
+            dtTreeGrid.Columns.Add("projectid", typeof(String));
+            dtTreeGrid.Columns.Add("Layouts", typeof(String));
+            dtTreeGrid.Columns.Add("lockstatus", typeof(String));
+            dtTreeGrid.Columns.Add("lockby", typeof(String));
+            dtTreeGrid.Columns.Add("Error", typeof(String));
+
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+            try
+            {
+                Database mainDb = new Database(false, true);
+                String rootid = "";
+                using (mainDb)
+                {
+                    mainDb.ReadDwgFile(doc.Name, FileOpenMode.OpenForReadAndAllShare, true, null);
+                    mainDb.ResolveXrefs(false, false);
+                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                    for (int i = 0; i < xg.NumNodes; i++)
+                    {
+                        XrefGraphNode xgn = xg.GetXrefNode(i);
+                        switch (xgn.XrefStatus)
+                        {
+                            case XrefStatus.Unresolved:
+                                ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Unloaded:
+                                ed.WriteMessage("\nUnloaded xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Unreferenced:
+                                ed.WriteMessage("\nUnreferenced xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Resolved:
+                                {
+                                    Database xdb = xgn.Database;
+                                    if (xdb != null)
+                                    {
+                                        Transaction tr = xdb.TransactionManager.StartTransaction();
+                                        String drawingName;
+                                        String[] str = new String[14];
+                                        using (tr)
+                                        {
+                                            String Layouts = "";
+                                            DBDictionary layoutDict = tr.GetObject(xdb.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
+                                            foreach (DBDictionaryEntry de in layoutDict)
+                                            {
+                                                String layoutName = de.Key;
+                                                if (layoutName != "Model")
+                                                {
+                                                    Layouts += de.Key.ToString() + "$";
+                                                }
+                                                else
+                                                {
+                                                    continue;
+                                                }
+                                            }
+
+                                            if (xgn.Name.Contains("\\"))
+                                            {
+                                                str = xgn.Name.Split('\\');
+                                                drawingName = str[str.Length - 1];
+                                                //acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(xgn.Name);
+                                                //acadApp.DocumentManager.Open(xgn.Name, false);
+                                            }
+                                            else
+                                            {
+                                                drawingName = xgn.Name;
+                                            }
+
+                                            if (i == 0)
+                                            {
+                                                ICADManager cadManager = CADFactory.getCADManager();
+                                                Hashtable rootdrawingAttrs = new Hashtable();
+                                                rootdrawingAttrs = (Hashtable)cadManager.GetAttributes();
+                                                rootid = "";
+                                                String childrens = "";
+                                                for (int j = 0; j < xgn.NumIn; j++)
+                                                {
+                                                    int tempInt = IsXrNodeEqual(xg, xgn.In(j));
+                                                    if (tempInt.Equals(-1))
+                                                        continue;
+                                                    String MyName = xg.GetXrefNode(tempInt).Name;
+                                                    String[] str1 = new String[14];
+                                                    if (xg.GetXrefNode(tempInt).Name.Contains("\\"))
+                                                    {
+                                                        str1 = xg.GetXrefNode(tempInt).Name.Split('\\');
+                                                        MyName = str1[str1.Length - 1];
+                                                    }
+                                                    if (j == xgn.NumIn - 1)
+                                                        childrens += MyName;
+                                                    else
+                                                        childrens += MyName + ",";
+                                                }
+                                                if (rootdrawingAttrs.Count != 0)
+                                                {
+                                                    rootid = rootdrawingAttrs["drawingid"].ToString();
+                                                    dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"].ToString(), rootdrawingAttrs["drawingnumber"].ToString(), rootdrawingAttrs["classification"].ToString(), rootdrawingAttrs["revision"].ToString(), rootdrawingAttrs["drawingid"].ToString(), xgn.Database.Filename.ToString(), rootdrawingAttrs["drawingstate"].ToString(), rootdrawingAttrs["generation"].ToString(), rootdrawingAttrs["type"].ToString(), childrens, "1", rootdrawingAttrs["projectname"].ToString(), rootdrawingAttrs["projectid"].ToString(), Layouts.ToString());
+                                                }
+                                                else
+                                                {
+                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString());
+                                                }
+                                            }
+                                            else
+                                            {
+                                                String childrens = "";
+                                                for (int j = 0; j < xgn.NumIn; j++)
+                                                {
+                                                    int tempInt = IsXrNodeEqual(xg, xgn.In(j));
+                                                    if (tempInt.Equals(-1))
+                                                        continue;
+                                                    String MyName = xg.GetXrefNode(tempInt).Name;
+                                                    String[] str1 = new String[14];
+                                                    if (xg.GetXrefNode(tempInt).Name.Contains("\\"))
+                                                    {
+                                                        str1 = xg.GetXrefNode(tempInt).Name.Split('\\');
+                                                        MyName = str1[str1.Length - 1];
+                                                    }
+                                                    if (j == xgn.NumIn - 1)
+                                                        childrens += MyName;
+                                                    else
+                                                        childrens += MyName + ",";
+                                                }
+                                                Hashtable drawingAttrs = new Hashtable();
+                                                IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
+                                                while (en.MoveNext())
+                                                {
+                                                    drawingAttrs.Add(en.Key, en.Value);
+                                                }
+                                                if (drawingAttrs.Count != 0)
+                                                    dtTreeGrid.Rows.Add(drawingAttrs["drawingname"].ToString(), drawingAttrs["drawingnumber"].ToString(), drawingAttrs["classification"].ToString(), drawingAttrs["revision"].ToString(), drawingAttrs["drawingid"].ToString(), xgn.Database.Filename.ToString(), drawingAttrs["drawingstate"].ToString(), drawingAttrs["generation"].ToString(), drawingAttrs["type"].ToString(), childrens, "0", drawingAttrs["projectname"].ToString(), drawingAttrs["projectid"].ToString(), Layouts);
+                                                else
+                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts);
+                                            }
+                                            tr.Commit();
+                                        }
+                                    }
+                                    break;
+                                }
+                        }//Switch Complete
+                    }//For Complete                    
+                }//Complete MainDB
+            }
+            catch (System.Exception ex)
+            {
+                ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
+            }
+            return dtTreeGrid;
+        }
+
+        public int IsXrNodeEqual(XrefGraph xrGraph, GraphNode grNode)
+        {
+            for (int i = 0; i < xrGraph.NumNodes; i++)
+            {
+                if (grNode == xrGraph.GetXrefNode(i) as GraphNode)
+                    return i;
+            }
+            return -1;
+        }
+
+        [Autodesk.AutoCAD.Runtime.CommandMethod("TITLEBLOCK")]
+        public void UpdateLayoutAttribute(Hashtable documentProperties = null)
+        {
+            System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
+            dtTreeGrid.Columns.Add("drawingname", typeof(String));
+            dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
+            dtTreeGrid.Columns.Add("classification", typeof(String));
+            dtTreeGrid.Columns.Add("revision", typeof(String));
+            dtTreeGrid.Columns.Add("drawingid", typeof(String));
+            dtTreeGrid.Columns.Add("filepath", typeof(String));
+            dtTreeGrid.Columns.Add("drawingstate", typeof(String));
+            dtTreeGrid.Columns.Add("generation", typeof(String));
+            dtTreeGrid.Columns.Add("type", typeof(String));
+            dtTreeGrid.Columns.Add("sourceid", typeof(String));
+            dtTreeGrid.Columns.Add("isroot", typeof(String));
+            dtTreeGrid.Columns.Add("projectname", typeof(String));
+            dtTreeGrid.Columns.Add("projectid", typeof(String));
+            dtTreeGrid.Columns.Add("createdon", typeof(String));
+            dtTreeGrid.Columns.Add("createdby", typeof(String));
+            dtTreeGrid.Columns.Add("modifiedon", typeof(String));
+            dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
+            dtTreeGrid.Columns.Add("lockstatus", typeof(String));
+            dtTreeGrid.Columns.Add("lockby", typeof(String));
+            dtTreeGrid.Columns.Add("Error", typeof(String));
+            //if (!(ArasConnector.ArasConnector.Isconnected))
+            //{
+            //    MessageBox.Show("Please login into Avrut Innova for this functionality...!!");
+            //    return;
+            //}
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+            Hashtable drawingAttrs = documentProperties; //new Hashtable();
+            IDictionaryEnumerator en = doc.Database.SummaryInfo.CustomProperties;
+            while (en.MoveNext())
+            {
+                drawingAttrs.Add(en.Key, en.Value);
+            }
+            if (drawingAttrs.Count < 0) return;
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                #region "TraverseForLayout"
+                DBDictionary layoutDict = tr.GetObject(db.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
+                ObjectIdCollection layoutsToPlot = new ObjectIdCollection();
+                foreach (DBDictionaryEntry de in layoutDict)
+                {
+                    String layoutName = de.Key;
+                    if (layoutName != "Model")
+                    {
+                        LayoutManager.Current.CurrentLayout = layoutName;
+                        Hashtable LayoutData = documentProperties; //new Hashtable();
+                        // ArasConnector.ArasConnector LayoutDetail = new ArasConnector.ArasConnector();
+                        // LayoutData = LayoutDetail.GetLayoutDetail(drawingAttrs["drawingid"].ToString(), layoutName);
+
+                        #region "TraverseForTitleblock"
+
+                        BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.PaperSpace], OpenMode.ForRead);
+                        layoutsToPlot.Add(btr.LayoutId);
+
+                        foreach (ObjectId objId in btr)
+                        {
+                            Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForRead);
+                            string blkName = ent.BlockName;
+                            if (LayoutData.Count < 1) continue;
+                            if (ent != null)
+                            {
+                                BlockReference br = ent as BlockReference;
+                                if (br != null)
+                                {
+                                    BlockTableRecord bd = (BlockTableRecord)tr.GetObject(br.BlockTableRecord, OpenMode.ForRead);
+                                    //MessageBox.Show(bd.Name);//Block Name
+                                    foreach (ObjectId arId in br.AttributeCollection)
+                                    {
+                                        DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
+                                        AttributeReference ar = obj as AttributeReference;
+
+                                        if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["drawingnumber"].ToString();//drawingAttrs["drawingnumber"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "DRAWINGNAME")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = drawingAttrs["drawingname"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "PROJECTNAME")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["projectname"].ToString(); //drawingAttrs["projectname"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "PROJECTID")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["projectid"].ToString(); //drawingAttrs["projectid"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "GENERATION")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = drawingAttrs["generation"].ToString(); //drawingAttrs["generation"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "REVISION")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["revision"].ToString(); //drawingAttrs["revision"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "DWGSTATE")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = drawingAttrs["drawingstate"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "GOODNOT")
+                                        {
+                                            ar.UpgradeOpen();
+                                            if (((LayoutData["drawingstate"].ToString() == "GFC") || (LayoutData["drawingstate"].ToString() == "Released")) && ((drawingAttrs["drawingstate"].ToString() == "GFC") || (drawingAttrs["drawingstate"].ToString() == "Coordinated") || (drawingAttrs["drawingstate"].ToString() == "Const-Dwg")))
+                                            {
+                                                ar.TextString = "GOOD";
+                                            }
+                                            else
+                                            {
+                                                ar.TextString = "NOT";
+                                            }
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "LAYOUTNAME")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = layoutName;
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "CREATEDBY")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["createdby"].ToString(); //drawingAttrs["createdby"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "MODIFIEDBY")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["modifiedby"].ToString(); //drawingAttrs["modifiedby"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "CREATEDON")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["createdon"].ToString().Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "MODIFIEDON")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["modifiedon"].ToString().Substring(0, 10); //drawingAttrs["modifiedon"].ToString().Substring(0,10);
+                                            ar.DowngradeOpen();
+                                        }
+                                        if (ar.Tag.ToUpper() == "DRAWINGSTATE")
+                                        {
+                                            ar.UpgradeOpen();
+                                            ar.TextString = LayoutData["drawingstate"].ToString(); //drawingAttrs["drawingstate"].ToString();
+                                            ar.DowngradeOpen();
+                                        }
+                                    }
+                                }
+                            }
+                        } //end foreach Block
+                        #endregion "TraverseForTitleblock"                  
+                    }
+                    else
+                    {
+                        #region "if Model is there"
+                        /*
+                        BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                        PlotInfo pi = new PlotInfo();
+                        PlotInfoValidator piv = new PlotInfoValidator();
+                        piv.MediaMatchingPolicy = MatchingPolicy.MatchEnabled;
+
+                        if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
+                        {
+                            PlotEngine pe = PlotFactory.CreatePublishEngine();
+                            using (pe)
+                            {
+                                PlotProgressDialog ppd = new PlotProgressDialog(false, 1, true);
+                                using (ppd)
+                                {  
+                                    Layout lo = (Layout)tr.GetObject(btr.LayoutId, OpenMode.ForRead);
+                                    PlotSettings ps = new PlotSettings(lo.ModelType);
+                                    ps.CopyFrom(lo);
+                                    PlotSettingsValidator psv = PlotSettingsValidator.Current;
+                                    psv.SetPlotType(ps, Autodesk.AutoCAD.DatabaseServices.PlotType.Extents);
+                                    psv.SetUseStandardScale(ps, true);
+                                    psv.SetStdScaleType(ps, StdScaleType.ScaleToFit);
+                                    psv.SetPlotCentered(ps, true);                                        
+                                    psv.SetPlotConfigurationName(ps, "PublishToWeb JPG.pc3", "Sun_Hi-Res_(1600.00_x_1280.00_Pixels)");//Plot to jpeg
+                                    pi.Layout = btr.LayoutId;
+                                    LayoutManager.Current.CurrentLayout = lo.LayoutName;
+                                    pi.OverrideSettings = ps;
+                                    piv.Validate(pi);
+                                    ppd.set_PlotMsgString(PlotMessageIndex.DialogTitle, "Custom Plot Progress");
+                                    ppd.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Cancel Job");
+                                    ppd.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Cancel Sheet");
+                                    ppd.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, "Sheet Set Progress");
+                                    ppd.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "Sheet Progress");
+                                    ppd.LowerPlotProgressRange = 0;
+                                    ppd.UpperPlotProgressRange = 100;
+                                    ppd.PlotProgressPos = 0;
+                                    ppd.OnBeginPlot();
+                                    ppd.IsVisible = false;
+                                    pe.BeginPlot(ppd, null);
+                                    pe.BeginDocument(pi, doc.Name, null, 1, true, "C:\\Test\\" + lo.LayoutName + ".jpg");////Plot to jpeg  
+                                    ppd.OnBeginSheet();
+                                    ppd.LowerSheetProgressRange = 0;
+                                    ppd.UpperSheetProgressRange = 100;
+                                    ppd.SheetProgressPos = 0;
+                                    PlotPageInfo ppi = new PlotPageInfo();
+                                    pe.BeginPage(ppi, pi, true, null);
+                                    pe.BeginGenerateGraphics(null);
+                                    ppd.SheetProgressPos = 50;
+                                    pe.EndGenerateGraphics(null);
+                                    pe.EndPage(null);
+                                    ppd.SheetProgressPos = 100;
+                                    ppd.OnEndSheet();                                        
+                                    ppd.PlotProgressPos += (100 / layoutsToPlot.Count);
+                                    pe.EndDocument(null);
+                                    ppd.PlotProgressPos = 100;
+                                    ppd.OnEndPlot();
+                                    pe.EndPlot(null);
+                                }
+                            }
+                        }
+
+                        else
+                        {
+                            MessageBox.Show("\nAnother plot is in progress.");
+                        }
+                        */
+                        #endregion "if Model is there"
+                    }
+                }
+                #endregion "TraverseForLayout
+
+                #region "PlotLayouts"
+                //PlotLayout(doc, tr, layoutsToPlot);
+                #endregion "PlotLayouts"
+
+                tr.Commit();
+                tr.Dispose();
+            }//end Transaction tr
+            doclock.Dispose();
+        }
+
+        //[Autodesk.AutoCAD.Runtime.CommandMethod("DWGPROPS")]
+        //[Autodesk.AutoCAD.Runtime.CommandMethod("EATTEDIT")]
+        //[Autodesk.AutoCAD.Runtime.CommandMethod("ATTEDIT")]
+        //[Autodesk.AutoCAD.Runtime.CommandMethod("-BEDIT")]
+
+        public void DisableCommand()
+        {
+            // MessageBox.Show("Sorry!!! AutoCAD does not allow you to run this Command!!!");
+        }
+
+        #region "Plot Layout to PDF"
+        /*
+        public void PlotLayout(Document doc, Transaction tr, ObjectIdCollection layoutsToPlot)
+        {
+            PlotInfo pi = new PlotInfo();
+            PlotInfoValidator piv = new PlotInfoValidator();
+            piv.MediaMatchingPolicy = MatchingPolicy.MatchEnabled;
+
+            if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
+            {
+                PlotEngine pe = PlotFactory.CreatePublishEngine();
+                using (pe)
+                {
+                    PlotProgressDialog ppd = new PlotProgressDialog(false, layoutsToPlot.Count, true);
+                    using (ppd)
+                    {
+                        int numSheet = 1;
+                        foreach (ObjectId layoutId in layoutsToPlot)
+                        {
+                            Layout lo = (Layout)tr.GetObject(layoutId, OpenMode.ForRead);
+                            PlotSettings ps = new PlotSettings(lo.ModelType);
+                            ps.CopyFrom(lo);
+                            PlotSettingsValidator psv = PlotSettingsValidator.Current;
+                            psv.SetPlotType(ps, Autodesk.AutoCAD.DatabaseServices.PlotType.Extents);
+                            psv.SetUseStandardScale(ps, true);
+                            psv.SetStdScaleType(ps, StdScaleType.ScaleToFit);
+                            psv.SetPlotCentered(ps, true);
+                            psv.SetPlotConfigurationName(ps, "DWG To PDF.pc3", "ANSI_A_(11.00_x_8.50_Inches)");//Plot to Pdf                            
+                            pi.Layout = layoutId;
+                            LayoutManager.Current.CurrentLayout = lo.LayoutName;
+                            pi.OverrideSettings = ps;
+                            piv.Validate(pi);
+                            if (numSheet == 1)
+                            {
+                                ppd.set_PlotMsgString(PlotMessageIndex.DialogTitle, "Custom Plot Progress");
+                                ppd.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Cancel Job");
+                                ppd.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Cancel Sheet");
+                                ppd.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, "Sheet Set Progress");
+                                ppd.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "Sheet Progress");
+                                ppd.LowerPlotProgressRange = 0;
+                                ppd.UpperPlotProgressRange = 100;
+                                ppd.PlotProgressPos = 0;
+                                ppd.OnBeginPlot();
+                                ppd.IsVisible = false;
+                                pe.BeginPlot(ppd, null);
+                                pe.BeginDocument(pi, doc.Name, null, 1, true, "C:\\Test\\" + lo.LayoutName + ".pdf");//plot to pdf                                
+                            }                            
+                            ppd.set_PlotMsgString(PlotMessageIndex.SheetName, doc.Name.Substring(doc.Name.LastIndexOf("\\") + 1) + " - sheet " + numSheet.ToString() + " of " + layoutsToPlot.Count.ToString());
+                            ppd.OnBeginSheet();
+                            ppd.LowerSheetProgressRange = 0;
+                            ppd.UpperSheetProgressRange = 100;
+                            ppd.SheetProgressPos = 0;
+                            PlotPageInfo ppi = new PlotPageInfo();
+                            pe.BeginPage(ppi, pi, (numSheet == layoutsToPlot.Count), null);
+                            pe.BeginGenerateGraphics(null);
+                            ppd.SheetProgressPos = 50;
+                            pe.EndGenerateGraphics(null);
+                            pe.EndPage(null);
+                            ppd.SheetProgressPos = 100;
+                            ppd.OnEndSheet();
+                            numSheet++;
+                            ppd.PlotProgressPos += (100 / layoutsToPlot.Count);
+                        }
+                        pe.EndDocument(null);
+                        ppd.PlotProgressPos = 100;
+                        ppd.OnEndPlot();
+                        pe.EndPlot(null);
+                    }
+                }
+            }
+
+            else
+            {
+                MessageBox.Show("\nAnother plot is in progress.");
+            }
+        }
+         */
+        #endregion "Plot Layout to PDF"
+    }
+}
+
+

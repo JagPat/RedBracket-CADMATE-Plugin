@@ -1,0 +1,583 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using CADController.Commands;
+using AdvancedDataGridView;
+using System.IO;
+using CADController.Controllers;
+using CADController;
+using CADController.Configuration;
+using RedBracketConnector;
+
+namespace AutocadPlugIn.UI_Forms
+{
+    public partial class Save_Active_Drawings : Form
+    {
+        public ArrayList drawings = new ArrayList();
+        public ArrayList drawingsOpen = new ArrayList();
+        public Hashtable htNewDrawings = new Hashtable();
+        private System.Data.DataTable dtTreeGridData = new System.Data.DataTable();
+
+        public Save_Active_Drawings()
+        {
+            ICADManager objCadMgr = CADFactory.getCADManager();
+            objCadMgr.SaveActiveDrawing();
+            InitializeComponent();
+        }
+
+        private void Save_Active_Drawings_Load(object sender, EventArgs e)
+        {
+            this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
+            this.imageStrip.TransparentColor = System.Drawing.Color.Magenta;
+            this.imageStrip.ImageSize = new Size(17, 17);
+            this.imageStrip.Images.AddStrip(Properties.Resources.LockImageStrip1);
+            savetreeGrid.ImageList = imageStrip;
+            int totalCount = savetreeGrid.Nodes.Count;
+            int counter = 0;
+
+            ICADManager objCadMgr = CADFactory.getCADManager();
+            //objCadMgr.SaveActiveDrawing();
+            TreeGridNode node = null;
+            for (int i = 0; i < totalCount; i++)
+            {
+                TreeGridNode TreeNode1 = savetreeGrid.Nodes.ElementAt(0);
+                this.ClearTreeView(TreeNode1);
+                savetreeGrid.Nodes.Remove(TreeNode1);
+            }
+
+            dtTreeGridData = objCadMgr.GetExternalRefreces();
+
+            SaveCommand lockStatusCmd = new SaveCommand();
+            lockStatusCmd.DrawingInfo = dtTreeGridData;
+
+            SaveController lockStatusCon = new SaveController();
+            dtTreeGridData = lockStatusCon.getLockStatus(lockStatusCmd);
+            if (lockStatusCon.errorString != null)
+            {
+                MessageBox.Show(lockStatusCon.errorString);
+                this.Close();
+                return;
+            }
+
+            #region CreateTreeGrid
+            foreach (DataRow rw in dtTreeGridData.Rows)
+            {
+
+                DataGridViewComboBoxCell ds = new DataGridViewComboBoxCell();
+                CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+                DataTable dtProjectNo = new DataTable();
+                dtProjectNo.Columns.Add("ProjectId", typeof(string));
+                dtProjectNo.Columns.Add("ProjectName", typeof(string));
+                dtProjectNo.Columns.Add("ProjectNo", typeof(string));
+                dtProjectNo = objWordConfig.GetProject();
+                dtProjectNo.Rows.Add("", "Non", "Non");
+                ProjectName.DataSource = dtProjectNo;
+                ProjectName.DisplayMember = "ProjectName";
+                ProjectName.ValueMember = "ProjectId";
+                ProjectId.DataSource = dtProjectNo;
+                ProjectId.DisplayMember = "ProjectNo";
+                ProjectId.ValueMember = "ProjectId";
+
+                if (rw["drawingid"].ToString() != "")
+                {
+                    this.savetreeGrid.Columns["realtyid"].Visible = false;
+                    this.savetreeGrid.Columns["realtyname"].Visible = false;
+                    ProjectId.ReadOnly = true;
+                    ProjectName.ReadOnly = true;
+                }
+                else
+                {
+                    this.savetreeGrid.Columns["version"].Visible = false;
+                }
+
+                if (counter == 0 || rw["isroot"].ToString() == "1")
+                {
+                    ArrayList cmbData = new ArrayList();
+                    cmbData.Add(rw["revision"].ToString());
+                    cmbData.Add("Next");
+                    ds.DataSource = cmbData;
+
+                    node = savetreeGrid.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["classification"].ToString(), rw["revision"].ToString(), rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"]);
+                    node.Cells["version"].Value = true;
+                    if (rw["drawingid"].ToString() == "")
+                    {
+                        RealtyName.ReadOnly = false;
+                        RealtyId.ReadOnly = false;
+                        node.Cells["projectid"].Value = "";
+                        node.Cells["projectname"].Value = "";
+                        node.Cells["realtyid"].Value = "";
+                        node.Cells["realtyname"].Value = "";
+                        node.Cells["version"].Value = true;
+                        node.Cells["targetrevision"].ReadOnly = true;
+                        node.Cells["projectid"].ReadOnly = false;
+                        node.Cells["projectname"].ReadOnly = false;
+                    }
+                    else
+                    {
+                        foreach (DataRow rr in dtProjectNo.Rows)
+                        {
+                            if (rr["ProjectNo"].ToString() == rw["projectid"].ToString())
+                            {
+                                node.Cells["projectname"].Value = rr["ProjectId"].ToString();
+                                node.Cells["projectid"].Value = rr["ProjectId"].ToString();
+                                break;
+                            }
+                        }
+                    }
+                    node.Cells["targetrevision"] = ds;
+                    if (rw["lockstatus"].ToString() == "1")
+                        node.ImageIndex = 0;
+                    else if (rw["lockstatus"].ToString() == "2")
+                    {
+                        node.ImageIndex = 1;
+                        node.Cells["Check"].ReadOnly = true;
+                    }
+                    node.Expand();
+                    counter = 1;
+                }
+                else
+                {
+                    ArrayList cmbData1 = new ArrayList();
+                    cmbData1.Add(rw["revision"].ToString());
+                    cmbData1.Add("Next");
+                    TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["classification"].ToString(), rw["revision"].ToString(), rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"]);
+                    node1.Cells["version"].Value = true;
+                    node1.Cells["version"].ReadOnly = true;
+                    ds.DataSource = cmbData1;
+                    if (rw["drawingid"].ToString() == "")
+                    {
+                        RealtyName.ReadOnly = false;
+                        RealtyId.ReadOnly = false;
+                        node1.Cells["projectid"].Value = "";
+                        node1.Cells["projectname"].Value = "";
+                        node.Cells["version"].Value = true;
+                        node1.Cells["projectid"].ReadOnly = true;
+                        node1.Cells["projectname"].ReadOnly = true;
+                        node1.Cells["realtyid"].Value = "";
+                        node1.Cells["realtyname"].Value = "";
+                        node1.Cells["targetrevision"].ReadOnly = true;
+                    }
+                    else
+                    {
+                        foreach (DataRow rr in dtProjectNo.Rows)
+                        {
+                            if (rr["ProjectNo"].ToString() == rw["projectid"].ToString())
+                            {
+                                node1.Cells["projectname"].Value = rr["ProjectId"].ToString();
+                                node1.Cells["projectid"].Value = rr["ProjectId"].ToString();
+                                break;
+                            }
+                        }
+                    }
+                    node1.Cells["targetrevision"] = ds;
+                    if (rw["lockstatus"].ToString() == "1")
+                    {
+                        node1.ImageIndex = 0;
+                    }
+
+                    else if (rw["lockstatus"].ToString() == "2")
+                    {
+                        node1.ImageIndex = 1;
+                    }
+                }
+            }
+            #endregion CreateTreeGrid
+        }
+
+        private void ClearTreeView(TreeGridNode CurrentNode)
+        {
+            try
+            {
+                for (int nodeCount = 0; nodeCount < CurrentNode.Nodes.Count; nodeCount++)
+                {
+                    if (CurrentNode.Nodes.ElementAt(nodeCount).Nodes.Count() == 0)
+                    {
+                        savetreeGrid.Nodes.Remove(CurrentNode.Nodes.ElementAt(nodeCount));
+                    }
+                    else
+                    {
+                        TreeGridNode node1 = CurrentNode.Nodes.ElementAt(nodeCount);
+                        this.ClearTreeView(node1);
+                        savetreeGrid.Nodes.Remove(node1);
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                return;
+            }
+
+        }
+
+        private void submit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                bool Is_Delete = false;
+                bool Is_Save = false;
+
+                SaveController objController = new SaveController();
+                if (ShowMessage.InfoYNMess("Would you like to delete local file/files" + Environment.NewLine + " after saving it to RedBracket ?") == DialogResult.Yes)
+                {
+                    Is_Delete = true;
+                }
+                for (int i = 0; i < savetreeGrid.RowCount; i++)
+                {
+                    if (Convert.ToBoolean(savetreeGrid.Nodes[i].Cells["Check"].Value) == true)
+                    {
+                        string FilePath = Convert.ToString(savetreeGrid.Nodes[i].Cells["filepath"].Value);
+
+                        if (Is_Delete)
+                        {
+                            File.Delete(FilePath);
+                        }
+                        Is_Save = true;
+                    }
+                }
+                if (Is_Save)
+                {
+                    ShowMessage.InfoMess("Save operation successfully completed.");
+                    return;
+                }
+                if (htNewDrawings.Count > 0 || drawings.Count > 0)
+                {
+                    ICADManager objMgr = new AutoCADManager();
+                    SaveCommand objCmd = new SaveCommand();
+
+                    ICollection keys = htNewDrawings.Keys;
+                    IEnumerator key = keys.GetEnumerator();
+                    while (key.MoveNext())
+                    {
+                        objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
+                    }
+                    foreach (String str in drawings)
+                    {
+                        objCmd.Drawings.Add(str);
+                    }
+                    objController.Execute(objCmd);
+                    if (objController.errorString != null)
+                    {
+                        MessageBox.Show(objController.errorString);
+                        this.Cursor = Cursors.Default;
+                        return;
+                    }
+                    Hashtable htDrawingProperty = new Hashtable();
+                    foreach (DataRow row in objController.dtDrawingProperty.Rows)
+                    {      /*int i = 0;
+                            foreach (DataColumn column in objController.dtDrawingProperty.Columns)
+                            {
+                                MessageBox.Show(column.ColumnName.ToString() + "---------->" + row[i].ToString());
+                                i++;
+                            }*/
+
+                        htDrawingProperty.Add("DrawingId", row["DrawingId"]);
+                        htDrawingProperty.Add("DrawingName", row["DrawingName"]);
+                        htDrawingProperty.Add("Classification", row["Classification"]);
+                        htDrawingProperty.Add("DrawingNumber", row["DrawingNumber"]);
+                        htDrawingProperty.Add("DrawingState", row["DrawingState"]);
+                        htDrawingProperty.Add("Revision", row["Revision"]);
+                        htDrawingProperty.Add("Generation", row["Generation"]);
+                        htDrawingProperty.Add("Type", row["Type"]);
+                        htDrawingProperty.Add("ProjectName", row["ProjectName"]);
+                        htDrawingProperty.Add("ProjectId", row["ProjectId"]);
+                        htDrawingProperty.Add("CreatedOn", row["createdon"]);
+                        htDrawingProperty.Add("CreatedBy", row["createdby"]);
+                        htDrawingProperty.Add("ModifiedOn", row["modifiedon"]);
+                        htDrawingProperty.Add("ModifiedBy", row["modifiedby"]);
+
+                        if ((bool)row["isroot"])
+                        {
+                            objMgr.OpenActiveDocument(row["filepath"].ToString(), "updtMainDrawing", htDrawingProperty);
+                        }
+                        else
+                        {
+                            objMgr.OpenActiveDocument(row["filepath"].ToString(), "updtXRDrawing", htDrawingProperty);
+                        }
+                        htDrawingProperty.Clear();
+                    }
+                    bool deletefile = false;
+                    if (MessageBox.Show("Would you like to Delete Local file/files after Saving it into Aras?", "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                        deletefile = true;
+                    foreach (DataRow row in objController.dtDrawingProperty.Rows)
+                    {
+                        if ((bool)row["isroot"])
+                        {
+                            objMgr.CloseActiveDocument(row["filepath"].ToString());
+                            if (deletefile)
+                                objMgr.DeleteActiveDocument(row["filepath"].ToString());
+                        }
+                        else
+                        {
+                            if (deletefile)
+                                objMgr.DeleteActiveDocument(row["filepath"].ToString());
+                        }
+                    }
+                    MessageBox.Show("Save operation succesfully completed.");
+                    this.Cursor = Cursors.Default;
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message.ToString(), "Error");
+                this.Cursor = Cursors.Default;
+            }
+            this.Cursor = Cursors.Default;
+        }
+
+        private void cancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void savetreeGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            return;
+            if (e.ColumnIndex == 0)
+            {
+                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                bool flag = false;
+                CADDescription.ReadOnly = false;
+                for (int GridRows = 0; GridRows < savetreeGrid.Rows.Count; GridRows++)
+                {
+                    TreeGridNode MyTreeNode = (TreeGridNode)savetreeGrid.Rows[GridRows];
+                    if ((bool)MyTreeNode.Cells["check"].EditedFormattedValue)
+                    { flag = true; break; }
+                }
+                if (flag)
+                    CADDescription.ReadOnly = true;
+
+                #region "Concate  infromation with ';' for Drawing presented in ARASInnovator"
+                String id = (String)selectedTreeNode.Cells["drawingid"].Value;
+                String ItemType = (String)selectedTreeNode.Cells["itemtype"].Value;
+                String FilePath = (String)selectedTreeNode.Cells["filepath"].Value;
+                String MyProjectName = selectedTreeNode.Cells["projectname"].FormattedValue.ToString();
+                String MyProjectId = selectedTreeNode.Cells["projectid"].FormattedValue.ToString();
+                Hashtable DrawingData = new Hashtable();
+                ArasConnector.ArasConnector DrawingDetail = new ArasConnector.ArasConnector();
+                if (DrawingData.Count < 1)
+                    DrawingData = DrawingDetail.GetDrawingDetail(selectedTreeNode.Cells["drawingid"].Value.ToString());
+
+                if (selectedTreeNode.Cells["targetrevision"].Value == null)
+                {
+                    selectedTreeNode.Cells["targetrevision"].Value = "";
+                }
+                String ARASDrawingInformation = id + ";" + ItemType + ";" + FilePath + ";" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["targetrevision"].Value.ToString() + ";" + selectedTreeNode.Cells["version"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString();
+
+                #endregion
+
+                #region "Lock Drawings"
+                if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "0")
+                {
+                    ArrayList arDrawingIDs = new ArrayList();
+                    arDrawingIDs.Add(selectedTreeNode.Cells["drawingID"].Value.ToString());
+                    frmLock1 objLock = new frmLock1();
+                    if (!objLock.LockDrawings(arDrawingIDs))
+                    {
+                        selectedTreeNode.ImageIndex = 0;
+                        selectedTreeNode.Cells["lockstatus"].Value = "1";
+                    }
+                }
+                if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "2")
+                {
+                    MessageBox.Show("This drawing is not locked by you.");
+                    return;
+                }
+                #endregion
+
+                #region "Drawing is present in ARASInnovator"
+                //if (selectedTreeNode.Cells["drawingid"].Value.ToString() != "")
+                //    {
+                //        if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
+                //            {
+                //                selectedTreeNode.Cells["targetrevision"].ReadOnly=true;                                
+                //                drawings.Add(ARASDrawingInformation);
+                //                drawingsOpen.Add(ARASDrawingInformation);
+                //                savetreeGrid.Columns[17].ReadOnly = true;
+                //            }
+                //            else
+                //            {
+                //                selectedTreeNode.Cells["targetrevision"].ReadOnly=false;                                
+                //                drawings.Remove(ARASDrawingInformation);
+                //                drawingsOpen.Remove(ARASDrawingInformation);
+                //                savetreeGrid.Columns[17].ReadOnly = false;
+                //            }
+                //     }
+                #endregion
+
+                #region "Add Drawing to ARASInnovator"
+                ////else
+                ////{
+                //if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
+                //{
+                //    selectedTreeNode.Cells["projectname"].ReadOnly = true;
+                //    selectedTreeNode.Cells["realtyname"].ReadOnly = true;
+                //    selectedTreeNode.Cells["projectid"].ReadOnly = true;
+                //    selectedTreeNode.Cells["realtyid"].ReadOnly = true;
+                //        String[] strarry = new String[5];
+                //        String DrawingInformation;
+                //        String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();                                
+                //        int index = DrawingNameandNumber.IndexOf('.');
+                //        int length = DrawingNameandNumber.Length;
+                //    if(index>0)
+                //        DrawingNameandNumber = DrawingNameandNumber.Remove(index);
+                //    DrawingInformation = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" + selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["projectname"].Value.ToString() + ";" + selectedTreeNode.Cells["realtyname"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString(); 
+                //        htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation);
+
+                //        selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
+                //        selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;                                
+                //}
+                //else
+                //{
+                //    if (e.RowIndex == 0)
+                //    {
+                //        selectedTreeNode.Cells["projectname"].ReadOnly = false;
+                //        selectedTreeNode.Cells["projectid"].ReadOnly = false;
+                //    }
+                //    selectedTreeNode.Cells["realtyname"].ReadOnly = false;
+                //    selectedTreeNode.Cells["realtyid"].ReadOnly = false; 
+                //    if (htNewDrawings.Contains(selectedTreeNode.Cells["drawing"].Value.ToString()))
+                //    {
+                //        htNewDrawings.Remove(selectedTreeNode.Cells["drawing"].Value.ToString());
+                //    }
+                //    selectedTreeNode.Cells["drawingnumber"].Value = "";
+                //    selectedTreeNode.Cells["cadtype"].Value = "";
+                //}
+                //}
+                #endregion
+            }
+        }
+
+        private void savetreeGrid_CellBeginEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 13)
+            {
+                CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                String sg_projectid = selectedTreeNode.Cells["projectname"].Value.ToString();
+                selectedTreeNode.Cells["projectid"].Value = sg_projectid;
+                selectedTreeNode.Cells["realtyname"].Value = "";
+                selectedTreeNode.Cells["realtyid"].Value = "";
+                for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
+                {
+                    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
+                    ChildTreeNode.Cells["projectname"].Value = sg_projectid;
+                    ChildTreeNode.Cells["projectid"].Value = sg_projectid;
+                }
+                DataTable dtRealtyNo = new DataTable();
+                dtRealtyNo.Columns.Add("ProjectId", typeof(string));
+                dtRealtyNo.Columns.Add("RealtyName", typeof(string));
+                dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
+                dtRealtyNo = objWordConfig.GetRealtyEntity();
+                DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyNo", DataViewRowState.CurrentRows);
+                Realty.AddNew();
+
+                RealtyName.DataSource = Realty;
+                RealtyName.DisplayMember = "RealtyName";
+                RealtyName.ValueMember = "RealtyNo";
+                RealtyId.DataSource = Realty;
+                RealtyId.DisplayMember = "RealtyNo";
+                RealtyId.ValueMember = "RealtyNo";
+            }
+            if (e.ColumnIndex == 14)
+            {
+                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                String sg_projectid = selectedTreeNode.Cells["projectid"].Value.ToString();
+                selectedTreeNode.Cells["projectname"].Value = sg_projectid;
+            }
+            if (e.ColumnIndex == 15)
+            {
+                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                String sg_projectid = selectedTreeNode.Cells["realtyname"].Value.ToString();
+                selectedTreeNode.Cells["realtyid"].Value = sg_projectid;
+            }
+            if (e.ColumnIndex == 16)
+            {
+                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                String sg_projectid = selectedTreeNode.Cells["realtyid"].Value.ToString();
+                selectedTreeNode.Cells["realtyname"].Value = sg_projectid;
+            }
+            if (e.ColumnIndex == 18)
+            {
+                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
+                {
+                    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
+                    ChildTreeNode.Cells["version"].Value = selectedTreeNode.Cells["version"].Value;
+                }
+            }
+        }
+
+        private void Save_Active_Drawings_Resize(object sender, EventArgs e)
+        {
+            //int f_height=this.Height;
+            //int f_width = this.Width;
+            //submit.Location = new Point((f_width / 2)-100, f_height - 85);
+            //cancel.Location = new Point((f_width / 2)+100, f_height - 85);
+            //Comments.Location = new Point(20, f_height - 88);
+            //CADDescription.Location = new Point(100, f_height - 88);
+        }
+
+        /*  private void ExpandNodeForCheck(TreeGridNode CurrentNode)
+          {
+              try
+              {
+                  for (int nodeCount = 0; nodeCount < CurrentNode.Nodes.Count(); nodeCount++)
+                  {
+                      if (CurrentNode.Nodes.ElementAt(nodeCount).Nodes.Count() == 0)
+                      {
+
+                          if (CurrentNode.Cells["drawingid"].Value != "")
+                          {
+                              CurrentNode.Nodes.ElementAt(nodeCount).Cells[0].Value = CurrentNode.Cells[0].EditedFormattedValue;
+                              String id = (string)CurrentNode.Nodes.ElementAt(nodeCount).Cells[5].Value;
+                              String ItemType = "CAD";
+                              String FilePath = (string)CurrentNode.Nodes.ElementAt(nodeCount).Cells[6].Value;
+                              String DarawingInfo = id + ";" + ItemType + ";" + FilePath;
+
+                              id = (string)CurrentNode.Nodes.ElementAt(nodeCount).Cells[5].Value;
+
+                              if ((bool)CurrentNode.Nodes.ElementAt(nodeCount).Cells[0].Value)
+                                  drawings.Add(DarawingInfo);
+                              else
+                                  drawings.Remove(DarawingInfo);
+                          }
+                      }
+                      else
+                      {
+                          TreeGridNode node1 = CurrentNode.Nodes.ElementAt(nodeCount);
+                          CurrentNode.Nodes.ElementAt(nodeCount).Expand();
+                          CurrentNode.Nodes.ElementAt(nodeCount).Cells[0].Value = CurrentNode.Cells[0].EditedFormattedValue;
+                          String id = (string)CurrentNode.Nodes.ElementAt(nodeCount).Cells[5].Value;
+                          String ItemType = "CAD";
+                          String FilePath = (string)CurrentNode.Nodes.ElementAt(nodeCount).Cells[6].Value;
+                          String DarawingInfo = id + ";" + ItemType + ";" + FilePath;
+
+                          id = (string)CurrentNode.Nodes.ElementAt(nodeCount).Cells[5].Value;
+
+                          if ((bool)CurrentNode.Nodes.ElementAt(nodeCount).Cells[0].Value)
+                              drawings.Add(DarawingInfo);
+                          else
+                              drawings.Remove(DarawingInfo);
+
+                          this.ExpandNodeForCheck(node1);
+
+                      }
+                  }
+              }
+              catch (System.Exception ex)
+              {
+                  System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                  return;
+              }
+          }       */
+    }
+}
