@@ -3,3 +3,17 @@
 ################################################################################
 
 /.vs
+/ArasConnector/bin/Debug
+/ArasConnector/obj/Debug
+/ArasConnector/obj
+/AutocadPlugIn/obj/Debug
+/AutocadPlugIn/obj/Release/AutocadPlugIn.csproj.CoreCompileInputs.cache
+/CADController/obj/Debug
+/CADController/obj/Office2003/CADController.csproj.CoreCompileInputs.cache
+/CADController/obj
+/Common/obj/Debug
+/RedBracketConnector/bin/Debug
+/RedBracketConnector/obj/Debug
+/RedBracketConnector/obj/Release
+/Common/bin/Debug
+/Common/obj/Release/Common.csproj.CoreCompileInputs.cache
