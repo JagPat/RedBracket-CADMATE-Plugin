@@ -32,12 +32,15 @@
             this.submit = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.savetreeGrid = new AdvancedDataGridView.TreeGridView();
+            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
+            this.CADDescription = new System.Windows.Forms.TextBox();
+            this.Comments = new System.Windows.Forms.Label();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.drawing = new AdvancedDataGridView.TreeGridColumn();
             this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cadtype = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.revision = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.State = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.State = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.drawingID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.filepath = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.itemtype = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,9 +54,6 @@
             this.RealtyId = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.targetrevision = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.Version = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
-            this.CADDescription = new System.Windows.Forms.TextBox();
-            this.Comments = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.savetreeGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,9 +82,9 @@
             this.savetreeGrid.AllowUserToAddRows = false;
             this.savetreeGrid.AllowUserToDeleteRows = false;
             this.savetreeGrid.AllowUserToOrderColumns = true;
-            this.savetreeGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.savetreeGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.savetreeGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.savetreeGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.savetreeGrid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
@@ -119,6 +119,31 @@
             this.savetreeGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.savetreeGrid_CellContentClick);
             this.savetreeGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.savetreeGrid_CellBeginEdit);
             // 
+            // imageStrip
+            // 
+            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
+            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // CADDescription
+            // 
+            this.CADDescription.Location = new System.Drawing.Point(88, 378);
+            this.CADDescription.Multiline = true;
+            this.CADDescription.Name = "CADDescription";
+            this.CADDescription.Size = new System.Drawing.Size(304, 47);
+            this.CADDescription.TabIndex = 8;
+            // 
+            // Comments
+            // 
+            this.Comments.AutoSize = true;
+            this.Comments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Comments.ForeColor = System.Drawing.Color.Red;
+            this.Comments.Location = new System.Drawing.Point(12, 381);
+            this.Comments.Name = "Comments";
+            this.Comments.Size = new System.Drawing.Size(64, 13);
+            this.Comments.TabIndex = 9;
+            this.Comments.Text = "Comments";
+            // 
             // Check
             // 
             this.Check.FillWeight = 51.53443F;
@@ -129,20 +154,20 @@
             // drawing
             // 
             this.drawing.DefaultNodeImage = null;
-            this.drawing.HeaderText = "Document Name";
+            this.drawing.HeaderText = "File Name";
             this.drawing.Name = "drawing";
             this.drawing.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // DrawingNumber
             // 
-            this.DrawingNumber.HeaderText = "Document No";
+            this.DrawingNumber.HeaderText = "File No";
             this.DrawingNumber.Name = "DrawingNumber";
             this.DrawingNumber.ReadOnly = true;
             this.DrawingNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // cadtype
             // 
-            this.cadtype.HeaderText = "CAD Type";
+            this.cadtype.HeaderText = "File Type";
             this.cadtype.Name = "cadtype";
             this.cadtype.ReadOnly = true;
             this.cadtype.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -158,10 +183,10 @@
             // State
             // 
             this.State.FillWeight = 70F;
-            this.State.HeaderText = "State";
+            this.State.HeaderText = "FIle Status";
             this.State.Name = "State";
             this.State.ReadOnly = true;
-            this.State.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.State.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // drawingID
             // 
@@ -218,23 +243,26 @@
             // 
             // ProjectName
             // 
-            this.ProjectName.HeaderText = "ProjectName";
+            this.ProjectName.HeaderText = "Project Name";
             this.ProjectName.Name = "ProjectName";
             // 
             // ProjectId
             // 
             this.ProjectId.HeaderText = "ProjectId";
             this.ProjectId.Name = "ProjectId";
+            this.ProjectId.Visible = false;
             // 
             // RealtyName
             // 
             this.RealtyName.HeaderText = "RealtyName";
             this.RealtyName.Name = "RealtyName";
+            this.RealtyName.Visible = false;
             // 
             // RealtyId
             // 
             this.RealtyId.HeaderText = "RealtyId";
             this.RealtyId.Name = "RealtyId";
+            this.RealtyId.Visible = false;
             // 
             // targetrevision
             // 
@@ -248,31 +276,6 @@
             this.Version.HeaderText = "Create New Ver";
             this.Version.MinimumWidth = 25;
             this.Version.Name = "Version";
-            // 
-            // imageStrip
-            // 
-            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
-            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // CADDescription
-            // 
-            this.CADDescription.Location = new System.Drawing.Point(88, 378);
-            this.CADDescription.Multiline = true;
-            this.CADDescription.Name = "CADDescription";
-            this.CADDescription.Size = new System.Drawing.Size(304, 47);
-            this.CADDescription.TabIndex = 8;
-            // 
-            // Comments
-            // 
-            this.Comments.AutoSize = true;
-            this.Comments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Comments.ForeColor = System.Drawing.Color.Red;
-            this.Comments.Location = new System.Drawing.Point(12, 381);
-            this.Comments.Name = "Comments";
-            this.Comments.Size = new System.Drawing.Size(64, 13);
-            this.Comments.TabIndex = 9;
-            this.Comments.Text = "Comments";
             // 
             // Save_Active_Drawings
             // 
@@ -299,26 +302,26 @@
         private System.Windows.Forms.Button cancel;
         private AdvancedDataGridView.TreeGridView savetreeGrid;
         private System.Windows.Forms.ImageList imageStrip;
+        private System.Windows.Forms.TextBox CADDescription;
+        private System.Windows.Forms.Label Comments;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private AdvancedDataGridView.TreeGridColumn drawing;
         private System.Windows.Forms.DataGridViewTextBoxColumn DrawingNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn cadtype;
         private System.Windows.Forms.DataGridViewTextBoxColumn revision;
+        private System.Windows.Forms.DataGridViewComboBoxColumn State;
         private System.Windows.Forms.DataGridViewTextBoxColumn drawingID;
         private System.Windows.Forms.DataGridViewTextBoxColumn filepath;
         private System.Windows.Forms.DataGridViewTextBoxColumn itemtype;
         private System.Windows.Forms.DataGridViewTextBoxColumn lockstatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn sourceid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Layouts;
         private System.Windows.Forms.DataGridViewTextBoxColumn isroot;
-        private System.Windows.Forms.DataGridViewComboBoxColumn targetrevision;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Layouts;
         private System.Windows.Forms.DataGridViewComboBoxColumn ProjectName;
         private System.Windows.Forms.DataGridViewComboBoxColumn ProjectId;
         private System.Windows.Forms.DataGridViewComboBoxColumn RealtyName;
         private System.Windows.Forms.DataGridViewComboBoxColumn RealtyId;
-        private System.Windows.Forms.DataGridViewTextBoxColumn State;
+        private System.Windows.Forms.DataGridViewComboBoxColumn targetrevision;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Version;
-        private System.Windows.Forms.TextBox CADDescription;
-        private System.Windows.Forms.Label Comments;
     }
 }

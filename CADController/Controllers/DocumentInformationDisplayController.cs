@@ -5,7 +5,7 @@ using System.Text;
 using System.Collections;
 using CADController.Controllers;
 using CADController.Commands;
-using ArasConnector;
+using RedBracketConnector;
 using System.Windows.Forms;
 using System.Data;
 namespace CADController.Controllers
@@ -35,7 +35,8 @@ namespace CADController.Controllers
                 plmobjs.Add(plmobj);
                 
             }
-            newplmobj = objConnector.GetPLMObjectInformation(plmobjs);
+            //newplmobj = objConnector.GetPLMObjectInformation(plmobjs);
+            newplmobj = ObjRBC.GetPLMObjectInformation(plmobjs);
             foreach (PLMObject obj in newplmobj)
             {
                 dtNewPlmObjInfomation.Rows.Add(obj.ObjectNumber,obj.ObjectRevision,obj.ObjectGeneration,obj.ObjectState,obj.LockStatus,obj.ObjectProjectId, obj.ObjectProjectName);

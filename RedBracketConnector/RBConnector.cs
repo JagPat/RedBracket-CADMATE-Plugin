@@ -9,7 +9,7 @@ using System.Data;
 using System.Collections;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using RestSharp;
+using RestSharp; 
 
 namespace RedBracketConnector
 {
@@ -29,455 +29,590 @@ namespace RedBracketConnector
                 ShowMessage.ErrorMess("Some error occurred while uploading file.");
             }
         }
-        public void SaveObject(ref List<PLMObject> plmobjs)
+      
+        public bool SaveObject(ref List<PLMObject> plmobjs, string FilePath)
         {
-            //Hashtable SavedData = new Hashtable();
-            //try
-            //{
-            //    String sourceid = "";
-            //    String newDrawingId = "";
-            //    String ProjectName = "";
+            try
+            {
+                
+                //foreach (PLMObject obj in plmobjs)
+                {
+                    //KeyValuePair<string, string> L = new KeyValuePair<string, string>("filepath", FilePath);
+                    SaveFileCommand objSFC = new SaveFileCommand();
+                    using (var binaryReader = new BinaryReader(File.OpenRead(FilePath)))
+                    {
+                        binaryReader.Read();
+                        objSFC.BRDocument = binaryReader;
+                        //binaryWriter.Flush();
+                        //binaryWriter.Close();
+                        //binaryWriter.Dispose();
+                    }
+                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("project", "19");
+
+                    List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                    urlParameters.Add(L);
+                    RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                        "/AutocadFiles/uploadFileService", DataFormat.Json,
+                        objSFC, true, urlParameters);
+                    if (restResponse.StatusCode!=System.Net.HttpStatusCode.OK)
+                    {
+                        
+                        ShowMessage.ErrorMess("Some error occurred while uploading file.");
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch(Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+                //Hashtable SavedData = new Hashtable();
+                //try
+                //{
+                //    String sourceid = "";
+                //    String newDrawingId = "";
+                //    String ProjectName = "";
 
 
-            //    #region "Release PLMObjects"
-            //    //ReleasePLMObjects(plmobjs);
-            //    #endregion
+                //    #region "Release PLMObjects"
+                //    //ReleasePLMObjects(plmobjs);
+                //    #endregion
 
-            //    #region "Save PLMObjects"
-            //    foreach (PLMObject obj in plmobjs)
-            //    {
-            //        Item cadDocument_QRY = null;
-            //        Item cadDocument_RES = null;
-            //        Array Layouts = obj.ObjectLayouts.Split('$');
+                //    #region "Save PLMObjects"
+                //    foreach (PLMObject obj in plmobjs)
+                //    {
+                //        Item cadDocument_QRY = null;
+                //        Item cadDocument_RES = null;
+                //        Array Layouts = obj.ObjectLayouts.Split('$');
 
-            //        #region "If Drawing is in ARASInnovator"
+                //        #region "If Drawing is in ARASInnovator"
 
-            //        if (!obj.IsNew)
-            //        {
-            //            if ((ProjectName == null || ProjectName == "") && (obj.ObjectId != null || obj.ObjectId != ""))
-            //            {
-            //                // Get this info by get file info
-            //                Item MyCAD = myInnovator.getItemById(obj.ItemType, obj.ObjectId);
-            //                ProjectName = MyCAD.getItemByIndex(0).getProperty("sg_project_name");
-            //            }
+                //        if (!obj.IsNew)
+                //        {
+                //            if ((ProjectName == null || ProjectName == "") && (obj.ObjectId != null || obj.ObjectId != ""))
+                //            {
+                //                // Get this info by get file info
+                //                Item MyCAD = myInnovator.getItemById(obj.ItemType, obj.ObjectId);
+                //                ProjectName = MyCAD.getItemByIndex(0).getProperty("sg_project_name");
+                //            }
 
-            //            #region CreateManualVersion
-            //            if (obj.IsManualVersion)
-            //            {
-            //                //
-            //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                cadDocument_QRY.setProperty("id", obj.ObjectId);
-            //                cadDocument_RES = cadDocument_QRY.apply();
-            //                if (cadDocument_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.getErrorString()));
-            //                }
-            //                string prevFileId = cadDocument_RES.getItemByIndex(0).getProperty("native_file");
-            //                Item fileItem = myInnovator.newItem("File", "add");
-            //                fileItem.setAttribute("where", "id='" + prevFileId + "'");
-            //                string seperatefilename = Path.GetFileName(obj.FilePath);
-            //                fileItem.setProperty("filename", seperatefilename);
-            //                fileItem.setID(myInnovator.getNewID());
-            //                fileItem.attachPhysicalFile(obj.FilePath);
-            //                Item checkin_result = fileItem.apply();
-            //                string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
-            //                if (checkin_result.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + checkin_result.getErrorString()));
-            //                }
-            //                if (obj.IsCreateNewRevision)
-            //                {
-            //                    cadDocument_RES.unlockItem();
-            //                    if (cadDocument_RES.apply("PE_CreateNewRevision").isError())
-            //                    {
-            //                        throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.apply("PE_CreateNewRevision").getErrorString()));
-            //                    }
+                //            #region CreateManualVersion
+                //            if (obj.IsManualVersion)
+                //            {
+                //                //
+                //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
+                //                cadDocument_QRY.setProperty("id", obj.ObjectId);
+                //                cadDocument_RES = cadDocument_QRY.apply();
+                //                if (cadDocument_RES.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.getErrorString()));
+                //                }
+                //                string prevFileId = cadDocument_RES.getItemByIndex(0).getProperty("native_file");
+                //                Item fileItem = myInnovator.newItem("File", "add");
+                //                fileItem.setAttribute("where", "id='" + prevFileId + "'");
+                //                string seperatefilename = Path.GetFileName(obj.FilePath);
+                //                fileItem.setProperty("filename", seperatefilename);
+                //                fileItem.setID(myInnovator.getNewID());
+                //                fileItem.attachPhysicalFile(obj.FilePath);
+                //                Item checkin_result = fileItem.apply();
+                //                string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
+                //                if (checkin_result.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + checkin_result.getErrorString()));
+                //                }
+                //                if (obj.IsCreateNewRevision)
+                //                {
+                //                    cadDocument_RES.unlockItem();
+                //                    if (cadDocument_RES.apply("PE_CreateNewRevision").isError())
+                //                    {
+                //                        throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.apply("PE_CreateNewRevision").getErrorString()));
+                //                    }
 
-            //                }
-            //                else
-            //                {
-            //                    //if (cadDocument_RES.getProperty("is_released").ToString() != "1")
-            //                    if (cadDocument_RES.apply("version").isError())
-            //                    {
-            //                        throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.apply("version").getErrorString()));
-            //                    }
-            //                }
-            //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                cadDocument_QRY.setProperty("item_number", cadDocument_RES.getProperty("item_number"));
-            //                cadDocument_QRY.setProperty("is_current", "1");
-            //                cadDocument_RES = cadDocument_QRY.apply();
-            //                if (cadDocument_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is : " + cadDocument_RES.getErrorString()));
-            //                }
-            //                Item newCadFile = myInnovator.newItem(obj.ItemType, "edit");
-            //                newCadFile.setAttribute("where", "id='" + cadDocument_RES.getProperty("id").ToString() + "'");
-            //                newCadFile.setProperty("native_file", newFileId);
-            //                if (obj.ObjectDescription.ToString().Length > 0)
-            //                    newCadFile.setProperty("description", obj.ObjectDescription);
-            //                Item newCadFile_RES = newCadFile.apply();
-            //                newCadFile_RES.unlockItem();
-            //                SavedData.Add(seperatefilename, obj.ObjectId);
-            //                if (newCadFile_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + newCadFile_RES.getErrorString()));
-            //                }
-            //                newDrawingId = newCadFile_RES.getProperty("id");
-            //            }
-            //            #endregion CreateManualVersion
+                //                }
+                //                else
+                //                {
+                //                    //if (cadDocument_RES.getProperty("is_released").ToString() != "1")
+                //                    if (cadDocument_RES.apply("version").isError())
+                //                    {
+                //                        throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.apply("version").getErrorString()));
+                //                    }
+                //                }
+                //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
+                //                cadDocument_QRY.setProperty("item_number", cadDocument_RES.getProperty("item_number"));
+                //                cadDocument_QRY.setProperty("is_current", "1");
+                //                cadDocument_RES = cadDocument_QRY.apply();
+                //                if (cadDocument_RES.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is : " + cadDocument_RES.getErrorString()));
+                //                }
+                //                Item newCadFile = myInnovator.newItem(obj.ItemType, "edit");
+                //                newCadFile.setAttribute("where", "id='" + cadDocument_RES.getProperty("id").ToString() + "'");
+                //                newCadFile.setProperty("native_file", newFileId);
+                //                if (obj.ObjectDescription.ToString().Length > 0)
+                //                    newCadFile.setProperty("description", obj.ObjectDescription);
+                //                Item newCadFile_RES = newCadFile.apply();
+                //                newCadFile_RES.unlockItem();
+                //                SavedData.Add(seperatefilename, obj.ObjectId);
+                //                if (newCadFile_RES.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + newCadFile_RES.getErrorString()));
+                //                }
+                //                newDrawingId = newCadFile_RES.getProperty("id");
+                //            }
+                //            #endregion CreateManualVersion
 
-            //            #region NoManualVersion
-            //            else
-            //            {
-            //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                cadDocument_QRY.setProperty("id", obj.ObjectId);
-            //                cadDocument_RES = cadDocument_QRY.apply();
-            //                if (cadDocument_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.getErrorString()));
-            //                }
-            //                string prevFileId = cadDocument_RES.getItemByIndex(0).getProperty("native_file");
+                //            #region NoManualVersion
+                //            else
+                //            {
+                //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
+                //                cadDocument_QRY.setProperty("id", obj.ObjectId);
+                //                cadDocument_RES = cadDocument_QRY.apply();
+                //                if (cadDocument_RES.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.getErrorString()));
+                //                }
+                //                string prevFileId = cadDocument_RES.getItemByIndex(0).getProperty("native_file");
 
-            //                Item fileItem = myInnovator.newItem("File", "add");
-            //                fileItem.setAttribute("where", "id='" + prevFileId + "'");
-            //                string seperatefilename = Path.GetFileName(obj.FilePath);
-            //                fileItem.setProperty("filename", seperatefilename);
-            //                fileItem.setID(myInnovator.getNewID());
-            //                fileItem.attachPhysicalFile(obj.FilePath);
-            //                Item checkin_result = fileItem.apply();
-            //                string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
-            //                if (checkin_result.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject NoManualVersion' method.\n Error string is :" + checkin_result.getErrorString()));
-            //                }
-            //                Item newCadFile = myInnovator.newItem(obj.ItemType, "edit");
-            //                newCadFile.setAttribute("where", "id='" + cadDocument_RES.getProperty("id").ToString() + "'");
-            //                newCadFile.setProperty("native_file", newFileId);
-            //                if (obj.ObjectDescription.ToString().Length > 1)
-            //                    newCadFile.setProperty("description", obj.ObjectDescription);
-            //                Item newCadFile_RES = newCadFile.apply();
-            //                newCadFile_RES.unlockItem();
-            //                if (newCadFile_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject NoManualVersion' method.\n Error string is :" + newCadFile_RES.getErrorString()));
-            //                }
-            //                newDrawingId = newCadFile_RES.getProperty("id");
-            //            }
-            //            #endregion NoManualVersion
-            //        }
+                //                Item fileItem = myInnovator.newItem("File", "add");
+                //                fileItem.setAttribute("where", "id='" + prevFileId + "'");
+                //                string seperatefilename = Path.GetFileName(obj.FilePath);
+                //                fileItem.setProperty("filename", seperatefilename);
+                //                fileItem.setID(myInnovator.getNewID());
+                //                fileItem.attachPhysicalFile(obj.FilePath);
+                //                Item checkin_result = fileItem.apply();
+                //                string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
+                //                if (checkin_result.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject NoManualVersion' method.\n Error string is :" + checkin_result.getErrorString()));
+                //                }
+                //                Item newCadFile = myInnovator.newItem(obj.ItemType, "edit");
+                //                newCadFile.setAttribute("where", "id='" + cadDocument_RES.getProperty("id").ToString() + "'");
+                //                newCadFile.setProperty("native_file", newFileId);
+                //                if (obj.ObjectDescription.ToString().Length > 1)
+                //                    newCadFile.setProperty("description", obj.ObjectDescription);
+                //                Item newCadFile_RES = newCadFile.apply();
+                //                newCadFile_RES.unlockItem();
+                //                if (newCadFile_RES.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject NoManualVersion' method.\n Error string is :" + newCadFile_RES.getErrorString()));
+                //                }
+                //                newDrawingId = newCadFile_RES.getProperty("id");
+                //            }
+                //            #endregion NoManualVersion
+                //        }
 
-            //        #endregion "If Drawing is in ARASInnovator"
+                //        #endregion "If Drawing is in ARASInnovator"
 
-            //        #region "If Drawing is not in ARASInnovator"
-            //        else
-            //        {
-            //            obj.IsManualVersion = true;
-            //            Item fileItem = myInnovator.newItem("File", "add");
-            //            string seperatefilename = Path.GetFileName(obj.FilePath);
-            //            fileItem.setProperty("filename", seperatefilename);
-            //            fileItem.setID(myInnovator.getNewID());
-            //            fileItem.attachPhysicalFile(obj.FilePath);
-            //            Item checkin_result = fileItem.apply();
-            //            string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
-            //            if (checkin_result.isError())
-            //            {
-            //                throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + checkin_result.getErrorString()));
-            //            }
-            //            cadDocument_QRY = myInnovator.newItem(obj.ItemType, "add");
-            //            cadDocument_QRY.setProperty("name", obj.ObjectName);
-            //            cadDocument_QRY.setProperty("item_number", obj.ObjectNumber);
-            //            if (obj.ObjectProjectId.ToString().Length > 1)
-            //            {
-            //                cadDocument_QRY.setProperty("sg_project_name", obj.ObjectProjectId);
-            //            }
-            //            if (obj.ObjectDescription.ToString().Length > 1)
-            //                cadDocument_QRY.setProperty("description", obj.ObjectDescription);
-            //            cadDocument_QRY.setProperty("authoring_tool", obj.AuthoringTool);
-            //            if (obj.Classification != "Non" && obj.Classification != null && obj.Classification != "")
-            //                cadDocument_QRY.setProperty("classification", obj.Classification);
-            //            cadDocument_QRY.setProperty("native_file", newFileId);
-            //            cadDocument_RES = cadDocument_QRY.apply();
-            //            newDrawingId = cadDocument_RES.getProperty("id");
-            //            SavedData.Add(seperatefilename, cadDocument_RES.getProperty("id"));
+                //        #region "If Drawing is not in ARASInnovator"
+                //        else
+                //        {
+                //            obj.IsManualVersion = true;
+                //            Item fileItem = myInnovator.newItem("File", "add");
+                //            string seperatefilename = Path.GetFileName(obj.FilePath);
+                //            fileItem.setProperty("filename", seperatefilename);
+                //            fileItem.setID(myInnovator.getNewID());
+                //            fileItem.attachPhysicalFile(obj.FilePath);
+                //            Item checkin_result = fileItem.apply();
+                //            string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
+                //            if (checkin_result.isError())
+                //            {
+                //                throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + checkin_result.getErrorString()));
+                //            }
+                //            cadDocument_QRY = myInnovator.newItem(obj.ItemType, "add");
+                //            cadDocument_QRY.setProperty("name", obj.ObjectName);
+                //            cadDocument_QRY.setProperty("item_number", obj.ObjectNumber);
+                //            if (obj.ObjectProjectId.ToString().Length > 1)
+                //            {
+                //                cadDocument_QRY.setProperty("sg_project_name", obj.ObjectProjectId);
+                //            }
+                //            if (obj.ObjectDescription.ToString().Length > 1)
+                //                cadDocument_QRY.setProperty("description", obj.ObjectDescription);
+                //            cadDocument_QRY.setProperty("authoring_tool", obj.AuthoringTool);
+                //            if (obj.Classification != "Non" && obj.Classification != null && obj.Classification != "")
+                //                cadDocument_QRY.setProperty("classification", obj.Classification);
+                //            cadDocument_QRY.setProperty("native_file", newFileId);
+                //            cadDocument_RES = cadDocument_QRY.apply();
+                //            newDrawingId = cadDocument_RES.getProperty("id");
+                //            SavedData.Add(seperatefilename, cadDocument_RES.getProperty("id"));
 
-            //            #region AddtoPart
-            //            if (obj.ObjectRealtyId.ToString().Length > 1)
-            //            {
-            //                Item sg_Part = myInnovator.applyAML("<AML><Item type='Part' action='get'><item_number>" + obj.ObjectRealtyId + "</item_number></Item></AML>");
+                //            #region AddtoPart
+                //            if (obj.ObjectRealtyId.ToString().Length > 1)
+                //            {
+                //                Item sg_Part = myInnovator.applyAML("<AML><Item type='Part' action='get'><item_number>" + obj.ObjectRealtyId + "</item_number></Item></AML>");
 
-            //                Item PartCADItem = myInnovator.newItem("Part CAD", "add");
-            //                PartCADItem.setProperty("source_id", sg_Part.getProperty("id"));
-            //                PartCADItem.setProperty("related_id", cadDocument_RES.getProperty("id"));
-            //                Item PartCADItem_RES = PartCADItem.apply();
-            //                if (PartCADItem_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'Realty Entity SaveObject' method.\n Error string is :" + PartCADItem_RES.getErrorString()));
-            //                }
-            //            }
-            //            #endregion AddtoPart
+                //                Item PartCADItem = myInnovator.newItem("Part CAD", "add");
+                //                PartCADItem.setProperty("source_id", sg_Part.getProperty("id"));
+                //                PartCADItem.setProperty("related_id", cadDocument_RES.getProperty("id"));
+                //                Item PartCADItem_RES = PartCADItem.apply();
+                //                if (PartCADItem_RES.isError())
+                //                {
+                //                    throw (new Exceptions.ConnectionException("Exception occured in 'Realty Entity SaveObject' method.\n Error string is :" + PartCADItem_RES.getErrorString()));
+                //                }
+                //            }
+                //            #endregion AddtoPart
 
-            //        }
-            //        #endregion
+                //        }
+                //        #endregion
 
-            //        #region "Manage Layout"
-            //        Item sg_CAD = myInnovator.getItemById("CAD", newDrawingId);
+                //        #region "Manage Layout"
+                //        Item sg_CAD = myInnovator.getItemById("CAD", newDrawingId);
 
-            //        String query = "select distinct(keyed_name) from innovator.[CAD] where id in (select related_id from innovator.[sg_RelatedCADLayout] where source_id in (select id from innovator.[CAD] where item_number='" + sg_CAD.getProperty("item_number", "") + "'))";
-            //        Item DwgLayout = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
+                //        String query = "select distinct(keyed_name) from innovator.[CAD] where id in (select related_id from innovator.[sg_RelatedCADLayout] where source_id in (select id from innovator.[CAD] where item_number='" + sg_CAD.getProperty("item_number", "") + "'))";
+                //        Item DwgLayout = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
 
-            //        Hashtable Layout_Old = new Hashtable();
+                //        Hashtable Layout_Old = new Hashtable();
 
-            //        for (int l = 0; l < DwgLayout.getItemCount(); l++)
-            //        {
-            //            Item Old_Layout = myInnovator.getItemByKeyedName("CAD", DwgLayout.getItemByIndex(l).getProperty("keyed_name"));
-            //            if (Old_Layout == null) continue;
-            //            if (Layout_Old.Contains(Old_Layout.getItemByIndex(0).getProperty("name"))) continue;
-            //            Layout_Old.Add(Old_Layout.getItemByIndex(0).getProperty("name"), Old_Layout.getItemByIndex(0).getProperty("id"));
-            //        }
+                //        for (int l = 0; l < DwgLayout.getItemCount(); l++)
+                //        {
+                //            Item Old_Layout = myInnovator.getItemByKeyedName("CAD", DwgLayout.getItemByIndex(l).getProperty("keyed_name"));
+                //            if (Old_Layout == null) continue;
+                //            if (Layout_Old.Contains(Old_Layout.getItemByIndex(0).getProperty("name"))) continue;
+                //            Layout_Old.Add(Old_Layout.getItemByIndex(0).getProperty("name"), Old_Layout.getItemByIndex(0).getProperty("id"));
+                //        }
 
-            //        foreach (string layout in Layouts)
-            //        {
-            //            if (Layout_Old.Contains(layout))
-            //            {
-            //                if (obj.IsManualVersion)
-            //                {
-            //                    Item CAD = myInnovator.getItemById("CAD", Layout_Old[layout].ToString());
-            //                    String sg_LayoutState = CAD.getProperty("state").ToString();
-            //                    if ((sg_LayoutState != "Preliminary"))
-            //                    {
-            //                        MessageBox.Show("The Layout \"" + layout + "\" is in \"" + CAD.getProperty("state").ToString() + "\" LifeCycle State. So we are unable to create new generation of it. To Create new generation of Layout \"" + layout + "\" create new REVISION of Layout using Change Process.", "Warning");
-            //                        //myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedCADLayout] where related_id='" + CAD.getProperty("id").ToString() + "' and source_id='" + newDrawingId + "'</query>");
-            //                    }
-            //                    else
-            //                    {
-            //                        CAD = myInnovator.newItem("CAD", "edit");
-            //                        CAD.setAttribute("where", "id='" + Layout_Old[layout] + "'");
-            //                        CAD.setProperty("description", obj.ObjectDescription.ToString());
-            //                        Item CADRes = CAD.apply("version");
-            //                        CADRes.unlockItem();
-            //                        query = "select * from innovator.[sg_RelatedCADLayout] where related_id='" + CADRes.getProperty("id").ToString() + "' and source_id='" + newDrawingId + "'";
-            //                        Item LayoutCurr = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
+                //        foreach (string layout in Layouts)
+                //        {
+                //            if (Layout_Old.Contains(layout))
+                //            {
+                //                if (obj.IsManualVersion)
+                //                {
+                //                    Item CAD = myInnovator.getItemById("CAD", Layout_Old[layout].ToString());
+                //                    String sg_LayoutState = CAD.getProperty("state").ToString();
+                //                    if ((sg_LayoutState != "Preliminary"))
+                //                    {
+                //                        MessageBox.Show("The Layout \"" + layout + "\" is in \"" + CAD.getProperty("state").ToString() + "\" LifeCycle State. So we are unable to create new generation of it. To Create new generation of Layout \"" + layout + "\" create new REVISION of Layout using Change Process.", "Warning");
+                //                        //myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedCADLayout] where related_id='" + CAD.getProperty("id").ToString() + "' and source_id='" + newDrawingId + "'</query>");
+                //                    }
+                //                    else
+                //                    {
+                //                        CAD = myInnovator.newItem("CAD", "edit");
+                //                        CAD.setAttribute("where", "id='" + Layout_Old[layout] + "'");
+                //                        CAD.setProperty("description", obj.ObjectDescription.ToString());
+                //                        Item CADRes = CAD.apply("version");
+                //                        CADRes.unlockItem();
+                //                        query = "select * from innovator.[sg_RelatedCADLayout] where related_id='" + CADRes.getProperty("id").ToString() + "' and source_id='" + newDrawingId + "'";
+                //                        Item LayoutCurr = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
 
-            //                        if (LayoutCurr.getItemCount() < 1)//If Layout is not in Relationship "sg_RelatedCADLayout"
-            //                        {
-            //                            Item Layout = myInnovator.newItem("sg_RelatedCADLayout", "add");
-            //                            Layout.setProperty("source_id", newDrawingId);
-            //                            Layout.setProperty("related_id", CADRes.getProperty("id").ToString());
-            //                            Layout = Layout.apply();
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (layout.Length > 0)
-            //                {
-            //                    Item sg_Layout = myInnovator.newItem("CAD", "add");
-            //                    sg_Layout.setProperty("name", layout);
-            //                    sg_Layout.setProperty("item_number", myInnovator.getNextSequence("sg_CADLayoutSequence") + "_" + sg_CAD.getProperty("item_number"));
-            //                    sg_Layout.setProperty("classification", "Layout");
-            //                    sg_Layout.setProperty("description", obj.ObjectDescription.ToString());
-            //                    sg_Layout.setProperty("sg_project_name", sg_CAD.getProperty("sg_project_name"));
-            //                    Item sg_LayoutRes = sg_Layout.apply();
+                //                        if (LayoutCurr.getItemCount() < 1)//If Layout is not in Relationship "sg_RelatedCADLayout"
+                //                        {
+                //                            Item Layout = myInnovator.newItem("sg_RelatedCADLayout", "add");
+                //                            Layout.setProperty("source_id", newDrawingId);
+                //                            Layout.setProperty("related_id", CADRes.getProperty("id").ToString());
+                //                            Layout = Layout.apply();
+                //                        }
+                //                    }
+                //                }
+                //            }
+                //            else
+                //            {
+                //                if (layout.Length > 0)
+                //                {
+                //                    Item sg_Layout = myInnovator.newItem("CAD", "add");
+                //                    sg_Layout.setProperty("name", layout);
+                //                    sg_Layout.setProperty("item_number", myInnovator.getNextSequence("sg_CADLayoutSequence") + "_" + sg_CAD.getProperty("item_number"));
+                //                    sg_Layout.setProperty("classification", "Layout");
+                //                    sg_Layout.setProperty("description", obj.ObjectDescription.ToString());
+                //                    sg_Layout.setProperty("sg_project_name", sg_CAD.getProperty("sg_project_name"));
+                //                    Item sg_LayoutRes = sg_Layout.apply();
 
-            //                    Item sg_CADItem = myInnovator.newItem("CAD", "edit");
-            //                    sg_CADItem.setAttribute("where", "id='" + newDrawingId + "'");
-            //                    Item CADLayoutItem = myInnovator.newItem("sg_RelatedCADLayout", "add");
-            //                    CADLayoutItem.setRelatedItem(sg_LayoutRes);
-            //                    sg_CADItem.addRelationship(CADLayoutItem);
-            //                    Item sg_CADItemRES = sg_CADItem.apply();
-            //                }
-            //            }
-            //        }
+                //                    Item sg_CADItem = myInnovator.newItem("CAD", "edit");
+                //                    sg_CADItem.setAttribute("where", "id='" + newDrawingId + "'");
+                //                    Item CADLayoutItem = myInnovator.newItem("sg_RelatedCADLayout", "add");
+                //                    CADLayoutItem.setRelatedItem(sg_LayoutRes);
+                //                    sg_CADItem.addRelationship(CADLayoutItem);
+                //                    Item sg_CADItemRES = sg_CADItem.apply();
+                //                }
+                //            }
+                //        }
 
-            //        //If Layout is deleted or Renamed then treat as deletion of Relationship
-            //        foreach (DictionaryEntry layout_old in Layout_Old)
-            //        {
-            //            Boolean flag = true;
-            //            foreach (string layout in Layouts)
-            //            {
-            //                if (layout == layout_old.Key.ToString())
-            //                {
-            //                    flag = false;
-            //                    break;
-            //                }
-            //            }
-            //            if (flag)
-            //            {
-            //                Item delRelItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedCADLayout] where source_id='" + newDrawingId + "' and related_id='" + layout_old.Value.ToString() + "'</query>");
-            //                // delRelItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedEntityLayout] where related_id='" + layout_old.Value.ToString() + "'</query>");
-            //            }
-            //        }
+                //        //If Layout is deleted or Renamed then treat as deletion of Relationship
+                //        foreach (DictionaryEntry layout_old in Layout_Old)
+                //        {
+                //            Boolean flag = true;
+                //            foreach (string layout in Layouts)
+                //            {
+                //                if (layout == layout_old.Key.ToString())
+                //                {
+                //                    flag = false;
+                //                    break;
+                //                }
+                //            }
+                //            if (flag)
+                //            {
+                //                Item delRelItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedCADLayout] where source_id='" + newDrawingId + "' and related_id='" + layout_old.Value.ToString() + "'</query>");
+                //                // delRelItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedEntityLayout] where related_id='" + layout_old.Value.ToString() + "'</query>");
+                //            }
+                //        }
 
-            //        //Update Realty Entity After File Checkin To Maintain Relationship "sg_RelatedEntityLayout" according to related "CAD" Items 
-            //        query = "select distinct(config_id) from innovator.[Part] where id in (select source_id from innovator.[Part_CAD] where related_id ='" + newDrawingId + "')";
-            //        Item sg_Realty = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
+                //        //Update Realty Entity After File Checkin To Maintain Relationship "sg_RelatedEntityLayout" according to related "CAD" Items 
+                //        query = "select distinct(config_id) from innovator.[Part] where id in (select source_id from innovator.[Part_CAD] where related_id ='" + newDrawingId + "')";
+                //        Item sg_Realty = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
 
-            //        for (int i = 0; i < sg_Realty.getItemCount(); i++)
-            //        {
-            //            Item sg_Part = myInnovator.newItem("Part", "edit");
-            //            sg_Part.setAttribute("where", "config_id='" + sg_Realty.getItemByIndex(i).getProperty("config_id") + "'");
-            //            sg_Part = sg_Part.apply();
-            //        }
+                //        for (int i = 0; i < sg_Realty.getItemCount(); i++)
+                //        {
+                //            Item sg_Part = myInnovator.newItem("Part", "edit");
+                //            sg_Part.setAttribute("where", "config_id='" + sg_Realty.getItemByIndex(i).getProperty("config_id") + "'");
+                //            sg_Part = sg_Part.apply();
+                //        }
 
-            //        #endregion "Manage Layout"
+                //        #endregion "Manage Layout"
 
-            //        #region "Add Drawings under Root Drawing"
-            //        /*
-            //           if (obj.IsManualVersion && !obj.IsNew)
-            //          {
-            //              if (obj.IsRoot)
-            //                  sourceid = cadDocument_RES.getProperty("id");
-            //              else
-            //                  newDrawingId = cadDocument_RES.getProperty("id");
+                //        #region "Add Drawings under Root Drawing"
+                //        /*
+                //           if (obj.IsManualVersion && !obj.IsNew)
+                //          {
+                //              if (obj.IsRoot)
+                //                  sourceid = cadDocument_RES.getProperty("id");
+                //              else
+                //                  newDrawingId = cadDocument_RES.getProperty("id");
 
-            //              if (!obj.IsRoot)
-            //              {
-            //                  Item relationship_RES;
-            //                  cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                  cadDocument_QRY.setProperty("id", sourceid);
-            //                  relationship_RES = cadDocument_QRY.apply();
+                //              if (!obj.IsRoot)
+                //              {
+                //                  Item relationship_RES;
+                //                  cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
+                //                  cadDocument_QRY.setProperty("id", sourceid);
+                //                  relationship_RES = cadDocument_QRY.apply();
 
-            //                  cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                  cadDocument_QRY.setProperty("config_id", relationship_RES.getProperty("config_id"));
-            //                  cadDocument_QRY.setProperty("is_current", "1");
-            //                  relationship_RES = cadDocument_QRY.apply();
-            //                  Item selItm = myInnovator.applyMethod("sg_run_sql_query", "<query>select * from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");
-            //                  if (selItm.getItemCount() > 0)
-            //                  {
-            //                      Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>Delete from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");  
-            //                  }
-            //                    cadDocument_QRY = myInnovator.newItem("CAD Structure", "add");
-            //                    cadDocument_QRY.setProperty("source_id", relationship_RES.getProperty("id"));
-            //                    if (relationship_RES.getProperty("project_name") != null || relationship_RES.getProperty("project_name") != "")
-            //                    {
-            //                        Item NewCAD = myInnovator.getItemById("CAD", newDrawingId);
-            //                        if (NewCAD.getItemByIndex(0).getProperty("project_name") == null || NewCAD.getItemByIndex(0).getProperty("project_name") == "")
-            //                        {
-            //                           Item updateItm = myInnovator.applyMethod("sg_run_sql_query", "<query>update innovator.[CAD] set project_name='" + relationship_RES.getProperty("project_name") + "' where id='" + newDrawingId + "'</query>");
-            //                        }
-            //                    }
-            //                    cadDocument_QRY.setProperty("related_id", newDrawingId);
-            //                    relationship_RES = cadDocument_QRY.apply();
-            //                  }                          
-            //          }*/
-            //        #endregion "Add Drawings under Root Drawing"
+                //                  cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
+                //                  cadDocument_QRY.setProperty("config_id", relationship_RES.getProperty("config_id"));
+                //                  cadDocument_QRY.setProperty("is_current", "1");
+                //                  relationship_RES = cadDocument_QRY.apply();
+                //                  Item selItm = myInnovator.applyMethod("sg_run_sql_query", "<query>select * from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");
+                //                  if (selItm.getItemCount() > 0)
+                //                  {
+                //                      Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>Delete from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");  
+                //                  }
+                //                    cadDocument_QRY = myInnovator.newItem("CAD Structure", "add");
+                //                    cadDocument_QRY.setProperty("source_id", relationship_RES.getProperty("id"));
+                //                    if (relationship_RES.getProperty("project_name") != null || relationship_RES.getProperty("project_name") != "")
+                //                    {
+                //                        Item NewCAD = myInnovator.getItemById("CAD", newDrawingId);
+                //                        if (NewCAD.getItemByIndex(0).getProperty("project_name") == null || NewCAD.getItemByIndex(0).getProperty("project_name") == "")
+                //                        {
+                //                           Item updateItm = myInnovator.applyMethod("sg_run_sql_query", "<query>update innovator.[CAD] set project_name='" + relationship_RES.getProperty("project_name") + "' where id='" + newDrawingId + "'</query>");
+                //                        }
+                //                    }
+                //                    cadDocument_QRY.setProperty("related_id", newDrawingId);
+                //                    relationship_RES = cadDocument_QRY.apply();
+                //                  }                          
+                //          }*/
+                //        #endregion "Add Drawings under Root Drawing"
 
-            //        #region "Update PLMObject information"
-            //        obj.ObjectId = cadDocument_RES.getProperty("id");
-            //        obj.Classification = cadDocument_RES.getProperty("classification");
-            //        obj.ObjectGeneration = cadDocument_RES.getProperty("generation");
-            //        obj.ObjectNumber = cadDocument_RES.getProperty("item_number");
-            //        obj.ObjectRevision = cadDocument_RES.getProperty("major_rev");
-            //        obj.ObjectState = cadDocument_RES.getProperty("state");
-            //        obj.ObjectName = cadDocument_RES.getProperty("name");
-            //        obj.ObjectProjectId = cadDocument_RES.getProperty("sg_project_name");
-            //        //obj.ObjectProjectId = cadDocument_RES.getProperty("project_id");
-            //        obj.LockStatus = cadDocument_RES.fetchLockStatus().ToString();
-            //        #endregion
-            //    }//end For
-            //    #endregion "Save PLMObjects"
+                //        #region "Update PLMObject information"
+                //        obj.ObjectId = cadDocument_RES.getProperty("id");
+                //        obj.Classification = cadDocument_RES.getProperty("classification");
+                //        obj.ObjectGeneration = cadDocument_RES.getProperty("generation");
+                //        obj.ObjectNumber = cadDocument_RES.getProperty("item_number");
+                //        obj.ObjectRevision = cadDocument_RES.getProperty("major_rev");
+                //        obj.ObjectState = cadDocument_RES.getProperty("state");
+                //        obj.ObjectName = cadDocument_RES.getProperty("name");
+                //        obj.ObjectProjectId = cadDocument_RES.getProperty("sg_project_name");
+                //        //obj.ObjectProjectId = cadDocument_RES.getProperty("project_id");
+                //        obj.LockStatus = cadDocument_RES.fetchLockStatus().ToString();
+                //        #endregion
+                //    }//end For
+                //    #endregion "Save PLMObjects"
 
-            //    #region ManageCADStructureRel
-            //    foreach (PLMObject obj in plmobjs)
-            //    {
-            //        String seperatefilename = Path.GetFileName(obj.FilePath);
-            //        String MyDrawingId = "";
-            //        foreach (DictionaryEntry de in SavedData)
-            //        {
-            //            if (de.Key.ToString() == seperatefilename)
-            //            {
-            //                MyDrawingId = de.Value.ToString();
-            //            }
-            //        }
-            //        #region "If Drawing is in ARASInnovator"
-            //        if (!obj.IsNew)
-            //        {
-            //            #region "Manage RelatedData: if Source updated"
+                //    #region ManageCADStructureRel
+                //    foreach (PLMObject obj in plmobjs)
+                //    {
+                //        String seperatefilename = Path.GetFileName(obj.FilePath);
+                //        String MyDrawingId = "";
+                //        foreach (DictionaryEntry de in SavedData)
+                //        {
+                //            if (de.Key.ToString() == seperatefilename)
+                //            {
+                //                MyDrawingId = de.Value.ToString();
+                //            }
+                //        }
+                //        #region "If Drawing is in ARASInnovator"
+                //        if (!obj.IsNew)
+                //        {
+                //            #region "Manage RelatedData: if Source updated"
 
-            //            String query = "select distinct related_id from innovator.[CAD_STRUCTURE] where source_id='" + MyDrawingId + "'";
-            //            Item PrevRel = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
+                //            String query = "select distinct related_id from innovator.[CAD_STRUCTURE] where source_id='" + MyDrawingId + "'";
+                //            Item PrevRel = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
 
-            //            for (int related = 0; related < PrevRel.getItemCount(); related++)
-            //            {
-            //                Item Child = myInnovator.getItemById("CAD", PrevRel.getItemByIndex(related).getProperty("related_id").ToString());
-            //                Item LatestChild = myInnovator.getItemByKeyedName("CAD", Child.getProperty("keyed_name").ToString());
+                //            for (int related = 0; related < PrevRel.getItemCount(); related++)
+                //            {
+                //                Item Child = myInnovator.getItemById("CAD", PrevRel.getItemByIndex(related).getProperty("related_id").ToString());
+                //                Item LatestChild = myInnovator.getItemByKeyedName("CAD", Child.getProperty("keyed_name").ToString());
 
-            //                query = "delete from innovator.[CAD_STRUCTURE] where source_id='" + obj.ObjectId + "' and related_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'";
-            //                Item delRes = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
+                //                query = "delete from innovator.[CAD_STRUCTURE] where source_id='" + obj.ObjectId + "' and related_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'";
+                //                Item delRes = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
 
-            //                Item NewCADStr = myInnovator.newItem("CAD Structure", "add");
-            //                NewCADStr.setProperty("source_id", obj.ObjectId);
-            //                NewCADStr.setProperty("related_id", LatestChild.getItemByIndex(0).getProperty("id").ToString());
-            //                Item NewCADStrRes = NewCADStr.apply();
-            //            }
-            //            #endregion "Manage RelatedData: if Source updated"
+                //                Item NewCADStr = myInnovator.newItem("CAD Structure", "add");
+                //                NewCADStr.setProperty("source_id", obj.ObjectId);
+                //                NewCADStr.setProperty("related_id", LatestChild.getItemByIndex(0).getProperty("id").ToString());
+                //                Item NewCADStrRes = NewCADStr.apply();
+                //            }
+                //            #endregion "Manage RelatedData: if Source updated"
 
-            //            #region "Manage SourceData: if RelatedItem updated"
-            //            /*PrevRel = myInnovator.applyMethod("sg_run_sql_query", "<query>select distinct source_id from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "'</query>");
-            //            for (int related = 0; related < PrevRel.getItemCount(); related++)
-            //            {                            
-            //                Item Child = myInnovator.getItemById("CAD", PrevRel.getItemByIndex(related).getProperty("source_id").ToString());
-            //                Item LatestChild = myInnovator.getItemByKeyedName("CAD", Child.getProperty("keyed_name").ToString());
-            //                Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + obj.ObjectId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
+                //            #region "Manage SourceData: if RelatedItem updated"
+                //            /*PrevRel = myInnovator.applyMethod("sg_run_sql_query", "<query>select distinct source_id from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "'</query>");
+                //            for (int related = 0; related < PrevRel.getItemCount(); related++)
+                //            {                            
+                //                Item Child = myInnovator.getItemById("CAD", PrevRel.getItemByIndex(related).getProperty("source_id").ToString());
+                //                Item LatestChild = myInnovator.getItemByKeyedName("CAD", Child.getProperty("keyed_name").ToString());
+                //                Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + obj.ObjectId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
 
-            //                Item NewCADStr = myInnovator.newItem("CAD Structure", "add");
-            //                NewCADStr.setProperty("source_id", LatestChild.getItemByIndex(0).getProperty("id").ToString());
-            //                NewCADStr.setProperty("related_id", obj.ObjectId);
-            //                Item NewCADStrRes = NewCADStr.apply();                            
-            //                delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
+                //                Item NewCADStr = myInnovator.newItem("CAD Structure", "add");
+                //                NewCADStr.setProperty("source_id", LatestChild.getItemByIndex(0).getProperty("id").ToString());
+                //                NewCADStr.setProperty("related_id", obj.ObjectId);
+                //                Item NewCADStrRes = NewCADStr.apply();                            
+                //                delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
 
-            //            }*/
-            //            #endregion "Manage SourceData: if RelatedItem updated"
-            //        }
-            //        #endregion "If Drawing is in ARASInnovator"
+                //            }*/
+                //            #endregion "Manage SourceData: if RelatedItem updated"
+                //        }
+                //        #endregion "If Drawing is in ARASInnovator"
 
-            //        #region "If Drawing is not in ARASInnovator"
-            //        else
-            //        {
-            //            if ((obj.ObjectProjectId == null || obj.ObjectProjectId == "") && (ProjectName != ""))
-            //            {
-            //                Item updateItm = myInnovator.applyMethod("sg_run_sql_query", "<query>update innovator.[CAD] set sg_project_name='" + ProjectName + "' where id='" + obj.ObjectId + "'</query>");
-            //            }
-            //        }
-            //        #endregion "If Drawing is not in ARASInnovator"
+                //        #region "If Drawing is not in ARASInnovator"
+                //        else
+                //        {
+                //            if ((obj.ObjectProjectId == null || obj.ObjectProjectId == "") && (ProjectName != ""))
+                //            {
+                //                Item updateItm = myInnovator.applyMethod("sg_run_sql_query", "<query>update innovator.[CAD] set sg_project_name='" + ProjectName + "' where id='" + obj.ObjectId + "'</query>");
+                //            }
+                //        }
+                //        #endregion "If Drawing is not in ARASInnovator"
 
-            //        if (!obj.IsRoot)
-            //        {
-            //            String[] SaveID = new String[10];
-            //            ArrayList SourceIds = new ArrayList();
-            //            SaveID = obj.ObjectSourceId.ToString().Split(',');
-            //            for (int ids = 0; ids < SaveID.Length; ids++)
-            //            {
-            //                foreach (DictionaryEntry de in SavedData)
-            //                {
-            //                    if (de.Key.ToString() == SaveID[ids] || de.Key.ToString().Substring(0, de.Key.ToString().Length - 4) == SaveID[ids])
-            //                    {
-            //                        SourceIds.Add(de.Value.ToString());
-            //                    }
-            //                }
-            //            }
+                //        if (!obj.IsRoot)
+                //        {
+                //            String[] SaveID = new String[10];
+                //            ArrayList SourceIds = new ArrayList();
+                //            SaveID = obj.ObjectSourceId.ToString().Split(',');
+                //            for (int ids = 0; ids < SaveID.Length; ids++)
+                //            {
+                //                foreach (DictionaryEntry de in SavedData)
+                //                {
+                //                    if (de.Key.ToString() == SaveID[ids] || de.Key.ToString().Substring(0, de.Key.ToString().Length - 4) == SaveID[ids])
+                //                    {
+                //                        SourceIds.Add(de.Value.ToString());
+                //                    }
+                //                }
+                //            }
 
-            //            for (int rel = 0; rel < SourceIds.Count; rel++)
-            //            {
-            //                Item Latest = myInnovator.getItemById("CAD", SourceIds[rel].ToString());
-            //                Item LatestCAD = myInnovator.getItemByKeyedName("CAD", Latest.getItemByIndex(0).getProperty("keyed_name"));
-            //                Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + obj.ObjectId + "' and source_id='" + LatestCAD.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
+                //            for (int rel = 0; rel < SourceIds.Count; rel++)
+                //            {
+                //                Item Latest = myInnovator.getItemById("CAD", SourceIds[rel].ToString());
+                //                Item LatestCAD = myInnovator.getItemByKeyedName("CAD", Latest.getItemByIndex(0).getProperty("keyed_name"));
+                //                Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + obj.ObjectId + "' and source_id='" + LatestCAD.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
 
-            //                Item CADStructure = myInnovator.newItem("CAD Structure", "add");
-            //                CADStructure.setProperty("source_id", LatestCAD.getItemByIndex(0).getProperty("id"));
-            //                CADStructure.setProperty("related_id", obj.ObjectId);
-            //                Item CADStructureRes = CADStructure.apply();
-            //            }
-            //            SourceIds.Clear();
-            //        }
-            //    }
-            //    #endregion ManageCADStructureRel
-            //}//end Catch
-            //catch (Exception ex)
-            //{
-            //    throw (new Exceptions.ConnectionException("ArasConnector SaveObject Exception Message : " + ex.Message));
-            //}
+                //                Item CADStructure = myInnovator.newItem("CAD Structure", "add");
+                //                CADStructure.setProperty("source_id", LatestCAD.getItemByIndex(0).getProperty("id"));
+                //                CADStructure.setProperty("related_id", obj.ObjectId);
+                //                Item CADStructureRes = CADStructure.apply();
+                //            }
+                //            SourceIds.Clear();
+                //        }
+                //    }
+                //    #endregion ManageCADStructureRel
+                //}//end Catch
+                //catch (Exception ex)
+                //{
+                //    throw (new Exceptions.ConnectionException("ArasConnector SaveObject Exception Message : " + ex.Message));
+                //}
+        }
+
+        public List<PLMObject> GetPLMObjectInformation(List<PLMObject> plmobjs)
+        {
+            try
+            {
+
+                 
+
+                List<PLMObject> newplmobjs = new List<PLMObject>();
+                foreach (PLMObject obj in plmobjs)
+                {
+
+                    // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId",obj.ObjectId);
+                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
+
+                    List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                    urlParameters.Add(L);
+                    RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                        "/AutocadFiles/fetchFileInfo", DataFormat.Json,
+                        null, true, urlParameters);
+
+                     
+                        var ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                     
+
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        MessageBox.Show("Some error occurred while fetching file information.");
+                    }
+                    else
+                    {
+                        string Response = restResponse.Content;
+ 
+
+                            PLMObject objPlm = new PLMObject();
+                        objPlm.Classification ="";
+                        objPlm.ObjectGeneration = "";
+                        objPlm.ObjectNumber = ObjFileInfo.fileNo;
+                        objPlm.ObjectRevision = ObjFileInfo.versionno;
+                        objPlm.ObjectState = ObjFileInfo.status.statusname;
+                        objPlm.ObjectName = ObjFileInfo.name;
+                        objPlm.ObjectProjectId = ObjFileInfo.projectinfo;
+                        objPlm.ObjectProjectName = ObjFileInfo.projectname;
+                        objPlm.LockStatus = ObjFileInfo.filelock.ToString();
+                        newplmobjs.Add(objPlm);
+                        
+                        //DataTable dataTableFileInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
+                        //if(dataTableFileInfo.Rows.Count>0)
+                        //{
+                        //    bool FileLock = Convert.ToBoolean(Convert.ToString(dataTableFileInfo.Rows[0]["filelock"]));
+                        //    string UpdatedBy = Convert.ToString(dataTableFileInfo.Rows[0]["updatedBy"]);
+
+                        //    if(FileLock)
+                        //    {
+                        //        if(UpdatedBy== Helper.UserName)
+                        //        {
+                        //            rw["lockstatus"] = "1";
+                        //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
+                        //        }
+                        //        else
+                        //        {
+                        //            rw["lockstatus"] = "2";
+                        //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+
+                        //    }
+                        //}
+
+                    }
+
+
+                   
+                }
+                return newplmobjs;
+
+            }
+            catch (Exception ex)
+            {
+                throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+            }
+
+        }
+
+    }
+    public class SaveFileCommand  
+    {
+        private BinaryReader bRDocument;
+        public BinaryReader BRDocument
+        {
+            get { return this.bRDocument; }
+            set { this.bRDocument = value; }
         }
     }
 }

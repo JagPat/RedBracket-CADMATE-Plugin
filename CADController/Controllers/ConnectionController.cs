@@ -39,44 +39,41 @@ namespace CADController.Controllers
 
                 isConnect = restResponse.StatusCode == System.Net.HttpStatusCode.OK;
 
-                DataTable dtUserDetail = new DataTable();
-                dtUserDetail.Rows.Add();
-                var list = restResponse.Content.Split(',');
-                foreach(string s in list)
-                {
-                    string s2 = s.Replace('{',' ').Trim();
-                    s2 = s2.Replace('{', ' ').Trim();
-                    s2 = s2.Replace('"', ' ').Trim();
-                    //string s1 = s2.Substring( s2.IndexOf(@":")+1 );
-                    string ColumnName = s2.Substring(0, s2.IndexOf(@":") - 1);
-                    string Value = s2.Substring(s2.IndexOf(@":") + 1);
-                    dtUserDetail.Columns.Add(ColumnName);
-                    dtUserDetail.Rows[0][ColumnName] = Value;
-
-                }
-
-                if(dtUserDetail.Rows.Count>0)
-                {
-                    Helper.UserFullName = Convert.ToString(dtUserDetail.Rows[0]["firstName"]) + " " + Convert.ToString(dtUserDetail.Rows[0]["lastName"]);
-                    Helper.FirstName = Convert.ToString(dtUserDetail.Rows[0]["firstName"]);
-                    Helper.LastName = Convert.ToString(dtUserDetail.Rows[0]["lastName"]);
-                    Helper.UserID = Convert.ToString(dtUserDetail.Rows[0]["id"]);
-                }
-               
-                //var UserRecords = JsonConvert.DeserializeObject<List<UserDetails>>(restResponse.Content);
-
-                //if (UserRecords.Count <= 0)
+                //DataTable dtUserDetail = new DataTable();
+                //dtUserDetail.Rows.Add();
+                //var list = restResponse.Content.Split(',');
+                //foreach(string s in list)
                 //{
-                //    return;
+                //    string s2 = s.Replace('{',' ').Trim();
+                //    s2 = s2.Replace('{', ' ').Trim();
+                //    s2 = s2.Replace('"', ' ').Trim();
+                //    //string s1 = s2.Substring( s2.IndexOf(@":")+1 );
+                //    string ColumnName = s2.Substring(0, s2.IndexOf(@":") - 1);
+                //    string Value = s2.Substring(s2.IndexOf(@":") + 1);
+                //    dtUserDetail.Columns.Add(ColumnName);
+                //    dtUserDetail.Rows[0][ColumnName] = Value;
+
                 //}
 
-                //foreach (UserDetails userDetail in UserRecords)
+                //if(dtUserDetail.Rows.Count>0)
                 //{
-                //    Helper.UserFullName = Convert.ToString(userDetail.firstName) + " " + Convert.ToString(userDetail.lastName);
-                //    Helper.FirstName = Convert.ToString(userDetail.firstName);
-                //    Helper.LastName = Convert.ToString(userDetail.lastName);
-                //    Helper.UserID = Convert.ToString(userDetail.id);
+                //    Helper.UserFullName = Convert.ToString(dtUserDetail.Rows[0]["firstName"]) + " " + Convert.ToString(dtUserDetail.Rows[0]["lastName"]);
+                //    Helper.FirstName = Convert.ToString(dtUserDetail.Rows[0]["firstName"]);
+                //    Helper.LastName = Convert.ToString(dtUserDetail.Rows[0]["lastName"]);
+                //    Helper.UserID = Convert.ToString(dtUserDetail.Rows[0]["id"]);
                 //}
+
+                if(isConnect)
+                {
+                    UserDetails UserRecords = JsonConvert.DeserializeObject<UserDetails>(restResponse.Content);
+                    Helper.UserName = cmd.UserName;
+                    Helper.UserFullName = Convert.ToString(UserRecords.firstName) + " " + Convert.ToString(UserRecords.lastName);
+                    Helper.FirstName = Convert.ToString(UserRecords.firstName);
+                    Helper.LastName = Convert.ToString(UserRecords.lastName);
+                    Helper.UserID = Convert.ToString(UserRecords.id);
+                }
+                
+                 
                 //var dataSet = JsonConvert.DeserializeObject<DataSet>(restResponse.Content);
                 //var table = dataSet.Tables[0];
                 //DataTable dtUserInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));

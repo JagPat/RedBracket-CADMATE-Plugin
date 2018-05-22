@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace RedBracketConnector
 {
-    public  class LockUnLockUpdater
+    public class LockUnLockUpdater
     {
         public void LockObject(List<PLMObject> plmObjs)
         {
@@ -16,8 +16,8 @@ namespace RedBracketConnector
 
 
                 bool IsUpdated = true;
-                    foreach (PLMObject plmObj in plmObjs)
-                    {
+                foreach (PLMObject plmObj in plmObjs)
+                {
                     //Item drawingQuery = myInnovator.newItem(plmObj.ItemType, "get");
                     //Item drawingQueryRes = null;
 
@@ -46,7 +46,7 @@ namespace RedBracketConnector
 
                     // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", plmObj.ObjectId);
                     List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
-                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", "11760c31-d3fb-4acb-9675-551915493fd5");                                   
+                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", "11760c31-d3fb-4acb-9675-551915493fd5");
                     urlParameters.Add(L);
                     L = new KeyValuePair<string, string>("userName", Helper.UserName);
                     urlParameters.Add(L);
@@ -61,7 +61,7 @@ namespace RedBracketConnector
 
 
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -73,11 +73,11 @@ namespace RedBracketConnector
         {
             try
             {
-                
-                    
 
-                    foreach (PLMObject plmObj in plmObjs)
-                    {
+
+
+                foreach (PLMObject plmObj in plmObjs)
+                {
                     //Item drawingQuery = myInnovator.newItem(plmObj.ItemType, "get");
                     //Item drawingQueryRes = null;
 
@@ -105,7 +105,7 @@ namespace RedBracketConnector
 
 
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -149,11 +149,8 @@ namespace RedBracketConnector
                             "/AutocadFiles/fetchFileInfo", DataFormat.Json,
                             null, true, urlParameters);
 
-                        //try
-                        //{
-                        //    var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-                        //}
-                        //catch { }
+                        ResultSearchCriteria ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+
 
                         if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                         {
@@ -161,40 +158,61 @@ namespace RedBracketConnector
                         }
                         else
                         {
-                            string Response = restResponse.Content;
+                            bool FileLock = Convert.ToBoolean(Convert.ToString(ObjFileInfo.filelock));
+                            string UpdatedBy = Convert.ToString(ObjFileInfo.updatedby );
 
-                            if(Response.Contains("11760c31-d3fb-4acb-9675-551915493fd5") && Response.Contains("filelock") && 
-                                Response.Contains("updatedBy"))
+                            if (FileLock)
                             {
-                               int i= Response.IndexOf("updatedBy");
-                                string s = Response.Substring(Response.LastIndexOf("updatedby") +12, 50);
-                                string s1 = Response.Substring(Response.IndexOf("filelock") + 10, 5);
-                                if(s1!="false")
+                                if (UpdatedBy == Helper.UserFullName)
                                 {
-                                    s1 = s1.Substring(0, 4);
-                                }
-                                bool FileLock = Convert.ToBoolean(Convert.ToString(s1));
-                                string UpdatedBy =  s.Substring(0, s.IndexOf('"'));
-
-                                if (FileLock)
-                                {
-                                    if (UpdatedBy == Helper.UserFullName)
-                                    {
-                                        rw["lockstatus"] = "1";
-                                        rw["lockby"] = UpdatedBy;
-                                    }
-                                    else
-                                    {
-                                        rw["lockstatus"] = "2";
-                                        rw["lockby"] = UpdatedBy;
-                                    }
+                                    rw["lockstatus"] = "1";
+                                    rw["lockby"] = UpdatedBy;
                                 }
                                 else
                                 {
-                                    rw["lockstatus"] = "0";
+                                    rw["lockstatus"] = "2";
                                     rw["lockby"] = UpdatedBy;
                                 }
                             }
+                            else
+                            {
+                                rw["lockstatus"] = "0";
+                                rw["lockby"] = UpdatedBy;
+                            }
+                            //string Response = restResponse.Content;
+
+                            //if(Response.Contains("11760c31-d3fb-4acb-9675-551915493fd5") && Response.Contains("filelock") && 
+                            //    Response.Contains("updatedBy"))
+                            //{
+                            //   int i= Response.IndexOf("updatedBy");
+                            //    string s = Response.Substring(Response.LastIndexOf("updatedby") +12, 50);
+                            //    string s1 = Response.Substring(Response.IndexOf("filelock") + 10, 5);
+                            //    if(s1!="false")
+                            //    {
+                            //        s1 = s1.Substring(0, 4);
+                            //    }
+                            //    bool FileLock = Convert.ToBoolean(Convert.ToString(s1));
+                            //    string UpdatedBy =  s.Substring(0, s.IndexOf('"'));
+
+                            //    if (FileLock)
+                            //    {
+                            //        if (UpdatedBy == Helper.UserFullName)
+                            //        {
+                            //            rw["lockstatus"] = "1";
+                            //            rw["lockby"] = UpdatedBy;
+                            //        }
+                            //        else
+                            //        {
+                            //            rw["lockstatus"] = "2";
+                            //            rw["lockby"] = UpdatedBy;
+                            //        }
+                            //    }
+                            //    else
+                            //    {
+                            //        rw["lockstatus"] = "0";
+                            //        rw["lockby"] = UpdatedBy;
+                            //    }
+                            //}
                             //DataTable dataTableFileInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
                             //if(dataTableFileInfo.Rows.Count>0)
                             //{

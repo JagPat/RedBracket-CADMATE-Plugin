@@ -14,6 +14,8 @@ using CADController.Controllers;
 using CADController;
 using CADController.Configuration;
 using RedBracketConnector;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
 
 namespace AutocadPlugIn.UI_Forms
 {
@@ -26,8 +28,8 @@ namespace AutocadPlugIn.UI_Forms
 
         public Save_Active_Drawings()
         {
-            ICADManager objCadMgr = CADFactory.getCADManager();
-            objCadMgr.SaveActiveDrawing();
+            //ICADManager objCadMgr = CADFactory.getCADManager();
+            //objCadMgr.SaveActiveDrawing();
             InitializeComponent();
         }
 
@@ -71,7 +73,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 DataGridViewComboBoxCell ds = new DataGridViewComboBoxCell();
                 CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-                DataTable dtProjectNo = new DataTable();
+               System.Data.DataTable dtProjectNo = new System.Data.DataTable();
                 dtProjectNo.Columns.Add("ProjectId", typeof(string));
                 dtProjectNo.Columns.Add("ProjectName", typeof(string));
                 dtProjectNo.Columns.Add("ProjectNo", typeof(string));
@@ -220,31 +222,61 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                List<TreeGridNode> selectedTreeGridNodes = new List<TreeGridNode>();
                 this.Cursor = Cursors.WaitCursor;
                 bool Is_Delete = false;
                 bool Is_Save = false;
+
+                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
+                Database db = doc.Database;
+                String FilePath = db.OriginalFileName;
+                foreach (TreeGridNode treeGridNode in savetreeGrid.Nodes)
+                {
+                    if ((bool)treeGridNode.Cells[0].FormattedValue)
+                    {
+                        selectedTreeGridNodes.Add(treeGridNode);
+                    }
+                }
+
+                if (selectedTreeGridNodes.Count < 1)
+                {
+                    MessageBox.Show("Please select at least one file to save.");
+                    return;
+                }
+
+                //string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+
+
 
                 SaveController objController = new SaveController();
                 if (ShowMessage.InfoYNMess("Would you like to delete local file/files" + Environment.NewLine + " after saving it to RedBracket ?") == DialogResult.Yes)
                 {
                     Is_Delete = true;
                 }
-                for (int i = 0; i < savetreeGrid.RowCount; i++)
+                foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
-                    if (Convert.ToBoolean(savetreeGrid.Nodes[i].Cells["Check"].Value) == true)
-                    {
-                        string FilePath = Convert.ToString(savetreeGrid.Nodes[i].Cells["filepath"].Value);
 
-                        if (Is_Delete)
-                        {
-                            File.Delete(FilePath);
-                        }
-                        Is_Save = true;
+                   SaveCommand cmd = new SaveCommand();
+                    cmd.FilePath = FilePath;
+
+                    // Is_Save :needs to make changes for multiple file
+                    Is_Save = objController.ExecuteSave(cmd);
+
+                    if (Is_Delete)
+                    {
+                        File.Delete(FilePath);
                     }
                 }
+                this.Cursor = Cursors.Default;
                 if (Is_Save)
                 {
                     ShowMessage.InfoMess("Save operation successfully completed.");
+                    return;
+                }
+                else
+                {
+                    ShowMessage.ErrorMess("Save operation unsuccessfully completed.");
                     return;
                 }
                 if (htNewDrawings.Count > 0 || drawings.Count > 0)
@@ -472,7 +504,7 @@ namespace AutocadPlugIn.UI_Forms
                     ChildTreeNode.Cells["projectname"].Value = sg_projectid;
                     ChildTreeNode.Cells["projectid"].Value = sg_projectid;
                 }
-                DataTable dtRealtyNo = new DataTable();
+                System.Data.DataTable dtRealtyNo = new System.Data.DataTable();
                 dtRealtyNo.Columns.Add("ProjectId", typeof(string));
                 dtRealtyNo.Columns.Add("RealtyName", typeof(string));
                 dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
