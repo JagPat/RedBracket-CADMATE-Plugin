@@ -46,20 +46,19 @@ namespace AutocadPlugIn.UI_Forms
                 dtLatestInformation = controller.dtNewPlmObjInfomation;
                 dsTables.Tables.Add(dtCurrentInformation);
                 dsTables.Tables.Add(dtLatestInformation);
-                DataRelation drel;
-                try
-                {
-                    drel = new DataRelation("EquiJoin", dtLatestInformation.Columns["drawingnumber"], dtCurrentInformation.Columns["drawingnumber"]);
-                }
-                catch(Exception E)
-                {
+                DataRelation drel = new DataRelation("EquiJoin", dtLatestInformation.Columns["drawingnumber"], dtCurrentInformation.Columns["drawingnumber"]);
+                //try
+                //{
+                //    drel = new DataRelation("EquiJoin", dtLatestInformation.Columns["drawingnumber"], dtCurrentInformation.Columns["drawingnumber"]);
+                //}
+                //catch(Exception E)
+                //{
 
-                }
-                  
-               // dsTables.Relations.Add(drel);
+                //}
 
-                dtFinalInformation.Columns.Add("drawingname", typeof(String));
+                 dsTables.Relations.Add(drel);
                 dtFinalInformation.Columns.Add("drawingnumber", typeof(String));
+                dtFinalInformation.Columns.Add("drawingname", typeof(String));               
                 dtFinalInformation.Columns.Add("lockstatus", typeof(String));
                 dtFinalInformation.Columns.Add("classification", typeof(String));
                 dtFinalInformation.Columns.Add("currentstate", typeof(String));
@@ -76,6 +75,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
 
                     DataRow parent = dr.GetParentRow("EquiJoin");
+                    //DataRow parent = dr.GetParentRow(drel);
 
                     DataRow current = dtFinalInformation.NewRow();
 
@@ -92,12 +92,16 @@ namespace AutocadPlugIn.UI_Forms
                     // Add the column that is not present in the child, which is present in the parent.
 
                    // current["drawingid"] = parent["drawingid"];
-                    current["latestrevision"] = parent["LatestRevision"];
-                    current["latestgeneration"] = parent["LatestGeneration"];
-                    current["lateststate"] = parent["LatestState"];
-                    current["lockstatus"] = parent["LockStatus"];
-                    current["projectname"] = parent["projectname"];
-                    current["projectid"] = parent["projectid"];
+                   if(parent!=null)
+                    {
+                        current["latestrevision"] = parent["LatestRevision"];
+                        current["latestgeneration"] = parent["LatestGeneration"];
+                        current["lateststate"] = parent["LatestState"];
+                        current["lockstatus"] = parent["LockStatus"];
+                        current["projectname"] = parent["projectname"];
+                        current["projectid"] = parent["projectid"];
+                    }
+                   
 
                     dtFinalInformation.Rows.Add(current);
 

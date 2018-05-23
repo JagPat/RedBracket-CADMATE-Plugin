@@ -424,7 +424,7 @@ namespace AutocadPlugIn.UI_Forms
                     null,
                     null);
 
-                AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
+                //AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
             }
 
             treeGridView1.Show();
@@ -896,7 +896,7 @@ namespace AutocadPlugIn.UI_Forms
                 DrawingProperty.Add("DrawingId", "123");
                 DrawingProperty.Add("DrawingName", "123");
                 DrawingProperty.Add("Classification", "123");
-                DrawingProperty.Add("DrawingNumber", "123");
+                DrawingProperty.Add("DrawingNumber", "DWG00098");
                 DrawingProperty.Add("DrawingState", "123");
                 DrawingProperty.Add("Revision", "123");
                 DrawingProperty.Add("LockStatus", "123");
@@ -909,10 +909,10 @@ namespace AutocadPlugIn.UI_Forms
                 DrawingProperty.Add("ModifiedOn", "123");
                 DrawingProperty.Add("ModifiedBy", "123");
 
-                //    string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
-                  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
-               // string filePathName = Path.Combine(checkoutPath, fileName);
-
+                    string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
+                //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
+               
+ 
                 using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
                 {
                     binaryWriter.Write(restResponse.RawBytes);

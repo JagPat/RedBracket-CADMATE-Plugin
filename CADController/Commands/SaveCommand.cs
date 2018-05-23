@@ -3,7 +3,7 @@ using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ArasConnector;
+using System.IO;
 
 namespace CADController.Commands
 {
@@ -16,7 +16,13 @@ namespace CADController.Commands
             get { return this.drawingList; }
             set { this.drawingList = value; }
         }
+        private  String filePath ;
 
+        public  String FilePath
+        {
+            get { return this.filePath; }
+            set { this.filePath = value; }
+        }
         private List<String> newDrawings = new List<String>();
 
         public List<String> NewDrawings
@@ -32,4 +38,5 @@ namespace CADController.Commands
             set { this.drawingInfo = value; }
         }
     }
-}
+   
+    }
