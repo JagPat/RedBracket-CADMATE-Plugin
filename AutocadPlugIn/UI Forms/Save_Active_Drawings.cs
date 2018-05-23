@@ -16,7 +16,8 @@ using CADController.Configuration;
 using RedBracketConnector;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-
+using Newtonsoft.Json;
+using RestSharp;
 namespace AutocadPlugIn.UI_Forms
 {
     public partial class Save_Active_Drawings : Form
@@ -25,6 +26,7 @@ namespace AutocadPlugIn.UI_Forms
         public ArrayList drawingsOpen = new ArrayList();
         public Hashtable htNewDrawings = new Hashtable();
         private System.Data.DataTable dtTreeGridData = new System.Data.DataTable();
+        RBConnector objRBC = new RBConnector();
 
         public Save_Active_Drawings()
         {
@@ -73,18 +75,37 @@ namespace AutocadPlugIn.UI_Forms
 
                 DataGridViewComboBoxCell ds = new DataGridViewComboBoxCell();
                 CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-               System.Data.DataTable dtProjectNo = new System.Data.DataTable();
-                dtProjectNo.Columns.Add("ProjectId", typeof(string));
-                dtProjectNo.Columns.Add("ProjectName", typeof(string));
-                dtProjectNo.Columns.Add("ProjectNo", typeof(string));
-                dtProjectNo = objWordConfig.GetProject();
-                dtProjectNo.Rows.Add("", "Non", "Non");
-                ProjectName.DataSource = dtProjectNo;
-                ProjectName.DisplayMember = "ProjectName";
-                ProjectName.ValueMember = "ProjectId";
-                ProjectId.DataSource = dtProjectNo;
-                ProjectId.DisplayMember = "ProjectNo";
-                ProjectId.ValueMember = "ProjectId";
+                //System.Data.DataTable dtProjectNo = new System.Data.DataTable();
+                // dtProjectNo.Columns.Add("ProjectId", typeof(string));
+                // dtProjectNo.Columns.Add("ProjectName", typeof(string));
+                // dtProjectNo.Columns.Add("ProjectNo", typeof(string));
+                // dtProjectNo = objWordConfig.GetProject();
+                // dtProjectNo.Rows.Add("", "Non", "Non");
+
+                #region filetype
+                Helper.FIllCMB(cadtype, objRBC.GetFIleType(), "name", "name", true);
+            
+                #endregion filetype
+                #region filestatus
+                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/fetchFileStatus", DataFormat.Json, null, true, null);
+                var statusInfoList = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
+                State.DataSource = statusInfoList;
+                State.DisplayMember = "statusname";
+                State.ValueMember = "statusname";
+                // objRBC.GetFIleStatus(CDState,   "name", "name", true);
+                #endregion filestatus
+
+                Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "name", "id", true);
+
+                //ProjectName.DataSource = dtProjectNo;
+                //ProjectName.DisplayMember = "ProjectName";
+                //ProjectName.ValueMember = "ProjectId";
+                Helper.FIllCMB(ProjectId, objRBC.GetProjectDetail(), "number", "id", true);
+
+
+                //ProjectId.DataSource = dtProjectNo;
+                //ProjectId.DisplayMember = "ProjectNo";
+                //ProjectId.ValueMember = "ProjectId";
 
                 if (rw["drawingid"].ToString() != "")
                 {
@@ -122,15 +143,15 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                        foreach (DataRow rr in dtProjectNo.Rows)
-                        {
-                            if (rr["ProjectNo"].ToString() == rw["projectid"].ToString())
-                            {
-                                node.Cells["projectname"].Value = rr["ProjectId"].ToString();
-                                node.Cells["projectid"].Value = rr["ProjectId"].ToString();
-                                break;
-                            }
-                        }
+                        //foreach (DataRow rr in dtProjectNo.Rows)
+                        //{
+                        //    if (rr["ProjectNo"].ToString() == rw["projectid"].ToString())
+                        //    {
+                        //        node.Cells["projectname"].Value = rr["ProjectId"].ToString();
+                        //        node.Cells["projectid"].Value = rr["ProjectId"].ToString();
+                        //        break;
+                        //    }
+                        //}
                     }
                     node.Cells["targetrevision"] = ds;
                     if (rw["lockstatus"].ToString() == "1")
@@ -167,15 +188,15 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                        foreach (DataRow rr in dtProjectNo.Rows)
-                        {
-                            if (rr["ProjectNo"].ToString() == rw["projectid"].ToString())
-                            {
-                                node1.Cells["projectname"].Value = rr["ProjectId"].ToString();
-                                node1.Cells["projectid"].Value = rr["ProjectId"].ToString();
-                                break;
-                            }
-                        }
+                        //foreach (DataRow rr in dtProjectNo.Rows)
+                        //{
+                        //    if (rr["ProjectNo"].ToString() == rw["projectid"].ToString())
+                        //    {
+                        //        node1.Cells["projectname"].Value = rr["ProjectId"].ToString();
+                        //        node1.Cells["projectid"].Value = rr["ProjectId"].ToString();
+                        //        break;
+                        //    }
+                        //}
                     }
                     node1.Cells["targetrevision"] = ds;
                     if (rw["lockstatus"].ToString() == "1")
@@ -556,6 +577,11 @@ namespace AutocadPlugIn.UI_Forms
             //cancel.Location = new Point((f_width / 2)+100, f_height - 85);
             //Comments.Location = new Point(20, f_height - 88);
             //CADDescription.Location = new Point(100, f_height - 88);
+        }
+
+        private void savetreeGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+
         }
 
         /*  private void ExpandNodeForCheck(TreeGridNode CurrentNode)

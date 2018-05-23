@@ -38,7 +38,7 @@
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.drawing = new AdvancedDataGridView.TreeGridColumn();
             this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cadtype = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cadtype = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.revision = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.State = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.drawingID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -108,16 +108,17 @@
             this.RealtyId,
             this.targetrevision,
             this.Version});
-            this.savetreeGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
+            this.savetreeGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.savetreeGrid.ImageList = null;
             this.savetreeGrid.Location = new System.Drawing.Point(11, 23);
             this.savetreeGrid.Name = "savetreeGrid";
             this.savetreeGrid.RowHeadersVisible = false;
             this.savetreeGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.savetreeGrid.Size = new System.Drawing.Size(1115, 348);
+            this.savetreeGrid.Size = new System.Drawing.Size(1106, 348);
             this.savetreeGrid.TabIndex = 7;
             this.savetreeGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.savetreeGrid_CellContentClick);
             this.savetreeGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.savetreeGrid_CellBeginEdit);
+            this.savetreeGrid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.savetreeGrid_DataError);
             // 
             // imageStrip
             // 
@@ -146,7 +147,7 @@
             // 
             // Check
             // 
-            this.Check.FillWeight = 51.53443F;
+            this.Check.FillWeight = 47.0663F;
             this.Check.HeaderText = "";
             this.Check.MinimumWidth = 25;
             this.Check.Name = "Check";
@@ -154,12 +155,14 @@
             // drawing
             // 
             this.drawing.DefaultNodeImage = null;
+            this.drawing.FillWeight = 91.32983F;
             this.drawing.HeaderText = "File Name";
             this.drawing.Name = "drawing";
             this.drawing.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // DrawingNumber
             // 
+            this.DrawingNumber.FillWeight = 91.32983F;
             this.DrawingNumber.HeaderText = "File No";
             this.DrawingNumber.Name = "DrawingNumber";
             this.DrawingNumber.ReadOnly = true;
@@ -167,14 +170,14 @@
             // 
             // cadtype
             // 
+            this.cadtype.FillWeight = 91.32983F;
             this.cadtype.HeaderText = "File Type";
             this.cadtype.Name = "cadtype";
-            this.cadtype.ReadOnly = true;
-            this.cadtype.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cadtype.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // revision
             // 
-            this.revision.FillWeight = 30F;
+            this.revision.FillWeight = 27.39895F;
             this.revision.HeaderText = "Rev";
             this.revision.Name = "revision";
             this.revision.ReadOnly = true;
@@ -182,10 +185,9 @@
             // 
             // State
             // 
-            this.State.FillWeight = 70F;
+            this.State.FillWeight = 63.93088F;
             this.State.HeaderText = "FIle Status";
             this.State.Name = "State";
-            this.State.ReadOnly = true;
             this.State.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // drawingID
@@ -243,14 +245,15 @@
             // 
             // ProjectName
             // 
+            this.ProjectName.FillWeight = 91.32983F;
             this.ProjectName.HeaderText = "Project Name";
             this.ProjectName.Name = "ProjectName";
             // 
             // ProjectId
             // 
-            this.ProjectId.HeaderText = "ProjectId";
+            this.ProjectId.FillWeight = 91.32983F;
+            this.ProjectId.HeaderText = "ProjectNo";
             this.ProjectId.Name = "ProjectId";
-            this.ProjectId.Visible = false;
             // 
             // RealtyName
             // 
@@ -272,7 +275,7 @@
             // 
             // Version
             // 
-            this.Version.FillWeight = 30F;
+            this.Version.FillWeight = 86.48914F;
             this.Version.HeaderText = "Create New Ver";
             this.Version.MinimumWidth = 25;
             this.Version.Name = "Version";
@@ -307,7 +310,7 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private AdvancedDataGridView.TreeGridColumn drawing;
         private System.Windows.Forms.DataGridViewTextBoxColumn DrawingNumber;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cadtype;
+        private System.Windows.Forms.DataGridViewComboBoxColumn cadtype;
         private System.Windows.Forms.DataGridViewTextBoxColumn revision;
         private System.Windows.Forms.DataGridViewComboBoxColumn State;
         private System.Windows.Forms.DataGridViewTextBoxColumn drawingID;

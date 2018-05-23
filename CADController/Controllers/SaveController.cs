@@ -145,7 +145,8 @@ namespace CADController.Controllers
             {
                 SaveCommand cmd = (SaveCommand)command;
                 dtNewPlmObjInfomation = cmd.DrawingInfo;
-                objConnector.LockStatus(ref dtNewPlmObjInfomation);
+                // objConnector.LockStatus(ref dtNewPlmObjInfomation);
+                ObjRBC.LockStatus(ref dtNewPlmObjInfomation);
                 return dtNewPlmObjInfomation;
             }
             catch (ConnectionException ex)
