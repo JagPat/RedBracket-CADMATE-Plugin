@@ -57,6 +57,12 @@ namespace AutocadPlugIn.UI_Forms
             DataTable dataTableProjectInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
 
             #region filetype
+            DataView dataView = dataTableProjectInfo.DefaultView;
+            dataView.Sort = "name asc";
+            dataTableProjectInfo = dataView.ToTable();
+            DataRow dataRow = dataTableProjectInfo.NewRow();
+            dataRow.ItemArray = new object[] { null, "All", null, null, null, null, null, null, null, null, null };
+            dataTableProjectInfo.Rows.InsertAt(dataRow, 0);
             CDType.DataSource = dataTableProjectInfo;
             CDType.DisplayMember = "name";
             CDType.ValueMember = "name";
@@ -65,6 +71,8 @@ namespace AutocadPlugIn.UI_Forms
             #region filestatus
             restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/fetchFileStatus", DataFormat.Json, null, true, null);
             var statusInfoList = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
+            statusInfoList = statusInfoList.OrderBy(statusInfo => statusInfo.statusname).ToList();
+            statusInfoList.Insert(0, new ResultStatusData {statusname = "All" });
             CDState.DataSource = statusInfoList;
             CDState.DisplayMember = "statusname";
             CDState.ValueMember = "statusname";
@@ -73,13 +81,29 @@ namespace AutocadPlugIn.UI_Forms
             #region projectdetails
             restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/ProjectAutocad/fetchUserAutocadProjectsService", true, null);
             DataTable dataTableProjectNameNumber = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
-            CDProjectId.DataSource = dataTableProjectNameNumber;
-            CDProjectId.DisplayMember = "number";
-            CDProjectId.ValueMember = "number";
+            List<string> nameNumberList = new List<string>();
+            foreach(DataRow dr in dataTableProjectNameNumber.Rows)
+            {
+                nameNumberList.Add(dr["name"].ToString());
+                nameNumberList.Add(dr["number"].ToString());
+            }
+            nameNumberList.Sort();
+            nameNumberList.Insert(0, "All");
 
-            CDProjectName.DataSource = dataTableProjectNameNumber;
-            CDProjectName.DisplayMember = "name";
-            CDProjectName.ValueMember = "name";
+            //dataView = dataTableProjectNameNumber.DefaultView;
+            //dataView.Sort = "number asc";
+            //dataTableProjectInfo = dataView.ToTable();
+            //dataRow = dataTableProjectNameNumber.NewRow();
+            //dataRow.ItemArray = new object[] { null, "All", null, null, null, null, null, null, null, null, null };
+            //dataTableProjectInfo.Rows.InsertAt(dataRow, 0);
+
+            //CDProjectId.DataSource = dataTableProjectNameNumber;
+            //CDProjectId.DisplayMember = "number";
+            //CDProjectId.ValueMember = "number";
+
+            CDProjectName.DataSource = nameNumberList;
+            //CDProjectName.DisplayMember = "name";
+            //CDProjectName.ValueMember = "name";
             #endregion projectdetails
 
             restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/getLatestRecords", true, null);
