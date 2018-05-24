@@ -70,6 +70,32 @@ namespace AutocadPlugIn.UI_Forms
             }
 
             #region CreateTreeGrid
+
+            #region filetype
+            Helper.FIllCMB(cadtype, objRBC.GetFIleType(), "name", "name", true);
+
+            #endregion filetype
+            #region filestatus
+            //RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/fetchFileStatus", DataFormat.Json, null, true, null);
+            //var statusInfoList = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
+            //State.DataSource = statusInfoList;
+            //State.DisplayMember = "statusname";
+            //State.ValueMember = "statusname";
+            // objRBC.GetFIleStatus(CDState,   "name", "name", true);
+            Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "statusname", true);
+            #endregion filestatus
+
+            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "name", "id", true);
+
+            //ProjectName.DataSource = dtProjectNo;
+            //ProjectName.DisplayMember = "ProjectName";
+            //ProjectName.ValueMember = "ProjectId";
+            Helper.FIllCMB(ProjectId, objRBC.GetProjectDetail(), "number", "id", true);
+
+
+            //ProjectId.DataSource = dtProjectNo;
+            //ProjectId.DisplayMember = "ProjectNo";
+            //ProjectId.ValueMember = "ProjectId";
             foreach (DataRow rw in dtTreeGridData.Rows)
             {
 
@@ -82,30 +108,6 @@ namespace AutocadPlugIn.UI_Forms
                 // dtProjectNo = objWordConfig.GetProject();
                 // dtProjectNo.Rows.Add("", "Non", "Non");
 
-                #region filetype
-                Helper.FIllCMB(cadtype, objRBC.GetFIleType(), "name", "name", true);
-            
-                #endregion filetype
-                #region filestatus
-                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/fetchFileStatus", DataFormat.Json, null, true, null);
-                var statusInfoList = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
-                State.DataSource = statusInfoList;
-                State.DisplayMember = "statusname";
-                State.ValueMember = "statusname";
-                // objRBC.GetFIleStatus(CDState,   "name", "name", true);
-                #endregion filestatus
-
-                Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "name", "id", true);
-
-                //ProjectName.DataSource = dtProjectNo;
-                //ProjectName.DisplayMember = "ProjectName";
-                //ProjectName.ValueMember = "ProjectId";
-                Helper.FIllCMB(ProjectId, objRBC.GetProjectDetail(), "number", "id", true);
-
-
-                //ProjectId.DataSource = dtProjectNo;
-                //ProjectId.DisplayMember = "ProjectNo";
-                //ProjectId.ValueMember = "ProjectId";
 
                 if (rw["drawingid"].ToString() != "")
                 {
@@ -248,10 +250,10 @@ namespace AutocadPlugIn.UI_Forms
                 bool Is_Delete = false;
                 bool Is_Save = false;
 
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
-                Database db = doc.Database;
-                String FilePath = db.OriginalFileName;
+                //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                //DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
+                //Database db = doc.Database;
+                //String FilePath = db.OriginalFileName;
                 foreach (TreeGridNode treeGridNode in savetreeGrid.Nodes)
                 {
                     if ((bool)treeGridNode.Cells[0].FormattedValue)
@@ -278,15 +280,15 @@ namespace AutocadPlugIn.UI_Forms
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
 
-                   SaveCommand cmd = new SaveCommand();
-                    cmd.FilePath = FilePath;
+                    SaveCommand cmd = new SaveCommand();
+                    cmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
                     // Is_Save :needs to make changes for multiple file
                     Is_Save = objController.ExecuteSave(cmd);
 
-                    if (Is_Delete)
+                    if (Is_Delete && File.Exists(cmd.FilePath))
                     {
-                        File.Delete(FilePath);
+                        File.Delete(cmd.FilePath);
                     }
                 }
                 this.Cursor = Cursors.Default;
@@ -516,14 +518,23 @@ namespace AutocadPlugIn.UI_Forms
                 CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
                 String sg_projectid = selectedTreeNode.Cells["projectname"].Value.ToString();
-                selectedTreeNode.Cells["projectid"].Value = sg_projectid;
+                decimal int_projectid = Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value);
+                DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
+                c2.Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "number"); ; ;
+                //selectedTreeNode.Cells["projectid"].Value = sg_projectid;
                 selectedTreeNode.Cells["realtyname"].Value = "";
                 selectedTreeNode.Cells["realtyid"].Value = "";
                 for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
                 {
                     TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
-                    ChildTreeNode.Cells["projectname"].Value = sg_projectid;
-                    ChildTreeNode.Cells["projectid"].Value = sg_projectid;
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
+                   
+                    
+                    c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name"); 
+                    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
+                    c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
+                    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
+                    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
                 }
                 System.Data.DataTable dtRealtyNo = new System.Data.DataTable();
                 dtRealtyNo.Columns.Add("ProjectId", typeof(string));
@@ -539,12 +550,29 @@ namespace AutocadPlugIn.UI_Forms
                 RealtyId.DataSource = Realty;
                 RealtyId.DisplayMember = "RealtyNo";
                 RealtyId.ValueMember = "RealtyNo";
+
+                savetreeGrid.Refresh();
+                this.Refresh();
             }
             if (e.ColumnIndex == 14)
             {
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
                 String sg_projectid = selectedTreeNode.Cells["projectid"].Value.ToString();
-                selectedTreeNode.Cells["projectname"].Value = sg_projectid;
+                DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
+               
+                selectedTreeNode.Cells["projectname"].Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "name");
+                for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
+                {
+                    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
+
+
+                    c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
+                    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
+                    c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
+                    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
+                    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
+                }
             }
             if (e.ColumnIndex == 15)
             {

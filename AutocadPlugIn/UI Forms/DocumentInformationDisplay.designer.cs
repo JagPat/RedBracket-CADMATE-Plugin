@@ -49,9 +49,6 @@ namespace AutocadPlugIn.UI_Forms
             this.drawinginfotreeGrid.AllowUserToAddRows = false;
             this.drawinginfotreeGrid.AllowUserToDeleteRows = false;
             this.drawinginfotreeGrid.AllowUserToOrderColumns = true;
-            this.drawinginfotreeGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.drawinginfotreeGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.drawinginfotreeGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.drawinginfotreeGrid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
@@ -68,12 +65,14 @@ namespace AutocadPlugIn.UI_Forms
             this.latestrevision,
             this.projectname,
             this.projectid});
+            this.drawinginfotreeGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.drawinginfotreeGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
             this.drawinginfotreeGrid.ImageList = null;
-            this.drawinginfotreeGrid.Location = new System.Drawing.Point(12, 52);
+            this.drawinginfotreeGrid.Location = new System.Drawing.Point(0, 0);
+            this.drawinginfotreeGrid.Margin = new System.Windows.Forms.Padding(10);
             this.drawinginfotreeGrid.Name = "drawinginfotreeGrid";
             this.drawinginfotreeGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.drawinginfotreeGrid.Size = new System.Drawing.Size(1016, 380);
+            this.drawinginfotreeGrid.Size = new System.Drawing.Size(1040, 453);
             this.drawinginfotreeGrid.TabIndex = 8;
             // 
             // drawingname

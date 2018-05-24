@@ -620,90 +620,27 @@ namespace RedBracketConnector
         }
         public void GetFIleStatus(ComboBox cmb, string DisplayMember, string ValueMenmber, bool IsSelect)
         {
-
+        }
+        public DataTable GetFIleStatus()
+        {
+            DataTable dataTableFileStatus = new DataTable();
             try
             {
-                RestResponse restResponse = GetDataFromWS1("/AutocadFiles/fetchFileStatus", "file status");
-                List<ResultStatusData> statusInfoList = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
-                String Text = "All";
-                if (IsSelect)
-                    Text = "Select";
-                ResultStatusData L = new ResultStatusData() { id = -1, statusname = Text, Rank = 1 };
-                foreach (ResultStatusData objRSD in statusInfoList)
-                {
-                    objRSD.Rank = 2;
-                }
-                statusInfoList.Add(L);
-                // statusInfoList.Sort(id)
-                var sortedList = from staffmember in statusInfoList
-                                 orderby staffmember.Rank, staffmember.statusname ascending
-                                 select staffmember;
-
-                cmb.DataSource = sortedList;
-                cmb.DisplayMember = DisplayMember;
-                cmb.ValueMember = ValueMenmber;
-
-
-                cmb.SelectedIndex = 0;
-                //try
-                //{
-
-
-                //    try
-                //    {
-                //        if (dt == null)
-                //        {
-                //            dt.Columns.Add("id");
-                //            dt.Columns.Add("name");
-
-                //        }
-                //        dt.Columns.Add("Rank");
-
-                //        for (int i = 0; i < dt.Rows.Count; i++)
-                //        {
-                //            dt.Rows[i]["Rank"] = 2;
-                //        }
-                //        DataRow dr = dt.NewRow();
-                //        dr["id"] = -1;
-                //        dr["name"] = "---" + Text + "---";
-                //        dr["Rank"] = 1;
-
-                //        dt.Rows.Add(dr);
-
-                //        DataView dv = dt.DefaultView;
-                //        dv.Sort = "Rank,name";
-                //        dt = dv.ToTable();
-
-                //    }
-                //    catch (Exception E)
-                //    {
-                //        ShowMessage.ErrorMess(E.Message);
-                //    }
-
-                //    cmb.DataSource = dt;
-                //    cmb.DisplayMember = DisplayMember;
-                //    cmb.ValueMember = ValueMenmber;
-
-                //    if (dt.Rows.Count > 0)
-                //        cmb.SelectedIndex = 0;
-                //}
-                //catch (Exception E)
-                //{
-                //    ShowMessage.ErrorMess(E.Message);
-                //}
+                dataTableFileStatus = GetDataFromWS("/AutocadFiles/fetchFileStatus", "file status", "POST", typeof(List<ResultStatusData>)); 
+               
             }
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
-
+            return dataTableFileStatus;
         }
         public DataTable GetProjectDetail()
         {
             DataTable dataTableProjectInfo = new DataTable();
             try
             {
-                dataTableProjectInfo = GetDataFromWS("/ProjectAutocad/fetchUserAutocadProjectsService", "project detail","GET");
+                dataTableProjectInfo = GetDataFromWS("/ProjectAutocad/fetchUserAutocadProjectsService", "project detail", "GET");
             }
             catch (Exception E)
             {
@@ -716,23 +653,38 @@ namespace RedBracketConnector
         {
             return GetDataFromWS(ServiceName, MessageText, "POST");
         }
-            public DataTable GetDataFromWS(string ServiceName, string MessageText,String MethodType)
+        public DataTable GetDataFromWS(string ServiceName, string MessageText, String MethodType)
+        {
+            return GetDataFromWS(ServiceName, MessageText, MethodType, typeof(DataTable));
+        }
+        public DataTable GetDataFromWS(string ServiceName, string MessageText, String MethodType, Type type)
         {
             DataTable dataTableProjectInfo = null;
             try
             {
                 RestResponse restResponse;
-                if(MethodType=="POST")
-                     restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), ServiceName, DataFormat.Json, null, true, null);
+                if (MethodType == "POST")
+                    restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), ServiceName, DataFormat.Json, null, true, null);
                 else
-                    restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), ServiceName ,true);
+                    restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), ServiceName, true);
                 if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     MessageBox.Show("Some error occurred while retrieving the " + MessageText + ".");
                 }
                 else
                 {
-                    dataTableProjectInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
+                    if (type == typeof(DataTable))
+                    {
+                        dataTableProjectInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
+                    }
+                    else
+                    {
+                        if (type == typeof(List<ResultStatusData>))
+                        {
+                            List<ResultStatusData> ObjFileInfo = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
+                            dataTableProjectInfo = Helper.ToDataTable(ObjFileInfo);
+                        }
+                    }
                 }
 
 

@@ -35,7 +35,7 @@ namespace RedBracketConnector
 
         public bool deleted { get; set; }
 
-        public int Rank { get; set; }
+       
 
     }
 }

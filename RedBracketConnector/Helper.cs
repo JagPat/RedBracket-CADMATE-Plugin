@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Reflection;
 
 using System.Windows.Forms;
 namespace RedBracketConnector
@@ -42,14 +43,14 @@ namespace RedBracketConnector
         /// </summary>
         /// <param name="IsSelect"></param>
         /// <returns></returns>
-        public static void FIllCMB(ComboBox cmb, DataTable dt, string DisplayMember, string ValueMenmber ,bool IsSelect)
+        public static void FIllCMB(ComboBox cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect)
         {
             try
             {
                 String Text = "All";
                 if (IsSelect)
                     Text = "Select";
-                dt= Helper.AddFirstRowToTable(dt, Text, DisplayMember);
+                dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember);
 
                 cmb.DataSource = dt;
                 cmb.DisplayMember = DisplayMember;
@@ -76,6 +77,7 @@ namespace RedBracketConnector
                 cmb.DisplayMember = DisplayMember;
                 cmb.ValueMember = ValueMenmber;
 
+
                 //if (dt.Rows.Count > 0)
                 //    cmb.SelectedIndex = 0;
             }
@@ -85,7 +87,7 @@ namespace RedBracketConnector
             }
         }
 
-        public static DataTable AddFirstRowToTable(DataTable dt,string Text, string DisplayMember)
+        public static DataTable AddFirstRowToTable(DataTable dt, string Text, string DisplayMember)
         {
             try
             {
@@ -93,7 +95,7 @@ namespace RedBracketConnector
                 {
                     dt.Columns.Add("id");
                     dt.Columns.Add(DisplayMember);
-                     
+
                 }
                 dt.Columns.Add("Rank");
 
@@ -103,13 +105,13 @@ namespace RedBracketConnector
                 }
                 DataRow dr = dt.NewRow();
                 dr["id"] = -1;
-                dr[DisplayMember] = "---"+ Text + "---";
+                dr[DisplayMember] = "---" + Text + "---";
                 dr["Rank"] = 1;
 
                 dt.Rows.Add(dr);
 
                 DataView dv = dt.DefaultView;
-                dv.Sort = "Rank,"+ DisplayMember;
+                dv.Sort = "Rank," + DisplayMember;
                 dt = dv.ToTable();
 
             }
@@ -121,5 +123,50 @@ namespace RedBracketConnector
         }
 
 
+        public static DataTable ToDataTable<T>(List<T> items)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);
+
+            //Get all the properties
+            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in Props)
+            {
+                //Defining type of data column gives proper data table 
+                var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
+                //Setting column names as Property names
+                dataTable.Columns.Add(prop.Name, type);
+            }
+            foreach (T item in items)
+            {
+                var values = new object[Props.Length];
+                for (int i = 0; i < Props.Length; i++)
+                {
+                    //inserting property values to datatable rows
+                    values[i] = Props[i].GetValue(item, null);
+                }
+                dataTable.Rows.Add(values);
+            }
+            //put a breakpoint here and check datatable
+            return dataTable;
+        }
+        public static string FindValueInCMB(DataTable dt,string ValueMember,string Value, string DisplayMember)
+        {
+            string RValue = "";
+            try
+            {
+                DataRow[] dr= dt.Select(ValueMember+" = '" + Value + "'");
+
+                if(dr.Length>0)
+                {
+                    RValue =Convert.ToString( dr[0][DisplayMember]);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+            return RValue;
+        }
     }
 }
