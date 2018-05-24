@@ -125,7 +125,7 @@ namespace CADController.Controllers
                     plmObj.ObjectLayouts = plmobjInfo[17];
                 }
                 //  objConnector.SaveObject(ref plmObjs);
-              bool RetVal=  ObjRBC.SaveObject(ref plmObjs, command.FilePath);
+                bool RetVal = ObjRBC.SaveObject(ref plmObjs, command.FilePath);
                 foreach (PLMObject plmobj in plmObjs)
                 {
                     dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.Classification, plmobj.ObjectNumber, plmobj.ObjectState, plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy);
