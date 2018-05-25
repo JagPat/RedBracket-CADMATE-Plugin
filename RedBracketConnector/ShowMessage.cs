@@ -23,9 +23,6 @@ namespace RedBracketConnector
         {
             MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        public static void ValMess(string Message)
-        {
-            MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-        }
+
     }
 }

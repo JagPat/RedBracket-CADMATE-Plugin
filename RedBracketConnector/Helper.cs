@@ -18,7 +18,6 @@ namespace RedBracketConnector
         public static string LastName = "User";
         public static string UserID = "1";
         public static string FileNamePrefix = "RBDF-";
-        public static string CompanyName = "RedBracket";
         public static object GetValueRegistry(string subKeyName, string keyName)
         {
             // Read the keys from the user registry and load it to the UI.
@@ -155,7 +154,6 @@ namespace RedBracketConnector
             string RValue = "";
             try
             {
-                
                 DataRow[] dr= dt.Select(ValueMember+" = '" + Value + "'");
 
                 if(dr.Length>0)
