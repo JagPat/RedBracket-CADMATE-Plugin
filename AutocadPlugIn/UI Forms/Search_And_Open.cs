@@ -405,16 +405,14 @@ namespace AutocadPlugIn.UI_Forms
 
         private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
         {
-            int numberOfNodes = 0;
+            if (resultSearchCriteriaResponseList.Count > 50)
+            {
+                MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
+                return;
+            }
+
             foreach (ResultSearchCriteria resultSearchCriteriaRecord in resultSearchCriteriaResponseList)
             {
-                if (numberOfNodes >= 50)
-                {
-                    this.searchStatus.Text = resultSearchCriteriaResponseList.Count.ToString() + " Items Found..";
-                    MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
-                    return;
-                }
-
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
                     null,
@@ -433,8 +431,6 @@ namespace AutocadPlugIn.UI_Forms
                     null);
 
                 //AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
-
-                numberOfNodes++;
             }
 
             treeGridView1.Show();

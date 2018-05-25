@@ -29,13 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LockTree = new AdvancedDataGridView.TreeGridView();
-            this.CancelBtn = new System.Windows.Forms.Button();
-            this.LockBtn = new System.Windows.Forms.Button();
-            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.DrawingName = new AdvancedDataGridView.TreeGridColumn();
             this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -47,6 +42,11 @@
             this.ProjectName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ProjectId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.State = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CancelBtn = new System.Windows.Forms.Button();
+            this.LockBtn = new System.Windows.Forms.Button();
+            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.LockTree)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -72,83 +72,25 @@
             this.ProjectName,
             this.ProjectId,
             this.State});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.LockTree.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.LockTree.DefaultCellStyle = dataGridViewCellStyle1;
             this.LockTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LockTree.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
             this.LockTree.ImageList = null;
-            this.LockTree.Location = new System.Drawing.Point(3, 3);
+            this.LockTree.Location = new System.Drawing.Point(4, 5);
+            this.LockTree.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.LockTree.Name = "LockTree";
             this.LockTree.RowHeadersVisible = false;
             this.LockTree.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.LockTree.Size = new System.Drawing.Size(638, 315);
+            this.LockTree.Size = new System.Drawing.Size(958, 485);
             this.LockTree.TabIndex = 4;
             this.LockTree.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LockTree_CellContentClick);
-            // 
-            // CancelBtn
-            // 
-            this.CancelBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CancelBtn.Location = new System.Drawing.Point(491, 3);
-            this.CancelBtn.Name = "CancelBtn";
-            this.CancelBtn.Size = new System.Drawing.Size(144, 33);
-            this.CancelBtn.TabIndex = 6;
-            this.CancelBtn.Text = "Cancel";
-            this.CancelBtn.UseVisualStyleBackColor = true;
-            // 
-            // LockBtn
-            // 
-            this.LockBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LockBtn.Location = new System.Drawing.Point(341, 3);
-            this.LockBtn.Name = "LockBtn";
-            this.LockBtn.Size = new System.Drawing.Size(144, 33);
-            this.LockBtn.TabIndex = 5;
-            this.LockBtn.Text = "Lock";
-            this.LockBtn.UseVisualStyleBackColor = true;
-            this.LockBtn.Click += new System.EventHandler(this.LockBtn_Click);
-            // 
-            // imageStrip
-            // 
-            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageStrip.ImageSize = new System.Drawing.Size(16, 16);
-            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.LockTree, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 87.97814F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.02186F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(644, 366);
-            this.tableLayoutPanel1.TabIndex = 7;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 4;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel2.Controls.Add(this.LockBtn, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.CancelBtn, 3, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 324);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(638, 39);
-            this.tableLayoutPanel2.TabIndex = 5;
             // 
             // Check
             // 
@@ -179,7 +121,7 @@
             this.DrawingNumber.ReadOnly = true;
             this.DrawingNumber.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.DrawingNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DrawingNumber.Width = 92;
+            this.DrawingNumber.Width = 133;
             // 
             // CADType
             // 
@@ -190,7 +132,7 @@
             this.CADType.ReadOnly = true;
             this.CADType.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.CADType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.CADType.Width = 62;
+            this.CADType.Width = 87;
             // 
             // Revision
             // 
@@ -201,7 +143,7 @@
             this.Revision.ReadOnly = true;
             this.Revision.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Revision.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Revision.Width = 54;
+            this.Revision.Width = 75;
             // 
             // DrawingID
             // 
@@ -219,7 +161,6 @@
             this.LockStatus.Name = "LockStatus";
             this.LockStatus.ReadOnly = true;
             this.LockStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.LockStatus.Width = 70;
             // 
             // LockStatus1
             // 
@@ -237,7 +178,7 @@
             this.ProjectName.Name = "ProjectName";
             this.ProjectName.ReadOnly = true;
             this.ProjectName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ProjectName.Width = 77;
+            this.ProjectName.Width = 110;
             // 
             // ProjectId
             // 
@@ -246,7 +187,6 @@
             this.ProjectId.Name = "ProjectId";
             this.ProjectId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.ProjectId.Visible = false;
-            this.ProjectId.Width = 55;
             // 
             // State
             // 
@@ -255,14 +195,78 @@
             this.State.Name = "State";
             this.State.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.State.Visible = false;
-            this.State.Width = 38;
+            // 
+            // CancelBtn
+            // 
+            this.CancelBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CancelBtn.Location = new System.Drawing.Point(737, 5);
+            this.CancelBtn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.CancelBtn.Name = "CancelBtn";
+            this.CancelBtn.Size = new System.Drawing.Size(217, 48);
+            this.CancelBtn.TabIndex = 6;
+            this.CancelBtn.Text = "Cancel";
+            this.CancelBtn.UseVisualStyleBackColor = true;
+            this.CancelBtn.Click += new System.EventHandler(this.CancelBtn_Click);
+            // 
+            // LockBtn
+            // 
+            this.LockBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LockBtn.Location = new System.Drawing.Point(512, 5);
+            this.LockBtn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.LockBtn.Name = "LockBtn";
+            this.LockBtn.Size = new System.Drawing.Size(217, 48);
+            this.LockBtn.TabIndex = 5;
+            this.LockBtn.Text = "Lock";
+            this.LockBtn.UseVisualStyleBackColor = true;
+            this.LockBtn.Click += new System.EventHandler(this.LockBtn_Click);
+            // 
+            // imageStrip
+            // 
+            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageStrip.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.LockTree, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 87.97814F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.02186F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(966, 563);
+            this.tableLayoutPanel1.TabIndex = 7;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 225F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 225F));
+            this.tableLayoutPanel2.Controls.Add(this.LockBtn, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.CancelBtn, 3, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 500);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(958, 58);
+            this.tableLayoutPanel2.TabIndex = 5;
             // 
             // frmLock
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(644, 366);
+            this.ClientSize = new System.Drawing.Size(966, 563);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "frmLock";
             this.Text = "Lock";
             this.Load += new System.EventHandler(this.frmLock_Load);
