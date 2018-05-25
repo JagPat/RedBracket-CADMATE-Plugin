@@ -1195,5 +1195,44 @@ namespace AutocadPlugIn.UI_Forms
         {
 
         }
+
+        private void CDProjectName_KeyUp(object sender, KeyEventArgs e)
+        {
+            comboBoxSearch();
+        }
+
+        /// <summary>
+        /// Start searching the text box with the result list.
+        /// </summary>
+        private void comboBoxSearch()
+        {
+            CDProjectName.DroppedDown = true;
+
+            object[] actualItemList = (object[])CDProjectName.Tag;
+            if (actualItemList == null)
+            {
+                // Maintain back of the original list
+                actualItemList = new object[CDProjectName.Items.Count];
+                CDProjectName.Items.CopyTo(actualItemList, 0);
+                CDProjectName.Tag = actualItemList;
+            }
+
+            // Show only list of matching items.
+            string s = CDProjectName.Text.ToLower();
+            IEnumerable<object> newList = actualItemList;
+            if (s.Length > 0)
+            {
+                newList = actualItemList.Where(item => item.ToString().ToLower().Contains(s));
+            }
+
+            // Clear the list before attaching the same again.
+            while (CDProjectName.Items.Count > 0)
+            {
+                CDProjectName.Items.RemoveAt(0);
+            }
+
+            // re-set list
+            CDProjectName.Items.AddRange(newList.ToArray());
+        }
     }
 }
