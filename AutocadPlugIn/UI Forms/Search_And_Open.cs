@@ -405,8 +405,15 @@ namespace AutocadPlugIn.UI_Forms
 
         private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
         {
+            int numberOfNodes = 0;
             foreach (ResultSearchCriteria resultSearchCriteriaRecord in resultSearchCriteriaResponseList)
             {
+                if (numberOfNodes >= 50)
+                {
+                    MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
+                    return;
+                }
+
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
                     null,
@@ -425,6 +432,8 @@ namespace AutocadPlugIn.UI_Forms
                     null);
 
                 //AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
+
+                numberOfNodes++;
             }
 
             treeGridView1.Show();
@@ -911,8 +920,8 @@ namespace AutocadPlugIn.UI_Forms
 
                     string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
                 //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
-               
- 
+
+
                 using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
                 {
                     binaryWriter.Write(restResponse.RawBytes);
@@ -987,6 +996,17 @@ namespace AutocadPlugIn.UI_Forms
                 dataGridView1 = (System.Windows.Forms.DataGridView)treeGridView1;
                 TreeGridNode TreeNode1 = (TreeGridNode)dataGridView1.Rows[e.RowIndex];
 
+                if ((bool)TreeNode1.Cells[0].EditedFormattedValue)
+                {
+                    // Handling check box check and uncheck features.
+                    foreach (TreeGridNode node in dataGridView1.Rows)
+                    {
+                        ((DataGridViewCell)TreeNode1.Cells[0]).Value = false;
+                    }
+
+                    TreeNode1.Cells[0].Value = true;
+                }
+
                 TreeNode1.Expand();
                 String id = (string)TreeNode1.Cells[7].Value;
                 String Mode = "View";
@@ -1057,7 +1077,6 @@ namespace AutocadPlugIn.UI_Forms
                     TreeNode1.Collapse();
                 }
                 treeGridView1.Show();
-
             }
 
         }
