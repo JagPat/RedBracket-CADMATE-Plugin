@@ -284,10 +284,12 @@ namespace AutocadPlugIn.UI_Forms
 
                 ICollection keys = htNewDrawings.Keys;
                 IEnumerator key = keys.GetEnumerator();
+                //to get new drawing info       
                 while (key.MoveNext())
                 {
                     objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
                 }
+                // to get existing drawing info
                 foreach (String str in drawings)
                 {
                     objCmd.Drawings.Add(str);
@@ -406,8 +408,7 @@ namespace AutocadPlugIn.UI_Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString(), "Error");
-                this.Cursor = Cursors.Default;
+                MessageBox.Show(ex.Message.ToString(), "Error"); 
             }
             this.Cursor = Cursors.Default;
         }

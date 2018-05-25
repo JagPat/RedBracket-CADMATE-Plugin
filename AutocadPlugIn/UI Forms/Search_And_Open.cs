@@ -848,7 +848,7 @@ namespace AutocadPlugIn.UI_Forms
                     string ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["ProjectId"].FormattedValue);
                     if(ProjectName.Trim().Length==0)
                     {
-                        ProjectName = "123";
+                        ProjectName = "MyFiles";
                     }
                     checkoutPath = Path.Combine(checkoutPath, ProjectName);
                     if (!Directory.Exists(checkoutPath))

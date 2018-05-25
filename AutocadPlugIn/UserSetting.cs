@@ -490,11 +490,19 @@ namespace AutocadPlugIn.UI_Forms
             try
             {
                 string DriveName = lbDriveList.SelectedItem.ToString();
-                string Username = txtSettingUserNm.Text;
-                if (Helper.UserName.Trim().Length > 0)
-                    Username = Helper.FirstName;
-                string WorkDir = Path.Combine(DriveName, "redbracket", Username + "-" +Helper.UserID);
-                txtWorkingDirectory.Text = WorkDir;
+                Convert.ToString(Helper.GetValueRegistry("LoginSettings", "UserName"));
+                string Username = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "firstName"));
+                string UserID = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "id"));
+
+                if (Username.Trim().Length > 0 && UserID.Trim().Length > 0)
+                {
+                    string WorkDir = Path.Combine(DriveName, Helper.CompanyName, Username + "-" + UserID);
+                    txtWorkingDirectory.Text = WorkDir;
+                }
+                else
+                {
+                    ShowMessage.ValMess("Please login once to create working directory.");
+                }
             }
             catch (Exception E)
             {
