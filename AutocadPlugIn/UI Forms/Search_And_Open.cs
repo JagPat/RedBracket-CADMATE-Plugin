@@ -1154,5 +1154,30 @@ namespace AutocadPlugIn.UI_Forms
             CDState.ValueMember = "StateName";
             CDState.SelectedValue = "";
         }
+
+        private void textBox_foldername_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label_foldername_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CDState_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Doc_name_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

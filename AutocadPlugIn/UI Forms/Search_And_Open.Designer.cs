@@ -31,8 +31,8 @@ namespace AutocadPlugIn.UI_Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this.DGNumber = new System.Windows.Forms.TextBox();
             this.DGName = new System.Windows.Forms.TextBox();
             this.SearchButton = new System.Windows.Forms.Button();
@@ -85,7 +85,7 @@ namespace AutocadPlugIn.UI_Forms
             // DGNumber
             // 
             this.DGNumber.Location = new System.Drawing.Point(1056, 551);
-            this.DGNumber.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.DGNumber.Margin = new System.Windows.Forms.Padding(4);
             this.DGNumber.Name = "DGNumber";
             this.DGNumber.Size = new System.Drawing.Size(156, 22);
             this.DGNumber.TabIndex = 10;
@@ -93,16 +93,16 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // DGName
             // 
-            this.DGName.Location = new System.Drawing.Point(460, 30);
-            this.DGName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.DGName.Location = new System.Drawing.Point(555, 35);
+            this.DGName.Margin = new System.Windows.Forms.Padding(4);
             this.DGName.Name = "DGName";
-            this.DGName.Size = new System.Drawing.Size(160, 22);
+            this.DGName.Size = new System.Drawing.Size(213, 22);
             this.DGName.TabIndex = 20;
             // 
             // SearchButton
             // 
             this.SearchButton.Location = new System.Drawing.Point(564, 159);
-            this.SearchButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SearchButton.Margin = new System.Windows.Forms.Padding(4);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(100, 28);
             this.SearchButton.TabIndex = 0;
@@ -113,7 +113,7 @@ namespace AutocadPlugIn.UI_Forms
             // CancelButton
             // 
             this.CancelButton.Location = new System.Drawing.Point(732, 159);
-            this.CancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(100, 28);
             this.CancelButton.TabIndex = 1;
@@ -125,12 +125,13 @@ namespace AutocadPlugIn.UI_Forms
             // 
             this.Doc_name.AutoSize = true;
             this.Doc_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Doc_name.Location = new System.Drawing.Point(344, 31);
+            this.Doc_name.Location = new System.Drawing.Point(380, 37);
             this.Doc_name.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.Doc_name.Name = "Doc_name";
             this.Doc_name.Size = new System.Drawing.Size(110, 17);
             this.Doc_name.TabIndex = 6;
             this.Doc_name.Text = "File Name/No.";
+            this.Doc_name.Click += new System.EventHandler(this.Doc_name_Click);
             // 
             // Doc_description
             // 
@@ -144,7 +145,7 @@ namespace AutocadPlugIn.UI_Forms
             // OpenDrawingButton
             // 
             this.OpenDrawingButton.Location = new System.Drawing.Point(564, 513);
-            this.OpenDrawingButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.OpenDrawingButton.Margin = new System.Windows.Forms.Padding(4);
             this.OpenDrawingButton.Name = "OpenDrawingButton";
             this.OpenDrawingButton.Size = new System.Drawing.Size(100, 28);
             this.OpenDrawingButton.TabIndex = 50;
@@ -155,7 +156,7 @@ namespace AutocadPlugIn.UI_Forms
             // FormCancelButton
             // 
             this.FormCancelButton.Location = new System.Drawing.Point(732, 513);
-            this.FormCancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FormCancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.FormCancelButton.Name = "FormCancelButton";
             this.FormCancelButton.Size = new System.Drawing.Size(100, 28);
             this.FormCancelButton.TabIndex = 60;
@@ -167,7 +168,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(348, 91);
+            this.label1.Location = new System.Drawing.Point(24, 100);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(75, 17);
@@ -179,8 +180,8 @@ namespace AutocadPlugIn.UI_Forms
             this.CDType.DisplayMember = "AssemblyModel, PartModel, Drawing";
             this.CDType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CDType.FormattingEnabled = true;
-            this.CDType.Location = new System.Drawing.Point(460, 89);
-            this.CDType.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CDType.Location = new System.Drawing.Point(136, 100);
+            this.CDType.Margin = new System.Windows.Forms.Padding(4);
             this.CDType.Name = "CDType";
             this.CDType.Size = new System.Drawing.Size(160, 24);
             this.CDType.TabIndex = 30;
@@ -214,18 +215,18 @@ namespace AutocadPlugIn.UI_Forms
             this.LockBy,
             this.OwnerCompany,
             this.Checkout});
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.treeGridView1.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.treeGridView1.DefaultCellStyle = dataGridViewCellStyle9;
             this.treeGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
             this.treeGridView1.ImageList = null;
             this.treeGridView1.Location = new System.Drawing.Point(16, 206);
-            this.treeGridView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.treeGridView1.Margin = new System.Windows.Forms.Padding(4);
             this.treeGridView1.Name = "treeGridView1";
             this.treeGridView1.RowHeadersVisible = false;
             this.treeGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -253,8 +254,8 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // DrawingName
             // 
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle7;
             this.DrawingName.DefaultNodeImage = null;
             this.DrawingName.FillWeight = 186.9562F;
             this.DrawingName.HeaderText = "Name";
@@ -366,7 +367,7 @@ namespace AutocadPlugIn.UI_Forms
             // CDRevisionValue
             // 
             this.CDRevisionValue.Location = new System.Drawing.Point(284, 527);
-            this.CDRevisionValue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CDRevisionValue.Margin = new System.Windows.Forms.Padding(4);
             this.CDRevisionValue.Name = "CDRevisionValue";
             this.CDRevisionValue.Size = new System.Drawing.Size(163, 22);
             this.CDRevisionValue.TabIndex = 40;
@@ -395,7 +396,7 @@ namespace AutocadPlugIn.UI_Forms
             "Released",
             "AsSaved"});
             this.CheckOutViewCBox.Location = new System.Drawing.Point(1089, 508);
-            this.CheckOutViewCBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CheckOutViewCBox.Margin = new System.Windows.Forms.Padding(4);
             this.CheckOutViewCBox.Name = "CheckOutViewCBox";
             this.CheckOutViewCBox.Size = new System.Drawing.Size(219, 24);
             this.CheckOutViewCBox.TabIndex = 50;
@@ -418,20 +419,21 @@ namespace AutocadPlugIn.UI_Forms
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(24, 91);
+            this.label4.Location = new System.Drawing.Point(89, 525);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(84, 17);
             this.label4.TabIndex = 64;
             this.label4.Text = "Project No";
+            this.label4.Visible = false;
             // 
             // CDProjectName
             // 
             this.CDProjectName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.CDProjectName.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.CDProjectName.FormattingEnabled = true;
-            this.CDProjectName.Location = new System.Drawing.Point(1145, 32);
-            this.CDProjectName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CDProjectName.Location = new System.Drawing.Point(1047, 33);
+            this.CDProjectName.Margin = new System.Windows.Forms.Padding(4);
             this.CDProjectName.Name = "CDProjectName";
             this.CDProjectName.Size = new System.Drawing.Size(211, 24);
             this.CDProjectName.TabIndex = 70;
@@ -441,7 +443,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(989, 32);
+            this.label5.Location = new System.Drawing.Point(885, 33);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(105, 17);
@@ -452,32 +454,35 @@ namespace AutocadPlugIn.UI_Forms
             // 
             this.CDProjectId.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CDProjectId.FormattingEnabled = true;
-            this.CDProjectId.Location = new System.Drawing.Point(136, 89);
-            this.CDProjectId.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CDProjectId.Location = new System.Drawing.Point(201, 523);
+            this.CDProjectId.Margin = new System.Windows.Forms.Padding(4);
             this.CDProjectId.Name = "CDProjectId";
             this.CDProjectId.Size = new System.Drawing.Size(160, 24);
             this.CDProjectId.TabIndex = 60;
+            this.CDProjectId.Visible = false;
             // 
             // CDState
             // 
             this.CDState.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CDState.FormattingEnabled = true;
-            this.CDState.Location = new System.Drawing.Point(761, 89);
-            this.CDState.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CDState.Location = new System.Drawing.Point(555, 97);
+            this.CDState.Margin = new System.Windows.Forms.Padding(4);
             this.CDState.Name = "CDState";
-            this.CDState.Size = new System.Drawing.Size(155, 24);
+            this.CDState.Size = new System.Drawing.Size(213, 24);
             this.CDState.TabIndex = 80;
+            this.CDState.SelectedIndexChanged += new System.EventHandler(this.CDState_SelectedIndexChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(672, 91);
+            this.label6.Location = new System.Drawing.Point(380, 104);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 17);
             this.label6.TabIndex = 68;
             this.label6.Text = "Status";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // label7
             // 
@@ -496,7 +501,7 @@ namespace AutocadPlugIn.UI_Forms
             this.CDRealty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CDRealty.FormattingEnabled = true;
             this.CDRealty.Location = new System.Drawing.Point(325, 501);
-            this.CDRealty.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CDRealty.Margin = new System.Windows.Forms.Padding(4);
             this.CDRealty.Name = "CDRealty";
             this.CDRealty.Size = new System.Drawing.Size(142, 24);
             this.CDRealty.TabIndex = 90;
@@ -523,7 +528,7 @@ namespace AutocadPlugIn.UI_Forms
             "Projects",
             "Knowledge"});
             this.sg_SearchType.Location = new System.Drawing.Point(136, 30);
-            this.sg_SearchType.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.sg_SearchType.Margin = new System.Windows.Forms.Padding(4);
             this.sg_SearchType.Name = "sg_SearchType";
             this.sg_SearchType.Size = new System.Drawing.Size(160, 24);
             this.sg_SearchType.TabIndex = 100;
@@ -554,19 +559,21 @@ namespace AutocadPlugIn.UI_Forms
             // 
             this.label_foldername.AutoSize = true;
             this.label_foldername.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_foldername.Location = new System.Drawing.Point(989, 91);
+            this.label_foldername.Location = new System.Drawing.Point(885, 107);
             this.label_foldername.Name = "label_foldername";
             this.label_foldername.Size = new System.Drawing.Size(105, 17);
             this.label_foldername.TabIndex = 103;
             this.label_foldername.Text = " Folder Name";
+            this.label_foldername.Click += new System.EventHandler(this.label_foldername_Click);
             // 
             // textBox_foldername
             // 
-            this.textBox_foldername.Location = new System.Drawing.Point(1145, 94);
+            this.textBox_foldername.Location = new System.Drawing.Point(1047, 100);
             this.textBox_foldername.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox_foldername.Name = "textBox_foldername";
             this.textBox_foldername.Size = new System.Drawing.Size(211, 22);
             this.textBox_foldername.TabIndex = 104;
+            this.textBox_foldername.TextChanged += new System.EventHandler(this.textBox_foldername_TextChanged);
             // 
             // Doc_Number
             // 
@@ -617,7 +624,7 @@ namespace AutocadPlugIn.UI_Forms
             this.Controls.Add(this.SearchButton);
             this.Controls.Add(this.DGName);
             this.Controls.Add(this.DGNumber);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Search_And_Open";
             this.Text = "Search and Open";
             this.Load += new System.EventHandler(this.Search_And_Open_Load);
