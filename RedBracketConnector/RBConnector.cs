@@ -37,26 +37,41 @@ namespace RedBracketConnector
 
                 //foreach (PLMObject obj in plmobjs)
                 {
+
+                    //To unlock File in case of update
+
+                    if (UnlockObject(plmobjs))
+                    {
+                        return false;
+                    }
+
+
+
+
                     //KeyValuePair<string, string> L = new KeyValuePair<string, string>("filepath", FilePath);
                     SaveFileCommand objSFC = new SaveFileCommand();
+                    // to convert file in bytes.
                     using (var binaryReader = new BinaryReader(File.OpenRead(FilePath)))
                     {
                         binaryReader.Read();
                         objSFC.BRDocument = binaryReader;
-                        //binaryWriter.Flush();
-                        //binaryWriter.Close();
-                        //binaryWriter.Dispose();
+
                     }
+
+                    //Defining parameters
                     KeyValuePair<string, string> L = new KeyValuePair<string, string>("project", "19");
 
                     List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
                     urlParameters.Add(L);
+
+                    //service calling to upload document.
                     RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                         "/AutocadFiles/uploadFileService", DataFormat.Json,
                         objSFC, true, urlParameters);
+
+                    //checking if service call was successfull or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
-
                         ShowMessage.ErrorMess("Some error occurred while uploading file.");
                         return false;
                     }
@@ -71,6 +86,7 @@ namespace RedBracketConnector
                 ShowMessage.ErrorMess(E.Message);
                 return false;
             }
+            #region Old Code
             //Hashtable SavedData = new Hashtable();
             //try
             //{
@@ -518,6 +534,7 @@ namespace RedBracketConnector
             //{
             //    throw (new Exceptions.ConnectionException("ArasConnector SaveObject Exception Message : " + ex.Message));
             //}
+            #endregion
         }
 
         public List<PLMObject> GetPLMObjectInformation(List<PLMObject> plmobjs)
@@ -626,8 +643,8 @@ namespace RedBracketConnector
             DataTable dataTableFileStatus = new DataTable();
             try
             {
-                dataTableFileStatus = GetDataFromWS("/AutocadFiles/fetchFileStatus", "file status", "POST", typeof(List<ResultStatusData>)); 
-               
+                dataTableFileStatus = GetDataFromWS("/AutocadFiles/fetchFileStatus", "file status", "POST", typeof(List<ResultStatusData>));
+
             }
             catch (Exception E)
             {
@@ -851,6 +868,212 @@ namespace RedBracketConnector
                 throw (new Exceptions.ConnectionException("Exception Message :" + ex.Message));
 
             }
+        }
+
+        public void LockObject(List<PLMObject> plmObjs)
+        {
+            try
+            {
+
+
+                bool IsUpdated = true;
+                foreach (PLMObject plmObj in plmObjs)
+                {
+                    //Item drawingQuery = myInnovator.newItem(plmObj.ItemType, "get");
+                    //Item drawingQueryRes = null;
+
+                    //drawingQuery.setProperty("id", plmObj.ObjectId);
+                    //drawingQueryRes = drawingQuery.apply();
+                    //bool is_need = true;
+                    //if (drawingQueryRes.getProperty("is_current") != "1")
+                    //{
+                    //    if (MessageBox.Show("Aras has updated Version of Drawing " + drawingQueryRes.getProperty("name").ToString() + ", Eventhough Would you like to update it?", "Aras has updated Version of this Drawing", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                    //        is_need = true;
+                    //    else
+                    //        is_need = false;
+                    //}
+                    //if (is_need)
+                    //{
+                    //    if (drawingQueryRes.lockItem().isError())
+                    //    {
+                    //        throw (new Exceptions.ConnectionException("Exception occured in 'LockObject' method.\n Error string is :" + drawingQueryRes.lockItem().getErrorString()));
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    throw (new Exceptions.ConnectionException("Please download latest Version of Drawing from Aras!!!"));
+                    //}
+
+
+                    // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", plmObj.ObjectId);
+                    List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", "11760c31-d3fb-4acb-9675-551915493fd5");
+                    urlParameters.Add(L);
+                    L = new KeyValuePair<string, string>("userName", Helper.UserName);
+                    urlParameters.Add(L);
+
+                    RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                        "/AutocadFiles/lockfile", DataFormat.Json,
+                        null, false, urlParameters);
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        MessageBox.Show("Some error occurred while locking file.");
+                    }
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw (new Exceptions.ConnectionException("RedBracketConnectorS Exception Message : " + ex.Message));
+            }
+        }
+
+        public bool UnlockObject(List<PLMObject> plmObjs)
+        {
+            try
+            {
+                foreach (PLMObject plmObj in plmObjs)
+                {
+                    //Item drawingQuery = myInnovator.newItem(plmObj.ItemType, "get");
+                    //Item drawingQueryRes = null;
+
+                    //drawingQuery.setProperty("id", plmObj.ObjectId);
+                    //drawingQueryRes = drawingQuery.apply();
+                    //if (drawingQueryRes.unlockItem().isError())
+                    //{
+                    //    throw (new Exceptions.ConnectionException("Exception occured in 'UnlockObject' method.\n Error string is :" + drawingQueryRes.unlockItem().getErrorString()));
+                    //}
+
+                    // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", plmObj.ObjectId);
+                    List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", "11760c31-d3fb-4acb-9675-551915493fd5");
+                    urlParameters.Add(L);
+                    L = new KeyValuePair<string, string>("userName", Helper.UserName);
+                    urlParameters.Add(L);
+
+                    RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                        "/AutocadFiles/unlockfile", DataFormat.Json,
+                        null, false, urlParameters);
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        MessageBox.Show("Some error occurred while locking file.");
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //  throw (new Exceptions.ConnectionException("RedBracketConnector Exception Message : " + ex.Message));
+                ShowMessage.ErrorMess(ex.Message);
+                return false;
+            }
+            return false;
+        }
+
+
+        public Hashtable GetDrawingDetail(String drawingid)
+        {
+            Hashtable DrawingInfo = new Hashtable();
+            ResultSearchCriteria Drawing = new ResultSearchCriteria();
+            Drawing = GetDrawingInformation(drawingid);
+
+            if (Drawing !=null)
+            {
+                DrawingInfo.Add("createdby",Drawing.createdby);
+                DrawingInfo.Add("createdon",Drawing.updatedon);
+                DrawingInfo.Add("modifiedby",Drawing.updatedby);
+                DrawingInfo.Add("modifiedon", Drawing.updatedon);
+
+
+                
+            }
+            else
+            {
+                DateTime dt = DateTime.Now;
+                
+                DrawingInfo.Add("createdby", Helper.UserFullName);
+                DrawingInfo.Add("createdon", dt.ToString());
+                DrawingInfo.Add("modifiedby", Helper.UserFullName);
+                DrawingInfo.Add("modifiedon", dt.ToString());
+            }
+            return DrawingInfo;
+        }
+
+        public ResultSearchCriteria GetDrawingInformation(String drawingid)
+        {
+            try
+            {
+                // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId",drawingid);
+                KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
+
+                List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                urlParameters.Add(L);
+                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                    "/AutocadFiles/fetchFileInfo", DataFormat.Json,
+                    null, true, urlParameters);
+
+
+                ResultSearchCriteria ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+
+
+                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    MessageBox.Show("Some error occurred while fetching file information.");
+                    return null;
+                }
+                else
+                {
+                    string Response = restResponse.Content;
+
+
+
+
+                    //DataTable dataTableFileInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
+                    //if(dataTableFileInfo.Rows.Count>0)
+                    //{
+                    //    bool FileLock = Convert.ToBoolean(Convert.ToString(dataTableFileInfo.Rows[0]["filelock"]));
+                    //    string UpdatedBy = Convert.ToString(dataTableFileInfo.Rows[0]["updatedBy"]);
+
+                    //    if(FileLock)
+                    //    {
+                    //        if(UpdatedBy== Helper.UserName)
+                    //        {
+                    //            rw["lockstatus"] = "1";
+                    //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
+                    //        }
+                    //        else
+                    //        {
+                    //            rw["lockstatus"] = "2";
+                    //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+
+                    //    }
+                    //}
+
+                }
+
+
+
+
+                return ObjFileInfo;
+
+            }
+            catch (Exception ex)
+            {
+                throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+            }
+
         }
     }
     public class SaveFileCommand

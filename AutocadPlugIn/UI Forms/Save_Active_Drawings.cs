@@ -254,6 +254,8 @@ namespace AutocadPlugIn.UI_Forms
                 //DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
                 //Database db = doc.Database;
                 //String FilePath = db.OriginalFileName;
+
+                //To check howmany file is selected.
                 foreach (TreeGridNode treeGridNode in savetreeGrid.Nodes)
                 {
                     if ((bool)treeGridNode.Cells[0].FormattedValue)
@@ -262,33 +264,55 @@ namespace AutocadPlugIn.UI_Forms
                     }
                 }
 
+                //To check whether any file is selected or not
                 if (selectedTreeGridNodes.Count < 1)
                 {
                     MessageBox.Show("Please select at least one file to save.");
                     return;
                 }
 
+
+
                 //string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
 
 
 
                 SaveController objController = new SaveController();
+
+                ICADManager objMgr = new AutoCADManager();
+                SaveCommand objCmd = new SaveCommand();
+
+                ICollection keys = htNewDrawings.Keys;
+                IEnumerator key = keys.GetEnumerator();
+                while (key.MoveNext())
+                {
+                    objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
+                }
+                foreach (String str in drawings)
+                {
+                    objCmd.Drawings.Add(str);
+                }
+
+                // to ask user want to delete file after save or not.
                 if (ShowMessage.InfoYNMess("Would you like to delete local file/files" + Environment.NewLine + " after saving it to RedBracket ?") == DialogResult.Yes)
                 {
                     Is_Delete = true;
                 }
+
+                // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
 
-                    SaveCommand cmd = new SaveCommand();
-                    cmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
+
+                    objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
                     // Is_Save :needs to make changes for multiple file
-                    Is_Save = objController.ExecuteSave(cmd);
+                    Is_Save = objController.ExecuteSave(objCmd);
 
-                    if (Is_Delete && File.Exists(cmd.FilePath))
+                    // To delete file
+                    if (Is_Delete && File.Exists(objCmd.FilePath))
                     {
-                        File.Delete(cmd.FilePath);
+                        File.Delete(objCmd.FilePath);
                     }
                 }
                 this.Cursor = Cursors.Default;
@@ -302,83 +326,83 @@ namespace AutocadPlugIn.UI_Forms
                     ShowMessage.ErrorMess("Save operation unsuccessfully completed.");
                     return;
                 }
-                if (htNewDrawings.Count > 0 || drawings.Count > 0)
-                {
-                    ICADManager objMgr = new AutoCADManager();
-                    SaveCommand objCmd = new SaveCommand();
+                //if (htNewDrawings.Count > 0 || drawings.Count > 0)
+                //{
+                //    ICADManager objMgr = new AutoCADManager();
+                //    SaveCommand objCmd = new SaveCommand();
 
-                    ICollection keys = htNewDrawings.Keys;
-                    IEnumerator key = keys.GetEnumerator();
-                    while (key.MoveNext())
-                    {
-                        objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
-                    }
-                    foreach (String str in drawings)
-                    {
-                        objCmd.Drawings.Add(str);
-                    }
-                    objController.Execute(objCmd);
-                    if (objController.errorString != null)
-                    {
-                        MessageBox.Show(objController.errorString);
-                        this.Cursor = Cursors.Default;
-                        return;
-                    }
-                    Hashtable htDrawingProperty = new Hashtable();
-                    foreach (DataRow row in objController.dtDrawingProperty.Rows)
-                    {      /*int i = 0;
-                            foreach (DataColumn column in objController.dtDrawingProperty.Columns)
-                            {
-                                MessageBox.Show(column.ColumnName.ToString() + "---------->" + row[i].ToString());
-                                i++;
-                            }*/
+                //    ICollection keys = htNewDrawings.Keys;
+                //    IEnumerator key = keys.GetEnumerator();
+                //    while (key.MoveNext())
+                //    {
+                //        objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
+                //    }
+                //    foreach (String str in drawings)
+                //    {
+                //        objCmd.Drawings.Add(str);
+                //    }
+                //    objController.Execute(objCmd);
+                //    if (objController.errorString != null)
+                //    {
+                //        MessageBox.Show(objController.errorString);
+                //        this.Cursor = Cursors.Default;
+                //        return;
+                //    }
+                //    Hashtable htDrawingProperty = new Hashtable();
+                //    foreach (DataRow row in objController.dtDrawingProperty.Rows)
+                //    {      /*int i = 0;
+                //            foreach (DataColumn column in objController.dtDrawingProperty.Columns)
+                //            {
+                //                MessageBox.Show(column.ColumnName.ToString() + "---------->" + row[i].ToString());
+                //                i++;
+                //            }*/
 
-                        htDrawingProperty.Add("DrawingId", row["DrawingId"]);
-                        htDrawingProperty.Add("DrawingName", row["DrawingName"]);
-                        htDrawingProperty.Add("Classification", row["Classification"]);
-                        htDrawingProperty.Add("DrawingNumber", row["DrawingNumber"]);
-                        htDrawingProperty.Add("DrawingState", row["DrawingState"]);
-                        htDrawingProperty.Add("Revision", row["Revision"]);
-                        htDrawingProperty.Add("Generation", row["Generation"]);
-                        htDrawingProperty.Add("Type", row["Type"]);
-                        htDrawingProperty.Add("ProjectName", row["ProjectName"]);
-                        htDrawingProperty.Add("ProjectId", row["ProjectId"]);
-                        htDrawingProperty.Add("CreatedOn", row["createdon"]);
-                        htDrawingProperty.Add("CreatedBy", row["createdby"]);
-                        htDrawingProperty.Add("ModifiedOn", row["modifiedon"]);
-                        htDrawingProperty.Add("ModifiedBy", row["modifiedby"]);
+                //        htDrawingProperty.Add("DrawingId", row["DrawingId"]);
+                //        htDrawingProperty.Add("DrawingName", row["DrawingName"]);
+                //        htDrawingProperty.Add("Classification", row["Classification"]);
+                //        htDrawingProperty.Add("DrawingNumber", row["DrawingNumber"]);
+                //        htDrawingProperty.Add("DrawingState", row["DrawingState"]);
+                //        htDrawingProperty.Add("Revision", row["Revision"]);
+                //        htDrawingProperty.Add("Generation", row["Generation"]);
+                //        htDrawingProperty.Add("Type", row["Type"]);
+                //        htDrawingProperty.Add("ProjectName", row["ProjectName"]);
+                //        htDrawingProperty.Add("ProjectId", row["ProjectId"]);
+                //        htDrawingProperty.Add("CreatedOn", row["createdon"]);
+                //        htDrawingProperty.Add("CreatedBy", row["createdby"]);
+                //        htDrawingProperty.Add("ModifiedOn", row["modifiedon"]);
+                //        htDrawingProperty.Add("ModifiedBy", row["modifiedby"]);
 
-                        if ((bool)row["isroot"])
-                        {
-                            objMgr.OpenActiveDocument(row["filepath"].ToString(), "updtMainDrawing", htDrawingProperty);
-                        }
-                        else
-                        {
-                            objMgr.OpenActiveDocument(row["filepath"].ToString(), "updtXRDrawing", htDrawingProperty);
-                        }
-                        htDrawingProperty.Clear();
-                    }
-                    bool deletefile = false;
-                    if (MessageBox.Show("Would you like to Delete Local file/files after Saving it into Aras?", "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-                        deletefile = true;
-                    foreach (DataRow row in objController.dtDrawingProperty.Rows)
-                    {
-                        if ((bool)row["isroot"])
-                        {
-                            objMgr.CloseActiveDocument(row["filepath"].ToString());
-                            if (deletefile)
-                                objMgr.DeleteActiveDocument(row["filepath"].ToString());
-                        }
-                        else
-                        {
-                            if (deletefile)
-                                objMgr.DeleteActiveDocument(row["filepath"].ToString());
-                        }
-                    }
-                    MessageBox.Show("Save operation succesfully completed.");
-                    this.Cursor = Cursors.Default;
-                    this.Close();
-                }
+                //        if ((bool)row["isroot"])
+                //        {
+                //            objMgr.OpenActiveDocument(row["filepath"].ToString(), "updtMainDrawing", htDrawingProperty);
+                //        }
+                //        else
+                //        {
+                //            objMgr.OpenActiveDocument(row["filepath"].ToString(), "updtXRDrawing", htDrawingProperty);
+                //        }
+                //        htDrawingProperty.Clear();
+                //    }
+                //    bool deletefile = false;
+                //    if (MessageBox.Show("Would you like to Delete Local file/files after Saving it into Aras?", "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                //        deletefile = true;
+                //    foreach (DataRow row in objController.dtDrawingProperty.Rows)
+                //    {
+                //        if ((bool)row["isroot"])
+                //        {
+                //            objMgr.CloseActiveDocument(row["filepath"].ToString());
+                //            if (deletefile)
+                //                objMgr.DeleteActiveDocument(row["filepath"].ToString());
+                //        }
+                //        else
+                //        {
+                //            if (deletefile)
+                //                objMgr.DeleteActiveDocument(row["filepath"].ToString());
+                //        }
+                //    }
+                //    MessageBox.Show("Save operation succesfully completed.");
+                //    this.Cursor = Cursors.Default;
+                //    this.Close();
+                //}
             }
             catch (Exception ex)
             {
@@ -395,7 +419,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void savetreeGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            return;
+           // return;
             if (e.ColumnIndex == 0)
             {
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
@@ -417,7 +441,9 @@ namespace AutocadPlugIn.UI_Forms
                 String MyProjectName = selectedTreeNode.Cells["projectname"].FormattedValue.ToString();
                 String MyProjectId = selectedTreeNode.Cells["projectid"].FormattedValue.ToString();
                 Hashtable DrawingData = new Hashtable();
-                ArasConnector.ArasConnector DrawingDetail = new ArasConnector.ArasConnector();
+                //ArasConnector.ArasConnector DrawingDetail = new ArasConnector.ArasConnector();
+                RBConnector DrawingDetail = new RBConnector();
+                DrawingData = DrawingDetail.GetDrawingDetail(id);
                 if (DrawingData.Count < 1)
                     DrawingData = DrawingDetail.GetDrawingDetail(selectedTreeNode.Cells["drawingid"].Value.ToString());
 
@@ -425,7 +451,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     selectedTreeNode.Cells["targetrevision"].Value = "";
                 }
-                String ARASDrawingInformation = id + ";" + ItemType + ";" + FilePath + ";" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["targetrevision"].Value.ToString() + ";" + selectedTreeNode.Cells["version"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString();
+                String DrawingInformation = id + ";" + ItemType + ";" + FilePath + ";" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["targetrevision"].Value.ToString() + ";" + selectedTreeNode.Cells["version"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString();
 
                 #endregion
 
@@ -448,67 +474,73 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 #endregion
 
-                #region "Drawing is present in ARASInnovator"
-                //if (selectedTreeNode.Cells["drawingid"].Value.ToString() != "")
-                //    {
-                //        if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
-                //            {
-                //                selectedTreeNode.Cells["targetrevision"].ReadOnly=true;                                
-                //                drawings.Add(ARASDrawingInformation);
-                //                drawingsOpen.Add(ARASDrawingInformation);
-                //                savetreeGrid.Columns[17].ReadOnly = true;
-                //            }
-                //            else
-                //            {
-                //                selectedTreeNode.Cells["targetrevision"].ReadOnly=false;                                
-                //                drawings.Remove(ARASDrawingInformation);
-                //                drawingsOpen.Remove(ARASDrawingInformation);
-                //                savetreeGrid.Columns[17].ReadOnly = false;
-                //            }
-                //     }
+                #region "Drawing is present in redbracket"
+                if (selectedTreeNode.Cells["drawingid"].Value.ToString() != "")
+                {
+                    if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
+                    {
+                        selectedTreeNode.Cells["targetrevision"].ReadOnly = true;
+                        drawings.Add(DrawingInformation);
+                        drawingsOpen.Add(DrawingInformation);
+                        savetreeGrid.Columns[17].ReadOnly = true;
+                    }
+                    else
+                    {
+                        selectedTreeNode.Cells["targetrevision"].ReadOnly = false;
+                        drawings.Remove(DrawingInformation);
+                        drawingsOpen.Remove(DrawingInformation);
+                        savetreeGrid.Columns[17].ReadOnly = false;
+                    }
+                }
                 #endregion
 
-                #region "Add Drawing to ARASInnovator"
-                ////else
-                ////{
-                //if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
-                //{
-                //    selectedTreeNode.Cells["projectname"].ReadOnly = true;
-                //    selectedTreeNode.Cells["realtyname"].ReadOnly = true;
-                //    selectedTreeNode.Cells["projectid"].ReadOnly = true;
-                //    selectedTreeNode.Cells["realtyid"].ReadOnly = true;
-                //        String[] strarry = new String[5];
-                //        String DrawingInformation;
-                //        String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();                                
-                //        int index = DrawingNameandNumber.IndexOf('.');
-                //        int length = DrawingNameandNumber.Length;
-                //    if(index>0)
-                //        DrawingNameandNumber = DrawingNameandNumber.Remove(index);
-                //    DrawingInformation = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" + selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["projectname"].Value.ToString() + ";" + selectedTreeNode.Cells["realtyname"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString(); 
-                //        htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation);
-
-                //        selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
-                //        selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;                                
-                //}
+                #region "Add Drawing to redbracket"
                 //else
                 //{
-                //    if (e.RowIndex == 0)
-                //    {
-                //        selectedTreeNode.Cells["projectname"].ReadOnly = false;
-                //        selectedTreeNode.Cells["projectid"].ReadOnly = false;
-                //    }
-                //    selectedTreeNode.Cells["realtyname"].ReadOnly = false;
-                //    selectedTreeNode.Cells["realtyid"].ReadOnly = false; 
-                //    if (htNewDrawings.Contains(selectedTreeNode.Cells["drawing"].Value.ToString()))
-                //    {
-                //        htNewDrawings.Remove(selectedTreeNode.Cells["drawing"].Value.ToString());
-                //    }
-                //    selectedTreeNode.Cells["drawingnumber"].Value = "";
-                //    selectedTreeNode.Cells["cadtype"].Value = "";
-                //}
-                //}
-                #endregion
+                if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
+                {
+                    selectedTreeNode.Cells["projectname"].ReadOnly = true;
+                    selectedTreeNode.Cells["realtyname"].ReadOnly = true;
+                    selectedTreeNode.Cells["projectid"].ReadOnly = true;
+                    selectedTreeNode.Cells["realtyid"].ReadOnly = true;
+                    String[] strarry = new String[5];
+                    String DrawingInformation1;
+                    String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();
+                    int index = DrawingNameandNumber.IndexOf('.');
+                    int length = DrawingNameandNumber.Length;
+                    if (index > 0)
+                        DrawingNameandNumber = DrawingNameandNumber.Remove(index);
+                    DrawingInformation1 = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" + 
+                            selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + 
+                            ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" +Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";" 
+                            + Convert.ToString(selectedTreeNode.Cells["realtyname"].Value ) + ";" + CADDescription.Text + ";" 
+                            + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString()
+                            + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
+                            + selectedTreeNode.Cells["Layouts"].Value.ToString();
+                    htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);
+
+                    selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
+                    selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;
+                }
+                else
+                {
+                    if (e.RowIndex == 0)
+                    {
+                        selectedTreeNode.Cells["projectname"].ReadOnly = false;
+                        selectedTreeNode.Cells["projectid"].ReadOnly = false;
+                    }
+                    selectedTreeNode.Cells["realtyname"].ReadOnly = false;
+                    selectedTreeNode.Cells["realtyid"].ReadOnly = false;
+                    if (htNewDrawings.Contains(selectedTreeNode.Cells["drawing"].Value.ToString()))
+                    {
+                        htNewDrawings.Remove(selectedTreeNode.Cells["drawing"].Value.ToString());
+                    }
+                    selectedTreeNode.Cells["drawingnumber"].Value = "";
+                    selectedTreeNode.Cells["cadtype"].Value = "";
+                }
             }
+            #endregion
+        
         }
 
         private void savetreeGrid_CellBeginEdit(object sender, DataGridViewCellEventArgs e)

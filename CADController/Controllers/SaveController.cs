@@ -27,6 +27,7 @@ namespace CADController.Controllers
                 String ModifiedBy = "";
                 String CreatedOn = "";
                 String CreatedBy = "";
+                // creating table to store document info
                 dtDrawingProperty.Columns.Add("DrawingId");
                 dtDrawingProperty.Columns.Add("DrawingName");
                 dtDrawingProperty.Columns.Add("Classification");
@@ -48,6 +49,7 @@ namespace CADController.Controllers
 
                 SaveCommand cmd = (SaveCommand)command;
                 List<PLMObject> plmObjs = new List<PLMObject>();
+                // gethering document info
                 foreach (String str in cmd.NewDrawings)
                 {
                     String[] plmobjInfo = new String[18];
@@ -126,6 +128,8 @@ namespace CADController.Controllers
                 }
                 //  objConnector.SaveObject(ref plmObjs);
                 bool RetVal = ObjRBC.SaveObject(ref plmObjs, command.FilePath);
+
+                // updating document info
                 foreach (PLMObject plmobj in plmObjs)
                 {
                     dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.Classification, plmobj.ObjectNumber, plmobj.ObjectState, plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy);

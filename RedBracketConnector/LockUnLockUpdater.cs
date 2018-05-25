@@ -13,55 +13,8 @@ namespace RedBracketConnector
         {
             try
             {
-
-
-                bool IsUpdated = true;
-                foreach (PLMObject plmObj in plmObjs)
-                {
-                    //Item drawingQuery = myInnovator.newItem(plmObj.ItemType, "get");
-                    //Item drawingQueryRes = null;
-
-                    //drawingQuery.setProperty("id", plmObj.ObjectId);
-                    //drawingQueryRes = drawingQuery.apply();
-                    //bool is_need = true;
-                    //if (drawingQueryRes.getProperty("is_current") != "1")
-                    //{
-                    //    if (MessageBox.Show("Aras has updated Version of Drawing " + drawingQueryRes.getProperty("name").ToString() + ", Eventhough Would you like to update it?", "Aras has updated Version of this Drawing", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-                    //        is_need = true;
-                    //    else
-                    //        is_need = false;
-                    //}
-                    //if (is_need)
-                    //{
-                    //    if (drawingQueryRes.lockItem().isError())
-                    //    {
-                    //        throw (new Exceptions.ConnectionException("Exception occured in 'LockObject' method.\n Error string is :" + drawingQueryRes.lockItem().getErrorString()));
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    throw (new Exceptions.ConnectionException("Please download latest Version of Drawing from Aras!!!"));
-                    //}
-
-
-                    // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", plmObj.ObjectId);
-                    List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
-                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", "11760c31-d3fb-4acb-9675-551915493fd5");
-                    urlParameters.Add(L);
-                    L = new KeyValuePair<string, string>("userName", Helper.UserName);
-                    urlParameters.Add(L);
-
-                    RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        "/AutocadFiles/lockfile", DataFormat.Json,
-                        null, false, urlParameters);
-                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                    {
-                        MessageBox.Show("Some error occurred while locking file.");
-                    }
-
-
-                }
-
+                RBConnector objRBC = new RBConnector();
+                objRBC.LockObject(plmObjs);
             }
             catch (Exception ex)
             {
@@ -72,40 +25,10 @@ namespace RedBracketConnector
         public void UnlockObject(List<PLMObject> plmObjs)
         {
             try
-            {
+            { 
 
-
-
-                foreach (PLMObject plmObj in plmObjs)
-                {
-                    //Item drawingQuery = myInnovator.newItem(plmObj.ItemType, "get");
-                    //Item drawingQueryRes = null;
-
-                    //drawingQuery.setProperty("id", plmObj.ObjectId);
-                    //drawingQueryRes = drawingQuery.apply();
-                    //if (drawingQueryRes.unlockItem().isError())
-                    //{
-                    //    throw (new Exceptions.ConnectionException("Exception occured in 'UnlockObject' method.\n Error string is :" + drawingQueryRes.unlockItem().getErrorString()));
-                    //}
-
-                    // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", plmObj.ObjectId);
-                    List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
-                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", "11760c31-d3fb-4acb-9675-551915493fd5");
-                    urlParameters.Add(L);
-                    L = new KeyValuePair<string, string>("userName", Helper.UserName);
-                    urlParameters.Add(L);
-
-                    RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        "/AutocadFiles/unlockfile", DataFormat.Json,
-                        null, false, urlParameters);
-                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                    {
-                        MessageBox.Show("Some error occurred while locking file.");
-                    }
-
-
-                }
-
+                RBConnector objRBC = new RBConnector();
+                objRBC.UnlockObject(    plmObjs);
             }
             catch (Exception ex)
             {
