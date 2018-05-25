@@ -84,7 +84,7 @@ namespace AutocadPlugIn.UI_Forms
             List<string> nameNumberList = new List<string>();
             foreach(DataRow dr in dataTableProjectNameNumber.Rows)
             {
-                nameNumberList.Add(dr["name"].ToString() + "-" + dr["number"].ToString());
+                nameNumberList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")");
             }
 
             nameNumberList.Sort();
