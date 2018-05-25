@@ -1002,10 +1002,10 @@ namespace AutocadPlugIn.UI_Forms
                     // Handling check box check and uncheck features.
                     foreach (TreeGridNode node in dataGridView1.Rows)
                     {
-                        ((DataGridViewCell)TreeNode1.Cells[0]).Value = false;
+                        ((DataGridViewCheckBoxCell)TreeNode1.Cells[0]).TrueValue = false;
                     }
 
-                    TreeNode1.Cells[0].Value = true;
+                    ((DataGridViewCheckBoxCell)TreeNode1.Cells[0]).TrueValue = true;
                 }
 
                 TreeNode1.Expand();
