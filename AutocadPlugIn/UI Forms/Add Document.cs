@@ -16,10 +16,9 @@ namespace AutocadPlugIn.UI_Forms
             InitializeComponent();
         }
 
-       
+        private void Add_Document_Load(object sender, EventArgs e)
+        {
 
-      
-        
-        
+        }
     }
 }

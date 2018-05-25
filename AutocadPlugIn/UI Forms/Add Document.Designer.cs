@@ -112,6 +112,7 @@
             this.Controls.Add(this.comboBox1);
             this.Name = "Add_Document";
             this.Text = "Create Drawing from Template";
+            this.Load += new System.EventHandler(this.Add_Document_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
