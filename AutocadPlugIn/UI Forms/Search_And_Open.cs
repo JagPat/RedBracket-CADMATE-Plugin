@@ -406,11 +406,11 @@ namespace AutocadPlugIn.UI_Forms
 
         private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
         {
-            //if (resultSearchCriteriaResponseList.Count > 50)
-            //{
-            //    MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
-            //    return;
-            //}
+            if (resultSearchCriteriaResponseList.Count > 50)
+            {
+                MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
+                return;
+            }
 
             foreach (ResultSearchCriteria resultSearchCriteriaRecord in resultSearchCriteriaResponseList)
             {
