@@ -410,6 +410,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 if (numberOfNodes >= 50)
                 {
+                    this.searchStatus.Text = resultSearchCriteriaResponseList.Count.ToString() + " Items Found..";
                     MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
                     return;
                 }
