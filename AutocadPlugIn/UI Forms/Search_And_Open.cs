@@ -102,6 +102,7 @@ namespace AutocadPlugIn.UI_Forms
             //CDProjectId.ValueMember = "number";
 
             CDProjectName.Items.AddRange(nameNumberList.ToArray());
+            CDProjectName.SelectedIndex = 0;
             //CDProjectName.DisplayMember = "name";
             //CDProjectName.ValueMember = "name";
             #endregion projectdetails
@@ -405,11 +406,11 @@ namespace AutocadPlugIn.UI_Forms
 
         private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
         {
-            if (resultSearchCriteriaResponseList.Count > 50)
-            {
-                MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
-                return;
-            }
+            //if (resultSearchCriteriaResponseList.Count > 50)
+            //{
+            //    MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
+            //    return;
+            //}
 
             foreach (ResultSearchCriteria resultSearchCriteriaRecord in resultSearchCriteriaResponseList)
             {
@@ -1135,40 +1136,40 @@ namespace AutocadPlugIn.UI_Forms
 
         private void CDProjectName_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Build datatable for Realty Entity and Set Value in Dropdown
-            CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-            DataTable dtRealtyNo = new DataTable();
-            dtRealtyNo.Columns.Add("ProjectId", typeof(string));
-            dtRealtyNo.Columns.Add("RealtyName", typeof(string));
-            dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
-            dtRealtyNo = objWordConfig.GetRealtyEntity();
-            String sg_projectid = CDProjectName.SelectedValue.ToString();
-            DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyName", DataViewRowState.CurrentRows);
-            Realty.AddNew();
-            CDRealty.DataSource = Realty;
-            CDRealty.DisplayMember = "RealtyName";
-            CDRealty.ValueMember = "RealtyNo";
-            CDRealty.SelectedValue = "";
+            //////Build datatable for Realty Entity and Set Value in Dropdown
+            ////CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+            ////DataTable dtRealtyNo = new DataTable();
+            ////dtRealtyNo.Columns.Add("ProjectId", typeof(string));
+            ////dtRealtyNo.Columns.Add("RealtyName", typeof(string));
+            ////dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
+            ////dtRealtyNo = objWordConfig.GetRealtyEntity();
+            ////String sg_projectid = CDProjectName.SelectedValue.ToString();
+            ////DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyName", DataViewRowState.CurrentRows);
+            ////Realty.AddNew();
+            ////CDRealty.DataSource = Realty;
+            ////CDRealty.DisplayMember = "RealtyName";
+            ////CDRealty.ValueMember = "RealtyNo";
+            ////CDRealty.SelectedValue = "";
         }
 
         private void CDType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Build datatable for Lifecycle State and Set Value in Dropdown
-            CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-            DataTable lcState = new DataTable();
-            lcState.Columns.Add("Classification", typeof(string));
-            lcState.Columns.Add("StateName", typeof(string));
-            lcState.Columns.Add("StateLabel", typeof(string));
-            lcState = objWordConfig.GetLifeCycleState();
+            //////Build datatable for Lifecycle State and Set Value in Dropdown
+            ////CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+            ////DataTable lcState = new DataTable();
+            ////lcState.Columns.Add("Classification", typeof(string));
+            ////lcState.Columns.Add("StateName", typeof(string));
+            ////lcState.Columns.Add("StateLabel", typeof(string));
+            ////lcState = objWordConfig.GetLifeCycleState();
 
-            String classificationValue = CDType.SelectedValue.ToString();
-            DataView LCState = new DataView(lcState, "Classification='" + classificationValue + "'", "", DataViewRowState.CurrentRows);
-            if (LCState.Count < 1) LCState = new DataView(lcState, "Classification=''", "", DataViewRowState.CurrentRows);
-            LCState.AddNew();
-            CDState.DataSource = LCState;
-            CDState.DisplayMember = "StateLabel";
-            CDState.ValueMember = "StateName";
-            CDState.SelectedValue = "";
+            ////String classificationValue = CDType.SelectedValue.ToString();
+            ////DataView LCState = new DataView(lcState, "Classification='" + classificationValue + "'", "", DataViewRowState.CurrentRows);
+            ////if (LCState.Count < 1) LCState = new DataView(lcState, "Classification=''", "", DataViewRowState.CurrentRows);
+            ////LCState.AddNew();
+            ////CDState.DataSource = LCState;
+            ////CDState.DisplayMember = "StateLabel";
+            ////CDState.ValueMember = "StateName";
+            ////CDState.SelectedValue = "";
         }
 
         private void textBox_foldername_TextChanged(object sender, EventArgs e)
