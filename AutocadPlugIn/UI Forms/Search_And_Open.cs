@@ -84,9 +84,9 @@ namespace AutocadPlugIn.UI_Forms
             List<string> nameNumberList = new List<string>();
             foreach(DataRow dr in dataTableProjectNameNumber.Rows)
             {
-                nameNumberList.Add(dr["name"].ToString());
-                nameNumberList.Add(dr["number"].ToString());
+                nameNumberList.Add(dr["name"].ToString() + "-" + dr["number"].ToString());
             }
+
             nameNumberList.Sort();
             nameNumberList.Insert(0, "All");
 
@@ -101,7 +101,7 @@ namespace AutocadPlugIn.UI_Forms
             //CDProjectId.DisplayMember = "number";
             //CDProjectId.ValueMember = "number";
 
-            CDProjectName.DataSource = nameNumberList;
+            CDProjectName.Items.AddRange(nameNumberList.ToArray());
             //CDProjectName.DisplayMember = "name";
             //CDProjectName.ValueMember = "name";
             #endregion projectdetails
