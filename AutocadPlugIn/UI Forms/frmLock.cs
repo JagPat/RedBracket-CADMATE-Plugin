@@ -277,5 +277,10 @@ namespace AutocadPlugIn.UI_Forms
             }
 
         }
+
+        private void CancelBtn_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+        }
     }
 }

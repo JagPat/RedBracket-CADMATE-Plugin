@@ -431,8 +431,6 @@ namespace AutocadPlugIn.UI_Forms
                     null);
 
                 //AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
-
-                numberOfNodes++;
             }
 
             treeGridView1.Show();
