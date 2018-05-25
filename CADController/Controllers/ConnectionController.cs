@@ -19,6 +19,8 @@ namespace CADController.Controllers
     public class ConnectionController : BaseController
     {
         public bool isConnect = false;
+        public UserDetails loggedUserDetails;
+
         #region "public Methods"
 
         public override void Execute(Command command)
@@ -37,6 +39,7 @@ namespace CADController.Controllers
 
                 //isConnect = ArasConnector.ArasConnector.Isconnected;
 
+                loggedUserDetails = JsonConvert.DeserializeObject<UserDetails>(restResponse.Content);
                 isConnect = restResponse.StatusCode == System.Net.HttpStatusCode.OK;
 
                 //DataTable dtUserDetail = new DataTable();
@@ -72,8 +75,8 @@ namespace CADController.Controllers
                     Helper.LastName = Convert.ToString(UserRecords.lastName);
                     Helper.UserID = Convert.ToString(UserRecords.id);
                 }
-                
-                 
+
+
                 //var dataSet = JsonConvert.DeserializeObject<DataSet>(restResponse.Content);
                 //var table = dataSet.Tables[0];
                 //DataTable dtUserInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));

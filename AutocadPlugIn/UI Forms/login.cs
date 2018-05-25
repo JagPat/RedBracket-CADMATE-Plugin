@@ -184,7 +184,6 @@ namespace AutocadPlugIn
                 ConnectionController controller1 = new ConnectionController();
                 controller1.Execute(connectionCmd);
 
-
                 if (controller1.errorString != null)
                 {
                     MessageBox.Show(controller1.errorString);
@@ -192,6 +191,8 @@ namespace AutocadPlugIn
                     this.Cursor = Cursors.Default;
                     return;
                 }
+
+                saveUserLoginDetails(controller1.loggedUserDetails);
 
                 if (controller1.isConnect)
                 {
@@ -221,6 +222,23 @@ namespace AutocadPlugIn
             {
                 MessageBox.Show(excep.ToString());
             }
+        }
+
+        private void saveUserLoginDetails(UserDetails loggedUserDetails)
+        {
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
+            registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
+            registryKey = registryKey.OpenSubKey("LoginSettings", true);
+
+            registryKey.SetValue("id", loggedUserDetails.id);
+            registryKey.SetValue("firstName", loggedUserDetails.firstName);
+            registryKey.SetValue("lastName", loggedUserDetails.lastName);
+            registryKey.SetValue("companyId", loggedUserDetails.companyId);
+            registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin);
+            registryKey.SetValue("mobile", loggedUserDetails.mobile);
+            registryKey.SetValue("status", loggedUserDetails.status);
+            registryKey.SetValue("active", loggedUserDetails.active);
+            registryKey.SetValue("deleted", loggedUserDetails.deleted);
         }
 
         private void txt_url_TextChanged(object sender, EventArgs e)
