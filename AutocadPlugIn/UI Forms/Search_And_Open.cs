@@ -1217,12 +1217,12 @@ namespace AutocadPlugIn.UI_Forms
                 CDProjectName.Tag = actualItemList;
             }
 
-            // Show only list of matching items.
-            string s = CDProjectName.Text.ToLower();
+            // prepare list of matching items
+            string searchText = CDProjectName.Text.ToLower();
             IEnumerable<object> newList = actualItemList;
-            if (s.Length > 0)
+            if (searchText.Length > 0)
             {
-                newList = actualItemList.Where(item => item.ToString().ToLower().Contains(s));
+                newList = actualItemList.Where(item => item.ToString().ToLower().Contains(searchText));
             }
 
             // Clear the list before attaching the same again.

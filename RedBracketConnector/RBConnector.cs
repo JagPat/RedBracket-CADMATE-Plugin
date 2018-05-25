@@ -40,14 +40,14 @@ namespace RedBracketConnector
         public bool SaveObject(ref List<PLMObject> plmobjs, string FilePath)
         {
             try
-            {  
+            {
                 //To unlock File in case of update
                 if (UnlockObject(plmobjs))
                 {
                     return false;
                 }
                 foreach (PLMObject obj in plmobjs)
-                { 
+                {
                     //KeyValuePair<string, string> L = new KeyValuePair<string, string>("filepath", FilePath);
                     SaveFileCommand objSFC = new SaveFileCommand();
 
@@ -366,7 +366,7 @@ namespace RedBracketConnector
             //            }
             //        }
 
-            //        //Update Realty Entity After File Checkin To Maintain Relationship "sg_RelatedEntityLayout" according to related "CAD" Items 
+            //        //Update Realty Entity After File Checkin To Maintain Relationship "sg_RelatedEntityLayout" according to related "CAD" Items
             //        query = "select distinct(config_id) from innovator.[Part] where id in (select source_id from innovator.[Part_CAD] where related_id ='" + newDrawingId + "')";
             //        Item sg_Realty = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
 
@@ -402,7 +402,7 @@ namespace RedBracketConnector
             //                  Item selItm = myInnovator.applyMethod("sg_run_sql_query", "<query>select * from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");
             //                  if (selItm.getItemCount() > 0)
             //                  {
-            //                      Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>Delete from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");  
+            //                      Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>Delete from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");
             //                  }
             //                    cadDocument_QRY = myInnovator.newItem("CAD Structure", "add");
             //                    cadDocument_QRY.setProperty("source_id", relationship_RES.getProperty("id"));
@@ -416,7 +416,7 @@ namespace RedBracketConnector
             //                    }
             //                    cadDocument_QRY.setProperty("related_id", newDrawingId);
             //                    relationship_RES = cadDocument_QRY.apply();
-            //                  }                          
+            //                  }
             //          }*/
             //        #endregion "Add Drawings under Root Drawing"
 
@@ -473,7 +473,7 @@ namespace RedBracketConnector
             //            #region "Manage SourceData: if RelatedItem updated"
             //            /*PrevRel = myInnovator.applyMethod("sg_run_sql_query", "<query>select distinct source_id from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "'</query>");
             //            for (int related = 0; related < PrevRel.getItemCount(); related++)
-            //            {                            
+            //            {
             //                Item Child = myInnovator.getItemById("CAD", PrevRel.getItemByIndex(related).getProperty("source_id").ToString());
             //                Item LatestChild = myInnovator.getItemByKeyedName("CAD", Child.getProperty("keyed_name").ToString());
             //                Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + obj.ObjectId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
@@ -481,7 +481,7 @@ namespace RedBracketConnector
             //                Item NewCADStr = myInnovator.newItem("CAD Structure", "add");
             //                NewCADStr.setProperty("source_id", LatestChild.getItemByIndex(0).getProperty("id").ToString());
             //                NewCADStr.setProperty("related_id", obj.ObjectId);
-            //                Item NewCADStrRes = NewCADStr.apply();                            
+            //                Item NewCADStrRes = NewCADStr.apply();
             //                delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
 
             //            }*/
@@ -536,6 +536,7 @@ namespace RedBracketConnector
             //    throw (new Exceptions.ConnectionException("ArasConnector SaveObject Exception Message : " + ex.Message));
             //}
             #endregion
+            return true;
         }
 
         public List<PLMObject> GetPLMObjectInformation(List<PLMObject> plmobjs)
