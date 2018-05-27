@@ -10,6 +10,7 @@ using System.Collections;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Web.Script.Serialization;
 
 namespace RedBracketConnector
 {
@@ -72,6 +73,10 @@ namespace RedBracketConnector
                         obj.NativeFileName, true, new List<KeyValuePair<string, string>> {
                             new KeyValuePair<string, string>("project", obj.ObjectProjectId)
                 });
+
+                    SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
+
+                    var saveObjectResponseValueObject = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
 
                     //checking if service call was successful or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
