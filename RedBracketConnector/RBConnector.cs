@@ -46,6 +46,7 @@ namespace RedBracketConnector
                 {
                     return false;
                 }
+
                 foreach (PLMObject obj in plmobjs)
                 {
                     //KeyValuePair<string, string> L = new KeyValuePair<string, string>("filepath", FilePath);
@@ -56,7 +57,6 @@ namespace RedBracketConnector
                     {
                         binaryReader.Read();
                         objSFC.BRDocument = binaryReader;
-
                     }
 
                     //Defining parameters
@@ -66,20 +66,21 @@ namespace RedBracketConnector
                     urlParameters.Add(L);
 
                     //service calling to upload document.
-                    RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        "/AutocadFiles/uploadFileService", DataFormat.Json,
-                        objSFC, true, urlParameters);
+                    RestResponse restResponse = (RestResponse)ServiceHelper.SaveObject(
+                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                        "/AutocadFiles/uploadFileService", obj.FilePath,
+                        obj.NativeFileName, true, new List<KeyValuePair<string, string>> {
+                            new KeyValuePair<string, string>("project", obj.ObjectProjectId)
+                });
 
-                    //checking if service call was successfull or not.
+                    //checking if service call was successful or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
                         ShowMessage.ErrorMess("Some error occurred while uploading file.");
                         return false;
                     }
-                    else
-                    {
-                        return true;
-                    }
+
+                    return true;
                 }
             }
             catch (Exception E)

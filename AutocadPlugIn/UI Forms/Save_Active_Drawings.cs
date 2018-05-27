@@ -271,12 +271,7 @@ namespace AutocadPlugIn.UI_Forms
                     return;
                 }
 
-
-
                 //string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-
-
-
                 SaveController objController = new SaveController();
 
                 ICADManager objMgr = new AutoCADManager();
@@ -288,6 +283,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
                 }
+
                 foreach (String str in drawings)
                 {
                     objCmd.Drawings.Add(str);
@@ -302,8 +298,6 @@ namespace AutocadPlugIn.UI_Forms
                 // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
-
-
                     objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
                     // Is_Save :needs to make changes for multiple file
@@ -510,10 +504,10 @@ namespace AutocadPlugIn.UI_Forms
                     int length = DrawingNameandNumber.Length;
                     if (index > 0)
                         DrawingNameandNumber = DrawingNameandNumber.Remove(index);
-                    DrawingInformation1 = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" + 
-                            selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + 
-                            ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" +Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";" 
-                            + Convert.ToString(selectedTreeNode.Cells["realtyname"].Value ) + ";" + CADDescription.Text + ";" 
+                    DrawingInformation1 = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" +
+                            selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() +
+                            ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" +Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";"
+                            + Convert.ToString(selectedTreeNode.Cells["realtyname"].Value ) + ";" + CADDescription.Text + ";"
                             + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString()
                             + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
                             + selectedTreeNode.Cells["Layouts"].Value.ToString();
@@ -540,7 +534,7 @@ namespace AutocadPlugIn.UI_Forms
                 }
             }
             #endregion
-        
+
         }
 
         private void savetreeGrid_CellBeginEdit(object sender, DataGridViewCellEventArgs e)
@@ -560,9 +554,9 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
-                   
-                    
-                    c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name"); 
+
+
+                    c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
                     DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
                     c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
                     //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
@@ -591,7 +585,7 @@ namespace AutocadPlugIn.UI_Forms
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
                 String sg_projectid = selectedTreeNode.Cells["projectid"].Value.ToString();
                 DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
-               
+
                 selectedTreeNode.Cells["projectname"].Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "name");
                 for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
                 {

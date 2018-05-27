@@ -852,8 +852,8 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         Directory.CreateDirectory(checkoutPath);
                     }
-                    DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
 
+                    DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
                 }
 
 

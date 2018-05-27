@@ -126,6 +126,7 @@ namespace CADController.Controllers
                     ModifiedBy = plmobjInfo[16];
                     plmObj.ObjectLayouts = plmobjInfo[17];
                 }
+
                 //  objConnector.SaveObject(ref plmObjs);
                 bool RetVal = ObjRBC.SaveObject(ref plmObjs, command.FilePath);
 
