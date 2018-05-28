@@ -45,6 +45,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -63,6 +64,7 @@
     <Compile Include="ResultSearchCriteria.cs" />
     <Compile Include="ResultStatusData.cs" />
     <Compile Include="ResultStatusDataCoreType.cs" />
+    <Compile Include="SaveResult.cs" />
     <Compile Include="SearchCriteria.cs" />
     <Compile Include="ServiceHelper.cs" />
     <Compile Include="ShowMessage.cs" />

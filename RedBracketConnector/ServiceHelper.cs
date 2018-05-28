@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using Microsoft.Win32;
 using RestSharp;
@@ -39,7 +40,7 @@ namespace RedBracketConnector
                         {
                             relevantAddress += ("&" + urlParameter.Key + "=" + urlParameter.Value);
                         }
-                        
+
                         count++;
                     }
                 }
@@ -87,6 +88,56 @@ namespace RedBracketConnector
                 }
 
                 return restClient.Execute(new RestRequest(relevantAddress, Method.GET));
+            }
+            catch (WebException webException)
+            {
+                throw new WebException("Invalid response from the server.", webException.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Saves the object to redbracket server.
+        /// </summary>
+        /// <param name="baseAddress">Base address of the server to save the object.</param>
+        /// <param name="relevantAddress">Relevant address of the path.</param>
+        /// <param name="filePath">Physical, absolute path of the file.</param>
+        /// <param name="fileName">Name of the file to save that in the server.</param>
+        /// <param name="addUserNametoUrl">Username should be added to URL?</param>
+        /// <param name="urlParameters">Specify list of parameters if any.</param>
+        /// <returns>Response of the server in IRestResponse format.</returns>
+        public static IRestResponse SaveObject(string baseAddress, string relevantAddress, string filePath, string  fileName, bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
+        {
+            try
+            {
+                //var restClient = new RestClient("https://test.redbracket.in:8090");
+                var restClient = new RestClient(baseAddress);
+                int count = 0;
+                if (addUserNametoUrl)
+                {
+                    relevantAddress += "?userName=" + Helper.GetValueRegistry("LoginSettings", "UserName").ToString();
+                }
+
+                if (urlParameters != null)
+                {
+                    foreach (KeyValuePair<string, string> urlParameter in urlParameters)
+                    {
+                        if (count == 0 && !addUserNametoUrl)
+                        {
+                            relevantAddress += ("?" + urlParameter.Key + "=" + urlParameter.Value);
+                        }
+                        else
+                        {
+                            relevantAddress += ("&" + urlParameter.Key + "=" + urlParameter.Value);
+                        }
+
+                        count++;
+                    }
+                }
+
+                var request = new RestRequest(relevantAddress, Method.POST);
+                request.AddFile("files", File.ReadAllBytes(filePath), fileName);
+
+                return restClient.Execute(request);
             }
             catch (WebException webException)
             {

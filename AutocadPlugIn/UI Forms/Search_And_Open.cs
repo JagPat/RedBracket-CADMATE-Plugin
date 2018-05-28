@@ -84,9 +84,9 @@ namespace AutocadPlugIn.UI_Forms
             List<string> nameNumberList = new List<string>();
             foreach(DataRow dr in dataTableProjectNameNumber.Rows)
             {
-                nameNumberList.Add(dr["name"].ToString());
-                nameNumberList.Add(dr["number"].ToString());
+                nameNumberList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")");
             }
+
             nameNumberList.Sort();
             nameNumberList.Insert(0, "All");
 
@@ -101,7 +101,8 @@ namespace AutocadPlugIn.UI_Forms
             //CDProjectId.DisplayMember = "number";
             //CDProjectId.ValueMember = "number";
 
-            CDProjectName.DataSource = nameNumberList;
+            CDProjectName.Items.AddRange(nameNumberList.ToArray());
+            CDProjectName.SelectedIndex = 0;
             //CDProjectName.DisplayMember = "name";
             //CDProjectName.ValueMember = "name";
             #endregion projectdetails
@@ -419,8 +420,8 @@ namespace AutocadPlugIn.UI_Forms
                     resultSearchCriteriaRecord.name,
                     resultSearchCriteriaRecord.fileNo,
                     (bool)resultSearchCriteriaRecord.filelock,
-                   null, //resultSearchCriteriaRecord.coreType.name,
-                    null, //resultSearchCriteriaRecord.status.statusname,
+                    resultSearchCriteriaRecord.coreType.name,
+                    resultSearchCriteriaRecord.status.statusname,
                     resultSearchCriteriaRecord.versionno,
                     resultSearchCriteriaRecord.projectname,
                     resultSearchCriteriaRecord.projectinfo,
@@ -851,8 +852,8 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         Directory.CreateDirectory(checkoutPath);
                     }
-                    DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
 
+                    DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
                 }
 
 
@@ -1135,40 +1136,40 @@ namespace AutocadPlugIn.UI_Forms
 
         private void CDProjectName_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Build datatable for Realty Entity and Set Value in Dropdown
-            CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-            DataTable dtRealtyNo = new DataTable();
-            dtRealtyNo.Columns.Add("ProjectId", typeof(string));
-            dtRealtyNo.Columns.Add("RealtyName", typeof(string));
-            dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
-            dtRealtyNo = objWordConfig.GetRealtyEntity();
-            String sg_projectid = CDProjectName.SelectedValue.ToString();
-            DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyName", DataViewRowState.CurrentRows);
-            Realty.AddNew();
-            CDRealty.DataSource = Realty;
-            CDRealty.DisplayMember = "RealtyName";
-            CDRealty.ValueMember = "RealtyNo";
-            CDRealty.SelectedValue = "";
+            //////Build datatable for Realty Entity and Set Value in Dropdown
+            ////CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+            ////DataTable dtRealtyNo = new DataTable();
+            ////dtRealtyNo.Columns.Add("ProjectId", typeof(string));
+            ////dtRealtyNo.Columns.Add("RealtyName", typeof(string));
+            ////dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
+            ////dtRealtyNo = objWordConfig.GetRealtyEntity();
+            ////String sg_projectid = CDProjectName.SelectedValue.ToString();
+            ////DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyName", DataViewRowState.CurrentRows);
+            ////Realty.AddNew();
+            ////CDRealty.DataSource = Realty;
+            ////CDRealty.DisplayMember = "RealtyName";
+            ////CDRealty.ValueMember = "RealtyNo";
+            ////CDRealty.SelectedValue = "";
         }
 
         private void CDType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Build datatable for Lifecycle State and Set Value in Dropdown
-            CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-            DataTable lcState = new DataTable();
-            lcState.Columns.Add("Classification", typeof(string));
-            lcState.Columns.Add("StateName", typeof(string));
-            lcState.Columns.Add("StateLabel", typeof(string));
-            lcState = objWordConfig.GetLifeCycleState();
+            //////Build datatable for Lifecycle State and Set Value in Dropdown
+            ////CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+            ////DataTable lcState = new DataTable();
+            ////lcState.Columns.Add("Classification", typeof(string));
+            ////lcState.Columns.Add("StateName", typeof(string));
+            ////lcState.Columns.Add("StateLabel", typeof(string));
+            ////lcState = objWordConfig.GetLifeCycleState();
 
-            String classificationValue = CDType.SelectedValue.ToString();
-            DataView LCState = new DataView(lcState, "Classification='" + classificationValue + "'", "", DataViewRowState.CurrentRows);
-            if (LCState.Count < 1) LCState = new DataView(lcState, "Classification=''", "", DataViewRowState.CurrentRows);
-            LCState.AddNew();
-            CDState.DataSource = LCState;
-            CDState.DisplayMember = "StateLabel";
-            CDState.ValueMember = "StateName";
-            CDState.SelectedValue = "";
+            ////String classificationValue = CDType.SelectedValue.ToString();
+            ////DataView LCState = new DataView(lcState, "Classification='" + classificationValue + "'", "", DataViewRowState.CurrentRows);
+            ////if (LCState.Count < 1) LCState = new DataView(lcState, "Classification=''", "", DataViewRowState.CurrentRows);
+            ////LCState.AddNew();
+            ////CDState.DataSource = LCState;
+            ////CDState.DisplayMember = "StateLabel";
+            ////CDState.ValueMember = "StateName";
+            ////CDState.SelectedValue = "";
         }
 
         private void textBox_foldername_TextChanged(object sender, EventArgs e)
@@ -1194,6 +1195,45 @@ namespace AutocadPlugIn.UI_Forms
         private void label6_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void CDProjectName_KeyUp(object sender, KeyEventArgs e)
+        {
+            comboBoxSearch();
+        }
+
+        /// <summary>
+        /// Start searching the text box with the result list.
+        /// </summary>
+        private void comboBoxSearch()
+        {
+            CDProjectName.DroppedDown = true;
+
+            object[] actualItemList = (object[])CDProjectName.Tag;
+            if (actualItemList == null)
+            {
+                // Maintain back of the original list
+                actualItemList = new object[CDProjectName.Items.Count];
+                CDProjectName.Items.CopyTo(actualItemList, 0);
+                CDProjectName.Tag = actualItemList;
+            }
+
+            // prepare list of matching items
+            string searchText = CDProjectName.Text.ToLower();
+            IEnumerable<object> newList = actualItemList;
+            if (searchText.Length > 0)
+            {
+                newList = actualItemList.Where(item => item.ToString().ToLower().Contains(searchText));
+            }
+
+            // Clear the list before attaching the same again.
+            while (CDProjectName.Items.Count > 0)
+            {
+                CDProjectName.Items.RemoveAt(0);
+            }
+
+            // re-set list
+            CDProjectName.Items.AddRange(newList.ToArray());
         }
     }
 }
