@@ -43,10 +43,10 @@ namespace RedBracketConnector
             try
             {
                 //To unlock File in case of update
-                if (UnlockObject(plmobjs))
-                {
-                    return false;
-                }
+                //if (UnlockObject(plmobjs))
+                //{
+                //    return false;
+                //}
 
                 foreach (PLMObject obj in plmobjs)
                 {
@@ -54,11 +54,11 @@ namespace RedBracketConnector
                     SaveFileCommand objSFC = new SaveFileCommand();
 
                     // to convert file in bytes.
-                    using (var binaryReader = new BinaryReader(File.OpenRead(FilePath)))
-                    {
-                        binaryReader.Read();
-                        objSFC.BRDocument = binaryReader;
-                    }
+                    //using (var binaryReader = new BinaryReader(File.OpenRead(FilePath)))
+                    //{
+                    //    binaryReader.Read();
+                    //    objSFC.BRDocument = binaryReader;
+                    //}
 
                     //Defining parameters
                     KeyValuePair<string, string> L = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
@@ -83,6 +83,10 @@ namespace RedBracketConnector
                     {
                         ShowMessage.ErrorMess("Some error occurred while uploading file.");
                         return false;
+                    }
+                    else
+                    {
+
                     }
 
                     return true;

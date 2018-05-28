@@ -882,6 +882,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                 fileId = "11760c31-d3fb-4acb-9675-551915493fd5";
                 //RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
                 //    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                 //    "/AutocadFiles/downloadAutocadSingleFile",
@@ -893,42 +894,50 @@ namespace AutocadPlugIn.UI_Forms
            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
            "/AutocadFiles/downloadAutocadSingleFile",
            false,
-           new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5") ,
+           new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",fileId ) ,
         new KeyValuePair<string, string>("userName", "attune.mule@yopmail.com")
 
            });
+                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    RBConnector objRBC = new RBConnector();
+                    ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(fileId);
+                    Hashtable DrawingProperty = new Hashtable();
 
-                Hashtable DrawingProperty = new Hashtable();
-
-                DrawingProperty.Add("DrawingId", "123");
-                DrawingProperty.Add("DrawingName", "123");
-                DrawingProperty.Add("Classification", "123");
-                DrawingProperty.Add("DrawingNumber", "DWG00098");
-                DrawingProperty.Add("DrawingState", "123");
-                DrawingProperty.Add("Revision", "123");
-                DrawingProperty.Add("LockStatus", "123");
-                DrawingProperty.Add("Generation", "123");
-                DrawingProperty.Add("Type", "123");
-                DrawingProperty.Add("ProjectName", "123");
-                DrawingProperty.Add("ProjectId", "123");
-                DrawingProperty.Add("CreatedOn", "123");
-                DrawingProperty.Add("CreatedBy", "123");
-                DrawingProperty.Add("ModifiedOn", "123");
-                DrawingProperty.Add("ModifiedBy", "123");
+                    DrawingProperty.Add("DrawingId", Drawing.id);
+                    DrawingProperty.Add("DrawingName", Drawing.name);
+                    DrawingProperty.Add("Classification", "123");
+                    DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+                    DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+                    DrawingProperty.Add("Revision", Drawing.versionno);
+                    DrawingProperty.Add("LockStatus", Drawing.filelock);
+                    DrawingProperty.Add("Generation", "123");
+                    DrawingProperty.Add("Type", "123");
+                    DrawingProperty.Add("ProjectName", Drawing.projectinfo);
+                    DrawingProperty.Add("ProjectId", "123");
+                    DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                    DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                    DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                    DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
 
                     string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
-                //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
+                    //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
 
 
-                using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
-                {
-                    binaryWriter.Write(restResponse.RawBytes);
-                    //binaryWriter.Flush();
-                    //binaryWriter.Close();
-                    //binaryWriter.Dispose();
+                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
+                    {
+                        binaryWriter.Write(restResponse.RawBytes);
+                        //binaryWriter.Flush();
+                        //binaryWriter.Close();
+                        //binaryWriter.Dispose();
+                    }
+
+                    cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
                 }
-
-                cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                else
+                {
+                    ShowMessage.ErrorMess("Some error occures while retrieving file.");
+                }
             }
             catch(Exception E)
             {
