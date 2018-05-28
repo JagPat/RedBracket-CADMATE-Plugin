@@ -9,7 +9,7 @@ using System.Reflection;
 
 using System.Windows.Forms;
 using System.IO;
-
+using System.Collections;
 namespace RedBracketConnector
 {
     public static class Helper
@@ -186,6 +186,46 @@ namespace RedBracketConnector
                     return ms.ToArray();
                 }
             }
+        }
+        public static Hashtable Table2HashTable(DataTable dt,int i)
+        {
+            Hashtable DrawingProperty = new Hashtable();
+
+            try
+            {
+                if(dt.Rows.Count>i)
+                {
+                    DrawingProperty.Add("DrawingId", dt.Rows[i]["DrawingId"]);
+                    DrawingProperty.Add("DrawingName", dt.Rows[i]["DrawingName"]);
+                    DrawingProperty.Add("Classification", dt.Rows[i]["Classification"]);
+                    DrawingProperty.Add("DrawingNumber", dt.Rows[i]["DrawingNumber"]);
+                    DrawingProperty.Add("DrawingState", dt.Rows[i]["DrawingState"]);
+                    DrawingProperty.Add("Revision", dt.Rows[i]["Revision"]);         
+                    DrawingProperty.Add("Generation", dt.Rows[i]["Generation"]);
+                    DrawingProperty.Add("Type", dt.Rows[i]["Type"]);
+                    DrawingProperty.Add("filepath", dt.Rows[i]["filepath"]);
+                    DrawingProperty.Add("isroot", dt.Rows[i]["isroot"]);
+                    DrawingProperty.Add("ProjectName", dt.Rows[i]["ProjectName"]);
+                    DrawingProperty.Add("ProjectId", dt.Rows[i]["ProjectId"]);
+                    DrawingProperty.Add("CreatedOn", dt.Rows[i]["createdon"]);
+                    DrawingProperty.Add("CreatedBy", dt.Rows[i]["createdby"]);
+                    DrawingProperty.Add("ModifiedOn", dt.Rows[i]["modifiedon"]);
+                    DrawingProperty.Add("ModifiedBy", dt.Rows[i]["modifiedby"]);
+                    DrawingProperty.Add("sourceid", dt.Rows[i]["sourceid"]);
+                    DrawingProperty.Add("Layouts", dt.Rows[i]["Layouts"]);
+                }
+                else
+                {
+                    ShowMessage.ErrorMess("Specified index not found.");
+                }
+            }
+            catch(Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+            return DrawingProperty;
+
         }
     }
 }

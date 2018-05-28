@@ -11,11 +11,13 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Web.Script.Serialization;
+ 
 
 namespace RedBracketConnector
 {
     public class RBConnector
     {
+        
         public void SaveObject(string FilePath)
         {
             try
@@ -38,7 +40,7 @@ namespace RedBracketConnector
             }
         }
 
-        public bool SaveObject(ref List<PLMObject> plmobjs, string FilePath)
+        public bool SaveObject(ref List<PLMObject> plmobjs, string FilePath )
         {
             try
             {
@@ -86,7 +88,41 @@ namespace RedBracketConnector
                     }
                     else
                     {
+                        var Drawing = saveObjectResponseValueObject;
+                        // Hashtable DrawingProperty = new Hashtable();
 
+                        //DrawingProperty.Add("DrawingId", Drawing.id);
+                        //DrawingProperty.Add("DrawingName", Drawing.name);
+                        //DrawingProperty.Add("Classification",  "123");
+                        //DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+                        //DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+                        //DrawingProperty.Add("Revision", Drawing.versionno);
+                        //DrawingProperty.Add("LockStatus", Drawing.filelock);
+                        //DrawingProperty.Add("Generation", "123");
+                        //DrawingProperty.Add("Type", "123");
+                        //DrawingProperty.Add("ProjectName", Drawing.projectname);
+                        //DrawingProperty.Add("ProjectId", "123");
+                        //DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                        //DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                        //DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                        //DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+
+                        obj.ObjectId = Drawing.id;
+                        obj.ObjectName = Drawing.name;
+                        obj.Classification = "123";
+                        obj.ObjectState = Drawing.status.statusname;
+                        obj.ObjectRevision = Drawing.versionno;
+                        obj.LockStatus =Convert.ToString(Drawing.filelock);
+                        obj.ObjectGeneration = "123";
+                        obj.ItemType = Drawing.coreType.name;
+                        obj.ObjectProjectName = Drawing.projectname;
+                        obj.ObjectProjectId = "123";
+                        obj.ObjectCreatedById = Drawing.createdby;
+                        obj.ObjectCreatedOn = Drawing.created0n;
+                        obj.ObjectModifiedById = Drawing.updatedby;
+                        obj.ObjectModifiedOn = Drawing.updatedon;
+                        obj.ObjectNumber = Drawing.fileNo;
+                      
                     }
 
                     return true;

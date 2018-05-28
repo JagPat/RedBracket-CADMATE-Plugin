@@ -919,6 +919,9 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("CreatedBy", Drawing.createdby);
                     DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
                     DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+                    //DrawingProperty.Add("isroot", true);
+                    //DrawingProperty.Add("sourceid","");
+                    //DrawingProperty.Add("Layouts","");
 
                     string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
                     //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
