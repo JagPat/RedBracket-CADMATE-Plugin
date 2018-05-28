@@ -135,7 +135,9 @@ namespace RedBracketConnector
                 }
 
                 var request = new RestRequest(relevantAddress, Method.POST);
-                request.AddFile("files", File.ReadAllBytes(filePath), fileName);
+
+                //request.AddFile("files", File.ReadAllBytes(filePath), fileName);
+                request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
 
                 return restClient.Execute(request);
             }

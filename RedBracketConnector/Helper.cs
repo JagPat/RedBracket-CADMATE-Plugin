@@ -8,6 +8,8 @@ using System.Data;
 using System.Reflection;
 
 using System.Windows.Forms;
+using System.IO;
+
 namespace RedBracketConnector
 {
     public static class Helper
@@ -39,7 +41,7 @@ namespace RedBracketConnector
         }
         /// <summary>
         /// Passing True for IsSelect Means that you want first item of Combobox as ---Select---
-        /// false means ---All--- 
+        /// false means ---All---
         /// </summary>
         /// <param name="IsSelect"></param>
         /// <returns></returns>
@@ -131,7 +133,7 @@ namespace RedBracketConnector
             PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (PropertyInfo prop in Props)
             {
-                //Defining type of data column gives proper data table 
+                //Defining type of data column gives proper data table
                 var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
                 //Setting column names as Property names
                 dataTable.Columns.Add(prop.Name, type);
@@ -167,6 +169,23 @@ namespace RedBracketConnector
             }
 
             return RValue;
+        }
+
+        /// <summary>
+        /// Gets the file bytes array to save to the server.
+        /// </summary>
+        /// <param name="filePath">Path of the file to convert to bytes array.</param>
+        /// <returns>Array of file bytes.</returns>
+        public static byte[] GetFileDataBytes(string filePath)
+        {
+            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    fs.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
         }
     }
 }
