@@ -200,27 +200,42 @@ namespace AutocadPlugIn.UI_Forms
                 urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.Text));
             }
 
+            SearchCriteria searchCriteria = new SearchCriteria();
+
+            if (!string.IsNullOrEmpty(DGNumber.Text))
+            {
+                searchCriteria.fileNo = DGNumber.Text;
+            }
+
+            if (!string.IsNullOrEmpty(CDType.Text))
+            {
+                searchCriteria.type = new SearchCriteriaType
+                {
+                    name = CDType.Text
+                };
+            }
+
+            if (!string.IsNullOrEmpty(CDState.Text))
+            {
+                searchCriteria.status = new StatusCriteria
+                {
+                    statusname = CDState.Text
+                };
+            }
+
+            if (!string.IsNullOrEmpty(textBox_foldername.Text))
+            {
+                searchCriteria.folder = new SearchCriteriaFolder
+                {
+                    name = textBox_foldername.Text
+                };
+            }
+
             RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                "/AutocadFiles/searchAutocadFiles",
                DataFormat.Json,
-               new SearchCriteria
-               {
-                   fileNo = DGNumber.Text,
-                   ////name = DGName.Text,
-                   type = new SearchCriteriaType
-                   {
-                       name = textBox_foldername.Text
-                   },
-                   status = new StatusCriteria
-                   {
-                       statusname = CDState.SelectedText
-                   },
-                   folder = new SearchCriteriaFolder
-                   {
-                       name = textBox_foldername.Text
-                   },
-               },
+               searchCriteria,
               true,
               urlParameters);
 
