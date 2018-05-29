@@ -195,7 +195,7 @@ namespace AutocadPlugIn.UI_Forms
             }
 
             // If folder name is not null or empty then add the parameter to the URL.
-            if (sg_SearchType.SelectedIndex != -1)
+            if (sg_SearchType.SelectedIndex > 0)
             {
                 urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.Text));
             }
@@ -207,7 +207,7 @@ namespace AutocadPlugIn.UI_Forms
                 searchCriteria.fileNo = DGNumber.Text;
             }
 
-            if (!string.IsNullOrEmpty(CDType.Text))
+            if (CDType.SelectedIndex > 0)
             {
                 searchCriteria.type = new SearchCriteriaType
                 {
@@ -215,7 +215,7 @@ namespace AutocadPlugIn.UI_Forms
                 };
             }
 
-            if (!string.IsNullOrEmpty(CDState.Text))
+            if (CDState.SelectedIndex > 0)
             {
                 searchCriteria.status = new StatusCriteria
                 {
