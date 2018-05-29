@@ -49,7 +49,7 @@ namespace RedBracketConnector
                 var request = new RestRequest(relevantAddress, Method.POST);
                 request.RequestFormat = dataFormat;
 
-                request.AddBody(postData.ToString());
+                request.AddBody(postData);
                 return restClient.Execute(request);
             }
             catch (WebException webException)
