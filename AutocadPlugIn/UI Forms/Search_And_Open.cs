@@ -81,16 +81,14 @@ namespace AutocadPlugIn.UI_Forms
             #region projectdetails
             restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/ProjectAutocad/fetchUserAutocadProjectsService", true, null);
             DataTable dataTableProjectNameNumber = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
-            List<KeyValuePair<string, string>> nameNumberList = new List<KeyValuePair<string, string>>();
-            foreach(DataRow dr in dataTableProjectNameNumber.Rows)
+            List<string> nameNumberList = new List<string>();
+            foreach (DataRow dr in dataTableProjectNameNumber.Rows)
             {
-                nameNumberList.Add(new KeyValuePair<string, string>(dr["number"].ToString(), dr["name"].ToString() + " (" + dr["number"].ToString() + ")"));
+                nameNumberList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")");
             }
 
-            nameNumberList.OrderBy(key => key.Value);
-            ////nameNumberList.Sort();
-            ////nameNumberList = (from nameNumber in nameNumberList orderby nameNumber.Value ascending select nameNumber).ToList();
-            nameNumberList.Insert(0, new KeyValuePair<string, string>(string.Empty, "All"));
+            nameNumberList.Sort();
+            nameNumberList.Insert(0, "All");
 
             //dataView = dataTableProjectNameNumber.DefaultView;
             //dataView.Sort = "number asc";
