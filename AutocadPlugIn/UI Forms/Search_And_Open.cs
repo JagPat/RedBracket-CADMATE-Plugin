@@ -27,6 +27,7 @@ namespace AutocadPlugIn.UI_Forms
         public ArrayList OpenMode = new ArrayList();
         public ArrayList OpenMode1 = new ArrayList();
         ICADManager cadManager = new AutoCADManager();
+        public Dictionary<string, int> projectNameNumberKeyValiuePairList = new Dictionary<string, int>();
         ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
 
         public Search_And_Open()
@@ -85,6 +86,7 @@ namespace AutocadPlugIn.UI_Forms
             foreach (DataRow dr in dataTableProjectNameNumber.Rows)
             {
                 nameNumberList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")");
+                projectNameNumberKeyValiuePairList.Add(new KeyValuePair<string, int>(dr["name"].ToString() + " (" + dr["number"].ToString() + ")", dr["id"]));
             }
 
             nameNumberList.Sort();
@@ -189,7 +191,7 @@ namespace AutocadPlugIn.UI_Forms
 
             if (CDProjectName.SelectedIndex != -1)
             {
-                urlParameters.Add(new KeyValuePair<string, string>("projno", CDProjectName.SelectedText));
+                urlParameters.Add(new KeyValuePair<string, string>("projno", Convert.ToString(projectNameNumberKeyValiuePairList["CDProjectName.SelectedText"])));
             }
 
             // If folder name is not null or empty then add the parameter to the URL.
