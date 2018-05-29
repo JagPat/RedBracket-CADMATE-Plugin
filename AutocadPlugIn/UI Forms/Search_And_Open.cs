@@ -200,7 +200,12 @@ namespace AutocadPlugIn.UI_Forms
                 urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.Text));
             }
 
-            SearchCriteria searchCriteria = new SearchCriteria();
+            SearchCriteria searchCriteria = null;
+
+            if (!string.IsNullOrEmpty(DGNumber.Text) || CDType.SelectedIndex > 0 || CDState.SelectedIndex > 0 || !string.IsNullOrEmpty(textBox_foldername.Text))
+            {
+                searchCriteria = new SearchCriteria();
+            }
 
             if (!string.IsNullOrEmpty(DGNumber.Text))
             {
@@ -235,7 +240,7 @@ namespace AutocadPlugIn.UI_Forms
                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                "/AutocadFiles/searchAutocadFiles",
                DataFormat.Json,
-               searchCriteria,
+               JsonConvert.SerializeObject(searchCriteria, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
                true,
                urlParameters);
 
