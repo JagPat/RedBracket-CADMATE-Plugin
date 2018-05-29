@@ -86,7 +86,7 @@ namespace AutocadPlugIn.UI_Forms
             foreach (DataRow dr in dataTableProjectNameNumber.Rows)
             {
                 nameNumberList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")");
-                projectNameNumberKeyValiuePairList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")", (int)dr["id"]);
+                projectNameNumberKeyValiuePairList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")", Convert.ToInt32(dr["id"]));
             }
 
             nameNumberList.Sort();
