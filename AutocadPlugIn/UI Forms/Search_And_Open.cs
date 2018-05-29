@@ -103,7 +103,9 @@ namespace AutocadPlugIn.UI_Forms
             //CDProjectId.DisplayMember = "number";
             //CDProjectId.ValueMember = "number";
 
-            CDProjectName.Items.AddRange(nameNumberList.ToArray());
+            CDProjectName.DisplayMember = "Value";
+            CDProjectName.ValueMember = "Key";
+            ////CDProjectName.Items.AddRange(nameNumberList.ToArray());
             CDProjectName.SelectedIndex = 0;
             //CDProjectName.DisplayMember = "name";
             //CDProjectName.ValueMember = "name";
