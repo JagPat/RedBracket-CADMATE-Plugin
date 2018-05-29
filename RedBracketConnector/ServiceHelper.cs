@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Web.Script.Serialization;
 using Microsoft.Win32;
 using RestSharp;
 
@@ -48,7 +49,7 @@ namespace RedBracketConnector
                 var request = new RestRequest(relevantAddress, Method.POST);
                 request.RequestFormat = dataFormat;
 
-                request.AddBody(postData);
+                request.AddBody(new JavaScriptSerializer().DeserializeObject(postData.ToString()));
                 return restClient.Execute(request);
             }
             catch (WebException webException)
