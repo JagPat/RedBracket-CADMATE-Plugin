@@ -197,7 +197,7 @@ namespace AutocadPlugIn.UI_Forms
             // If folder name is not null or empty then add the parameter to the URL.
             if (sg_SearchType.SelectedIndex != -1)
             {
-                urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.SelectedText));
+                urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.Text));
             }
 
             RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
