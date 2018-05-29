@@ -191,7 +191,7 @@ namespace AutocadPlugIn.UI_Forms
 
             if (CDProjectName.SelectedIndex > 0)
             {
-                urlParameters.Add(new KeyValuePair<string, string>("projno", Convert.ToString(projectNameNumberKeyValiuePairList[CDProjectName.SelectedText])));
+                urlParameters.Add(new KeyValuePair<string, string>("projno", Convert.ToString(projectNameNumberKeyValiuePairList[CDProjectName.Text])));
             }
 
             // If folder name is not null or empty then add the parameter to the URL.
