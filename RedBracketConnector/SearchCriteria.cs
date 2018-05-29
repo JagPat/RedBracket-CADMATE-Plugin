@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,14 +9,19 @@ namespace RedBracketConnector
 {
     public class SearchCriteria
     {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string fileNo { set; get; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string name { set; get; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public SearchCriteriaType type { set; get; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public StatusCriteria status { set; get; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public SearchCriteriaFolder folder { set; get; }
     }
 
