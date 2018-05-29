@@ -189,7 +189,7 @@ namespace AutocadPlugIn.UI_Forms
             ////    urlParameters.Add(new KeyValuePair<string, string>("projno", CDProjectId.SelectedText));
             ////}
 
-            if (CDProjectName.SelectedIndex <= 0)
+            if (CDProjectName.SelectedIndex < 0)
             {
                 urlParameters.Add(new KeyValuePair<string, string>("projno", Convert.ToString(projectNameNumberKeyValiuePairList["CDProjectName.SelectedText"])));
             }
