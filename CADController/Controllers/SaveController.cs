@@ -7,11 +7,15 @@ using CADController.Controllers;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using CADController;
+ 
 namespace CADController.Controllers
 {
     public class SaveController : BaseController
     {
         public DataTable dtDrawingProperty = new DataTable();
+        RBConnector objRBC = new RBConnector();
+    
         public override void Execute(Command command)
         {
         }
@@ -130,6 +134,7 @@ namespace CADController.Controllers
                 //  objConnector.SaveObject(ref plmObjs);
                 bool RetVal = ObjRBC.SaveObject(ref plmObjs, command.FilePath);
 
+              
                 // updating document info
                 foreach (PLMObject plmobj in plmObjs)
                 {

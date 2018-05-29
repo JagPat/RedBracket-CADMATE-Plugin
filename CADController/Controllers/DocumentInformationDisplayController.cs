@@ -28,10 +28,11 @@ namespace CADController.Controllers
             foreach (String str in cmd.DarawingInformation)
             {
                 PLMObject plmobj = new PLMObject();
-                String[] drawingInfo = new String[2];
+                String[] drawingInfo = new String[3];
                 drawingInfo = str.Split(':');
                 plmobj.ObjectNumber = drawingInfo[0];
                 plmobj.ItemType = drawingInfo[1];
+                plmobj.ObjectId = drawingInfo[2];
                 plmobjs.Add(plmobj);
                 
             }

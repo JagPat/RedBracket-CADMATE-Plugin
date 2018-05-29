@@ -100,7 +100,7 @@ namespace AutocadPlugIn
 
             ribbonStatus = true;
 
-            //Connect Functionality          
+            //Connect Functionality
             panel1Panel.Title = "Connection";
             Panel1.Source = panel1Panel;
             Tab.Panels.Add(Panel1);
@@ -112,7 +112,7 @@ namespace AutocadPlugIn
             CADController.Controllers.ConnectionController connController = new CADController.Controllers.ConnectionController();
             if (!connect)
             {
-                Btn_Connection.Text = "Connect";
+                Btn_Connection.Text = "Log-in";
                 Btn_Connection.ShowText = true;
                 Btn_Connection.ShowImage = true;
                 Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
@@ -121,7 +121,7 @@ namespace AutocadPlugIn
             }
             else
             {
-                Btn_Connection.Text = "Disconnect";
+                Btn_Connection.Text = "Log-out";
                 Btn_Connection.ShowText = true;
                 Btn_Connection.ShowImage = true;
                 Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
@@ -145,7 +145,7 @@ namespace AutocadPlugIn
             panel2.Source = panel2Panel;
             Tab.Panels.Add(panel2);
 
-            Btn_BrowseDrawing.Text = "Open \nDrawing";
+            Btn_BrowseDrawing.Text = "Open \nFile";
             Btn_BrowseDrawing.ShowText = true;
             Btn_BrowseDrawing.ShowImage = true;
             Btn_BrowseDrawing.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Open);
@@ -173,7 +173,7 @@ namespace AutocadPlugIn
 
 
 
-            //Blocks browse and Add functionalities            
+            //Blocks browse and Add functionalities
             /*   pan3Panel.Title = "Blocks";
                Panel3.Source = pan3Panel;
                Tab.Panels.Add(Panel3);
@@ -206,7 +206,7 @@ namespace AutocadPlugIn
                pan3row1.Items.Add(Btn_AddBlock);
                pan3Panel.Items.Add(pan3row1);
             */
-            //Lock, Unlock, and Save                      
+            //Lock, Unlock, and Save
             panel4Panel.Title = "Status";
             panel4.Source = panel4Panel;
             Tab.Panels.Add(panel4);
@@ -345,7 +345,7 @@ namespace AutocadPlugIn
             mylogin.ShowDialog();
         }
     }
-    
+
     public class Disconnect : System.Windows.Input.ICommand
          {
             public bool CanExecute(object parameter)
@@ -356,7 +356,7 @@ namespace AutocadPlugIn
             public event EventHandler CanExecuteChanged;
             #region LogOut
             public void Execute(object parameter)
-            {                              
+            {
                 try
                 {
                     if (MessageBox.Show("Do you want to disconnect from Redbracket?", "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
@@ -364,13 +364,13 @@ namespace AutocadPlugIn
                        DisconnectCommand objCmd = new DisconnectCommand();
                         BaseController controller = new DisconnectController();
                         controller.Execute(objCmd);
-                        
+
                         if (controller.errorString != null)
                         {
                             MessageBox.Show(controller.errorString);
                             return;
                         }
-                        
+
                         CADRibbon cr = new CADRibbon();
 
 
@@ -384,7 +384,7 @@ namespace AutocadPlugIn
                         cr.SaveEnable = false;
                         cr.DrawingInfoEnable = false;
                         cr.MyRibbon();
-                      //  MessageBox.Show("Logged Out Successfully"); 
+                      //  MessageBox.Show("Logged Out Successfully");
                     }
 
                 }
@@ -433,8 +433,8 @@ namespace AutocadPlugIn
 
             public void Execute(object parameter)
             {
-            
-    
+
+
             }
         }
 
@@ -450,13 +450,13 @@ namespace AutocadPlugIn
             public void Execute(object parameter)
             {
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            
+
                 Database db = doc.Database;
                 Editor ed = doc.Editor;
 
                 //PromptStringOptions pso = new PromptStringOptions("\nEnter path to root drawing file: ");
                 //pso.AllowSpaces = true;
-               // PromptResult pr = ed.GetString(pso);               
+               // PromptResult pr = ed.GetString(pso);
 
                 if (!File.Exists(doc.Name))
                 {
@@ -468,13 +468,13 @@ namespace AutocadPlugIn
                     AutocadPlugIn.UI_Forms.Save_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.Save_Active_Drawings();
                     //Save_Active_Drawings objSave = new Save_Active_Drawings();
                     objSave.ShowDialog();
-                    
+
                  }
                 catch (System.Exception ex)
                 {
                     ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
                 }
-                
+
               /* try
                 {
                 Autodesk.AutoCAD.ApplicationServices.Document objActivedoc = acadApp.DocumentManager.MdiActiveDocument;
@@ -484,7 +484,7 @@ namespace AutocadPlugIn
                     SaveCommand objcmd = new SaveCommand();
                     Hashtable htAttributes = new Hashtable();
                     BaseController controller = new SaveController();
-                  
+
                     string path = objActivedoc.Name;
 
                     if (!path.Contains("\\"))
@@ -502,7 +502,7 @@ namespace AutocadPlugIn
                     //cmdSave.DrawingInformation.ObjectId = drawingAttrs["documentid"].ToString();
                     //cmdSave.DrawingInformation.FilePath = path;
                     //controller.Execute(cmdSave);
-               
+
                    /* if (htAttributes.Contains(PresentationManager.documentProperties.DocumentId.ToString()))
                         objDocMgr.UpdateAttributes(controller.htDocumentProperty);
                     else
@@ -511,7 +511,7 @@ namespace AutocadPlugIn
                     objDocMgr.CloseDocument(objDocMgr.GetActiveDocument(), false, System.Reflection.Missing.Value, System.Reflection.Missing.Value);
 
                     MessageBox.Show("Document Saved Successfully");
-            
+
                  */
                  /*  if (controller.errorString != null)
                     {
@@ -574,7 +574,7 @@ namespace AutocadPlugIn
             {
             CADController.Commands.HelpCommand objcmd = new CADController.Commands.HelpCommand();
             CADController.Controllers.BaseController controller = new CADController.Controllers.HelpController();
-                
+
             String Dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             //MessageBox.Show("directory path=" + Dir);
             objcmd.HelpFilePath = Dir + "\\Avrut_AutoCAD2013_Integration_UserGuide.chm";
@@ -589,7 +589,7 @@ namespace AutocadPlugIn
             {
             MessageBox.Show(ex.Message);
             }
-         
+
         }
     }
 
@@ -620,8 +620,8 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-            /* 
-            
+            /*
+
                 */
         }
     }
@@ -637,15 +637,15 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-            /* 
-            
+            /*
+
                 */
         }
     }
 
     public class Lock : System.Windows.Input.ICommand
     {
-        /* lock status 0: not locked, 
+        /* lock status 0: not locked,
             *             1: Locked by logged-in User
             *             2: locked by other user.
             */
@@ -662,7 +662,7 @@ namespace AutocadPlugIn
             Connector cn = new Connector();
             cn.UpdateDocPropert();
             String lockstatus = cn.getLockStatus();
-                
+
             if (lockstatus == "0")
             {
                 cn.LockDocument();
@@ -682,7 +682,7 @@ namespace AutocadPlugIn
                 cn.UpdateDocPropert();
                 acadApp.ShowAlertDialog(cn.getLockStatus());
             }
-    
+
             */
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
@@ -706,20 +706,20 @@ namespace AutocadPlugIn
 
                  frmLock obj = new  frmLock();
                 obj.ShowDialog();
-                
+
             }
 
             catch (System.Exception ex)
             {
                 //ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
             }
-               
+
         }
     }
 
     public class Unlock : System.Windows.Input.ICommand
     {
-        /* lock status 0: not locked, 
+        /* lock status 0: not locked,
             *             1: Locked by logged-in User
             *             2: locked by other user.
             */
@@ -735,7 +735,7 @@ namespace AutocadPlugIn
             /*Connector cn = new Connector();
             cn.UpdateDocPropert();
             String lockstatus = cn.getLockStatus();
-                
+
 
             if (lockstatus == "0")
             {
@@ -787,7 +787,7 @@ namespace AutocadPlugIn
             {
                 //ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
             }
-             
+
         }
     }
 

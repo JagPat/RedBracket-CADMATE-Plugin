@@ -39,7 +39,7 @@ namespace AutocadPlugIn.UI_Forms
                 dtCurrentInformation= objCADMgr.GetExternalRefreces();
                 foreach(DataRow row in dtCurrentInformation.Rows)
                  {
-                     drawings.Add(row["drawingnumber"] + ":" + row["type"]);
+                     drawings.Add(row["drawingnumber"] + ":" + row["type"] + ":" + row["drawingid"]);
                  } 
                  objCmd.DarawingInformation = drawings;
                 controller.Execute(objCmd);

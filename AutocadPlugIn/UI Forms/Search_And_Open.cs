@@ -81,14 +81,16 @@ namespace AutocadPlugIn.UI_Forms
             #region projectdetails
             restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/ProjectAutocad/fetchUserAutocadProjectsService", true, null);
             DataTable dataTableProjectNameNumber = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
-            List<string> nameNumberList = new List<string>();
+            List<KeyValuePair<string, string>> nameNumberList = new List<KeyValuePair<string, string>>();
             foreach(DataRow dr in dataTableProjectNameNumber.Rows)
             {
-                nameNumberList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")");
+                nameNumberList.Add(new KeyValuePair<string, string>(dr["number"].ToString(), dr["name"].ToString() + " (" + dr["number"].ToString() + ")"));
             }
 
-            nameNumberList.Sort();
-            nameNumberList.Insert(0, "All");
+            nameNumberList.OrderBy(key => key.Value);
+            ////nameNumberList.Sort();
+            ////nameNumberList = (from nameNumber in nameNumberList orderby nameNumber.Value ascending select nameNumber).ToList();
+            nameNumberList.Insert(0, new KeyValuePair<string, string>(string.Empty, "All"));
 
             //dataView = dataTableProjectNameNumber.DefaultView;
             //dataView.Sort = "number asc";
@@ -166,55 +168,61 @@ namespace AutocadPlugIn.UI_Forms
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
-            RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                "/AutocadFiles/searchAutocadFiles?userName=archi@yopmail.com&projno=proj001&projname=attune",
-                DataFormat.Json,
-                new SearchCriteria
-                {
-                    fileNo = "jpg",
-                    name = "c",
-                    status = new StatusCriteria
-                    {
-                        statusname = "draft"
-                    }
-                },
-               false,
-               null);
+            ////RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+            ////    "/AutocadFiles/searchAutocadFiles?userName=archi@yopmail.com&projno=proj001&projname=attune",
+            ////    DataFormat.Json,
+            ////    new SearchCriteria
+            ////    {
+            ////        fileNo = "jpg",
+            ////        name = "c",
+            ////        status = new StatusCriteria
+            ////        {
+            ////            statusname = "draft"
+            ////        }
+            ////    },
+            ////   false,
+            ////   null);
 
-            //List<KeyValuePair<string, string>> urlParameters = null;
-            //if(CDProjectId.SelectedIndex != -1)
-            //{
-            //    urlParameters.Add(new KeyValuePair<string, string>("projno", CDProjectId.SelectedText));
-            //}
+            List<KeyValuePair<string, string>> urlParameters = null;
+            ////if (CDProjectId.SelectedIndex != -1)
+            ////{
+            ////    urlParameters.Add(new KeyValuePair<string, string>("projno", CDProjectId.SelectedText));
+            ////}
 
-            //if (CDProjectName.SelectedIndex != -1)
-            //{
-            //    urlParameters.Add(new KeyValuePair<string, string>("projname", CDProjectName.SelectedText));
-            //}
+            if (CDProjectName.SelectedIndex != -1)
+            {
+                urlParameters.Add(new KeyValuePair<string, string>("projno", CDProjectName.SelectedText));
+            }
 
-            //RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
-            //    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-            //   "/AutocadFiles/searchAutocadFiles",
-            //   DataFormat.Json,
-            //   new SearchCriteria
-            //   {
-            //       fileNo = DGNumber.Text,
-            //       name = DGName.Text,
-            //       type = new SearchCriteriaType
-            //       {
-            //           name = textBox_foldername.Text
-            //       },
-            //       status = new StatusCriteria
-            //       {
-            //           statusname = CDState.SelectedText
-            //       },
-            //       folder = new SearchCriteriaFolder
-            //       {
-            //           name = textBox_foldername.Text
-            //       },
-            //   },
-            //  true,
-            //  urlParameters);
+            // If folder name is not null or empty then add the parameter to the URL.
+            if (sg_SearchType.SelectedIndex != -1)
+            {
+                urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.SelectedText));
+            }
+
+            RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
+                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+               "/AutocadFiles/searchAutocadFiles",
+               DataFormat.Json,
+               new SearchCriteria
+               {
+                   fileNo = DGNumber.Text,
+                   ////name = DGName.Text,
+                   type = new SearchCriteriaType
+                   {
+                       name = textBox_foldername.Text
+                   },
+                   status = new StatusCriteria
+                   {
+                       statusname = CDState.SelectedText
+                   },
+                   folder = new SearchCriteriaFolder
+                   {
+                       name = textBox_foldername.Text
+                   },
+               },
+              true,
+              urlParameters);
 
             var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
             BindDataToGrid(resultSearchCriteriaResponseList);
@@ -882,6 +890,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                 fileId = "11760c31-d3fb-4acb-9675-551915493fd5";
                 //RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
                 //    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                 //    "/AutocadFiles/downloadAutocadSingleFile",
@@ -893,42 +902,53 @@ namespace AutocadPlugIn.UI_Forms
            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
            "/AutocadFiles/downloadAutocadSingleFile",
            false,
-           new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5") ,
+           new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",fileId ) ,
         new KeyValuePair<string, string>("userName", "attune.mule@yopmail.com")
 
            });
+                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    RBConnector objRBC = new RBConnector();
+                    ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(fileId);
+                    Hashtable DrawingProperty = new Hashtable();
 
-                Hashtable DrawingProperty = new Hashtable();
-
-                DrawingProperty.Add("DrawingId", "123");
-                DrawingProperty.Add("DrawingName", "123");
-                DrawingProperty.Add("Classification", "123");
-                DrawingProperty.Add("DrawingNumber", "DWG00098");
-                DrawingProperty.Add("DrawingState", "123");
-                DrawingProperty.Add("Revision", "123");
-                DrawingProperty.Add("LockStatus", "123");
-                DrawingProperty.Add("Generation", "123");
-                DrawingProperty.Add("Type", "123");
-                DrawingProperty.Add("ProjectName", "123");
-                DrawingProperty.Add("ProjectId", "123");
-                DrawingProperty.Add("CreatedOn", "123");
-                DrawingProperty.Add("CreatedBy", "123");
-                DrawingProperty.Add("ModifiedOn", "123");
-                DrawingProperty.Add("ModifiedBy", "123");
+                    DrawingProperty.Add("DrawingId", Drawing.id);
+                    DrawingProperty.Add("DrawingName", Drawing.name);
+                    DrawingProperty.Add("Classification", "123");
+                    DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+                    DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+                    DrawingProperty.Add("Revision", Drawing.versionno);
+                    DrawingProperty.Add("LockStatus", Drawing.filelock);
+                    DrawingProperty.Add("Generation", "123");
+                    DrawingProperty.Add("Type", "123");
+                    DrawingProperty.Add("ProjectName", Drawing.projectinfo);
+                    DrawingProperty.Add("ProjectId", "123");
+                    DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                    DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                    DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                    DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+                    //DrawingProperty.Add("isroot", true);
+                    //DrawingProperty.Add("sourceid","");
+                    //DrawingProperty.Add("Layouts","");
 
                     string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
-                //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
+                    //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
 
 
-                using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
-                {
-                    binaryWriter.Write(restResponse.RawBytes);
-                    //binaryWriter.Flush();
-                    //binaryWriter.Close();
-                    //binaryWriter.Dispose();
+                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
+                    {
+                        binaryWriter.Write(restResponse.RawBytes);
+                        //binaryWriter.Flush();
+                        //binaryWriter.Close();
+                        //binaryWriter.Dispose();
+                    }
+
+                    cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
                 }
-
-                cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                else
+                {
+                    ShowMessage.ErrorMess("Some error occures while retrieving file.");
+                }
             }
             catch(Exception E)
             {

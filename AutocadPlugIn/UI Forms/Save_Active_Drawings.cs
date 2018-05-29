@@ -274,7 +274,7 @@ namespace AutocadPlugIn.UI_Forms
                 //string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
                 SaveController objController = new SaveController();
 
-                ICADManager objMgr = new AutoCADManager();
+                AutoCADManager objMgr = new AutoCADManager();
                 SaveCommand objCmd = new SaveCommand();
 
                 ICollection keys = htNewDrawings.Keys;
@@ -303,6 +303,14 @@ namespace AutocadPlugIn.UI_Forms
                     // Is_Save :needs to make changes for multiple file
                     Is_Save = objController.ExecuteSave(objCmd);
 
+                    if (Is_Save)
+                    {
+                        Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty,0);
+                        objMgr.SetAttributes(htCurrentInfo);
+                        objMgr.UpdateLayoutAttribute1(htCurrentInfo);
+
+
+                    }
                     // To delete file
                     if (Is_Delete && File.Exists(objCmd.FilePath))
                     {
@@ -313,6 +321,7 @@ namespace AutocadPlugIn.UI_Forms
                 if (Is_Save)
                 {
                     ShowMessage.InfoMess("Save operation successfully completed.");
+                    this.Close();
                     return;
                 }
                 else
@@ -497,6 +506,11 @@ namespace AutocadPlugIn.UI_Forms
                     selectedTreeNode.Cells["realtyname"].ReadOnly = true;
                     selectedTreeNode.Cells["projectid"].ReadOnly = true;
                     selectedTreeNode.Cells["realtyid"].ReadOnly = true;
+                    if (e.RowIndex == 0)
+                    {
+                        selectedTreeNode.Cells["projectname"].ReadOnly = false;
+                        selectedTreeNode.Cells["projectid"].ReadOnly = false;
+                    }
                     String[] strarry = new String[5];
                     String DrawingInformation1;
                     String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();
@@ -513,8 +527,8 @@ namespace AutocadPlugIn.UI_Forms
                             + selectedTreeNode.Cells["Layouts"].Value.ToString();
                     htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);
 
-                    selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
-                    selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;
+                    //selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
+                    //selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;
                 }
                 else
                 {
