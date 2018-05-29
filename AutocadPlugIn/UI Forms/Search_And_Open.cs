@@ -235,7 +235,7 @@ namespace AutocadPlugIn.UI_Forms
                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                "/AutocadFiles/searchAutocadFiles",
                DataFormat.Json,
-               JsonConvert.DeserializeObject(JsonConvert.SerializeObject(searchCriteria, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })),
+               searchCriteria,
                true,
                urlParameters);
 
