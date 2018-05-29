@@ -236,11 +236,18 @@ namespace AutocadPlugIn.UI_Forms
                 };
             }
 
+            object dataToPost = null;
+
+            if (searchCriteria != null)
+            {
+                dataToPost = JsonConvert.SerializeObject(searchCriteria, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            }
+
             RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                "/AutocadFiles/searchAutocadFiles",
                DataFormat.Json,
-               JsonConvert.SerializeObject(searchCriteria, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+               dataToPost,
                true,
                urlParameters);
 
