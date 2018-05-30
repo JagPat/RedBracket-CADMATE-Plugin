@@ -704,8 +704,8 @@ namespace AutocadPlugIn
             //AutocadPlugIn.UI_Forms.frmLock lockForm= new AutocadPlugIn.UI_Forms.frmLock();
             //lockForm.ShowDialog();
 
-                 //frmLock obj = new  frmLock();
-                frmRefresh obj = new frmRefresh();
+                  frmLock obj = new  frmLock();
+               // frmRefresh obj = new frmRefresh();
                 obj.ShowDialog();
 
             }
