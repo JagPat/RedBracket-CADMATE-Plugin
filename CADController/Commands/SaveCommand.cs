@@ -37,6 +37,27 @@ namespace CADController.Commands
             get { return this.drawingInfo; }
             set { this.drawingInfo = value; }
         }
+
+        private String fileStatus;
+
+        public String FileStatus
+        {
+            get { return this.fileStatus; }
+            set { this.fileStatus = value; }
+        }
+        private String fileType;
+        public String FileType
+        {
+            get { return this.fileType; }
+            set { this.fileType = value; }
+        }
+
+        private String fileDescription;
+        public String FileDescription
+        {
+            get { return this.fileDescription; }
+            set { this.fileDescription = value; }
+        }
     }
    
     }

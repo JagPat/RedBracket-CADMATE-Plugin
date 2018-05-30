@@ -11,13 +11,13 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Web.Script.Serialization;
- 
+
 
 namespace RedBracketConnector
 {
     public class RBConnector
     {
-        
+
         public void SaveObject(string FilePath)
         {
             try
@@ -40,7 +40,7 @@ namespace RedBracketConnector
             }
         }
 
-        public bool SaveObject(ref List<PLMObject> plmobjs, string FilePath )
+        public bool SaveObject(ref List<PLMObject> plmobjs, string FilePath)
         {
             try
             {
@@ -62,23 +62,31 @@ namespace RedBracketConnector
                     //    objSFC.BRDocument = binaryReader;
                     //}
 
-                    //Defining parameters
-                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
 
-                    List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
-                    urlParameters.Add(L);
 
+                    RestResponse restResponse;
                     //service calling to upload document.
-                    RestResponse restResponse = (RestResponse)ServiceHelper.SaveObject(
-                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        "/AutocadFiles/uploadFileService", obj.FilePath,
-                        "test.dwg", true, new List<KeyValuePair<string, string>> {
-                            new KeyValuePair<string, string>("project", obj.ObjectProjectId)
-                });
 
-                    SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
-
-                    var saveObjectResponseValueObject = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
+                    if (obj.ObjectId.Trim().Length > 0)
+                    {
+                          restResponse = (RestResponse)ServiceHelper.UpdateObject(
+                     Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                     "/AutocadFiles/updateFile", obj.FilePath,
+                     "test.dwg", true, new List<KeyValuePair<string, string>> {
+                         new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                           new KeyValuePair<string, string>("fileName", obj.ObjectName),
+                           new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                            new KeyValuePair<string, string>("fileType", obj.Classification),
+                            new KeyValuePair<string, string>("fileDescription", obj.ObjectDescription) });
+                    }
+                    else
+                    {
+                          restResponse = (RestResponse)ServiceHelper.SaveObject(
+                     Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                     "/AutocadFiles/uploadFileService", obj.FilePath,
+                     "test.dwg", true, new List<KeyValuePair<string, string>> {
+                            new KeyValuePair<string, string>("project", obj.ObjectProjectId) });
+                 }
 
                     //checking if service call was successful or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
@@ -86,44 +94,76 @@ namespace RedBracketConnector
                         ShowMessage.ErrorMess("Some error occurred while uploading file.");
                         return false;
                     }
-                    else
+                    else if (restResponse.Content.Trim().Length>0)
                     {
-                        var Drawing = saveObjectResponseValueObject;
-                        // Hashtable DrawingProperty = new Hashtable();
 
-                        //DrawingProperty.Add("DrawingId", Drawing.id);
-                        //DrawingProperty.Add("DrawingName", Drawing.name);
-                        //DrawingProperty.Add("Classification",  "123");
-                        //DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
-                        //DrawingProperty.Add("DrawingState", Drawing.status.statusname);
-                        //DrawingProperty.Add("Revision", Drawing.versionno);
-                        //DrawingProperty.Add("LockStatus", Drawing.filelock);
-                        //DrawingProperty.Add("Generation", "123");
-                        //DrawingProperty.Add("Type", "123");
-                        //DrawingProperty.Add("ProjectName", Drawing.projectname);
-                        //DrawingProperty.Add("ProjectId", "123");
-                        //DrawingProperty.Add("CreatedOn", Drawing.updatedon);
-                        //DrawingProperty.Add("CreatedBy", Drawing.createdby);
-                        //DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
-                        //DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
 
-                        obj.ObjectId = Drawing.id;
-                        obj.ObjectName = Drawing.name;
-                        obj.Classification = "123";
-                        obj.ObjectState = Drawing.status.statusname;
-                        obj.ObjectRevision = Drawing.versionno;
-                        obj.LockStatus =Convert.ToString(Drawing.filelock);
-                        obj.ObjectGeneration = "123";
-                        obj.ItemType = Drawing.coreType.name;
-                        obj.ObjectProjectName = Drawing.projectname;
-                        obj.ObjectProjectId = "123";
-                        obj.ObjectCreatedById = Drawing.createdby;
-                        obj.ObjectCreatedOn = Drawing.created0n;
-                        obj.ObjectModifiedById = Drawing.updatedby;
-                        obj.ObjectModifiedOn = Drawing.updatedon;
-                        obj.ObjectNumber = Drawing.fileNo;
-                      
+                        if (obj.ObjectId.Trim().Length == 0)
+                        {
+                            
+
+                            SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
+                            var saveObjectResponseValueObject = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
+
+                            var Drawing = saveObjectResponseValueObject;
+                            // Hashtable DrawingProperty = new Hashtable();
+
+                            //DrawingProperty.Add("DrawingId", Drawing.id);
+                            //DrawingProperty.Add("DrawingName", Drawing.name);
+                            //DrawingProperty.Add("Classification",  "123");
+                            //DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+                            //DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+                            //DrawingProperty.Add("Revision", Drawing.versionno);
+                            //DrawingProperty.Add("LockStatus", Drawing.filelock);
+                            //DrawingProperty.Add("Generation", "123");
+                            //DrawingProperty.Add("Type", "123");
+                            //DrawingProperty.Add("ProjectName", Drawing.projectname);
+                            //DrawingProperty.Add("ProjectId", "123");
+                            //DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                            //DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                            //DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                            //DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+
+                            obj.ObjectId = Drawing.id;
+                            obj.ObjectName = Drawing.name;
+                            obj.Classification = "123";
+                            obj.ObjectState = Drawing.status.statusname;
+                            obj.ObjectRevision = Drawing.versionno;
+                            obj.LockStatus = Convert.ToString(Drawing.filelock);
+                            obj.ObjectGeneration = "123";
+                            obj.ItemType = Drawing.coreType.name;
+                            obj.ObjectProjectName = Drawing.projectname;
+                            obj.ObjectProjectId = "123";
+                            obj.ObjectCreatedById = Drawing.createdby;
+                            obj.ObjectCreatedOn = Drawing.created0n;
+                            obj.ObjectModifiedById = Drawing.updatedby;
+                            obj.ObjectModifiedOn = Drawing.updatedon;
+                            obj.ObjectNumber = Drawing.fileNo;
+
+                        }
+                        else
+                        {
+                            var Drawing = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+
+                            obj.ObjectId = Drawing.id;
+                            obj.ObjectName = Drawing.name;
+                            obj.Classification = Drawing.coreType.name;
+                            obj.ObjectState = Drawing.status.statusname;
+                            obj.ObjectRevision = Drawing.versionno;
+                            obj.LockStatus = Convert.ToString(Drawing.filelock);
+                            obj.ObjectGeneration = "123";
+                            obj.ItemType = Drawing.coreType.name;
+                            obj.ObjectProjectName = Drawing.projectname;
+                            obj.ObjectProjectId = "123";
+                            obj.ObjectCreatedById = Drawing.createdby;
+                            obj.ObjectCreatedOn = Drawing.updatedon;
+                            obj.ObjectModifiedById = Drawing.updatedby;
+                            obj.ObjectModifiedOn = Drawing.updatedon;
+                            obj.ObjectNumber = Drawing.fileNo;
+                        }
                     }
+                   
+
 
                     return true;
                 }
@@ -593,8 +633,8 @@ namespace RedBracketConnector
                 foreach (PLMObject obj in plmobjs)
                 {
 
-                     KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId",obj.ObjectId);
-                   // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
+                    KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", obj.ObjectId);
+                    // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
 
                     List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
                     urlParameters.Add(L);
@@ -1050,6 +1090,77 @@ namespace RedBracketConnector
                 throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
             }
 
+        }
+
+        public string DownloadOpenDocument(string fileId, string checkoutPath, ref Hashtable DrawingProperty)
+        {
+            try
+            {
+                //fileId = "11760c31-d3fb-4acb-9675-551915493fd5";
+                //RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
+                //    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                //    "/AutocadFiles/downloadAutocadSingleFile",
+                //    true,
+                //    new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", fileId) });
+
+
+                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
+           Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+           "/AutocadFiles/downloadAutocadSingleFile",
+           false,
+           new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",fileId ) ,
+        new KeyValuePair<string, string>("userName", "attune.mule@yopmail.com")
+
+           });
+                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    RBConnector objRBC = new RBConnector();
+                    ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(fileId);
+
+
+                    DrawingProperty.Add("DrawingId", Drawing.id);
+                    DrawingProperty.Add("DrawingName", Drawing.name);
+                    DrawingProperty.Add("Classification", "123");
+                    DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+                    DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+                    DrawingProperty.Add("Revision", Drawing.versionno);
+                    DrawingProperty.Add("LockStatus", Drawing.filelock);
+                    DrawingProperty.Add("Generation", "123");
+                    DrawingProperty.Add("Type", "123");
+                    DrawingProperty.Add("ProjectName", Drawing.projectinfo);
+                    DrawingProperty.Add("ProjectId", "123");
+                    DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                    DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                    DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                    DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+                    //DrawingProperty.Add("isroot", true);
+                    //DrawingProperty.Add("sourceid","");
+                    //DrawingProperty.Add("Layouts","");
+
+                    // string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
+                    string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + Drawing.name);
+
+
+                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
+                    {
+                        binaryWriter.Write(restResponse.RawBytes);
+                        //binaryWriter.Flush();
+                        //binaryWriter.Close();
+                        //binaryWriter.Dispose();
+                    }
+                    return filePathName;
+                    // cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                }
+                else
+                {
+                    ShowMessage.ErrorMess("Some error occures while retrieving file.");
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return "";
         }
     }
     public class SaveFileCommand

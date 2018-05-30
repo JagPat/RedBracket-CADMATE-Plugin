@@ -59,6 +59,7 @@ namespace AutocadPlugIn
                         foreach (DictionaryEntry entry in currentDocumentProperties)
                         {
                             DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value.ToString());
+                           
                         }
                         Db.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
                         aTran.Commit();

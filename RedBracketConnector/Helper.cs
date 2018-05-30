@@ -170,6 +170,25 @@ namespace RedBracketConnector
 
             return RValue;
         }
+        public static string FindIDInCMB(DataTable dt, string ValueMember, string Value, string DisplayMember)
+        {
+            string RValue = "";
+            try
+            {
+                DataRow[] dr = dt.Select(DisplayMember + " = '" + Value + "'");
+
+                if (dr.Length > 0)
+                {
+                    RValue = Convert.ToString(dr[0][ValueMember]);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+            return RValue;
+        }
 
         /// <summary>
         /// Gets the file bytes array to save to the server.
@@ -227,5 +246,7 @@ namespace RedBracketConnector
             return DrawingProperty;
 
         }
+
+
     }
 }

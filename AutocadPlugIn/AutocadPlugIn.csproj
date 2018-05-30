@@ -130,6 +130,12 @@
     <Compile Include="UI Forms\frmLock.Designer.cs">
       <DependentUpon>frmLock.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI Forms\frmRefresh.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI Forms\frmRefresh.Designer.cs">
+      <DependentUpon>frmRefresh.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI Forms\GetDrawinDetail.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -203,6 +209,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmLock.resx">
       <DependentUpon>frmLock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI Forms\frmRefresh.resx">
+      <DependentUpon>frmRefresh.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\GetDrawinDetail.resx">
       <DependentUpon>GetDrawinDetail.cs</DependentUpon>

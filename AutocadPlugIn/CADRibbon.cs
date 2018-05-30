@@ -704,7 +704,8 @@ namespace AutocadPlugIn
             //AutocadPlugIn.UI_Forms.frmLock lockForm= new AutocadPlugIn.UI_Forms.frmLock();
             //lockForm.ShowDialog();
 
-                 frmLock obj = new  frmLock();
+                 //frmLock obj = new  frmLock();
+                frmRefresh obj = new frmRefresh();
                 obj.ShowDialog();
 
             }
@@ -807,6 +808,93 @@ namespace AutocadPlugIn
         }
 
 
+    }
+
+    public class Refresh : System.Windows.Input.ICommand
+    {
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            //PromptStringOptions pso = new PromptStringOptions("\nEnter path to root drawing file: ");
+            //pso.AllowSpaces = true;
+            // PromptResult pr = ed.GetString(pso);
+
+            if (!File.Exists(doc.Name))
+            {
+                MessageBox.Show("Please Save Document on Local Computer", "Information");
+                return;
+            }
+            try
+            {
+                DatabaseSummaryInfo dbsi = db.SummaryInfo;
+                string S= dbsi.ToString();
+
+            }
+            catch (System.Exception ex)
+            {
+                ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
+            }
+
+            /* try
+              {
+              Autodesk.AutoCAD.ApplicationServices.Document objActivedoc = acadApp.DocumentManager.MdiActiveDocument;
+              CADController.Commands.SaveCommand cmdSave = new SaveCommand();
+
+                  CADManger objDocMgr = new CADManger();
+                  SaveCommand objcmd = new SaveCommand();
+                  Hashtable htAttributes = new Hashtable();
+                  BaseController controller = new SaveController();
+
+                  string path = objActivedoc.Name;
+
+                  if (!path.Contains("\\"))
+                  {
+                      System.Windows.MessageBox.Show("Please save document first on local computer.");
+                      return;
+                  }
+
+                  CADManger cadManager = new CADManger();
+                  Hashtable drawingAttrs = new Hashtable();
+                  drawingAttrs = (Hashtable)cadManager.GetAttributes();
+
+
+                  //cmdSave.DrawingInformation.ItemType = drawingAttrs["type"].ToString();
+                  //cmdSave.DrawingInformation.ObjectId = drawingAttrs["documentid"].ToString();
+                  //cmdSave.DrawingInformation.FilePath = path;
+                  //controller.Execute(cmdSave);
+
+                 /* if (htAttributes.Contains(PresentationManager.documentProperties.DocumentId.ToString()))
+                      objDocMgr.UpdateAttributes(controller.htDocumentProperty);
+                  else
+                      objDocMgr.SetAttributes(controller.htDocumentProperty);
+                  SetControl_After_Save();
+                  objDocMgr.CloseDocument(objDocMgr.GetActiveDocument(), false, System.Reflection.Missing.Value, System.Reflection.Missing.Value);
+
+                  MessageBox.Show("Document Saved Successfully");
+
+               */
+            /*  if (controller.errorString != null)
+               {
+                   MessageBox.Show(controller.errorString.ToString());
+                   return;
+               }
+               MessageBox.Show("Document Saved Successfully");
+           }
+           catch (System.Exception ex)
+           {
+               MessageBox.Show("Error is ::" + ex.Message);
+           }*/
+        }
     }
 
     public class Images

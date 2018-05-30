@@ -72,7 +72,7 @@ namespace AutocadPlugIn.UI_Forms
             #region CreateTreeGrid
 
             #region filetype
-            Helper.FIllCMB(cadtype, objRBC.GetFIleType(), "name", "name", true);
+            Helper.FIllCMB(cadtype, objRBC.GetFIleType(), "name", "id", true);
 
             #endregion filetype
             #region filestatus
@@ -82,7 +82,7 @@ namespace AutocadPlugIn.UI_Forms
             //State.DisplayMember = "statusname";
             //State.ValueMember = "statusname";
             // objRBC.GetFIleStatus(CDState,   "name", "name", true);
-            Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "statusname", true);
+            Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true);
             #endregion filestatus
 
             Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "name", "id", true);
@@ -279,10 +279,10 @@ namespace AutocadPlugIn.UI_Forms
 
                 ICollection keys = htNewDrawings.Keys;
                 IEnumerator key = keys.GetEnumerator();
-                while (key.MoveNext())
-                {
-                    objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
-                }
+                //while (key.MoveNext())
+                //{
+                //    objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
+                //}
 
                 foreach (String str in drawings)
                 {
@@ -301,6 +301,12 @@ namespace AutocadPlugIn.UI_Forms
                     objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
                     // Is_Save :needs to make changes for multiple file
+                    DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["State"];
+                   System.Data.DataTable dt = (System.Data.DataTable)cell.DataSource;
+                   
+                    objCmd.FileStatus = Convert.ToString(currentTreeGrdiNode.Cells["State"].Value); 
+                    objCmd.FileType = Convert.ToString(currentTreeGrdiNode.Cells["cadtype"].Value);
+                    objCmd.FileDescription = CADDescription.Text;
                     Is_Save = objController.ExecuteSave(objCmd);
 
                     if (Is_Save)

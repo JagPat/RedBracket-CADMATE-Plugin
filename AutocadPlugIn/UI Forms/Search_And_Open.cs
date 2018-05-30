@@ -917,7 +917,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                 fileId = "11760c31-d3fb-4acb-9675-551915493fd5";
+              //   fileId = "11760c31-d3fb-4acb-9675-551915493fd5";
                 //RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
                 //    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                 //    "/AutocadFiles/downloadAutocadSingleFile",
@@ -930,7 +930,7 @@ namespace AutocadPlugIn.UI_Forms
            "/AutocadFiles/downloadAutocadSingleFile",
            false,
            new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",fileId ) ,
-        new KeyValuePair<string, string>("userName", "attune.mule@yopmail.com")
+        new KeyValuePair<string, string>("userName", Helper.UserName)
 
            });
                 if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
@@ -958,8 +958,12 @@ namespace AutocadPlugIn.UI_Forms
                     //DrawingProperty.Add("sourceid","");
                     //DrawingProperty.Add("Layouts","");
 
-                    string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
-                    //  string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
+                    // string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
+                    if (fileName.Substring(0, Helper.FileNamePrefix.Length) == Helper.FileNamePrefix)
+                    {
+                        fileName = fileName.Substring(Helper.FileNamePrefix.Length);
+                    }
+                    string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
 
 
                     using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))

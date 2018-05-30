@@ -111,6 +111,7 @@ namespace RedBracketConnector
             try
             {
                 //var restClient = new RestClient("https://test.redbracket.in:8090");
+                
                 var restClient = new RestClient(baseAddress);
                 int count = 0;
                 if (addUserNametoUrl)
@@ -122,6 +123,7 @@ namespace RedBracketConnector
                 {
                     foreach (KeyValuePair<string, string> urlParameter in urlParameters)
                     {
+                        
                         if (count == 0 && !addUserNametoUrl)
                         {
                             relevantAddress += ("?" + urlParameter.Key + "=" + urlParameter.Value);
@@ -139,6 +141,60 @@ namespace RedBracketConnector
 
                 fileName = Path.GetFileName(filePath);
                 if(fileName.Substring(0,Helper.FileNamePrefix.Length)==Helper.FileNamePrefix)
+                {
+                    fileName = fileName.Substring(Helper.FileNamePrefix.Length);
+                }
+                //request.AddFile("files", File.ReadAllBytes(filePath), fileName);
+                request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
+
+                return restClient.Execute(request);
+            }
+            catch (WebException webException)
+            {
+                throw new WebException("Invalid response from the server.", webException.InnerException);
+            }
+        }
+
+
+        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath, string fileName, bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
+        {
+            try
+            {
+                //var restClient = new RestClient("https://test.redbracket.in:8090");
+                string FIleid = "";
+                var restClient = new RestClient(baseAddress);
+                int count = 0;
+                if (addUserNametoUrl)
+                {
+                    relevantAddress += "?userName=" + Helper.GetValueRegistry("LoginSettings", "UserName").ToString();
+                }
+
+                if (urlParameters != null)
+                {
+                    foreach (KeyValuePair<string, string> urlParameter in urlParameters)
+                    {
+                        if (urlParameter.Key == "")
+                        {
+                            FIleid = urlParameter.Value;
+                        }
+
+                        if (count == 0 && !addUserNametoUrl)
+                        {
+                            relevantAddress += ("?" + urlParameter.Key + "=" + urlParameter.Value);
+                        }
+                        else
+                        {
+                            relevantAddress += ("&" + urlParameter.Key + "=" + urlParameter.Value);
+                        }
+
+                        count++;
+                    }
+                }
+
+                var request = new RestRequest(relevantAddress, Method.POST);
+
+                fileName = Path.GetFileName(filePath);
+                if (fileName.Substring(0, Helper.FileNamePrefix.Length) == Helper.FileNamePrefix)
                 {
                     fileName = fileName.Substring(Helper.FileNamePrefix.Length);
                 }

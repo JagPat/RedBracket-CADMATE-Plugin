@@ -23,6 +23,7 @@ namespace CADController.Controllers
         {
             try
             {
+                dtDrawingProperty = new DataTable();
                 bool IsNewStructure = false;
                 bool IsCreateNewRevision = false;
                 String ProjectName = "";
@@ -68,6 +69,15 @@ namespace CADController.Controllers
                     String[] plmobjInfo = new String[15];
                     plmobjInfo = str.Split(';');
                     plmObj.ObjectId = plmobjInfo[0];
+                    string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
+                    if (fileName.Substring(0, Helper.FileNamePrefix.Length) == Helper.FileNamePrefix)
+                    {
+                        fileName = fileName.Substring(Helper.FileNamePrefix.Length);
+                    }
+                    plmObj.ObjectName = fileName;
+                    plmObj.ObjectStatus = cmd.FileStatus;
+                    plmObj.Classification = cmd.FileType;
+                    plmObj.ObjectDescription = cmd.FileDescription;
                     plmObj.ItemType = plmobjInfo[1];
                     plmObj.FilePath = plmobjInfo[2];
                     plmObj.IsManualVersion = false;
