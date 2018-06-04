@@ -39,19 +39,47 @@ namespace AutocadPlugIn.UI_Forms
             try
             {
                 //Geting File info form summuryinfo
-                var dbsi = ObjectToDictionary(db.SummaryInfo.ToString());
+               
+                //Dictionary<string, object> data = V
+                //                .OfType<DictionaryEntry>()
+                //                .Select(i => new { Key = i.Key.ToString(), value = i.Value })
+                //                .ToDictionary(i => i.Key, i => i.value);
+
+            
+
+                //var dbsi = ObjectToDictionary(db.SummaryInfo.ToString());
 
                 //Checking if file is in redbracket or not;
                 string drawingid = "", updatedon = "", projectname = "";
                 try
                 {
-                    drawingid = dbsi["drawingid"];
-                    updatedon = dbsi["modifiedon"];
-                    projectname = dbsi["projectname"];
+                    var dbsi = db.SummaryInfo.CustomProperties;
+                    while(dbsi.MoveNext())
+                    {
+                        if(Convert.ToString(dbsi.Key) =="drawingid")
+                        {
+                            drawingid =Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "modifiedon")
+                        {
+                            updatedon = Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "projectname")
+                        {
+                            projectname = Convert.ToString(dbsi.Value);
+                        }
+                    }
+                    //drawingid = dbsi["drawingid"];
+                    //updatedon = dbsi["modifiedon"];
+                    //projectname = dbsi["projectname"];
                 }
                 catch (Exception E)
                 {
 
+                }
+                if(drawingid.Trim().Length==0 || updatedon.Trim().Length == 0)
+                {
+                    return;
                 }
                 RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
                 RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(drawingid);

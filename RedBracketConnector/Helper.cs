@@ -20,6 +20,7 @@ namespace RedBracketConnector
         public static string LastName = "User";
         public static string UserID = "1";
         public static string FileNamePrefix = "RBDF-";
+        public static bool IsEventAssign = false;
         public static object GetValueRegistry(string subKeyName, string keyName)
         {
             // Read the keys from the user registry and load it to the UI.
@@ -93,11 +94,20 @@ namespace RedBracketConnector
         {
             try
             {
+                
                 if (dt == null)
                 {
                     dt.Columns.Add("id");
                     dt.Columns.Add(DisplayMember);
 
+                }
+                if (!dt.Columns.Contains("id"))
+                {
+                    dt.Columns.Add("id");
+                }
+                if (!dt.Columns.Contains(DisplayMember))
+                {
+                    dt.Columns.Add(DisplayMember);
                 }
                 dt.Columns.Add("Rank");
 

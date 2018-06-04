@@ -1,24 +1,17 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Windows.Media.Imaging;
-using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
-using Autodesk.Windows;
-using Autodesk.AutoCAD.Runtime;
+﻿using AutocadPlugIn.UI_Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using acadApp = Autodesk.AutoCAD.ApplicationServices.Application;
-using System.ComponentModel;
-using System.Windows.Forms;
+using Autodesk.AutoCAD.Runtime;
+using Autodesk.Windows;
 using CADController.Commands;
 using CADController.Controllers;
-using AutocadPlugIn.UI_Forms;
-using CADController;
-
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Windows.Forms;
+using System.Windows.Media.Imaging;
 namespace AutocadPlugIn
 {
     public class CADRibbon
@@ -80,11 +73,98 @@ namespace AutocadPlugIn
         public RibbonButton pan7button1 = new RibbonButton();
         public RibbonButton Btn_DrawingInfo = new RibbonButton();
 
+
+
+
+        [CommandMethod("AddDocEvent")]
+        //[CommandMethod("AddDwgEvent")]
+        [CommandMethod("StartEventHandling")]
+        public void AddDocEvent()
+        {
+            // Get the current document
+            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            //  var v = Autodesk.AutoCAD.ApplicationServices.Application.MainWindow.
+
+           // acDoc.SendStringToExecute("EXPORT", false, false, false);
+
+            acDoc.BeginDocumentClose += new DocumentBeginCloseEventHandler(docBeginDocClose);
+            acDoc.EndDwgOpen += new DrawingOpenEventHandler(docEndDwgOpen);
+
+            acDoc.BeginDwgOpen += new DrawingOpenEventHandler(docBeginDwgOpen);
+            acDoc.LayoutSwitched += new LayoutSwitchedEventHandler(docLayoutSwitched);
+
+  
+
+            
+        }
+        public void docLayoutSwitched(object senderObj,
+                           LayoutSwitchedEventArgs docBegClsEvtArgs)
+        {
+            // Display a message box prompting to continue closing the document
+            //if (System.Windows.Forms.MessageBox.Show(
+            //                     "The document is about to be closed." +
+            //                     "\nDo you want to continue?",
+            //                     "Close Document",
+            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
+            //                     System.Windows.Forms.DialogResult.No)
+            //{
+            //    docBegClsEvtArgs.Veto();
+            //}
+        }
+        public void docEndDwgOpen(object senderObj,
+                             DrawingOpenEventArgs docBegClsEvtArgs)
+        {
+            // Display a message box prompting to continue closing the document
+            //if (System.Windows.Forms.MessageBox.Show(
+            //                     "The document is about to be closed." +
+            //                     "\nDo you want to continue?",
+            //                     "Close Document",
+            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
+            //                     System.Windows.Forms.DialogResult.No)
+            //{
+            //    docBegClsEvtArgs.Veto();
+            //}
+        }
+        public void docBeginDwgOpen(object senderObj,
+                             DrawingOpenEventArgs docBegClsEvtArgs)
+        {
+            // Display a message box prompting to continue closing the document
+            //if (System.Windows.Forms.MessageBox.Show(
+            //                     "The document is about to be closed." +
+            //                     "\nDo you want to continue?",
+            //                     "Close Document",
+            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
+            //                     System.Windows.Forms.DialogResult.No)
+            //{
+            //    docBegClsEvtArgs.Veto();
+            //}
+        }
+        public void docBeginDocClose(object senderObj,
+                             DocumentBeginCloseEventArgs docBegClsEvtArgs)
+        {
+            // Display a message box prompting to continue closing the document
+            if (System.Windows.Forms.MessageBox.Show(
+                                 "The document is about to be closed." +
+                                 "\nDo you want to continue?",
+                                 "Close Document",
+                                 System.Windows.Forms.MessageBoxButtons.YesNo) ==
+                                 System.Windows.Forms.DialogResult.No)
+            {
+                docBegClsEvtArgs.Veto();
+            }
+        }
+
         //AutoCAD Command
 
         [CommandMethod("MyRibbon")]
         public void MyRibbon()
         {
+            if (!RedBracketConnector.Helper.IsEventAssign)
+            {
+                AddDocEvent();
+                //RedBracketConnector.Helper.IsEventAssign = true;
+            }
+
             Tab.Title = "Redbracket";
             Tab.Id = "RibbonSample_TAB_ID";
 
@@ -347,217 +427,217 @@ namespace AutocadPlugIn
     }
 
     public class Disconnect : System.Windows.Input.ICommand
-         {
-            public bool CanExecute(object parameter)
-            {
-                return true;
-            }
+    {
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
 
-            public event EventHandler CanExecuteChanged;
-            #region LogOut
-            public void Execute(object parameter)
+        public event EventHandler CanExecuteChanged;
+        #region LogOut
+        public void Execute(object parameter)
+        {
+            try
             {
-                try
+                if (MessageBox.Show("Do you want to disconnect from Redbracket?", "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    if (MessageBox.Show("Do you want to disconnect from Redbracket?", "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                    DisconnectCommand objCmd = new DisconnectCommand();
+                    BaseController controller = new DisconnectController();
+                    controller.Execute(objCmd);
+
+                    if (controller.errorString != null)
                     {
-                       DisconnectCommand objCmd = new DisconnectCommand();
-                        BaseController controller = new DisconnectController();
-                        controller.Execute(objCmd);
-
-                        if (controller.errorString != null)
-                        {
-                            MessageBox.Show(controller.errorString);
-                            return;
-                        }
-
-                        CADRibbon cr = new CADRibbon();
-
-
-                        CADRibbon.connect = false;
-                        cr.browseDEnable = false;
-                        cr.createDEnable = false;
-                        cr.browseBEnable = false;
-                        cr.createBEnable = false;
-                        cr.LockEnable = false;
-                        cr.UnlockEnable = false;
-                        cr.SaveEnable = false;
-                        cr.DrawingInfoEnable = false;
-                        cr.MyRibbon();
-                      //  MessageBox.Show("Logged Out Successfully");
+                        MessageBox.Show(controller.errorString);
+                        return;
                     }
 
-                }
-                catch (System.Exception ex)
-                {
-                    System.Windows.Forms.MessageBox.Show("Logout Fail due to " + ex);
-                    return;
+                    CADRibbon cr = new CADRibbon();
+
+
+                    CADRibbon.connect = false;
+                    cr.browseDEnable = false;
+                    cr.createDEnable = false;
+                    cr.browseBEnable = false;
+                    cr.createBEnable = false;
+                    cr.LockEnable = false;
+                    cr.UnlockEnable = false;
+                    cr.SaveEnable = false;
+                    cr.DrawingInfoEnable = false;
+                    cr.MyRibbon();
+                    //  MessageBox.Show("Logged Out Successfully");
                 }
 
             }
-            #endregion LogOut
-         }
+            catch (System.Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Logout Fail due to " + ex);
+                return;
+            }
+
+        }
+        #endregion LogOut
+    }
 
     public class BrowseDrawing : System.Windows.Input.ICommand
+    {
+        public bool CanExecute(object parameter)
         {
-            public bool CanExecute(object parameter)
-            {
-                return true;
-            }
+            return true;
+        }
 
-            public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged;
 
-            public void Execute(object parameter)
+        public void Execute(object parameter)
+        {
+            try
             {
-                try
-                {
                 AutocadPlugIn.UI_Forms.Search_And_Open browseDrawing = new AutocadPlugIn.UI_Forms.Search_And_Open();
                 browseDrawing.ShowDialog();
-                }
-                catch (System.Exception ex)
-                {
-                    System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex.Message);
-                    return;
             }
+            catch (System.Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex.Message);
+                return;
             }
         }
+    }
 
     public class DrawingUsingTemplate : System.Windows.Input.ICommand
+    {
+        public bool CanExecute(object parameter)
         {
-            public bool CanExecute(object parameter)
-            {
-                return true;
-            }
-
-            public event EventHandler CanExecuteChanged;
-
-            public void Execute(object parameter)
-            {
-
-
-            }
+            return true;
         }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+
+
+        }
+    }
 
     public class Save : System.Windows.Input.ICommand
+    {
+        public bool CanExecute(object parameter)
         {
-            public bool CanExecute(object parameter)
-            {
-                return true;
-            }
-
-            public event EventHandler CanExecuteChanged;
-
-            public void Execute(object parameter)
-            {
-                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-
-                Database db = doc.Database;
-                Editor ed = doc.Editor;
-
-                //PromptStringOptions pso = new PromptStringOptions("\nEnter path to root drawing file: ");
-                //pso.AllowSpaces = true;
-               // PromptResult pr = ed.GetString(pso);
-
-                if (!File.Exists(doc.Name))
-                {
-                    MessageBox.Show("Please Save Document on Local Computer", "Information");
-                    return;
-                }
-                try
-                {
-                    AutocadPlugIn.UI_Forms.Save_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.Save_Active_Drawings();
-                    //Save_Active_Drawings objSave = new Save_Active_Drawings();
-                    objSave.ShowDialog();
-
-                 }
-                catch (System.Exception ex)
-                {
-                    ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
-                }
-
-              /* try
-                {
-                Autodesk.AutoCAD.ApplicationServices.Document objActivedoc = acadApp.DocumentManager.MdiActiveDocument;
-                CADController.Commands.SaveCommand cmdSave = new SaveCommand();
-
-                    CADManger objDocMgr = new CADManger();
-                    SaveCommand objcmd = new SaveCommand();
-                    Hashtable htAttributes = new Hashtable();
-                    BaseController controller = new SaveController();
-
-                    string path = objActivedoc.Name;
-
-                    if (!path.Contains("\\"))
-                    {
-                        System.Windows.MessageBox.Show("Please save document first on local computer.");
-                        return;
-                    }
-
-                    CADManger cadManager = new CADManger();
-                    Hashtable drawingAttrs = new Hashtable();
-                    drawingAttrs = (Hashtable)cadManager.GetAttributes();
-
-
-                    //cmdSave.DrawingInformation.ItemType = drawingAttrs["type"].ToString();
-                    //cmdSave.DrawingInformation.ObjectId = drawingAttrs["documentid"].ToString();
-                    //cmdSave.DrawingInformation.FilePath = path;
-                    //controller.Execute(cmdSave);
-
-                   /* if (htAttributes.Contains(PresentationManager.documentProperties.DocumentId.ToString()))
-                        objDocMgr.UpdateAttributes(controller.htDocumentProperty);
-                    else
-                        objDocMgr.SetAttributes(controller.htDocumentProperty);
-                    SetControl_After_Save();
-                    objDocMgr.CloseDocument(objDocMgr.GetActiveDocument(), false, System.Reflection.Missing.Value, System.Reflection.Missing.Value);
-
-                    MessageBox.Show("Document Saved Successfully");
-
-                 */
-                 /*  if (controller.errorString != null)
-                    {
-                        MessageBox.Show(controller.errorString.ToString());
-                        return;
-                    }
-                    MessageBox.Show("Document Saved Successfully");
-                }
-                catch (System.Exception ex)
-                {
-                    MessageBox.Show("Error is ::" + ex.Message);
-                }*/
-            }
+            return true;
         }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+
+            //PromptStringOptions pso = new PromptStringOptions("\nEnter path to root drawing file: ");
+            //pso.AllowSpaces = true;
+            // PromptResult pr = ed.GetString(pso);
+
+            if (!File.Exists(doc.Name))
+            {
+                MessageBox.Show("Please Save Document on Local Computer", "Information");
+                return;
+            }
+            try
+            {
+                AutocadPlugIn.UI_Forms.Save_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.Save_Active_Drawings();
+                //Save_Active_Drawings objSave = new Save_Active_Drawings();
+                objSave.ShowDialog();
+
+            }
+            catch (System.Exception ex)
+            {
+                ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
+            }
+
+            /* try
+              {
+              Autodesk.AutoCAD.ApplicationServices.Document objActivedoc = acadApp.DocumentManager.MdiActiveDocument;
+              CADController.Commands.SaveCommand cmdSave = new SaveCommand();
+
+                  CADManger objDocMgr = new CADManger();
+                  SaveCommand objcmd = new SaveCommand();
+                  Hashtable htAttributes = new Hashtable();
+                  BaseController controller = new SaveController();
+
+                  string path = objActivedoc.Name;
+
+                  if (!path.Contains("\\"))
+                  {
+                      System.Windows.MessageBox.Show("Please save document first on local computer.");
+                      return;
+                  }
+
+                  CADManger cadManager = new CADManger();
+                  Hashtable drawingAttrs = new Hashtable();
+                  drawingAttrs = (Hashtable)cadManager.GetAttributes();
+
+
+                  //cmdSave.DrawingInformation.ItemType = drawingAttrs["type"].ToString();
+                  //cmdSave.DrawingInformation.ObjectId = drawingAttrs["documentid"].ToString();
+                  //cmdSave.DrawingInformation.FilePath = path;
+                  //controller.Execute(cmdSave);
+
+                 /* if (htAttributes.Contains(PresentationManager.documentProperties.DocumentId.ToString()))
+                      objDocMgr.UpdateAttributes(controller.htDocumentProperty);
+                  else
+                      objDocMgr.SetAttributes(controller.htDocumentProperty);
+                  SetControl_After_Save();
+                  objDocMgr.CloseDocument(objDocMgr.GetActiveDocument(), false, System.Reflection.Missing.Value, System.Reflection.Missing.Value);
+
+                  MessageBox.Show("Document Saved Successfully");
+
+               */
+            /*  if (controller.errorString != null)
+               {
+                   MessageBox.Show(controller.errorString.ToString());
+                   return;
+               }
+               MessageBox.Show("Document Saved Successfully");
+           }
+           catch (System.Exception ex)
+           {
+               MessageBox.Show("Error is ::" + ex.Message);
+           }*/
+        }
+    }
 
     public class DrawingInfo : System.Windows.Input.ICommand
+    {
+        public bool CanExecute(object parameter)
         {
-            public bool CanExecute(object parameter)
-            {
-                return true;
-            }
-
-            public event EventHandler CanExecuteChanged;
-
-            public void Execute(object parameter)
-            {
-                DocumentInformationDisplay objDRGInfo = new DocumentInformationDisplay();
-                objDRGInfo.ShowDialog();
-            }
+            return true;
         }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+            DocumentInformationDisplay objDRGInfo = new DocumentInformationDisplay();
+            objDRGInfo.ShowDialog();
+        }
+    }
 
     public class About : System.Windows.Input.ICommand
+    {
+        public bool CanExecute(object parameter)
         {
-            public bool CanExecute(object parameter)
-            {
-                return true;
-            }
-
-            public event EventHandler CanExecuteChanged;
-
-            public void Execute(object parameter)
-            {
-                RibbonSample.UI_Forms.About about = new RibbonSample.UI_Forms.About();
-                about.ShowDialog();
-            }
+            return true;
         }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+            RibbonSample.UI_Forms.About about = new RibbonSample.UI_Forms.About();
+            about.ShowDialog();
+        }
+    }
 
     public class Help : System.Windows.Input.ICommand
     {
@@ -570,24 +650,24 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-        try
+            try
             {
-            CADController.Commands.HelpCommand objcmd = new CADController.Commands.HelpCommand();
-            CADController.Controllers.BaseController controller = new CADController.Controllers.HelpController();
+                CADController.Commands.HelpCommand objcmd = new CADController.Commands.HelpCommand();
+                CADController.Controllers.BaseController controller = new CADController.Controllers.HelpController();
 
-            String Dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
-            //MessageBox.Show("directory path=" + Dir);
-            objcmd.HelpFilePath = Dir + "\\Avrut_AutoCAD2013_Integration_UserGuide.chm";
-            controller.Execute(objcmd);
-            if (controller.errorString != null)
-            {
-                MessageBox.Show(controller.errorString);
-                return;
-            }
+                String Dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+                //MessageBox.Show("directory path=" + Dir);
+                objcmd.HelpFilePath = Dir + "\\Avrut_AutoCAD2013_Integration_UserGuide.chm";
+                controller.Execute(objcmd);
+                if (controller.errorString != null)
+                {
+                    MessageBox.Show(controller.errorString);
+                    return;
+                }
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
-            MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
 
         }
@@ -701,11 +781,11 @@ namespace AutocadPlugIn
             }
             try
             {
-            //AutocadPlugIn.UI_Forms.frmLock lockForm= new AutocadPlugIn.UI_Forms.frmLock();
-            //lockForm.ShowDialog();
+                //AutocadPlugIn.UI_Forms.frmLock lockForm= new AutocadPlugIn.UI_Forms.frmLock();
+                //lockForm.ShowDialog();
 
-                  frmLock obj = new  frmLock();
-               // frmRefresh obj = new frmRefresh();
+                //frmLock obj = new frmLock();
+                frmRefresh obj = new frmRefresh();
                 obj.ShowDialog();
 
             }
@@ -837,7 +917,7 @@ namespace AutocadPlugIn
             try
             {
                 DatabaseSummaryInfo dbsi = db.SummaryInfo;
-                string S= dbsi.ToString();
+                string S = dbsi.ToString();
 
             }
             catch (System.Exception ex)
@@ -912,5 +992,5 @@ namespace AutocadPlugIn
         }
     }
 
-    }
+}
 

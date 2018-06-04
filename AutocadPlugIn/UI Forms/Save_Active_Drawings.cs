@@ -30,9 +30,11 @@ namespace AutocadPlugIn.UI_Forms
 
         public Save_Active_Drawings()
         {
+
+            InitializeComponent();
             //ICADManager objCadMgr = CADFactory.getCADManager();
             //objCadMgr.SaveActiveDrawing();
-            InitializeComponent();
+
         }
 
         private void Save_Active_Drawings_Load(object sender, EventArgs e)
@@ -245,15 +247,35 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                submit.Focus();
                 List<TreeGridNode> selectedTreeGridNodes = new List<TreeGridNode>();
                 this.Cursor = Cursors.WaitCursor;
                 bool Is_Delete = false;
                 bool Is_Save = false;
 
-                //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                //DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
-                //Database db = doc.Database;
+
                 //String FilePath = db.OriginalFileName;
+
+                //Test Code
+                try
+                {
+                    Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                    DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
+                    Database db = doc.Database;
+
+
+                    //    db.ThumbnailBitmap = doc.CapturePreviewImage(100,100);
+                    //    Bitmap bm = db.ThumbnailBitmap;
+
+                    //    //db.SaveAs("castial", DwgVersion.Current);
+                    //    pictureBox1.Image = bm;
+                    //return;
+
+                }
+                catch (Exception E)
+                {
+
+                }
 
                 //To check howmany file is selected.
                 foreach (TreeGridNode treeGridNode in savetreeGrid.Nodes)
@@ -264,6 +286,7 @@ namespace AutocadPlugIn.UI_Forms
                     }
                 }
 
+
                 //To check whether any file is selected or not
                 if (selectedTreeGridNodes.Count < 1)
                 {
@@ -273,16 +296,18 @@ namespace AutocadPlugIn.UI_Forms
 
                 //string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
                 SaveController objController = new SaveController();
-
                 AutoCADManager objMgr = new AutoCADManager();
                 SaveCommand objCmd = new SaveCommand();
 
+                htNewDrawings.Clear();
+                GenFileInfo();
+              //return;
                 ICollection keys = htNewDrawings.Keys;
                 IEnumerator key = keys.GetEnumerator();
-                //while (key.MoveNext())
-                //{
-                //    objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
-                //}
+                while (key.MoveNext())
+                {
+                    objCmd.NewDrawings.Add(htNewDrawings[key.Current.ToString()].ToString());
+                }
 
                 foreach (String str in drawings)
                 {
@@ -302,16 +327,30 @@ namespace AutocadPlugIn.UI_Forms
 
                     // Is_Save :needs to make changes for multiple file
                     DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["State"];
-                   System.Data.DataTable dt = (System.Data.DataTable)cell.DataSource;
-                   
-                    objCmd.FileStatus = Convert.ToString(currentTreeGrdiNode.Cells["State"].Value); 
+                    System.Data.DataTable dt = (System.Data.DataTable)cell.DataSource;
+
+                    objCmd.IsVerChange = Convert.ToString(Convert.ToBoolean(currentTreeGrdiNode.Cells["Version"].Value)).ToLower();
+                    objCmd.ProjectID = Convert.ToString(currentTreeGrdiNode.Cells["ProjectName"].Value);
+                    objCmd.FileStatus = Convert.ToString(currentTreeGrdiNode.Cells["State"].Value);
                     objCmd.FileType = Convert.ToString(currentTreeGrdiNode.Cells["cadtype"].Value);
+                    objCmd.IsRoot = "true";
+                    objCmd.IsAssociated = "false";
                     objCmd.FileDescription = CADDescription.Text;
                     Is_Save = objController.ExecuteSave(objCmd);
 
+                    //foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                    //{
+                    //    objCmd.IsVerChange = Convert.ToString(Convert.ToBoolean(ChildNode.Cells["Version"].Value)).ToLower();
+                    //    objCmd.FileStatus = Convert.ToString(ChildNode.Cells["State"].Value);
+                    //    objCmd.FileType = Convert.ToString(ChildNode.Cells["cadtype"].Value);
+                    //    objCmd.IsRoot = "false";
+                    //    objCmd.IsAssociated = "true";
+                    //    Is_Save = objController.ExecuteSave(objCmd);
+                    //}
+
                     if (Is_Save)
                     {
-                        Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty,0);
+                        Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty, 0);
                         objMgr.SetAttributes(htCurrentInfo);
                         objMgr.UpdateLayoutAttribute1(htCurrentInfo);
 
@@ -428,7 +467,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void savetreeGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-           // return;
+            // return;
             if (e.ColumnIndex == 0)
             {
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
@@ -443,26 +482,26 @@ namespace AutocadPlugIn.UI_Forms
                 if (flag)
                     CADDescription.ReadOnly = true;
 
-                #region "Concate  infromation with ';' for Drawing presented in ARASInnovator"
-                String id = (String)selectedTreeNode.Cells["drawingid"].Value;
-                String ItemType = (String)selectedTreeNode.Cells["itemtype"].Value;
-                String FilePath = (String)selectedTreeNode.Cells["filepath"].Value;
-                String MyProjectName = selectedTreeNode.Cells["projectname"].FormattedValue.ToString();
-                String MyProjectId = selectedTreeNode.Cells["projectid"].FormattedValue.ToString();
-                Hashtable DrawingData = new Hashtable();
-                //ArasConnector.ArasConnector DrawingDetail = new ArasConnector.ArasConnector();
-                RBConnector DrawingDetail = new RBConnector();
-                DrawingData = DrawingDetail.GetDrawingDetail(id);
-                if (DrawingData.Count < 1)
-                    DrawingData = DrawingDetail.GetDrawingDetail(selectedTreeNode.Cells["drawingid"].Value.ToString());
+                //#region "Concate  infromation with ';' for Drawing presented in ARASInnovator"
+                //String id = (String)selectedTreeNode.Cells["drawingid"].Value;
+                //String ItemType = (String)selectedTreeNode.Cells["itemtype"].Value;
+                //String FilePath = (String)selectedTreeNode.Cells["filepath"].Value;
+                //String MyProjectName = selectedTreeNode.Cells["projectname"].FormattedValue.ToString();
+                //String MyProjectId = selectedTreeNode.Cells["projectid"].FormattedValue.ToString();
+                //Hashtable DrawingData = new Hashtable();
+                ////ArasConnector.ArasConnector DrawingDetail = new ArasConnector.ArasConnector();
+                //RBConnector DrawingDetail = new RBConnector();
+                //DrawingData = DrawingDetail.GetDrawingDetail(id);
+                //if (DrawingData.Count < 1)
+                //    DrawingData = DrawingDetail.GetDrawingDetail(selectedTreeNode.Cells["drawingid"].Value.ToString());
 
-                if (selectedTreeNode.Cells["targetrevision"].Value == null)
-                {
-                    selectedTreeNode.Cells["targetrevision"].Value = "";
-                }
-                String DrawingInformation = id + ";" + ItemType + ";" + FilePath + ";" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["targetrevision"].Value.ToString() + ";" + selectedTreeNode.Cells["version"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString();
+                //if (selectedTreeNode.Cells["targetrevision"].Value == null)
+                //{
+                //    selectedTreeNode.Cells["targetrevision"].Value = "";
+                //}
+                //String DrawingInformation = id + ";" + ItemType + ";" + FilePath + ";" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["targetrevision"].Value.ToString() + ";" + selectedTreeNode.Cells["version"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString();
 
-                #endregion
+                //#endregion
 
                 #region "Lock Drawings"
                 if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "0")
@@ -481,6 +520,133 @@ namespace AutocadPlugIn.UI_Forms
                     MessageBox.Show("This drawing is not locked by you.");
                     return;
                 }
+                #endregion
+
+                //    #region "Drawing is present in redbracket"
+                //    if (selectedTreeNode.Cells["drawingid"].Value.ToString() != "")
+                //    {
+                //        if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
+                //        {
+                //            selectedTreeNode.Cells["targetrevision"].ReadOnly = true;
+                //            drawings.Add(DrawingInformation);
+                //            drawingsOpen.Add(DrawingInformation);
+                //            savetreeGrid.Columns[17].ReadOnly = true;
+                //        }
+                //        else
+                //        {
+                //            selectedTreeNode.Cells["targetrevision"].ReadOnly = false;
+                //            drawings.Remove(DrawingInformation);
+                //            drawingsOpen.Remove(DrawingInformation);
+                //            savetreeGrid.Columns[17].ReadOnly = false;
+                //        }
+                //    }
+                //    #endregion
+
+                //    #region "Add Drawing to redbracket"
+                //    //else
+                //    //{
+                if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
+                {
+                    selectedTreeNode.Cells["projectname"].ReadOnly = true;
+                    selectedTreeNode.Cells["realtyname"].ReadOnly = true;
+                    selectedTreeNode.Cells["projectid"].ReadOnly = true;
+                    selectedTreeNode.Cells["realtyid"].ReadOnly = true;
+                    if (e.RowIndex == 0)
+                    {
+                        selectedTreeNode.Cells["projectname"].ReadOnly = false;
+                        selectedTreeNode.Cells["projectid"].ReadOnly = false;
+
+                        //        String[] strarry = new String[5];
+                        //        String DrawingInformation1;
+                        //        String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();
+                        //        int index = DrawingNameandNumber.IndexOf('.');
+                        //        int length = DrawingNameandNumber.Length;
+                        //        if (index > 0)
+                        //            DrawingNameandNumber = DrawingNameandNumber.Remove(index);
+                        //        DrawingInformation1 = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" +
+                        //                selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() +
+                        //                ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" +Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";"
+                        //                + Convert.ToString(selectedTreeNode.Cells["realtyname"].Value ) + ";" + CADDescription.Text + ";"
+                        //                + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString()
+                        //                + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
+                        //                + selectedTreeNode.Cells["Layouts"].Value.ToString();
+                        //        htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);
+
+                        //        //selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
+                        //        //selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;
+                    }
+                    else
+                    {
+                        if (e.RowIndex == 0)
+                        {
+                            selectedTreeNode.Cells["projectname"].ReadOnly = false;
+                            selectedTreeNode.Cells["projectid"].ReadOnly = false;
+                        }
+                        selectedTreeNode.Cells["realtyname"].ReadOnly = false;
+                        selectedTreeNode.Cells["realtyid"].ReadOnly = false;
+                        if (htNewDrawings.Contains(selectedTreeNode.Cells["drawing"].Value.ToString()))
+                        {
+                            htNewDrawings.Remove(selectedTreeNode.Cells["drawing"].Value.ToString());
+                        }
+                        selectedTreeNode.Cells["drawingnumber"].Value = "";
+                        selectedTreeNode.Cells["cadtype"].Value = "";
+                    }
+                }
+            }
+            //#endregion
+
+        }
+        public void GenFileInfo()
+        {
+            try
+            {
+                foreach (TreeGridNode tgnParent in savetreeGrid.Nodes)
+                {
+                    
+                    foreach (TreeGridNode tgnChild in tgnParent.Nodes)
+                    {
+                        GenFileInfoDT(tgnChild);
+                    }
+                    GenFileInfoDT(tgnParent);
+                }
+
+               // var v = htNewDrawings;
+                
+                //var ht = from ht1 in htNewDrawings.AsQueryable()
+                //         orderby ht.IsRoot
+                //         select ht.*;
+                   
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public void GenFileInfoDT(TreeGridNode selectedTreeNode)
+        {
+            try
+            {
+                #region "Concate  infromation with ';' for Drawing presented in ARASInnovator"
+                String id = (String)selectedTreeNode.Cells["drawingid"].Value;
+                String ItemType = (String)selectedTreeNode.Cells["itemtype"].Value;
+                String FilePath = (String)selectedTreeNode.Cells["filepath"].Value;
+                String MyProjectName = selectedTreeNode.Cells["projectname"].FormattedValue.ToString();
+                String MyProjectId = selectedTreeNode.Cells["projectid"].Value.ToString();
+                //DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
+                //MyProjectId =Convert.ToString(c.Value);
+                Hashtable DrawingData = new Hashtable();
+                //ArasConnector.ArasConnector DrawingDetail = new ArasConnector.ArasConnector();
+                RBConnector DrawingDetail = new RBConnector();
+                DrawingData = DrawingDetail.GetDrawingDetail(id);
+                if (DrawingData.Count < 1)
+                    DrawingData = DrawingDetail.GetDrawingDetail(selectedTreeNode.Cells["drawingid"].Value.ToString());
+
+                if (selectedTreeNode.Cells["targetrevision"].Value == null)
+                {
+                    selectedTreeNode.Cells["targetrevision"].Value = "";
+                }
+                String DrawingInformation = id + ";" + ItemType + ";" + FilePath + ";" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + selectedTreeNode.Cells["targetrevision"].Value.ToString() + ";" + selectedTreeNode.Cells["version"].Value.ToString() + ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString();
+
                 #endregion
 
                 #region "Drawing is present in redbracket"
@@ -508,15 +674,7 @@ namespace AutocadPlugIn.UI_Forms
                 //{
                 if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
                 {
-                    selectedTreeNode.Cells["projectname"].ReadOnly = true;
-                    selectedTreeNode.Cells["realtyname"].ReadOnly = true;
-                    selectedTreeNode.Cells["projectid"].ReadOnly = true;
-                    selectedTreeNode.Cells["realtyid"].ReadOnly = true;
-                    if (e.RowIndex == 0)
-                    {
-                        selectedTreeNode.Cells["projectname"].ReadOnly = false;
-                        selectedTreeNode.Cells["projectid"].ReadOnly = false;
-                    }
+
                     String[] strarry = new String[5];
                     String DrawingInformation1;
                     String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();
@@ -526,8 +684,8 @@ namespace AutocadPlugIn.UI_Forms
                         DrawingNameandNumber = DrawingNameandNumber.Remove(index);
                     DrawingInformation1 = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" +
                             selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() +
-                            ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" +Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";"
-                            + Convert.ToString(selectedTreeNode.Cells["realtyname"].Value ) + ";" + CADDescription.Text + ";"
+                            ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";"
+                            + Convert.ToString(selectedTreeNode.Cells["realtyname"].Value) + ";" + CADDescription.Text + ";"
                             + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString()
                             + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
                             + selectedTreeNode.Cells["Layouts"].Value.ToString();
@@ -538,23 +696,15 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 else
                 {
-                    if (e.RowIndex == 0)
-                    {
-                        selectedTreeNode.Cells["projectname"].ReadOnly = false;
-                        selectedTreeNode.Cells["projectid"].ReadOnly = false;
-                    }
-                    selectedTreeNode.Cells["realtyname"].ReadOnly = false;
-                    selectedTreeNode.Cells["realtyid"].ReadOnly = false;
-                    if (htNewDrawings.Contains(selectedTreeNode.Cells["drawing"].Value.ToString()))
-                    {
-                        htNewDrawings.Remove(selectedTreeNode.Cells["drawing"].Value.ToString());
-                    }
-                    selectedTreeNode.Cells["drawingnumber"].Value = "";
-                    selectedTreeNode.Cells["cadtype"].Value = "";
+                    
                 }
-            }
-            #endregion
 
+                #endregion
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
         }
 
         private void savetreeGrid_CellBeginEdit(object sender, DataGridViewCellEventArgs e)
@@ -565,8 +715,10 @@ namespace AutocadPlugIn.UI_Forms
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
                 String sg_projectid = selectedTreeNode.Cells["projectname"].Value.ToString();
                 decimal int_projectid = Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value);
-                DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
-                c2.Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "number"); ; ;
+                //DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell);
+                // c2.Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "number"); ; ;
+                //c2.Value = int_projectid;
+                selectedTreeNode.Cells["projectid"].Value = selectedTreeNode.Cells["projectname"].Value;
                 //selectedTreeNode.Cells["projectid"].Value = sg_projectid;
                 selectedTreeNode.Cells["realtyname"].Value = "";
                 selectedTreeNode.Cells["realtyid"].Value = "";
@@ -575,10 +727,11 @@ namespace AutocadPlugIn.UI_Forms
                     TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
 
-
-                    c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
+                    c.Value = selectedTreeNode.Cells["projectid"].Value;
+                    //c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
                     DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
-                    c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
+                    c1.Value = selectedTreeNode.Cells["projectid"].Value;
+                    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
                     //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
                     //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
                 }
@@ -606,16 +759,18 @@ namespace AutocadPlugIn.UI_Forms
                 String sg_projectid = selectedTreeNode.Cells["projectid"].Value.ToString();
                 DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
 
-                selectedTreeNode.Cells["projectname"].Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "name");
+                selectedTreeNode.Cells["projectname"].Value = c2.Value;
                 for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
                 {
                     TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
 
+                    c.Value = c2.Value;
 
-                    c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
-                    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
-                    c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
+                    //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "number");
+                   DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
+                    c1.Value = c2.Value;
+                    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
                     //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
                     //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
                 }

@@ -40,133 +40,179 @@ namespace RedBracketConnector
             }
         }
 
-        public bool SaveObject(ref List<PLMObject> plmobjs, string FilePath)
+        public bool SaveObject(ref List<PLMObject> plmobjs)
         {
             try
             {
                 //To unlock File in case of update
                 //if (UnlockObject(plmobjs))
                 //{
-                //    return false;
+                 //  return false;
                 //}
-
+                string ParentFileID = "";
                 foreach (PLMObject obj in plmobjs)
                 {
-                    //KeyValuePair<string, string> L = new KeyValuePair<string, string>("filepath", FilePath);
-                    SaveFileCommand objSFC = new SaveFileCommand();
-
-                    // to convert file in bytes.
-                    //using (var binaryReader = new BinaryReader(File.OpenRead(FilePath)))
-                    //{
-                    //    binaryReader.Read();
-                    //    objSFC.BRDocument = binaryReader;
-                    //}
-
-
-
+                     
+                    SaveFileCommand objSFC = new SaveFileCommand(); 
                     RestResponse restResponse;
                     //service calling to upload document.
 
-                    if (obj.ObjectId.Trim().Length > 0)
+                    if (obj.IsRoot)
                     {
-                          restResponse = (RestResponse)ServiceHelper.UpdateObject(
-                     Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                     "/AutocadFiles/updateFile", obj.FilePath,
-                     "test.dwg", true, new List<KeyValuePair<string, string>> {
-                         new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                           new KeyValuePair<string, string>("fileName", obj.ObjectName),
-                           new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                            new KeyValuePair<string, string>("fileType", obj.Classification),
-                            new KeyValuePair<string, string>("fileDescription", obj.ObjectDescription) });
-                    }
-                    else
-                    {
-                          restResponse = (RestResponse)ServiceHelper.SaveObject(
-                     Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                     "/AutocadFiles/uploadFileService", obj.FilePath,
-                     "test.dwg", true, new List<KeyValuePair<string, string>> {
-                            new KeyValuePair<string, string>("project", obj.ObjectProjectId) });
-                 }
-
-                    //checking if service call was successful or not.
-                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                    {
-                        ShowMessage.ErrorMess("Some error occurred while uploading file.");
-                        return false;
-                    }
-                    else if (restResponse.Content.Trim().Length>0)
-                    {
-
-
-                        if (obj.ObjectId.Trim().Length == 0)
+                        if (Convert.ToString(obj.ObjectId).Trim().Length > 0)
                         {
-                            
+                            //     restResponse = (RestResponse)ServiceHelper.UpdateObject(
+                            //Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                            //"/AutocadFiles/updateFile", obj.FilePath,
+                            //"test.dwg", true, new List<KeyValuePair<string, string>> {
+                            //    new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                            //      new KeyValuePair<string, string>("fileName", obj.ObjectName),
+                            //      new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                            //       new KeyValuePair<string, string>("fileType", obj.Classification),
+                            //       new KeyValuePair<string, string>("fileDescription", obj.ObjectDescription) });
 
-                            SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
-                            var saveObjectResponseValueObject = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
-
-                            var Drawing = saveObjectResponseValueObject;
-                            // Hashtable DrawingProperty = new Hashtable();
-
-                            //DrawingProperty.Add("DrawingId", Drawing.id);
-                            //DrawingProperty.Add("DrawingName", Drawing.name);
-                            //DrawingProperty.Add("Classification",  "123");
-                            //DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
-                            //DrawingProperty.Add("DrawingState", Drawing.status.statusname);
-                            //DrawingProperty.Add("Revision", Drawing.versionno);
-                            //DrawingProperty.Add("LockStatus", Drawing.filelock);
-                            //DrawingProperty.Add("Generation", "123");
-                            //DrawingProperty.Add("Type", "123");
-                            //DrawingProperty.Add("ProjectName", Drawing.projectname);
-                            //DrawingProperty.Add("ProjectId", "123");
-                            //DrawingProperty.Add("CreatedOn", Drawing.updatedon);
-                            //DrawingProperty.Add("CreatedBy", Drawing.createdby);
-                            //DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
-                            //DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
-
-                            obj.ObjectId = Drawing.id;
-                            obj.ObjectName = Drawing.name;
-                            obj.Classification = "123";
-                            obj.ObjectState = Drawing.status.statusname;
-                            obj.ObjectRevision = Drawing.versionno;
-                            obj.LockStatus = Convert.ToString(Drawing.filelock);
-                            obj.ObjectGeneration = "123";
-                            obj.ItemType = Drawing.coreType.name;
-                            obj.ObjectProjectName = Drawing.projectname;
-                            obj.ObjectProjectId = "123";
-                            obj.ObjectCreatedById = Drawing.createdby;
-                            obj.ObjectCreatedOn = Drawing.created0n;
-                            obj.ObjectModifiedById = Drawing.updatedby;
-                            obj.ObjectModifiedOn = Drawing.updatedon;
-                            obj.ObjectNumber = Drawing.fileNo;
-
+                            restResponse = (RestResponse)ServiceHelper.UpdateObject(
+                      Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                      "/AutocadFiles/updateFileProperties", obj.FilePath,
+                      "test.dwg", true, new List<KeyValuePair<string, string>> {
+                         new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                          new KeyValuePair<string, string>("isChecked", "false"),
+                           new KeyValuePair<string, string>("fileName", obj.ObjectName),
+                           new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
+                            new KeyValuePair<string, string>("layoutFileId", ""),
+                             new KeyValuePair<string, string>("statusId", ""),
+                              new KeyValuePair<string, string>("typeId", ""),
+                                 new KeyValuePair<string, string>("layoutFileName", ""),
+                            new KeyValuePair<string, string>("fileTypeId", obj.Classification),
+                            new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription),
+                            new KeyValuePair<string, string>("layoutDesc", "") });
                         }
                         else
                         {
-                            var Drawing = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                            restResponse = (RestResponse)ServiceHelper.SaveObject(
+                       Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                       "/AutocadFiles/uploadFileService", obj.FilePath,
+                       "test.dwg", true, new List<KeyValuePair<string, string>> {
+                            new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
+                            new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                            new KeyValuePair<string, string>("fileType", obj.Classification)});
+                        }
 
-                            obj.ObjectId = Drawing.id;
-                            obj.ObjectName = Drawing.name;
-                            obj.Classification = Drawing.coreType.name;
-                            obj.ObjectState = Drawing.status.statusname;
-                            obj.ObjectRevision = Drawing.versionno;
-                            obj.LockStatus = Convert.ToString(Drawing.filelock);
-                            obj.ObjectGeneration = "123";
-                            obj.ItemType = Drawing.coreType.name;
-                            obj.ObjectProjectName = Drawing.projectname;
-                            obj.ObjectProjectId = "123";
-                            obj.ObjectCreatedById = Drawing.createdby;
-                            obj.ObjectCreatedOn = Drawing.updatedon;
-                            obj.ObjectModifiedById = Drawing.updatedby;
-                            obj.ObjectModifiedOn = Drawing.updatedon;
-                            obj.ObjectNumber = Drawing.fileNo;
+                        //checking if service call was successful or not.
+                        if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            ShowMessage.ErrorMess("Some error occurred while uploading file.");
+                            return false;
+                        }
+                        else if (restResponse.Content.Trim().Length > 0)
+                        {
+
+
+                          //  if (Convert.ToString(obj.ObjectId).Trim().Length > 0)
+                            {
+
+
+                                SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
+                                var saveObjectResponseValueObject = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
+
+                                var Drawing = saveObjectResponseValueObject;
+
+
+                                obj.ObjectId = ParentFileID = Drawing.id;
+                                obj.ObjectName = Drawing.name;
+                                //obj.Classification = "123";
+                                obj.ObjectState = Drawing.status.statusname;
+                                obj.ObjectRevision = Drawing.versionno;
+                                obj.LockStatus = Convert.ToString(Drawing.filelock);
+                                obj.ObjectGeneration = "123";
+                                obj.ItemType = Drawing.coreType.name;
+                                obj.ObjectProjectName = Drawing.projectname;
+                                //obj.ObjectProjectId = "123";
+                                obj.ObjectCreatedById = Drawing.createdby;
+                                obj.ObjectCreatedOn = Drawing.created0n;
+                                obj.ObjectModifiedById = Drawing.updatedby;
+                                obj.ObjectModifiedOn = Drawing.updatedon;
+                                obj.ObjectNumber = Drawing.fileNo;
+
+                            }
+                            //else
+                            //{
+                            //    try
+                            //    {
+                            //        var Drawing1 = JsonConvert.DeserializeObject<SaveResult>(restResponse.Content);
+                            //    }
+                            //    catch (Exception E)
+                            //    {
+
+                            //    }
+                            //    var Drawing = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+
+                            //    obj.ObjectId = ParentFileID = Drawing.id;
+                            //    obj.ObjectName = Drawing.name;
+                            //    obj.Classification = Drawing.coreType.name;
+                            //    obj.ObjectState = Drawing.status.statusname;
+                            //    obj.ObjectRevision = Drawing.versionno;
+                            //    obj.LockStatus = Convert.ToString(Drawing.filelock);
+                            //    obj.ObjectGeneration = "123";
+                            //    obj.ItemType = Drawing.coreType.name;
+                            //    obj.ObjectProjectName = Drawing.projectname;
+                            //    obj.ObjectProjectId = "123";
+                            //    obj.ObjectCreatedById = Drawing.createdby;
+                            //    obj.ObjectCreatedOn = Drawing.updatedon;
+                            //    obj.ObjectModifiedById = Drawing.updatedby;
+                            //    obj.ObjectModifiedOn = Drawing.updatedon;
+                            //    obj.ObjectNumber = Drawing.fileNo;
+                            //}
                         }
                     }
-                   
+                    else
+                    {
+
+                        //for save
+                        if (obj.ObjectId.Trim().Length == 0)
+                        {
+                            restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                            "/AutocadFiles/uploadXRefFiles", obj.FilePath,
+                                            "test.dwg", false, new List<KeyValuePair<string, string>> {
+                                                 new KeyValuePair<string, string>("source", "Computer") ,
+                                                  new KeyValuePair<string, string>("userName", Helper.UserName) ,
+                                            new KeyValuePair<string, string>("fileId", ParentFileID) ,
+                                            new KeyValuePair<string, string>("project", obj.ObjectProjectId) });
+                        }
+                        else
+                        {
+                            restResponse = (RestResponse)ServiceHelper.UpdateObject(
+                             Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                             "/AutocadFiles/updateFileProperties", obj.FilePath,
+                             "test.dwg", true, new List<KeyValuePair<string, string>> {
+                         new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                          new KeyValuePair<string, string>("isChecked", "false"),
+                           new KeyValuePair<string, string>("fileName", obj.ObjectName),
+                           new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
+                            new KeyValuePair<string, string>("layoutFileId", ""),
+                             new KeyValuePair<string, string>("statusId", ""),
+                              new KeyValuePair<string, string>("typeId", ""),
+                                 new KeyValuePair<string, string>("layoutFileName", ""),
+                            new KeyValuePair<string, string>("fileTypeId", obj.Classification),
+                            new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription),
+                            new KeyValuePair<string, string>("layoutDesc", "") });
+                        }
+
+                        if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            ShowMessage.ErrorMess("Some error occurred while uploading file.");
+                            return false;
+                        }
+
+                    }
 
 
-                    return true;
+
+
+                    
                 }
+                return true;
             }
             catch (Exception E)
             {
@@ -712,7 +758,7 @@ namespace RedBracketConnector
             DataTable dataTableProjectInfo = new DataTable();
             try
             {
-                dataTableProjectInfo = GetDataFromWS("/AutocadFiles/fetchFileType", "file type");
+                dataTableProjectInfo = GetDataFromWS("/AutocadFiles/fetchFileType", "file type", "POST", typeof(List<ResultStatusData>));
             }
             catch (Exception E)
             {
@@ -1091,6 +1137,41 @@ namespace RedBracketConnector
             }
 
         }
+        public List<ResultSearchCriteria> GetXrefFIleInfo(String drawingid)
+        {
+            try
+            {
+                KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
+                //KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
+
+                List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                urlParameters.Add(L);
+                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                    "/AutocadFiles/getAssoFile",  
+                    false,  urlParameters);
+
+
+                List < ResultSearchCriteria> ObjFileInfo = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+
+
+                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    MessageBox.Show("Some error occurred while fetching file information.");
+                    return null;
+                }
+                else
+                {
+                    string Response = restResponse.Content;
+                    
+                }
+                return ObjFileInfo;
+            }
+            catch (Exception ex)
+            {
+                throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+            }
+
+        }
 
         public string DownloadOpenDocument(string fileId, string checkoutPath, ref Hashtable DrawingProperty)
         {
@@ -1109,7 +1190,7 @@ namespace RedBracketConnector
            "/AutocadFiles/downloadAutocadSingleFile",
            false,
            new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",fileId ) ,
-        new KeyValuePair<string, string>("userName", "attune.mule@yopmail.com")
+        new KeyValuePair<string, string>("userName", Helper.UserName)
 
            });
                 if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)

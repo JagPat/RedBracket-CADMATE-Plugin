@@ -58,6 +58,34 @@ namespace CADController.Commands
             get { return this.fileDescription; }
             set { this.fileDescription = value; }
         }
+
+        private String projectID;
+        public String ProjectID
+        {
+            get { return this.projectID; }
+            set { this.projectID = value; }
+        }
+
+        private String isRoot;
+        public String IsRoot
+        {
+            get { return this.isRoot; }
+            set { this.isRoot = value; }
+        }
+
+        private String isAssociated;
+        public String IsAssociated
+        {
+            get { return this.isAssociated; }
+            set { this.isAssociated = value; }
+        }
+
+        private String isVerChange;
+        public String IsVerChange
+        {
+            get { return this.isVerChange; }
+            set { this.isVerChange = value; }
+        }
     }
    
     }
