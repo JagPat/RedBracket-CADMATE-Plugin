@@ -29,6 +29,7 @@ namespace AutocadPlugIn.UI_Forms
         public ArrayList OpenMode1 = new ArrayList();
         ICADManager cadManager = new AutoCADManager();
         public Dictionary<string, string> projectNameNumberKeyValiuePairList = new Dictionary<string, string>();
+        string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutExpandAllEnabled"));
         ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
 
         public Search_And_Open()
@@ -420,6 +421,8 @@ namespace AutocadPlugIn.UI_Forms
 
         private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
         {
+            string expandAllTrue = Convert.ToString(Helper.GetValueRegistry("CheckOutDirectory", "IsExpandAll"));
+
             if (resultSearchCriteriaResponseList == null)
             {
                 this.searchStatus.Text = "No Items Found..";
@@ -457,7 +460,12 @@ namespace AutocadPlugIn.UI_Forms
                     null,
                     null);
 
-                //AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
+                AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
+                if (checkoutPath == "True")
+                {
+                    //ExpandNode(treeGridNode);
+                    treeGridNode.Expand();
+                }
             }
 
             treeGridView1.Show();
@@ -477,32 +485,31 @@ namespace AutocadPlugIn.UI_Forms
 
             var childRecords = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
 
-            if (childRecords.Count <= 0)
+            if (childRecords == null || childRecords.Count <= 0)
             {
                 return;
             }
 
             foreach (ResultSearchCriteria resultSearchCriteriaChildRecord in childRecords)
             {
-
                 TreeGridNode treeGridNode = parentTreeGridNode.Nodes.Add(
                                                 null,
                                                 null,
-                                                resultSearchCriteriaRecord.name,
-                                                resultSearchCriteriaRecord.fileNo,
-                                                (bool)resultSearchCriteriaRecord.filelock,
-                                                null, //resultSearchCriteriaRecord.coreType.name,
-                                                null, //resultSearchCriteriaRecord.status.statusname,
-                                                resultSearchCriteriaRecord.versionno,
-                                                resultSearchCriteriaRecord.projectname,
-                                                resultSearchCriteriaRecord.projectinfo,
-                                                resultSearchCriteriaRecord.size,
-                                                resultSearchCriteriaRecord.id,
+                                                resultSearchCriteriaChildRecord.name,
+                                                resultSearchCriteriaChildRecord.fileNo,
+                                                (bool)resultSearchCriteriaChildRecord.filelock,
+                                                resultSearchCriteriaChildRecord.coreType.name,
+                                                resultSearchCriteriaChildRecord.status.statusname,
+                                                resultSearchCriteriaChildRecord.versionno,
+                                                resultSearchCriteriaChildRecord.projectname,
+                                                resultSearchCriteriaChildRecord.projectinfo,
+                                                resultSearchCriteriaChildRecord.size,
+                                                resultSearchCriteriaChildRecord.id,
                                                 null,
                                                 null,
                                                 null);
 
-                AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
+                //AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
             }
         }
 
@@ -860,11 +867,17 @@ namespace AutocadPlugIn.UI_Forms
 
                 if (selectedTreeGridNodes.Count < 1)
                 {
+                    this.Cursor = Cursors.Default;
                     MessageBox.Show("Please select at least one file to Open");
                     return;
                 }
 
-                string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+                if (string.IsNullOrEmpty(checkoutPath))
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show("Please set checkout path under settings, before opening any file.");
+                    return;
+                }
 
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
