@@ -687,6 +687,7 @@ namespace AutocadPlugIn.UI_Forms
                 return;
             }
         }
+
         List<TreeGridNode> selectedTreeGridNodes = new List<TreeGridNode>();
         private void OpenDrawingButton_Click(object sender, EventArgs e)
         {
@@ -892,7 +893,12 @@ namespace AutocadPlugIn.UI_Forms
                         Directory.CreateDirectory(checkoutPath);
                     }
 
-                    DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
+                    foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
+                    {
+                        DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
+                    }
+
+                    DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true);
                 }
 
                 CADRibbon ribbon = new CADRibbon();
@@ -916,7 +922,8 @@ namespace AutocadPlugIn.UI_Forms
             }
             this.Cursor = Cursors.Default;
         }
-        private void DownloadOpenDocument(string fileId, string fileName, string checkoutPath, string fileMode)
+
+        private void DownloadOpenDocument(string fileId, string fileName, string checkoutPath, string fileMode, bool isParentFile = false)
         {
             try
             {
@@ -975,7 +982,10 @@ namespace AutocadPlugIn.UI_Forms
                         //binaryWriter.Dispose();
                     }
 
-                    cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                    if (isParentFile)
+                    {
+                        cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                    }
                 }
                 else
                 {
