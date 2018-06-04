@@ -117,22 +117,25 @@ namespace RedBracketConnector
 
                                 var Drawing = saveObjectResponseValueObject;
 
-
-                                obj.ObjectId = ParentFileID = Drawing.id;
-                                obj.ObjectName = Drawing.name;
-                                //obj.Classification = "123";
-                                obj.ObjectState = Drawing.status.statusname;
-                                obj.ObjectRevision = Drawing.versionno;
-                                obj.LockStatus = Convert.ToString(Drawing.filelock);
-                                obj.ObjectGeneration = "123";
-                                obj.ItemType = Drawing.coreType.name;
-                                obj.ObjectProjectName = Drawing.projectname;
-                                //obj.ObjectProjectId = "123";
-                                obj.ObjectCreatedById = Drawing.createdby;
-                                obj.ObjectCreatedOn = Drawing.created0n;
-                                obj.ObjectModifiedById = Drawing.updatedby;
-                                obj.ObjectModifiedOn = Drawing.updatedon;
-                                obj.ObjectNumber = Drawing.fileNo;
+                                if(Drawing!=null)
+                                {
+                                    obj.ObjectId = ParentFileID = Drawing.id;
+                                    obj.ObjectName = Drawing.name;
+                                    //obj.Classification = "123";
+                                    obj.ObjectState = Drawing.status.statusname;
+                                    obj.ObjectRevision = Drawing.versionno;
+                                    obj.LockStatus = Convert.ToString(Drawing.filelock);
+                                    obj.ObjectGeneration = "123";
+                                    obj.ItemType = Drawing.coreType.name;
+                                    obj.ObjectProjectName = Drawing.projectname;
+                                    //obj.ObjectProjectId = "123";
+                                    obj.ObjectCreatedById = Drawing.createdby;
+                                    obj.ObjectCreatedOn = Drawing.created0n;
+                                    obj.ObjectModifiedById = Drawing.updatedby;
+                                    obj.ObjectModifiedOn = Drawing.updatedon;
+                                    obj.ObjectNumber = Drawing.fileNo;
+                                }
+                                
 
                             }
                             //else

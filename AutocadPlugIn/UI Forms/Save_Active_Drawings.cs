@@ -333,8 +333,8 @@ namespace AutocadPlugIn.UI_Forms
                     objCmd.ProjectID = Convert.ToString(currentTreeGrdiNode.Cells["ProjectName"].Value);
                     objCmd.FileStatus = Convert.ToString(currentTreeGrdiNode.Cells["State"].Value);
                     objCmd.FileType = Convert.ToString(currentTreeGrdiNode.Cells["cadtype"].Value);
-                    objCmd.IsRoot = "true";
-                    objCmd.IsAssociated = "false";
+                    //objCmd.IsRoot = "true";
+                    //objCmd.IsAssociated = "false";
                     objCmd.FileDescription = CADDescription.Text;
                     Is_Save = objController.ExecuteSave(objCmd);
 
@@ -350,9 +350,17 @@ namespace AutocadPlugIn.UI_Forms
 
                     if (Is_Save)
                     {
-                        Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty, 0);
-                        objMgr.SetAttributes(htCurrentInfo);
-                        objMgr.UpdateLayoutAttribute1(htCurrentInfo);
+                        // Update document info into document for future refeance
+                        try
+                        {
+                            Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty, 0);
+                            objMgr.SetAttributes(htCurrentInfo);
+                            objMgr.UpdateLayoutAttribute1(htCurrentInfo);
+                        }
+                        catch(Exception E)
+                        {
+
+                        }
 
 
                     }

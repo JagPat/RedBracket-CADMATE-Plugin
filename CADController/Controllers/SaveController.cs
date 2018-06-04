@@ -174,12 +174,19 @@ namespace CADController.Controllers
                 //  objConnector.SaveObject(ref plmObjs);
                 bool RetVal = ObjRBC.SaveObject(ref plmObjs);
 
-
-                // updating document info
-                foreach (PLMObject plmobj in plmObjs)
+                try
                 {
-                    dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.Classification, plmobj.ObjectNumber, plmobj.ObjectState, plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy);
+                    // updating document info
+                    foreach (PLMObject plmobj in plmObjs)
+                    {
+                        dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.Classification, plmobj.ObjectNumber, plmobj.ObjectState, plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy);
+                    }
                 }
+                catch (System.Exception E)
+                {
+
+                }
+
                 return RetVal;
             }
             catch (ConnectionException ex)
