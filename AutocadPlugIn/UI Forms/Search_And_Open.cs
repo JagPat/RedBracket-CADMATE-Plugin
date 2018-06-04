@@ -895,7 +895,6 @@ namespace AutocadPlugIn.UI_Forms
                     DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
                 }
 
-
                 CADRibbon ribbon = new CADRibbon();
                 ribbon.browseDEnable = true;
                 ribbon.createDEnable = true;
@@ -930,14 +929,12 @@ namespace AutocadPlugIn.UI_Forms
 
 
                 RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
-           Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-           "/AutocadFiles/downloadAutocadSingleFile",
-           false,
-           new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",fileId ) ,
-        new KeyValuePair<string, string>("userName", Helper.UserName)
-
-           });
-                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                                               Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                               "/AutocadFiles/downloadAutocadSingleFile",
+                                               true,
+                                               new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", fileId )
+                                               });
+                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(restResponse.Content))
                 {
                     RBConnector objRBC = new RBConnector();
                     ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(fileId);
@@ -945,7 +942,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     DrawingProperty.Add("DrawingId", Drawing.id);
                     DrawingProperty.Add("DrawingName", Drawing.name);
-                    DrawingProperty.Add("Classification", "123");
+                    DrawingProperty.Add("Classificati on", "123");
                     DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
                     DrawingProperty.Add("DrawingState", Drawing.status.statusname);
                     DrawingProperty.Add("Revision", Drawing.versionno);
@@ -982,7 +979,7 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 else
                 {
-                    ShowMessage.ErrorMess("Some error occures while retrieving file.");
+                    ShowMessage.ErrorMess("Some error occures while retrieving file.\nThis may be because of you may not have the proper access to the file.");
                 }
             }
             catch(Exception E)
