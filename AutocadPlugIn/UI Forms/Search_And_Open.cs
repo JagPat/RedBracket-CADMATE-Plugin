@@ -17,6 +17,7 @@ using RestSharp;
 using RedBracketConnector;
 using Newtonsoft.Json;
 using System.IO;
+using Microsoft.CSharp;
 
 namespace AutocadPlugIn.UI_Forms
 {
@@ -27,7 +28,7 @@ namespace AutocadPlugIn.UI_Forms
         public ArrayList OpenMode = new ArrayList();
         public ArrayList OpenMode1 = new ArrayList();
         ICADManager cadManager = new AutoCADManager();
-        public Dictionary<string, int> projectNameNumberKeyValiuePairList = new Dictionary<string, int>();
+        public Dictionary<string, string> projectNameNumberKeyValiuePairList = new Dictionary<string, string>();
         ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
 
         public Search_And_Open()
@@ -86,7 +87,7 @@ namespace AutocadPlugIn.UI_Forms
             foreach (DataRow dr in dataTableProjectNameNumber.Rows)
             {
                 nameNumberList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")");
-                projectNameNumberKeyValiuePairList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")", Convert.ToInt32(dr["id"]));
+                projectNameNumberKeyValiuePairList.Add(dr["name"].ToString() + " (" + dr["number"].ToString() + ")", dr["name"].ToString());
             }
 
             nameNumberList.Sort();
@@ -168,6 +169,9 @@ namespace AutocadPlugIn.UI_Forms
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
+            treeGridView1.Nodes.Clear();
+            this.Cursor = Cursors.WaitCursor;
+
             ////RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
             ////    "/AutocadFiles/searchAutocadFiles?userName=archi@yopmail.com&projno=proj001&projname=attune",
             ////    DataFormat.Json,
@@ -200,7 +204,7 @@ namespace AutocadPlugIn.UI_Forms
                 urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.Text));
             }
 
-            SearchCriteria searchCriteria = null;
+            dynamic searchCriteria = null;
 
             if (!string.IsNullOrEmpty(DGNumber.Text) || CDType.SelectedIndex > 0 || CDState.SelectedIndex > 0 || !string.IsNullOrEmpty(textBox_foldername.Text))
             {
@@ -236,23 +240,24 @@ namespace AutocadPlugIn.UI_Forms
                 };
             }
 
-            object dataToPost = null;
+            ////object dataToPost = null;
 
-            if (searchCriteria != null)
-            {
-                dataToPost = JsonConvert.SerializeObject(searchCriteria, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            }
+            ////if (searchCriteria != null)
+            ////{
+            ////    dataToPost = JsonConvert.SerializeObject(searchCriteria, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            ////}
 
             RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                "/AutocadFiles/searchAutocadFiles",
                DataFormat.Json,
-               dataToPost,
+               searchCriteria,
                true,
                urlParameters);
 
             var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
             BindDataToGrid(resultSearchCriteriaResponseList);
+            this.Cursor = Cursors.Default;
 
             //IEnumerator<TreeGridNode> it = SearchDrawingCon.dtDocuments.Nodes.GetEnumerator();
             //while (it.MoveNext())
@@ -277,32 +282,6 @@ namespace AutocadPlugIn.UI_Forms
             //        ExpandNode(node);
             //    }
             //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -441,6 +420,12 @@ namespace AutocadPlugIn.UI_Forms
 
         private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
         {
+            if (resultSearchCriteriaResponseList == null)
+            {
+                this.searchStatus.Text = "No Items Found..";
+                return;
+            }
+
             if (resultSearchCriteriaResponseList.Count > 50)
             {
                 MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
@@ -449,6 +434,12 @@ namespace AutocadPlugIn.UI_Forms
 
             foreach (ResultSearchCriteria resultSearchCriteriaRecord in resultSearchCriteriaResponseList)
             {
+                string[] splittedString = resultSearchCriteriaRecord.name.Split('.');
+                if (splittedString.Length > 1 && splittedString[splittedString.Length - 1] != "dwg")
+                {
+                    continue;
+                }
+
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
                     null,

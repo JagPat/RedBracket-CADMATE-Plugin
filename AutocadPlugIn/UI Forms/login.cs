@@ -89,6 +89,7 @@ namespace AutocadPlugIn
         private void btnConnect_Click(object sender, EventArgs e)
         {
             ConnectToRB();
+            this.Cursor = Cursors.Default;
            /*try
             {
                 this.Cursor = Cursors.WaitCursor;
@@ -226,6 +227,12 @@ namespace AutocadPlugIn
 
         private void saveUserLoginDetails(UserDetails loggedUserDetails)
         {
+            if (loggedUserDetails == null)
+            {
+                MessageBox.Show("Connection to RedBracket failed. Please try again. If the problem persists, please contact your administrator.");
+                return;
+            }
+
             RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
             registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
             registryKey = registryKey.OpenSubKey("LoginSettings", true);
