@@ -89,65 +89,66 @@ namespace AutocadPlugIn
         private void btnConnect_Click(object sender, EventArgs e)
         {
             ConnectToRB();
-            /*try
-             {
-                 this.Cursor = Cursors.WaitCursor;
-                 ConnectionCommand connectionCmd = new ConnectionCommand();
-                 connectionCmd.DbName = txt_DataBase.Text;
-                 connectionCmd.Passwd = txt_Password.Text;
-                 connectionCmd.Url = txt_url.Text;
-                 connectionCmd.UserName = txt_username.Text;
+            this.Cursor = Cursors.Default;
+           /*try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                ConnectionCommand connectionCmd = new ConnectionCommand();
+                connectionCmd.DbName = txt_DataBase.Text;
+                connectionCmd.Passwd = txt_Password.Text;
+                connectionCmd.Url = txt_url.Text;
+                connectionCmd.UserName = txt_username.Text;
 
-                 BaseController controller = null;
+                BaseController controller = null;
 
-                 controller = new MessageController();
-                 controller.Execute(connectionCmd);
+                controller = new MessageController();
+                controller.Execute(connectionCmd);
 
-                 if (controller.infoMessage != null)
-                 {
-                     MessageBox.Show(controller.infoMessage, "Error");
-                     this.Cursor = Cursors.Default;
-                     return;
-                 }
-
-                 ConnectionController controller1 = new ConnectionController();
-                 controller1.Execute(connectionCmd);
-
-
-                 if (controller1.errorString != null)
-                 {
-                     MessageBox.Show(controller1.errorString);
-                     //Globals.Ribbons.ARASRibbon.IsConnected = false;
-                     this.Cursor = Cursors.Default;
-                     return;
-                 }
-
-                 if (controller1.isConnect)
-                 {
-                     AutocadPlugIn.UI_Forms.CheckoutUserSettings CheckOUT = AutocadPlugIn.UI_Forms.UserSettings.createUserSetting().getCheckoutUserSettings();
-                     CheckOUT.checkoutDirPath = ArasConnector.ArasConnector.sg_WorkingDir.ToString();
-                     CADRibbon cr = new CADRibbon();
-                     //ArasConnector.ArasConnector.Isconnected = true;
-                     CADRibbon.connect = controller1.isConnect;
-                     cr.browseDEnable = true;
-                     cr.createDEnable = true;
-                     cr.browseBEnable = true;
-                     cr.createBEnable = true;
-                     cr.SaveEnable = true;
-                     cr.MyRibbon();
-                 }
-
-                 //Globals.Ribbons.ARASRibbon.IsConnected = true;
-                 this.Cursor = Cursors.Default;
-                 //MessageBox.Show(controller.infoMessage);
-
-                 this.Close();
-
+                if (controller.infoMessage != null)
+                {
+                    MessageBox.Show(controller.infoMessage, "Error");
+                    this.Cursor = Cursors.Default;
+                    return;
                 }
-             catch (Exception excep)
-             {
-                 MessageBox.Show(excep.ToString());
-             }*/
+
+                ConnectionController controller1 = new ConnectionController();
+                controller1.Execute(connectionCmd);
+
+
+                if (controller1.errorString != null)
+                {
+                    MessageBox.Show(controller1.errorString);
+                    //Globals.Ribbons.ARASRibbon.IsConnected = false;
+                    this.Cursor = Cursors.Default;
+                    return;
+                }
+
+                if (controller1.isConnect)
+                {
+                    AutocadPlugIn.UI_Forms.CheckoutUserSettings CheckOUT = AutocadPlugIn.UI_Forms.UserSettings.createUserSetting().getCheckoutUserSettings();
+                    CheckOUT.checkoutDirPath = ArasConnector.ArasConnector.sg_WorkingDir.ToString();
+                    CADRibbon cr = new CADRibbon();
+                    //ArasConnector.ArasConnector.Isconnected = true;
+                    CADRibbon.connect = controller1.isConnect;
+                    cr.browseDEnable = true;
+                    cr.createDEnable = true;
+                    cr.browseBEnable = true;
+                    cr.createBEnable = true;
+                    cr.SaveEnable = true;
+                    cr.MyRibbon();
+                }
+
+                //Globals.Ribbons.ARASRibbon.IsConnected = true;
+                this.Cursor = Cursors.Default;
+                //MessageBox.Show(controller.infoMessage);
+
+                this.Close();
+
+               }
+            catch (Exception excep)
+            {
+                MessageBox.Show(excep.ToString());
+            }*/
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -159,7 +160,6 @@ namespace AutocadPlugIn
         {
             try
             {
-                bool IsSkipLogin = false;
                 // Save the settings to user registry before trying to connect.
                 SaveSettigsToRegistry();
 
@@ -183,25 +183,17 @@ namespace AutocadPlugIn
                 }
 
                 ConnectionController controller1 = new ConnectionController();
-                if (!IsSkipLogin)
+                controller1.Execute(connectionCmd);
+
+                if (controller1.errorString != null)
                 {
-
-                    controller1.Execute(connectionCmd);
-
-                    if (controller1.errorString != null)
-                    {
-                        MessageBox.Show(controller1.errorString);
-                        //Globals.Ribbons.ARASRibbon.IsConnected = false;
-                        this.Cursor = Cursors.Default;
-                        return;
-                    }
-
-                    saveUserLoginDetails(controller1.loggedUserDetails);
+                    MessageBox.Show(controller1.errorString);
+                    //Globals.Ribbons.ARASRibbon.IsConnected = false;
+                    this.Cursor = Cursors.Default;
+                    return;
                 }
-                else
-                {
-                    controller1.isConnect = true;
-                }
+
+                saveUserLoginDetails(controller1.loggedUserDetails);
 
                 if (controller1.isConnect)
                 {
@@ -235,24 +227,25 @@ namespace AutocadPlugIn
 
         private void saveUserLoginDetails(UserDetails loggedUserDetails)
         {
-            if(loggedUserDetails !=null)
+            if (loggedUserDetails == null)
             {
-                RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
-                registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
-                registryKey = registryKey.OpenSubKey("LoginSettings", true);
-
-                registryKey.SetValue("id", loggedUserDetails.id);
-                registryKey.SetValue("firstName", loggedUserDetails.firstName);
-                registryKey.SetValue("lastName", loggedUserDetails.lastName);
-                registryKey.SetValue("companyId", loggedUserDetails.companyId);
-                registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin);
-                if (loggedUserDetails.mobile != null)
-                    registryKey.SetValue("mobile", Convert.ToString(loggedUserDetails.mobile));
-                registryKey.SetValue("status", loggedUserDetails.status);
-                registryKey.SetValue("active", loggedUserDetails.active);
-                registryKey.SetValue("deleted", loggedUserDetails.deleted);
+                MessageBox.Show("Connection to RedBracket failed. Please try again. If the problem persists, please contact your administrator.");
+                return;
             }
-           
+
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
+            registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
+            registryKey = registryKey.OpenSubKey("LoginSettings", true);
+
+            registryKey.SetValue("id", loggedUserDetails.id);
+            registryKey.SetValue("firstName", loggedUserDetails.firstName);
+            registryKey.SetValue("lastName", loggedUserDetails.lastName);
+            registryKey.SetValue("companyId", loggedUserDetails.companyId);
+            registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin);
+            registryKey.SetValue("mobile", loggedUserDetails.mobile);
+            registryKey.SetValue("status", loggedUserDetails.status);
+            registryKey.SetValue("active", loggedUserDetails.active);
+            registryKey.SetValue("deleted", loggedUserDetails.deleted);
         }
 
         private void txt_url_TextChanged(object sender, EventArgs e)

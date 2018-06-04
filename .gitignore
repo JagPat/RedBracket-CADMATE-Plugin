@@ -19,3 +19,7 @@
 /CADController/obj
 /Common/obj/Release
 /RedBracketConnector/obj/Release
+/AutocadPlugIn/packages.config
+/packages/RestSharp.106.3.0
+/RedBracketConnector/packages.config
+/CADController/packages.config
