@@ -242,7 +242,7 @@ namespace AutocadPlugIn
             registryKey.SetValue("lastName", loggedUserDetails.lastName);
             registryKey.SetValue("companyId", loggedUserDetails.companyId);
             registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin);
-            registryKey.SetValue("mobile", loggedUserDetails.mobile);
+            registryKey.SetValue("mobile", loggedUserDetails.mobile == null ? string.Empty : loggedUserDetails.mobile);
             registryKey.SetValue("status", loggedUserDetails.status);
             registryKey.SetValue("active", loggedUserDetails.active);
             registryKey.SetValue("deleted", loggedUserDetails.deleted);

@@ -8,14 +8,14 @@ using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 using CADController;
- 
+
 namespace CADController.Controllers
 {
     public class SaveController : BaseController
     {
         public DataTable dtDrawingProperty = new DataTable();
         RBConnector objRBC = new RBConnector();
-    
+
         public override void Execute(Command command)
         {
         }
@@ -108,48 +108,85 @@ namespace CADController.Controllers
                 }
                 foreach (String str in cmd.NewDrawings)
                 {
-                    PLMObject plmObj = new PLMObject();
-                    String[] plmobjInfo = new String[18];
-                    plmobjInfo = str.Split(';');
-                    plmObj.ObjectNumber = plmobjInfo[0];
-                    plmObj.Classification = plmobjInfo[1];
-                    plmObj.ObjectName = plmobjInfo[2];
-                    plmObj.FilePath = plmobjInfo[3];
-                    plmObj.ObjectId = plmobjInfo[4];
-                    plmObj.ItemType = plmobjInfo[5];
-                    plmObj.ObjectProjectId = plmobjInfo[7];
-                    plmObj.ObjectRealtyId = plmobjInfo[8];
-                    plmObj.ObjectDescription = plmobjInfo[9];
-                    plmObj.ObjectSourceId = plmobjInfo[10];
-                    plmObj.AuthoringTool = "AutoCAD";
-                    plmObj.IsCreateNewRevision = false;
-                    plmObj.IsNew = true;
-                    plmObj.IsRoot = false;
-                    if (plmobjInfo[6] == "1")
-                        plmObj.IsRoot = true;
-                    plmObj.IsNewStructure = IsNewStructure;
-                    if (plmObj.IsRoot)
-                        plmObjs.Insert(0, plmObj);
-                    else
-                        plmObjs.Add(plmObj);
-                    ProjectName = plmobjInfo[11];
-                    ProjectId = plmobjInfo[12];
-                    CreatedOn = plmobjInfo[13];
-                    CreatedBy = plmobjInfo[14];
-                    ModifiedOn = plmobjInfo[15];
-                    ModifiedBy = plmobjInfo[16];
-                    plmObj.ObjectLayouts = plmobjInfo[17];
+                    try
+                    {
+                        PLMObject plmObj = new PLMObject();
+                        String[] plmobjInfo = new String[18];
+                        plmobjInfo = str.Split(';');
+                        plmObj.ObjectNumber = plmobjInfo[0];
+                        plmObj.Classification = plmobjInfo[1];
+                        plmObj.ObjectName = plmobjInfo[2];
+                        plmObj.FilePath = plmobjInfo[3];
+                        // plmObj.ObjectId = plmobjInfo[4];
+                        //Needs to Change
+                        plmObj.ObjectId = "";
+                        plmObj.ItemType = plmobjInfo[5];
+                        plmObj.ObjectProjectId = plmobjInfo[7];
+                        plmObj.ObjectRealtyId = plmobjInfo[8];
+                        plmObj.ObjectDescription = plmobjInfo[9];
+                        plmObj.ObjectSourceId = plmobjInfo[10];
+                        plmObj.AuthoringTool = "AutoCAD";
+                        plmObj.IsCreateNewRevision = false;
+                        plmObj.IsNew = true;
+
+                        plmObj.IsNewStructure = IsNewStructure;
+
+                        ProjectName = plmobjInfo[11];
+                        ProjectId = cmd.ProjectID;
+                        CreatedOn = plmobjInfo[13];
+                        CreatedBy = plmobjInfo[14];
+                        ModifiedOn = plmobjInfo[15];
+                        ModifiedBy = plmobjInfo[16];
+                        plmObj.ObjectLayouts = plmobjInfo[17];
+                        string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
+                        try
+                        {
+                            if (Helper.FileNamePrefix.Length <= fileName.Trim().Length)
+                            {
+                                if (fileName.Substring(0, Helper.FileNamePrefix.Length) == Helper.FileNamePrefix)
+                                {
+                                    fileName = fileName.Substring(Helper.FileNamePrefix.Length);
+                                }
+                            }
+                        }
+                        catch (System.Exception E)
+                        {
+
+                        }
+                        plmObj.ObjectName = fileName;
+                        plmObj.ObjectStatus = cmd.FileStatus;
+                        plmObj.Classification = cmd.FileType;
+                        plmObj.ObjectDescription = cmd.FileDescription;
+                        plmObj.IsRoot = false;
+                        if (plmobjInfo[6] == "1")
+                            plmObj.IsRoot = true;
+                        if (plmObj.IsRoot)
+                            plmObjs.Insert(0, plmObj);
+                        else
+                            plmObjs.Add(plmObj);
+                    }
+                    catch (System.Exception E)
+                    {
+
+                    }
                 }
 
                 //  objConnector.SaveObject(ref plmObjs);
-                bool RetVal = ObjRBC.SaveObject(ref plmObjs, command.FilePath);
+                bool RetVal = ObjRBC.SaveObject(ref plmObjs);
 
-              
-                // updating document info
-                foreach (PLMObject plmobj in plmObjs)
+                try
                 {
-                    dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.Classification, plmobj.ObjectNumber, plmobj.ObjectState, plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy);
+                    // updating document info
+                    foreach (PLMObject plmobj in plmObjs)
+                    {
+                        dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.Classification, plmobj.ObjectNumber, plmobj.ObjectState, plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy);
+                    }
                 }
+                catch (System.Exception E)
+                {
+
+                }
+
                 return RetVal;
             }
             catch (ConnectionException ex)
