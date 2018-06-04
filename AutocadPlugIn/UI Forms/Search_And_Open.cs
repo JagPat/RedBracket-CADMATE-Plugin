@@ -29,7 +29,8 @@ namespace AutocadPlugIn.UI_Forms
         public ArrayList OpenMode1 = new ArrayList();
         ICADManager cadManager = new AutoCADManager();
         public Dictionary<string, string> projectNameNumberKeyValiuePairList = new Dictionary<string, string>();
-        string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutExpandAllEnabled"));
+        string CheckoutExpandAllEnabled = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutExpandAllEnabled"));
+        string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
         ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
 
         public Search_And_Open()
@@ -421,8 +422,6 @@ namespace AutocadPlugIn.UI_Forms
 
         private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
         {
-            string expandAllTrue = Convert.ToString(Helper.GetValueRegistry("CheckOutDirectory", "IsExpandAll"));
-
             if (resultSearchCriteriaResponseList == null)
             {
                 this.searchStatus.Text = "No Items Found..";
@@ -461,7 +460,7 @@ namespace AutocadPlugIn.UI_Forms
                     null);
 
                 AddChildNode(resultSearchCriteriaRecord, ref treeGridNode);
-                if (checkoutPath == "True")
+                if (CheckoutExpandAllEnabled == "True")
                 {
                     //ExpandNode(treeGridNode);
                     treeGridNode.Expand();
@@ -882,10 +881,11 @@ namespace AutocadPlugIn.UI_Forms
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
                     string ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["ProjectId"].FormattedValue);
-                    if(ProjectName.Trim().Length==0)
+                    if (ProjectName.Trim().Length == 0)
                     {
                         ProjectName = "MyFiles";
                     }
+
                     checkoutPath = Path.Combine(checkoutPath, ProjectName);
                     if (!Directory.Exists(checkoutPath))
                     {
@@ -967,8 +967,8 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         fileName = fileName.Substring(Helper.FileNamePrefix.Length);
                     }
-                    string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
 
+                    string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix  + fileName);
 
                     using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
                     {
