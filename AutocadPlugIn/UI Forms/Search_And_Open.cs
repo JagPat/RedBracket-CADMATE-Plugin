@@ -426,6 +426,12 @@ namespace AutocadPlugIn.UI_Forms
                 return;
             }
 
+            resultSearchCriteriaResponseList = (from resultSearchCriteriaResponse in resultSearchCriteriaResponseList
+                                               where resultSearchCriteriaResponse.name.EndsWith("dwg")
+                                               select resultSearchCriteriaResponse).ToList();
+
+            resultSearchCriteriaResponseList = resultSearchCriteriaResponseList.OrderBy(resultSearchCriteriaResponse => resultSearchCriteriaResponse.name).ToList();
+
             if (resultSearchCriteriaResponseList.Count > 50)
             {
                 MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
@@ -434,12 +440,6 @@ namespace AutocadPlugIn.UI_Forms
 
             foreach (ResultSearchCriteria resultSearchCriteriaRecord in resultSearchCriteriaResponseList)
             {
-                string[] splittedString = resultSearchCriteriaRecord.name.Split('.');
-                if (splittedString.Length > 1 && splittedString[splittedString.Length - 1] != "dwg")
-                {
-                    continue;
-                }
-
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
                     null,
