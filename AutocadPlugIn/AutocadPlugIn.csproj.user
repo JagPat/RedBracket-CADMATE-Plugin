@@ -7,7 +7,7 @@
     <StartProgram>C:\Program Files\Autodesk\AutoCAD 2014\acad.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup>
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
     <PublishUrlHistory />
     <InstallUrlHistory />
     <SupportUrlHistory />
