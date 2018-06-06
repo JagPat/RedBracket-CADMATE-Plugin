@@ -23,3 +23,5 @@
 /packages/RestSharp.106.3.0
 /RedBracketConnector/packages.config
 /CADController/packages.config
+/ArasConnector/bin/Release
+/Common/bin/Release
