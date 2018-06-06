@@ -48,6 +48,12 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>RedBracketConnectorSigningKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
       <HintPath>..\Binaries\AcCoreMgd.dll</HintPath>
@@ -260,6 +266,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="RedBracketConnectorSigningKey.snk" />
     <None Include="Resources\large.png" />
   </ItemGroup>
   <ItemGroup>
