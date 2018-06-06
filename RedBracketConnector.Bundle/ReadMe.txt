@@ -1,0 +1,1 @@
+Folder to generate the MSI file for the installation of this plugin.
