@@ -34,8 +34,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Artifacts", "Artifacts", "{
 		Binaries\ExpandableGridView.dll = Binaries\ExpandableGridView.dll
 		Binaries\IOM.dll = Binaries\IOM.dll
 		Binaries\Newtonsoft.Json.dll = Binaries\Newtonsoft.Json.dll
+		Binaries\RedBracketLogo.ico = Binaries\RedBracketLogo.ico
 		Binaries\RestSharp.dll = Binaries\RestSharp.dll
 	EndProjectSection
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RedBracketConnectorSetup", "RedBracketConnectorSetup\RedBracketConnectorSetup.vdproj", "{20103B48-FC75-4FCF-BE5D-843570228EE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +110,12 @@ Global
 		{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}.V2003Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}.V2007Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}.V2007Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Debug|Any CPU.ActiveCfg = Debug
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Office2003|Any CPU.ActiveCfg = Release
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Office2007|Any CPU.ActiveCfg = Release
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Release|Any CPU.ActiveCfg = Release
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.V2003Debug|Any CPU.ActiveCfg = Debug
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.V2007Debug|Any CPU.ActiveCfg = Debug
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
