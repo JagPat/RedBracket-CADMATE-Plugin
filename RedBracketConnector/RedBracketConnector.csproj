@@ -32,12 +32,6 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>RedBracketConnectorSigningKey.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="IOM">
       <HintPath>..\Binaries\IOM.dll</HintPath>
@@ -76,9 +70,6 @@
     <Compile Include="ShowMessage.cs" />
     <Compile Include="UIData.cs" />
     <Compile Include="UserLoginDetails.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="RedBracketConnectorSigningKey.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
