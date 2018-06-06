@@ -76,7 +76,7 @@ namespace RedBracketConnector
                       "/AutocadFiles/updateFileProperties", obj.FilePath,
                       "test.dwg", true, new List<KeyValuePair<string, string>> {
                          new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                          new KeyValuePair<string, string>("isChecked", "true"),
+                          new KeyValuePair<string, string>("isChecked", "false"),
                            new KeyValuePair<string, string>("fileName", obj.ObjectName),
                            new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
                             new KeyValuePair<string, string>("layoutFileId", ""),

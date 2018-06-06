@@ -329,11 +329,13 @@
             // 
             // pictureBox1
             // 
+            this.pictureBox1.ErrorImage = global::AutocadPlugIn.Properties.Resources.Refresh;
             this.pictureBox1.Location = new System.Drawing.Point(503, 3);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(100, 35);
             this.pictureBox1.TabIndex = 10;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
             // 
             // Save_Active_Drawings
             // 

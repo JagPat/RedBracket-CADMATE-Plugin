@@ -71,7 +71,7 @@ namespace RibbonSample.UI_Forms
             this.logoPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.logoPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logoPictureBox.ErrorImage = null;
-            this.logoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("logoPictureBox.Image")));
+            this.logoPictureBox.Image = global::AutocadPlugIn.Properties.Resources.RedBracket;
             this.logoPictureBox.Location = new System.Drawing.Point(3, 3);
             this.logoPictureBox.Name = "logoPictureBox";
             this.tableLayoutPanel.SetRowSpan(this.logoPictureBox, 6);
@@ -90,7 +90,7 @@ namespace RibbonSample.UI_Forms
             this.labelProductName.Name = "labelProductName";
             this.labelProductName.Size = new System.Drawing.Size(354, 17);
             this.labelProductName.TabIndex = 19;
-            this.labelProductName.Text = "Product Name  :   Avrut-AutoCAD2013 Integration Plugin";
+            this.labelProductName.Text = "Product Name  :  RedBracket Connector";
             this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelVersion
@@ -115,7 +115,7 @@ namespace RibbonSample.UI_Forms
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(354, 17);
             this.labelCopyright.TabIndex = 21;
-            this.labelCopyright.Text = "Copyright  :  2013 Steepgraph Systems";
+            this.labelCopyright.Text = "Copyright  :  2018 Redbracket Digital";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelCompanyName
@@ -127,7 +127,7 @@ namespace RibbonSample.UI_Forms
             this.labelCompanyName.Name = "labelCompanyName";
             this.labelCompanyName.Size = new System.Drawing.Size(354, 17);
             this.labelCompanyName.TabIndex = 22;
-            this.labelCompanyName.Text = "Vendor :  Steepgraph Systems Pvt. Ltd. (India)";
+            this.labelCompanyName.Text = "Vendor : Redbracket Digital Pvt Ltd";
             this.labelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxDescription
@@ -169,7 +169,7 @@ namespace RibbonSample.UI_Forms
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "About ARAS-AutoCAD Integration Plugin";
+            this.Text = "About RedBracket Connector";
             this.Load += new System.EventHandler(this.About_Load);
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();

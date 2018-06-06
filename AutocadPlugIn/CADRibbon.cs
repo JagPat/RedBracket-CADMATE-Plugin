@@ -73,6 +73,7 @@ namespace AutocadPlugIn
         public RibbonButton pan7button1 = new RibbonButton();
         public RibbonButton Btn_DrawingInfo = new RibbonButton();
 
+        public RibbonButton Btn_Refresh = new RibbonButton();
 
 
 
@@ -404,6 +405,19 @@ namespace AutocadPlugIn
             RibbonRowPanel pan6row1 = new RibbonRowPanel();
             pan6row1.Items.Add(Btn_Setting);
             panel6Panel.Items.Add(pan6row1);
+
+            Btn_Refresh.Text = "Refresh";
+            Btn_Refresh.ShowText = true;
+            Btn_Refresh.ShowImage = true;
+            Btn_Refresh.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+            Btn_Refresh.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+            Btn_Refresh.Size = RibbonItemSize.Large;
+            Btn_Refresh.Orientation = System.Windows.Controls.Orientation.Vertical;
+            Btn_Refresh.CommandHandler = new Refresh();
+            Btn_Refresh.IsEnabled = LockEnable;
+            pan7row1.Items.Add(Btn_Refresh);
+
+            
 
             Tab.IsActive = true;
         }
@@ -916,64 +930,84 @@ namespace AutocadPlugIn
             }
             try
             {
-                DatabaseSummaryInfo dbsi = db.SummaryInfo;
-                string S = dbsi.ToString();
+                //Geting File info form summuryinfo
 
+                
+
+                
+                string drawingid = "", updatedon = "", projectname = "";
+                try
+                {
+                    var dbsi = db.SummaryInfo.CustomProperties;
+                    while (dbsi.MoveNext())
+                    {
+                        if (Convert.ToString(dbsi.Key) == "drawingid")
+                        {
+                            drawingid = Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "modifiedon")
+                        {
+                            updatedon = Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "projectname")
+                        {
+                            projectname = Convert.ToString(dbsi.Value);
+                        }
+                    }
+                   
+                }
+                catch (System.Exception E)
+                {
+
+                }
+                if (drawingid.Trim().Length == 0 || updatedon.Trim().Length == 0)
+                {
+                    return;
+                }
+                //Checking if file is in redbracket or not;
+                RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
+                RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(drawingid);
+
+                //if (Drawing == null)
+                //{
+                //    RedBracketConnector.ShowMessage.InfoMess("File is no longer available in RedBracket.");
+                //    return;
+                //}
+                if (Convert.ToDateTime(Drawing.updatedon) > Convert.ToDateTime(updatedon))
+                {
+                    if (RedBracketConnector.ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?.") == DialogResult.Yes)
+                    {
+                        string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+                        string ProjectName = projectname;
+                        if (ProjectName.Trim().Length == 0)
+                        {
+                            ProjectName = "MyFiles";
+                        }
+                        checkoutPath = Path.Combine(checkoutPath, ProjectName);
+                        if (!Directory.Exists(checkoutPath))
+                        {
+                            Directory.CreateDirectory(checkoutPath);
+                        }
+                        System.Collections.Hashtable DrawingProperty = new System.Collections.Hashtable();
+                        string filePathName = objRBC.DownloadOpenDocument(drawingid, checkoutPath, ref DrawingProperty);
+                        CADController.ICADManager cadManager = new AutoCADManager();
+                        cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    RedBracketConnector.ShowMessage.InfoMess("This file is latest file.");
+                }
+          
             }
             catch (System.Exception ex)
             {
                 ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
             }
-
-            /* try
-              {
-              Autodesk.AutoCAD.ApplicationServices.Document objActivedoc = acadApp.DocumentManager.MdiActiveDocument;
-              CADController.Commands.SaveCommand cmdSave = new SaveCommand();
-
-                  CADManger objDocMgr = new CADManger();
-                  SaveCommand objcmd = new SaveCommand();
-                  Hashtable htAttributes = new Hashtable();
-                  BaseController controller = new SaveController();
-
-                  string path = objActivedoc.Name;
-
-                  if (!path.Contains("\\"))
-                  {
-                      System.Windows.MessageBox.Show("Please save document first on local computer.");
-                      return;
-                  }
-
-                  CADManger cadManager = new CADManger();
-                  Hashtable drawingAttrs = new Hashtable();
-                  drawingAttrs = (Hashtable)cadManager.GetAttributes();
-
-
-                  //cmdSave.DrawingInformation.ItemType = drawingAttrs["type"].ToString();
-                  //cmdSave.DrawingInformation.ObjectId = drawingAttrs["documentid"].ToString();
-                  //cmdSave.DrawingInformation.FilePath = path;
-                  //controller.Execute(cmdSave);
-
-                 /* if (htAttributes.Contains(PresentationManager.documentProperties.DocumentId.ToString()))
-                      objDocMgr.UpdateAttributes(controller.htDocumentProperty);
-                  else
-                      objDocMgr.SetAttributes(controller.htDocumentProperty);
-                  SetControl_After_Save();
-                  objDocMgr.CloseDocument(objDocMgr.GetActiveDocument(), false, System.Reflection.Missing.Value, System.Reflection.Missing.Value);
-
-                  MessageBox.Show("Document Saved Successfully");
-
-               */
-            /*  if (controller.errorString != null)
-               {
-                   MessageBox.Show(controller.errorString.ToString());
-                   return;
-               }
-               MessageBox.Show("Document Saved Successfully");
-           }
-           catch (System.Exception ex)
-           {
-               MessageBox.Show("Error is ::" + ex.Message);
-           }*/
         }
     }
 
