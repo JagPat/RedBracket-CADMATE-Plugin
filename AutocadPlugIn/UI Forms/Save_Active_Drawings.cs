@@ -300,8 +300,9 @@ namespace AutocadPlugIn.UI_Forms
                 SaveCommand objCmd = new SaveCommand();
 
                 htNewDrawings.Clear();
+                drawings.Clear();
                 GenFileInfo();
-              //return;
+                //return;
                 ICollection keys = htNewDrawings.Keys;
                 IEnumerator key = keys.GetEnumerator();
                 while (key.MoveNext())
@@ -356,8 +357,11 @@ namespace AutocadPlugIn.UI_Forms
                             Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty, 0);
                             objMgr.SetAttributes(htCurrentInfo);
                             objMgr.UpdateLayoutAttribute1(htCurrentInfo);
+
+                            objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
+
                         }
-                        catch(Exception E)
+                        catch (Exception E)
                         {
 
                         }
@@ -596,8 +600,13 @@ namespace AutocadPlugIn.UI_Forms
                         {
                             htNewDrawings.Remove(selectedTreeNode.Cells["drawing"].Value.ToString());
                         }
-                        selectedTreeNode.Cells["drawingnumber"].Value = "";
-                        selectedTreeNode.Cells["cadtype"].Value = "";
+
+                        if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim() == String.Empty)
+                        {
+                            selectedTreeNode.Cells["drawingnumber"].Value = "";
+                            selectedTreeNode.Cells["cadtype"].Value = "";
+                        }
+
                     }
                 }
             }
@@ -610,7 +619,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 foreach (TreeGridNode tgnParent in savetreeGrid.Nodes)
                 {
-                    
+
                     foreach (TreeGridNode tgnChild in tgnParent.Nodes)
                     {
                         GenFileInfoDT(tgnChild);
@@ -618,12 +627,12 @@ namespace AutocadPlugIn.UI_Forms
                     GenFileInfoDT(tgnParent);
                 }
 
-               // var v = htNewDrawings;
-                
+                // var v = htNewDrawings;
+
                 //var ht = from ht1 in htNewDrawings.AsQueryable()
                 //         orderby ht.IsRoot
                 //         select ht.*;
-                   
+
             }
             catch (Exception E)
             {
@@ -697,14 +706,16 @@ namespace AutocadPlugIn.UI_Forms
                             + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString()
                             + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
                             + selectedTreeNode.Cells["Layouts"].Value.ToString();
-                    htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);
+
+                    if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim() == String.Empty)
+                        htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);
 
                     //selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
                     //selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;
                 }
                 else
                 {
-                    
+
                 }
 
                 #endregion
@@ -722,7 +733,12 @@ namespace AutocadPlugIn.UI_Forms
                 CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
                 String sg_projectid = selectedTreeNode.Cells["projectname"].Value.ToString();
-                decimal int_projectid = Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value);
+                try
+                {
+
+                }
+                catch { }
+                decimal int_projectid =Convert.ToString(selectedTreeNode.Cells["projectname"].Value).Trim()==string.Empty?0: Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value);
                 //DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell);
                 // c2.Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "number"); ; ;
                 //c2.Value = int_projectid;
@@ -776,7 +792,7 @@ namespace AutocadPlugIn.UI_Forms
                     c.Value = c2.Value;
 
                     //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "number");
-                   DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
+                    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
                     c1.Value = c2.Value;
                     //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
                     //ChildTreeNode.Cells["projectname"].Value = sg_projectid;

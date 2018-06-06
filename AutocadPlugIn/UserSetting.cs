@@ -379,7 +379,7 @@ namespace AutocadPlugIn.UI_Forms
             BkCheckinDisableRadioBtn.Checked = !(BkCheckinEnableRadioBtn.Checked);
             CheckOutExpEnableRadioBtn.Checked = checkoutUserSettings.isCheckoutExpandAll;
             CheckOutExpDisableRadioBtn.Checked = !(CheckOutExpEnableRadioBtn.Checked);
-            CheckoutdirListBox.Path = checkoutUserSettings.checkoutDirPath;
+            //CheckoutdirListBox.Path = checkoutUserSettings.checkoutDirPath;
 
             lbDriveList.Items.Clear();
             DriveInfo[] allDrives = DriveInfo.GetDrives();
@@ -493,7 +493,7 @@ namespace AutocadPlugIn.UI_Forms
                 string Username = txtSettingUserNm.Text;
                 if (Helper.UserName.Trim().Length > 0)
                     Username = Helper.FirstName;
-                string WorkDir = Path.Combine(DriveName, "redbracket", Username + "-" +Helper.UserID);
+                string WorkDir = Path.Combine(DriveName, Helper.CompanyName, Username + "-" +Helper.UserID);
                 txtWorkingDirectory.Text = WorkDir;
             }
             catch (Exception E)

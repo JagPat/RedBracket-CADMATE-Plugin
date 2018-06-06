@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Data;
 using CADController;
 using Autodesk.AutoCAD.Runtime;
+using RedBracketConnector;
 
 namespace AutocadPlugIn
 {
@@ -59,7 +60,7 @@ namespace AutocadPlugIn
                         foreach (DictionaryEntry entry in currentDocumentProperties)
                         {
                             DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value.ToString());
-                           
+
                         }
                         Db.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
                         aTran.Commit();
@@ -67,10 +68,400 @@ namespace AutocadPlugIn
                             Doc.UpgradeDocOpen();
                     }
                 }
+
+
+
             }
             catch (System.Exception ex) { throw (new System.Exception("AutoCAD getting problem: AutoCADManager.cs setAttributes" + ex.Message)); }
         }
 
+        public void UpdateExRefInfo(string FilePath, System.Data.DataTable dtFileInfo)
+        {
+            try
+            {
+                string path = Path.GetDirectoryName(FilePath);
+                path += @"\" + Helper.FileNamePrefix;
+                Database mainDb = new Database(false, true);
+                using (mainDb)
+                {
+
+                    mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                    mainDb.ResolveXrefs(false, false);
+                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                    for (int i = 0; i < xg.NumNodes; i++)
+                    {
+                        XrefGraphNode xgn = xg.GetXrefNode(i);
+                        GraphNode root = xg.RootNode;
+                        if (xgn.Name == FilePath)
+                        {
+                            continue;
+                        }
+                        switch (xgn.XrefStatus)
+                        {
+                            case XrefStatus.Unresolved:
+                                //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                                break;
+                            case XrefStatus.Unloaded:
+                                //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                                break;
+                            case XrefStatus.Unreferenced:
+                                //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                                break;
+                            case XrefStatus.Resolved:
+                                {
+
+                                    if (xgn.Database != null)
+                                    {
+
+                                        String drawingName = Path.GetFileName(xgn.Database.Filename);
+                                        for (int j = 0; j < dtFileInfo.Rows.Count; j++)
+                                        {
+                                            if (Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]) == drawingName)
+                                            {
+                                                Hashtable ht = Helper.Table2HashTable(dtFileInfo, j);
+                                                SetAttributesXrefFiles(ht, xgn.Database.Filename);
+                                                UpdateLayoutAttributeArefFile(ht, xgn.Database.Filename);
+                                            }
+
+                                        }
+
+
+                                    }
+                                    break;
+                                }
+                        }//Switch Complete
+                    }//For Complete          
+                     // mainDb.SaveAs(FilePath, DwgVersion.Current);
+                    mainDb.Dispose();
+                }//using db complete
+
+            }
+            catch (System.Exception ex)
+            {
+                RedBracketConnector.ShowMessage.ErrorMess(ex.Message);
+            }
+        }
+        public void UpdateLayoutAttributeArefFile(Hashtable documentProperties, string FilePath)
+        {
+            try
+            {
+                System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
+                dtTreeGrid.Columns.Add("drawingname", typeof(String));
+                dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
+                dtTreeGrid.Columns.Add("classification", typeof(String));
+                dtTreeGrid.Columns.Add("revision", typeof(String));
+                dtTreeGrid.Columns.Add("drawingid", typeof(String));
+                dtTreeGrid.Columns.Add("filepath", typeof(String));
+                dtTreeGrid.Columns.Add("drawingstate", typeof(String));
+                dtTreeGrid.Columns.Add("generation", typeof(String));
+                dtTreeGrid.Columns.Add("type", typeof(String));
+                dtTreeGrid.Columns.Add("sourceid", typeof(String));
+                dtTreeGrid.Columns.Add("isroot", typeof(String));
+                dtTreeGrid.Columns.Add("projectname", typeof(String));
+                dtTreeGrid.Columns.Add("projectid", typeof(String));
+                dtTreeGrid.Columns.Add("createdon", typeof(String));
+                dtTreeGrid.Columns.Add("createdby", typeof(String));
+                dtTreeGrid.Columns.Add("modifiedon", typeof(String));
+                dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
+                dtTreeGrid.Columns.Add("lockstatus", typeof(String));
+                dtTreeGrid.Columns.Add("lockby", typeof(String));
+                dtTreeGrid.Columns.Add("Error", typeof(String));
+                //if (!(ArasConnector.ArasConnector.Isconnected))
+                //{
+                //    MessageBox.Show("Please login into Avrut Innova for this functionality...!!");
+                //    return;
+                //}
+
+                Database db = new Database(false, true); ;
+                db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                // Hashtable drawingAttrs = documentProperties; //new Hashtable();
+                Hashtable drawingAttrs = new Hashtable();
+                IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
+                while (en.MoveNext())
+                {
+                    // if(documentProperties==null)
+                    {
+                        drawingAttrs.Add(en.Key, en.Value);
+                    }
+                    // else
+                    {
+
+                    }
+
+                }
+                if (drawingAttrs.Count < 0) return;
+                using (Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    #region "TraverseForLayout"
+                    DBDictionary layoutDict = tr.GetObject(db.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
+                    ObjectIdCollection layoutsToPlot = new ObjectIdCollection();
+                    foreach (DBDictionaryEntry de in layoutDict)
+                    {
+                        String layoutName = de.Key;
+                        if (layoutName != "Model")
+                        {
+                            LayoutManager.Current.CurrentLayout = layoutName;
+                            Hashtable LayoutData = documentProperties; //new Hashtable();
+                                                                       // ArasConnector.ArasConnector LayoutDetail = new ArasConnector.ArasConnector();
+                                                                       // LayoutData = LayoutDetail.GetLayoutDetail(drawingAttrs["drawingid"].ToString(), layoutName);
+
+                            #region "TraverseForTitleblock"
+
+                            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                            BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.PaperSpace], OpenMode.ForRead);
+                            layoutsToPlot.Add(btr.LayoutId);
+
+                            foreach (ObjectId objId in btr)
+                            {
+                                Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForRead);
+                                string blkName = ent.BlockName;
+                                if (LayoutData.Count < 1) continue;
+                                if (ent != null)
+                                {
+                                    BlockReference br = ent as BlockReference;
+                                    if (br != null)
+                                    {
+                                        BlockTableRecord bd = (BlockTableRecord)tr.GetObject(br.BlockTableRecord, OpenMode.ForRead);
+                                        //MessageBox.Show(bd.Name);//Block Name
+                                        foreach (ObjectId arId in br.AttributeCollection)
+                                        {
+                                            DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
+                                            AttributeReference ar = obj as AttributeReference;
+
+                                            if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["drawingnumber"].ToString();//drawingAttrs["drawingnumber"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "DRAWINGNAME")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = drawingAttrs["drawingname"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "PROJECTNAME")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["projectname"].ToString(); //drawingAttrs["projectname"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "PROJECTID")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["projectid"].ToString(); //drawingAttrs["projectid"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "GENERATION")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = drawingAttrs["generation"].ToString(); //drawingAttrs["generation"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "REVISION")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["revision"].ToString(); //drawingAttrs["revision"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "DWGSTATE")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = drawingAttrs["drawingstate"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "GOODNOT")
+                                            {
+                                                ar.UpgradeOpen();
+                                                if (((LayoutData["drawingstate"].ToString() == "GFC") || (LayoutData["drawingstate"].ToString() == "Released")) && ((drawingAttrs["drawingstate"].ToString() == "GFC") || (drawingAttrs["drawingstate"].ToString() == "Coordinated") || (drawingAttrs["drawingstate"].ToString() == "Const-Dwg")))
+                                                {
+                                                    ar.TextString = "GOOD";
+                                                }
+                                                else
+                                                {
+                                                    ar.TextString = "NOT";
+                                                }
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "LAYOUTNAME")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = layoutName;
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "CREATEDBY")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["createdby"].ToString(); //drawingAttrs["createdby"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "MODIFIEDBY")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["modifiedby"].ToString(); //drawingAttrs["modifiedby"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "CREATEDON")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["createdon"].ToString().Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "MODIFIEDON")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["modifiedon"].ToString().Substring(0, 10); //drawingAttrs["modifiedon"].ToString().Substring(0,10);
+                                                ar.DowngradeOpen();
+                                            }
+                                            if (ar.Tag.ToUpper() == "DRAWINGSTATE")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["drawingstate"].ToString(); //drawingAttrs["drawingstate"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
+                                        }
+                                    }
+                                }
+                            } //end foreach Block
+                            #endregion "TraverseForTitleblock"                  
+                        }
+                        else
+                        {
+                            #region "if Model is there"
+                            /*
+                            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                            BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
+                            PlotInfo pi = new PlotInfo();
+                            PlotInfoValidator piv = new PlotInfoValidator();
+                            piv.MediaMatchingPolicy = MatchingPolicy.MatchEnabled;
+
+                            if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
+                            {
+                                PlotEngine pe = PlotFactory.CreatePublishEngine();
+                                using (pe)
+                                {
+                                    PlotProgressDialog ppd = new PlotProgressDialog(false, 1, true);
+                                    using (ppd)
+                                    {  
+                                        Layout lo = (Layout)tr.GetObject(btr.LayoutId, OpenMode.ForRead);
+                                        PlotSettings ps = new PlotSettings(lo.ModelType);
+                                        ps.CopyFrom(lo);
+                                        PlotSettingsValidator psv = PlotSettingsValidator.Current;
+                                        psv.SetPlotType(ps, Autodesk.AutoCAD.DatabaseServices.PlotType.Extents);
+                                        psv.SetUseStandardScale(ps, true);
+                                        psv.SetStdScaleType(ps, StdScaleType.ScaleToFit);
+                                        psv.SetPlotCentered(ps, true);                                        
+                                        psv.SetPlotConfigurationName(ps, "PublishToWeb JPG.pc3", "Sun_Hi-Res_(1600.00_x_1280.00_Pixels)");//Plot to jpeg
+                                        pi.Layout = btr.LayoutId;
+                                        LayoutManager.Current.CurrentLayout = lo.LayoutName;
+                                        pi.OverrideSettings = ps;
+                                        piv.Validate(pi);
+                                        ppd.set_PlotMsgString(PlotMessageIndex.DialogTitle, "Custom Plot Progress");
+                                        ppd.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Cancel Job");
+                                        ppd.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Cancel Sheet");
+                                        ppd.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, "Sheet Set Progress");
+                                        ppd.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "Sheet Progress");
+                                        ppd.LowerPlotProgressRange = 0;
+                                        ppd.UpperPlotProgressRange = 100;
+                                        ppd.PlotProgressPos = 0;
+                                        ppd.OnBeginPlot();
+                                        ppd.IsVisible = false;
+                                        pe.BeginPlot(ppd, null);
+                                        pe.BeginDocument(pi, doc.Name, null, 1, true, "C:\\Test\\" + lo.LayoutName + ".jpg");////Plot to jpeg  
+                                        ppd.OnBeginSheet();
+                                        ppd.LowerSheetProgressRange = 0;
+                                        ppd.UpperSheetProgressRange = 100;
+                                        ppd.SheetProgressPos = 0;
+                                        PlotPageInfo ppi = new PlotPageInfo();
+                                        pe.BeginPage(ppi, pi, true, null);
+                                        pe.BeginGenerateGraphics(null);
+                                        ppd.SheetProgressPos = 50;
+                                        pe.EndGenerateGraphics(null);
+                                        pe.EndPage(null);
+                                        ppd.SheetProgressPos = 100;
+                                        ppd.OnEndSheet();                                        
+                                        ppd.PlotProgressPos += (100 / layoutsToPlot.Count);
+                                        pe.EndDocument(null);
+                                        ppd.PlotProgressPos = 100;
+                                        ppd.OnEndPlot();
+                                        pe.EndPlot(null);
+                                    }
+                                }
+                            }
+
+                            else
+                            {
+                                MessageBox.Show("\nAnother plot is in progress.");
+                            }
+                            */
+                            #endregion "if Model is there"
+                        }
+                    }
+                    #endregion "TraverseForLayout
+
+                    #region "PlotLayouts"
+                    //PlotLayout(doc, tr, layoutsToPlot);
+                    #endregion "PlotLayouts"
+                    //db.Save();
+                    tr.Commit();
+                    tr.Dispose();
+                    db.SaveAs(FilePath, DwgVersion.Current);
+                }//end Transaction tr
+
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message.ToString(), "Error");
+            }
+        }
+        public void SetAttributesXrefFiles(Hashtable hashTable, string FilePath)
+        {
+            try
+            {
+                currentDocumentProperties = hashTable;
+
+                DatabaseSummaryInfoBuilder DbSib = new DatabaseSummaryInfoBuilder();
+
+
+                try
+                {
+
+
+                    Database mainDb = new Database(false, true);
+                    using (mainDb)
+                    {
+
+
+                        mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                        Autodesk.AutoCAD.DatabaseServices.TransactionManager tm = mainDb.TransactionManager;
+                        using (Transaction aTran = tm.StartTransaction())
+                        {
+                            foreach (DictionaryEntry entry in currentDocumentProperties)
+                            {
+                                DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value.ToString());
+
+                            }
+                            mainDb.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
+                            aTran.Commit();
+                            aTran.Dispose();
+                            mainDb.SaveAs(FilePath, DwgVersion.Current);
+                        }
+
+                        //mainDb.Save( );
+                    }//using db complete
+
+                }
+                catch (System.Exception ex)
+                {
+                    RedBracketConnector.ShowMessage.ErrorMess(ex.Message);
+                }
+
+            }
+            catch (System.Exception ex) { throw (new System.Exception("AutoCAD getting problem: AutoCADManager.cs setAttributes" + ex.Message)); }
+        }
         public Hashtable GetAttributes()
         {
             Hashtable hastable = new Hashtable();
@@ -251,6 +642,110 @@ namespace AutocadPlugIn
             }
         }
 
+        public void UpdateExRefPathInfo(string FilePath)
+        {
+            try
+            {
+                //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                string path = Path.GetDirectoryName(FilePath);
+                path += @"\" + Helper.FileNamePrefix;
+                Database mainDb = new Database(false, true);
+                using (mainDb)
+                {
+                    //Database db = doc.Database;
+                    //Editor ed = doc.Editor;
+                    string rootid = "";
+                    mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                    mainDb.ResolveXrefs(false, false);
+                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                    for (int i = 0; i < xg.NumNodes; i++)
+                    {
+                        XrefGraphNode xgn = xg.GetXrefNode(i);
+                        GraphNode root = xg.RootNode;
+                        if (xgn.Name == FilePath)
+                        {
+                             
+                            continue;
+                        }
+                        //switch (xgn.XrefStatus)
+                        //{
+                        if (XrefStatus.Unresolved == xgn.XrefStatus)
+                        {
+                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                        }
+                        else if (XrefStatus.Unloaded == xgn.XrefStatus)
+                        {
+                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
+                        }
+                        else if (XrefStatus.Unreferenced == xgn.XrefStatus)
+                        {
+                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
+                        }
+                        else if (XrefStatus.Resolved == xgn.XrefStatus )
+                        {
+
+
+                            Database xdb = xgn.Database;
+                            if (xdb != null)
+                            {
+                                Transaction tr = xdb.TransactionManager.StartTransaction();
+                                String drawingName;
+                                String[] str = new String[14];
+                                using (tr)
+                                {
+                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                                    mainDb.XrefEditEnabled = true;
+
+                                    string originalpath = btr.PathName;
+                                    string childname = Path.GetFileName(originalpath);
+                                    string newpath = path + childname;
+
+                                    btr.PathName = newpath;
+                                    //xdb.Filename = "";
+                                    tr.Commit();
+                                }
+                            }                     
+                        }
+                        else if (XrefStatus.FileNotFound == xgn.XrefStatus)
+                        {
+
+
+                            Database xdb = xgn.Database;
+                            if (xdb != null)
+                            {
+                                Transaction tr = xdb.TransactionManager.StartTransaction();
+                                String drawingName;
+                                String[] str = new String[14];
+                                using (tr)
+                                {
+                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                                    mainDb.XrefEditEnabled = true;
+
+                                    string originalpath = btr.PathName;
+                                    string childname = Path.GetFileName(originalpath);
+                                    string newpath = path + childname;
+
+                                    btr.PathName = newpath;
+                                    //xdb.Filename = "";
+                                    tr.Commit();
+                                }
+                            }
+                        }                         
+                        //}//Switch Complete
+                    }//For Complete          
+                    mainDb.SaveAs(FilePath, DwgVersion.Current);
+                }//using db complete
+
+            }
+            catch (System.Exception ex)
+            {
+                RedBracketConnector.ShowMessage.ErrorMess(ex.Message);
+            }
+        }
+
         public System.Data.DataTable GetExternalRefreces()
         {
             System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
@@ -361,8 +856,39 @@ namespace AutocadPlugIn
                                                 }
                                                 if (rootdrawingAttrs.Count != 0)
                                                 {
-                                                    rootid = rootdrawingAttrs["drawingid"].ToString();
-                                                    dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"].ToString(), rootdrawingAttrs["drawingnumber"].ToString(), rootdrawingAttrs["classification"].ToString(), rootdrawingAttrs["revision"].ToString(), rootdrawingAttrs["drawingid"].ToString(), xgn.Database.Filename.ToString(), rootdrawingAttrs["drawingstate"].ToString(), rootdrawingAttrs["generation"].ToString(), rootdrawingAttrs["type"].ToString(), childrens, "1", rootdrawingAttrs["projectname"].ToString(), rootdrawingAttrs["projectid"].ToString(), Layouts.ToString());
+                                                    try
+                                                    {
+                                                        rootid = rootdrawingAttrs["drawingid"].ToString();
+                                                        //dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"].ToString(), 
+                                                        //    rootdrawingAttrs["drawingnumber"].ToString(), 
+                                                        //    rootdrawingAttrs["classification"].ToString(), 
+                                                        //    rootdrawingAttrs["revision"].ToString(), 
+                                                        //    rootdrawingAttrs["drawingid"].ToString(),
+                                                        //    xgn.Database.Filename.ToString(),
+                                                        //    rootdrawingAttrs["drawingstate"].ToString(),
+                                                        //    rootdrawingAttrs["generation"].ToString(),
+                                                        //    rootdrawingAttrs["type"].ToString(), 
+                                                        //    childrens, "1", rootdrawingAttrs["projectname"].ToString(),
+                                                        //    rootdrawingAttrs["projectid"].ToString(), Layouts.ToString());
+
+                                                        dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"] == null ? string.Empty : rootdrawingAttrs["drawingname"],
+                                                          rootdrawingAttrs["drawingnumber"] == null ? string.Empty : rootdrawingAttrs["drawingnumber"],
+                                                          rootdrawingAttrs["classification"] == null ? string.Empty : rootdrawingAttrs["classification"],
+                                                          rootdrawingAttrs["revision"] == null ? string.Empty : rootdrawingAttrs["revision"],
+                                                          rootdrawingAttrs["drawingid"] == null ? string.Empty : rootdrawingAttrs["drawingid"],
+                                                          xgn.Database.Filename == null ? string.Empty : xgn.Database.Filename,
+                                                          rootdrawingAttrs["drawingstate"] == null ? string.Empty : rootdrawingAttrs["drawingstate"],
+                                                          rootdrawingAttrs["generation"] == null ? string.Empty : rootdrawingAttrs["generation"],
+                                                          rootdrawingAttrs["type"] == null ? string.Empty : rootdrawingAttrs["type"],
+                                                          childrens, "1", rootdrawingAttrs["projectname"] == null ? string.Empty : rootdrawingAttrs["projectname"],
+                                                          rootdrawingAttrs["projectid"] == null ? string.Empty : rootdrawingAttrs["projectid"],
+                                                          Layouts == null ? string.Empty : Layouts);
+
+                                                    }
+                                                    catch (System.Exception E)
+                                                    {
+
+                                                    }
                                                 }
                                                 else
                                                 {

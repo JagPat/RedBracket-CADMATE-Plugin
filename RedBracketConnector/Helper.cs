@@ -20,6 +20,7 @@ namespace RedBracketConnector
         public static string LastName = "User";
         public static string UserID = "1";
         public static string FileNamePrefix = "RBDF-";
+        public static string CompanyName = "RedBracket";
         public static bool IsEventAssign = false;
         public static object GetValueRegistry(string subKeyName, string keyName)
         {
@@ -52,7 +53,7 @@ namespace RedBracketConnector
             {
                 String Text = "All";
                 if (IsSelect)
-                    Text = "Select";
+                    Text = "---Select---";
                 dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember);
 
                 cmb.DataSource = dt;
@@ -94,7 +95,7 @@ namespace RedBracketConnector
         {
             try
             {
-                
+
                 if (dt == null)
                 {
                     dt.Columns.Add("id");
@@ -117,7 +118,8 @@ namespace RedBracketConnector
                 }
                 DataRow dr = dt.NewRow();
                 dr["id"] = -1;
-                dr[DisplayMember] = "---" + Text + "---";
+                //dr[DisplayMember] = "---" + Text + "---";
+                dr[DisplayMember] = Text;
                 dr["Rank"] = 1;
 
                 dt.Rows.Add(dr);
@@ -161,16 +163,16 @@ namespace RedBracketConnector
             //put a breakpoint here and check datatable
             return dataTable;
         }
-        public static string FindValueInCMB(DataTable dt,string ValueMember,string Value, string DisplayMember)
+        public static string FindValueInCMB(DataTable dt, string ValueMember, string Value, string DisplayMember)
         {
             string RValue = "";
             try
             {
-                DataRow[] dr= dt.Select(ValueMember+" = '" + Value + "'");
+                DataRow[] dr = dt.Select(ValueMember + " = '" + Value + "'");
 
-                if(dr.Length>0)
+                if (dr.Length > 0)
                 {
-                    RValue =Convert.ToString( dr[0][DisplayMember]);
+                    RValue = Convert.ToString(dr[0][DisplayMember]);
                 }
             }
             catch (Exception E)
@@ -216,20 +218,20 @@ namespace RedBracketConnector
                 }
             }
         }
-        public static Hashtable Table2HashTable(DataTable dt,int i)
+        public static Hashtable Table2HashTable(DataTable dt, int i)
         {
             Hashtable DrawingProperty = new Hashtable();
 
             try
             {
-                if(dt.Rows.Count>i)
+                if (dt.Rows.Count > i)
                 {
                     DrawingProperty.Add("DrawingId", dt.Rows[i]["DrawingId"]);
                     DrawingProperty.Add("DrawingName", dt.Rows[i]["DrawingName"]);
                     DrawingProperty.Add("Classification", dt.Rows[i]["Classification"]);
                     DrawingProperty.Add("DrawingNumber", dt.Rows[i]["DrawingNumber"]);
                     DrawingProperty.Add("DrawingState", dt.Rows[i]["DrawingState"]);
-                    DrawingProperty.Add("Revision", dt.Rows[i]["Revision"]);         
+                    DrawingProperty.Add("Revision", dt.Rows[i]["Revision"]);
                     DrawingProperty.Add("Generation", dt.Rows[i]["Generation"]);
                     DrawingProperty.Add("Type", dt.Rows[i]["Type"]);
                     DrawingProperty.Add("filepath", dt.Rows[i]["filepath"]);
@@ -248,7 +250,7 @@ namespace RedBracketConnector
                     ShowMessage.ErrorMess("Specified index not found.");
                 }
             }
-            catch(Exception E)
+            catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }

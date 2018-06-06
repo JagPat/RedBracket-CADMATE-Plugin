@@ -143,15 +143,15 @@ namespace AutocadPlugIn
                              DocumentBeginCloseEventArgs docBegClsEvtArgs)
         {
             // Display a message box prompting to continue closing the document
-            if (System.Windows.Forms.MessageBox.Show(
-                                 "The document is about to be closed." +
-                                 "\nDo you want to continue?",
-                                 "Close Document",
-                                 System.Windows.Forms.MessageBoxButtons.YesNo) ==
-                                 System.Windows.Forms.DialogResult.No)
-            {
-                docBegClsEvtArgs.Veto();
-            }
+            //if (System.Windows.Forms.MessageBox.Show(
+            //                     "The document is about to be closed." +
+            //                     "\nDo you want to continue?",
+            //                     "Close Document",
+            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
+            //                     System.Windows.Forms.DialogResult.No)
+            //{
+            //    docBegClsEvtArgs.Veto();
+            //}
         }
 
         //AutoCAD Command
@@ -784,8 +784,8 @@ namespace AutocadPlugIn
                 //AutocadPlugIn.UI_Forms.frmLock lockForm= new AutocadPlugIn.UI_Forms.frmLock();
                 //lockForm.ShowDialog();
 
-                //frmLock obj = new frmLock();
-                frmRefresh obj = new frmRefresh();
+                frmLock obj = new frmLock();
+                //frmRefresh obj = new frmRefresh();
                 obj.ShowDialog();
 
             }
