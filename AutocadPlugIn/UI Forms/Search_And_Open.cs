@@ -211,14 +211,14 @@ namespace AutocadPlugIn.UI_Forms
 
             dynamic searchCriteria = null;
 
-            if (!string.IsNullOrEmpty(DGNumber.Text) || CDType.SelectedIndex > 0 || CDState.SelectedIndex > 0 || !string.IsNullOrEmpty(textBox_foldername.Text))
+            if (!string.IsNullOrEmpty(DGName.Text) || CDType.SelectedIndex > 0 || CDState.SelectedIndex > 0 || !string.IsNullOrEmpty(textBox_foldername.Text))
             {
                 searchCriteria = new SearchCriteria();
             }
 
-            if (!string.IsNullOrEmpty(DGNumber.Text))
+            if (!string.IsNullOrEmpty(DGName.Text))
             {
-                searchCriteria.fileNo = DGNumber.Text;
+                searchCriteria.fileNo = DGName.Text;
             }
 
             if (CDType.SelectedIndex > 0)
