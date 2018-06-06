@@ -1040,10 +1040,7 @@ namespace RedBracketConnector
                         MessageBox.Show("Some error occurred while locking file.");
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    
                 }
             }
             catch (Exception ex)
