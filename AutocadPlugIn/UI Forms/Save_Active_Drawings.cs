@@ -732,7 +732,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                String sg_projectid = selectedTreeNode.Cells["projectname"].Value.ToString();
+                String sg_projectid =Convert.ToString( selectedTreeNode.Cells["projectname"].Value );
                 try
                 {
 
@@ -780,7 +780,8 @@ namespace AutocadPlugIn.UI_Forms
             if (e.ColumnIndex == 14)
             {
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                String sg_projectid = selectedTreeNode.Cells["projectid"].Value.ToString();
+                
+                String sg_projectid = Convert.ToString(selectedTreeNode.Cells["projectid"].Value);
                 DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
 
                 selectedTreeNode.Cells["projectname"].Value = c2.Value;
