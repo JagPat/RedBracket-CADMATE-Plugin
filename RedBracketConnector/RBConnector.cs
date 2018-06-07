@@ -123,7 +123,9 @@ namespace RedBracketConnector
                                                   new KeyValuePair<string, string>("userName", Helper.UserName) ,
                                             new KeyValuePair<string, string>("fileId", ParentFileID) ,
                                             new KeyValuePair<string, string>("project", obj.ObjectProjectId)  ,
-                                            new KeyValuePair<string, string>("xrefFileId", obj.ObjectId.Trim()) });
+                                            new KeyValuePair<string, string>("xrefFileId", obj.ObjectId.Trim()),
+                                            new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                                            new KeyValuePair<string, string>("fileType", obj.Classification) });
                         //}
                         //else
                         //{

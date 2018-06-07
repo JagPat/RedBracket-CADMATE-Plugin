@@ -921,25 +921,30 @@ namespace AutocadPlugIn
                                                 IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
                                                 while (en.MoveNext())
                                                 {
-                                                    drawingAttrs.Add(en.Key, en.Value);
+                                                    drawingAttrs.Add(en.Key, en.Value==null?string.Empty:Convert.ToString(en.Value));
                                                 }
                                                 if (drawingAttrs.Count != 0)
                                                 {
 
 
-                                                    dtTreeGrid.Rows.Add(drawingAttrs["drawingname"].ToString(),
-                                                        drawingAttrs["drawingnumber"].ToString(),
-                                                        drawingAttrs["classification"].ToString(),
-                                                        drawingAttrs["filetypeid"].ToString(),
-                                                        drawingAttrs["revision"].ToString(),
-                                                        drawingAttrs["drawingid"].ToString(),
-                                                        xgn.Database.Filename.ToString(),
-                                                        drawingAttrs["drawingstate"].ToString(),
-                                                        drawingAttrs["generation"].ToString(),
+                                                    dtTreeGrid.Rows.Add(
+                                                        
+                                                      drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]),
+                                                      drawingAttrs["drawingnumber"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingnumber"]),
+                                                        drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]),
+                                                        drawingAttrs["filetypeid"] == null ? string.Empty:Convert.ToString(drawingAttrs["filetypeid"]),
+
+                                                        drawingAttrs["revision"] == null ? string.Empty : Convert.ToString(drawingAttrs["revision"]),
+                                                    drawingAttrs["drawingid"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingid"]),
+                                                      xgn.Database.Filename.ToString(),
+                                                        drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]),
+                                                    drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]),
+
+                                                      drawingAttrs["type"] == null ? string.Empty : Convert.ToString(drawingAttrs["type"]),
                                                         drawingAttrs["type"].ToString(),
                                                         childrens,
                                                         "0",
-                                                        drawingAttrs["projectname"].ToString(),
+                                                        drawingAttrs["projectid"].ToString(),
                                                         drawingAttrs["projectid"].ToString(),
                                                         Layouts);
 
