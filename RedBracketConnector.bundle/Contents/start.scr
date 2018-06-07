@@ -1,0 +1,4 @@
+netload "./AutocadPlugIn.dll"
+_Ribbon 
+CoMMANDLINE 
+myribbon 
