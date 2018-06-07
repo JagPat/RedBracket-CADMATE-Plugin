@@ -106,12 +106,12 @@ namespace RedBracketConnector
         /// <param name="addUserNametoUrl">Username should be added to URL?</param>
         /// <param name="urlParameters">Specify list of parameters if any.</param>
         /// <returns>Response of the server in IRestResponse format.</returns>
-        public static IRestResponse SaveObject(string baseAddress, string relevantAddress, string filePath, string  fileName, bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
+        public static IRestResponse SaveObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
         {
             try
             {
                 //var restClient = new RestClient("https://test.redbracket.in:8090");
-                
+                string fileName = "";
                 var restClient = new RestClient(baseAddress);
                 int count = 0;
                 if (addUserNametoUrl)
@@ -156,11 +156,12 @@ namespace RedBracketConnector
         }
 
 
-        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath, string fileName, bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
+        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
         {
             try
             {
                 //var restClient = new RestClient("https://test.redbracket.in:8090");
+                string fileName = "";
                 string FIleid = "";
                 var restClient = new RestClient(baseAddress);
                 int count = 0;

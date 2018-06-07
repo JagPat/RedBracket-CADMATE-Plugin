@@ -79,9 +79,9 @@ namespace RedBracketConnector
                             restResponse = (RestResponse)ServiceHelper.UpdateObject(
                       Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                       "/AutocadFiles/updateFileProperties", obj.FilePath,
-                      "test.dwg", true, new List<KeyValuePair<string, string>> {
+                        true, new List<KeyValuePair<string, string>> {
                          new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                          new KeyValuePair<string, string>("isChecked", "false"),
+                          new KeyValuePair<string, string>("isChecked", "true"),// Need to change
                            new KeyValuePair<string, string>("fileName", obj.ObjectName),
                            new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
                             new KeyValuePair<string, string>("layoutFileId", ""),
@@ -97,7 +97,7 @@ namespace RedBracketConnector
                             restResponse = (RestResponse)ServiceHelper.SaveObject(
                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                        "/AutocadFiles/uploadFileService", obj.FilePath,
-                       "test.dwg", true, new List<KeyValuePair<string, string>> {
+                            true, new List<KeyValuePair<string, string>> {
                             new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
                             new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
                             new KeyValuePair<string, string>("fileType", obj.Classification)});
@@ -118,7 +118,7 @@ namespace RedBracketConnector
                         restResponse = (RestResponse)ServiceHelper.SaveObject(
                                         Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                                         "/AutocadFiles/uploadXRefFiles", obj.FilePath,
-                                        "test.dwg", false, new List<KeyValuePair<string, string>> {
+                                          false, new List<KeyValuePair<string, string>> {
                                                  new KeyValuePair<string, string>("source", "Computer") ,
                                                   new KeyValuePair<string, string>("userName", Helper.UserName) ,
                                             new KeyValuePair<string, string>("fileId", ParentFileID) ,
