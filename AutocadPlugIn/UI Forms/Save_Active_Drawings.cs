@@ -87,12 +87,12 @@ namespace AutocadPlugIn.UI_Forms
             Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true);
             #endregion filestatus
 
-            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "name", "id", true);
+            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true);
 
             //ProjectName.DataSource = dtProjectNo;
             //ProjectName.DisplayMember = "ProjectName";
             //ProjectName.ValueMember = "ProjectId";
-            Helper.FIllCMB(ProjectId, objRBC.GetProjectDetail(), "number", "id", true);
+          //  Helper.FIllCMB(ProjectId, objRBC.GetProjectDetail(), "number", "id", true);
 
 
             //ProjectId.DataSource = dtProjectNo;
@@ -730,95 +730,92 @@ namespace AutocadPlugIn.UI_Forms
         {
             if (e.ColumnIndex == 13)
             {
-                CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                String sg_projectid = selectedTreeNode.Cells["projectname"].Value.ToString();
-                try
-                {
+                //CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+                //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                //String sg_projectid =Convert.ToString( selectedTreeNode.Cells["projectname"].Value );
+                
+                //decimal int_projectid =Convert.ToString(selectedTreeNode.Cells["projectname"].Value).Trim()==string.Empty?0: Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value);
+                ////DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell);
+                //// c2.Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "number"); ; ;
+                ////c2.Value = int_projectid;
+                //selectedTreeNode.Cells["projectid"].Value = selectedTreeNode.Cells["projectname"].Value;
+                ////selectedTreeNode.Cells["projectid"].Value = sg_projectid;
+                //selectedTreeNode.Cells["realtyname"].Value = "";
+                //selectedTreeNode.Cells["realtyid"].Value = "";
+                //for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
+                //{
+                //    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
+                //    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
 
-                }
-                catch { }
-                decimal int_projectid =Convert.ToString(selectedTreeNode.Cells["projectname"].Value).Trim()==string.Empty?0: Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value);
-                //DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell);
-                // c2.Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "number"); ; ;
-                //c2.Value = int_projectid;
-                selectedTreeNode.Cells["projectid"].Value = selectedTreeNode.Cells["projectname"].Value;
-                //selectedTreeNode.Cells["projectid"].Value = sg_projectid;
-                selectedTreeNode.Cells["realtyname"].Value = "";
-                selectedTreeNode.Cells["realtyid"].Value = "";
-                for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
-                {
-                    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
-                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
+                //    c.Value = selectedTreeNode.Cells["projectid"].Value;
+                //    //c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
+                //    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
+                //    c1.Value = selectedTreeNode.Cells["projectid"].Value;
+                //    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
+                //    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
+                //    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
+                //}
+                //System.Data.DataTable dtRealtyNo = new System.Data.DataTable();
+                //dtRealtyNo.Columns.Add("ProjectId", typeof(string));
+                //dtRealtyNo.Columns.Add("RealtyName", typeof(string));
+                //dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
+                //dtRealtyNo = objWordConfig.GetRealtyEntity();
+                //DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyNo", DataViewRowState.CurrentRows);
+                //Realty.AddNew();
 
-                    c.Value = selectedTreeNode.Cells["projectid"].Value;
-                    //c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
-                    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
-                    c1.Value = selectedTreeNode.Cells["projectid"].Value;
-                    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
-                    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
-                    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
-                }
-                System.Data.DataTable dtRealtyNo = new System.Data.DataTable();
-                dtRealtyNo.Columns.Add("ProjectId", typeof(string));
-                dtRealtyNo.Columns.Add("RealtyName", typeof(string));
-                dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
-                dtRealtyNo = objWordConfig.GetRealtyEntity();
-                DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyNo", DataViewRowState.CurrentRows);
-                Realty.AddNew();
+                //RealtyName.DataSource = Realty;
+                //RealtyName.DisplayMember = "RealtyName";
+                //RealtyName.ValueMember = "RealtyNo";
+                //RealtyId.DataSource = Realty;
+                //RealtyId.DisplayMember = "RealtyNo";
+                //RealtyId.ValueMember = "RealtyNo";
 
-                RealtyName.DataSource = Realty;
-                RealtyName.DisplayMember = "RealtyName";
-                RealtyName.ValueMember = "RealtyNo";
-                RealtyId.DataSource = Realty;
-                RealtyId.DisplayMember = "RealtyNo";
-                RealtyId.ValueMember = "RealtyNo";
-
-                savetreeGrid.Refresh();
-                this.Refresh();
+                //savetreeGrid.Refresh();
+                //this.Refresh();
             }
             if (e.ColumnIndex == 14)
             {
-                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                String sg_projectid = selectedTreeNode.Cells["projectid"].Value.ToString();
-                DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
+                //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                
+                //String sg_projectid = Convert.ToString(selectedTreeNode.Cells["projectid"].Value);
+                //DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
 
-                selectedTreeNode.Cells["projectname"].Value = c2.Value;
-                for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
-                {
-                    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
-                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
+                //selectedTreeNode.Cells["projectname"].Value = c2.Value;
+                //for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
+                //{
+                //    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
+                //    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
 
-                    c.Value = c2.Value;
+                //    c.Value = c2.Value;
 
-                    //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "number");
-                    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
-                    c1.Value = c2.Value;
-                    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
-                    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
-                    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
-                }
+                //    //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "number");
+                //    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
+                //    c1.Value = c2.Value;
+                //    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
+                //    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
+                //    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
+                //}
             }
             if (e.ColumnIndex == 15)
             {
-                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                String sg_projectid = selectedTreeNode.Cells["realtyname"].Value.ToString();
-                selectedTreeNode.Cells["realtyid"].Value = sg_projectid;
+                //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                //String sg_projectid = selectedTreeNode.Cells["realtyname"].Value.ToString();
+                //selectedTreeNode.Cells["realtyid"].Value = sg_projectid;
             }
             if (e.ColumnIndex == 16)
             {
-                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                String sg_projectid = selectedTreeNode.Cells["realtyid"].Value.ToString();
-                selectedTreeNode.Cells["realtyname"].Value = sg_projectid;
+                //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                //String sg_projectid = selectedTreeNode.Cells["realtyid"].Value.ToString();
+                //selectedTreeNode.Cells["realtyname"].Value = sg_projectid;
             }
             if (e.ColumnIndex == 18)
             {
-                TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
-                {
-                    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
-                    ChildTreeNode.Cells["version"].Value = selectedTreeNode.Cells["version"].Value;
-                }
+                //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                //for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
+                //{
+                //    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
+                //    ChildTreeNode.Cells["version"].Value = selectedTreeNode.Cells["version"].Value;
+                //}
             }
         }
 

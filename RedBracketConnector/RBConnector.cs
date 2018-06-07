@@ -795,6 +795,13 @@ namespace RedBracketConnector
             try
             {
                 dataTableProjectInfo = GetDataFromWS("/ProjectAutocad/fetchUserAutocadProjectsService", "project detail", "GET");
+
+                dataTableProjectInfo.Columns.Add("PNAMENO");
+
+                for (int i = 0; i < dataTableProjectInfo.Rows.Count; i++)
+                {
+                    dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) +" ("+ Convert.ToString(dataTableProjectInfo.Rows[i]["number"])+")";
+                }
             }
             catch (Exception E)
             {
