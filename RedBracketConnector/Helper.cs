@@ -14,11 +14,11 @@ namespace RedBracketConnector
 {
     public static class Helper
     {
-        public static string UserName = "";
-        public static string UserFullName = "Archi User";
-        public static string FirstName = "Archi";
-        public static string LastName = "User";
-        public static string UserID = "1";
+        public static string UserName = "";//Like X@ymail.com
+        public static string UserFullName = "";// Like X User
+        public static string FirstName = "";// Like X
+        public static string LastName = "";// Like User
+        public static string UserID = ""; // Like 1
         public static string FileNamePrefix = "RB-";
         public static string CompanyName = "RedBracket";
         public static bool IsEventAssign = false;
