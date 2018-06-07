@@ -261,7 +261,7 @@ namespace AutocadPlugIn.UI_Forms
                urlParameters);
 
             var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-            BindDataToGrid(resultSearchCriteriaResponseList);
+            BindDataToGrid(resultSearchCriteriaResponseList, true);
             this.Cursor = Cursors.Default;
 
             //IEnumerator<TreeGridNode> it = SearchDrawingCon.dtDocuments.Nodes.GetEnumerator();
@@ -423,7 +423,7 @@ namespace AutocadPlugIn.UI_Forms
 
         //}
 
-        private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList)
+        private void BindDataToGrid(List<ResultSearchCriteria> resultSearchCriteriaResponseList, bool isSortingRequired = false)
         {
             if (resultSearchCriteriaResponseList == null)
             {
@@ -435,7 +435,10 @@ namespace AutocadPlugIn.UI_Forms
                                                 where resultSearchCriteriaResponse.name.EndsWith("dwg")
                                                 select resultSearchCriteriaResponse).ToList();
 
-            resultSearchCriteriaResponseList = resultSearchCriteriaResponseList.OrderBy(resultSearchCriteriaResponse => resultSearchCriteriaResponse.name).ToList();
+            if (isSortingRequired)
+            {
+                resultSearchCriteriaResponseList = resultSearchCriteriaResponseList.OrderBy(resultSearchCriteriaResponse => resultSearchCriteriaResponse.name).ToList();
+            }
 
             if (resultSearchCriteriaResponseList.Count > 50)
             {
