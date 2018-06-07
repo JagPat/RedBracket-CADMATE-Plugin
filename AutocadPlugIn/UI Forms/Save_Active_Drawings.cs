@@ -254,15 +254,15 @@ namespace AutocadPlugIn.UI_Forms
                 bool Is_Delete = false;
                 bool Is_Save = false;
 
-
+                #region Commented Code
                 //String FilePath = db.OriginalFileName;
 
                 //Test Code
                 try
                 {
-                    Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                    DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
-                    Database db = doc.Database;
+                    //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                    //DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
+                    //Database db = doc.Database;
 
 
                     //    db.ThumbnailBitmap = doc.CapturePreviewImage(100,100);
@@ -277,6 +277,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
 
                 }
+                #endregion
 
                 //To check howmany file is selected.
                 foreach (TreeGridNode treeGridNode in savetreeGrid.Nodes)

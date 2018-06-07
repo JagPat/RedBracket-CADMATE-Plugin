@@ -47,18 +47,23 @@ namespace RedBracketConnector
                 //To unlock File in case of update
                 //if (UnlockObject(plmobjs))
                 //{
-                 //  return false;
+                //  return false;
                 //}
                 string ParentFileID = "";
                 foreach (PLMObject obj in plmobjs)
                 {
-                     
-                    SaveFileCommand objSFC = new SaveFileCommand(); 
+                    
+                    SaveFileCommand objSFC = new SaveFileCommand();
                     RestResponse restResponse;
                     //service calling to upload document.
 
                     if (obj.IsRoot)
                     {
+                        if (!File.Exists(obj.FilePath))
+                        {
+                            ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
+                            return false;
+                        }
                         if (Convert.ToString(obj.ObjectId).Trim().Length > 0)
                         {
                             //     restResponse = (RestResponse)ServiceHelper.UpdateObject(
@@ -98,18 +103,22 @@ namespace RedBracketConnector
                             new KeyValuePair<string, string>("fileType", obj.Classification)});
                         }
 
-                      
+
                     }
                     else
                     {
-
+                        if (!File.Exists(obj.FilePath))
+                        {
+                            ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
+                            continue;
+                        }
                         //for save
                         //if (obj.ObjectId.Trim().Length == 0)
                         //{
-                            restResponse = (RestResponse)ServiceHelper.SaveObject(
-                                            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                            "/AutocadFiles/uploadXRefFiles", obj.FilePath,
-                                            "test.dwg", false, new List<KeyValuePair<string, string>> {
+                        restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                        "/AutocadFiles/uploadXRefFiles", obj.FilePath,
+                                        "test.dwg", false, new List<KeyValuePair<string, string>> {
                                                  new KeyValuePair<string, string>("source", "Computer") ,
                                                   new KeyValuePair<string, string>("userName", Helper.UserName) ,
                                             new KeyValuePair<string, string>("fileId", ParentFileID) ,
@@ -135,7 +144,7 @@ namespace RedBracketConnector
                         //    new KeyValuePair<string, string>("layoutDesc", "") });
                         //}
 
-                         
+
 
                     }
                     //checking if service call was successful or not.
@@ -159,10 +168,10 @@ namespace RedBracketConnector
 
                             if (Drawing != null)
                             {
-                                if(obj.IsRoot)
-                                obj.ObjectId = ParentFileID = Drawing.id;
+                                if (obj.IsRoot)
+                                    obj.ObjectId = ParentFileID = Drawing.id;
                                 else
-                                    obj.ObjectId =   Drawing.id;
+                                    obj.ObjectId = Drawing.id;
                                 obj.ObjectName = Drawing.name;
                                 //obj.Classification = "123";
                                 obj.ObjectState = Drawing.status.statusname;
@@ -800,7 +809,7 @@ namespace RedBracketConnector
 
                 for (int i = 0; i < dataTableProjectInfo.Rows.Count; i++)
                 {
-                    dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) +" ("+ Convert.ToString(dataTableProjectInfo.Rows[i]["number"])+")";
+                    dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) + " (" + Convert.ToString(dataTableProjectInfo.Rows[i]["number"]) + ")";
                 }
             }
             catch (Exception E)
@@ -1047,7 +1056,7 @@ namespace RedBracketConnector
                         MessageBox.Show("Some error occurred while locking file.");
                         return true;
                     }
-                    
+
                 }
             }
             catch (Exception ex)
@@ -1154,11 +1163,11 @@ namespace RedBracketConnector
                 List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
                 urlParameters.Add(L);
                 RestResponse restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                    "/AutocadFiles/getAssoFile",  
-                    false,  urlParameters);
+                    "/AutocadFiles/getAssoFile",
+                    false, urlParameters);
 
 
-                List < ResultSearchCriteria> ObjFileInfo = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+                List<ResultSearchCriteria> ObjFileInfo = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
 
 
                 if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
@@ -1169,7 +1178,7 @@ namespace RedBracketConnector
                 else
                 {
                     string Response = restResponse.Content;
-                    
+
                 }
                 return ObjFileInfo;
             }
