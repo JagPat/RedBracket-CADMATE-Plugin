@@ -966,14 +966,16 @@ namespace AutocadPlugIn.UI_Forms
 
                     DrawingProperty.Add("DrawingId", Drawing.id);
                     DrawingProperty.Add("DrawingName", Drawing.name);
-                    DrawingProperty.Add("Classification", Drawing.status.id);
+                    DrawingProperty.Add("Classification","");
+                    DrawingProperty.Add("FileTypeID", Drawing.type.name);
                     DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
                     DrawingProperty.Add("DrawingState", Drawing.status.statusname);
                     DrawingProperty.Add("Revision", Drawing.versionno);
                     DrawingProperty.Add("LockStatus", Drawing.filelock);
                     DrawingProperty.Add("Generation", "123");
                     DrawingProperty.Add("Type", Drawing.coreType.id);
-                    DrawingProperty.Add("ProjectName", Drawing.projectname);
+                    DrawingProperty.Add("ProjectName", Drawing.projectname );
+                    //DrawingProperty.Add("ProjectName", Drawing.projectname+" ("+ Drawing.projectinfo+")");
                     DrawingProperty.Add("ProjectId", Drawing.projectinfo);
                     DrawingProperty.Add("CreatedOn", Drawing.updatedon);
                     DrawingProperty.Add("CreatedBy", Drawing.createdby);

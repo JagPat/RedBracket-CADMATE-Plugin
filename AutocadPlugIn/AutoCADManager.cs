@@ -441,7 +441,7 @@ namespace AutocadPlugIn
                         {
                             foreach (DictionaryEntry entry in currentDocumentProperties)
                             {
-                                DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value.ToString());
+                                DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty :Convert.ToString(entry.Value));
 
                             }
                             mainDb.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
@@ -664,7 +664,7 @@ namespace AutocadPlugIn
                         GraphNode root = xg.RootNode;
                         if (xgn.Name == FilePath)
                         {
-                             
+
                             continue;
                         }
                         //switch (xgn.XrefStatus)
@@ -684,7 +684,7 @@ namespace AutocadPlugIn
                             //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
                             ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
                         }
-                        else if (XrefStatus.Resolved == xgn.XrefStatus )
+                        else if (XrefStatus.Resolved == xgn.XrefStatus)
                         {
 
 
@@ -707,7 +707,7 @@ namespace AutocadPlugIn
                                     //xdb.Filename = "";
                                     tr.Commit();
                                 }
-                            }                     
+                            }
                         }
                         else if (XrefStatus.FileNotFound == xgn.XrefStatus)
                         {
@@ -733,7 +733,7 @@ namespace AutocadPlugIn
                                     tr.Commit();
                                 }
                             }
-                        }                         
+                        }
                         //}//Switch Complete
                     }//For Complete          
                     mainDb.SaveAs(FilePath, DwgVersion.Current);
@@ -752,6 +752,7 @@ namespace AutocadPlugIn
             dtTreeGrid.Columns.Add("drawingname", typeof(String));
             dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
             dtTreeGrid.Columns.Add("classification", typeof(String));
+            dtTreeGrid.Columns.Add("FileTypeID", typeof(String));
             dtTreeGrid.Columns.Add("revision", typeof(String));
             dtTreeGrid.Columns.Add("drawingid", typeof(String));
             dtTreeGrid.Columns.Add("filepath", typeof(String));
@@ -874,6 +875,7 @@ namespace AutocadPlugIn
                                                         dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"] == null ? string.Empty : rootdrawingAttrs["drawingname"],
                                                           rootdrawingAttrs["drawingnumber"] == null ? string.Empty : rootdrawingAttrs["drawingnumber"],
                                                           rootdrawingAttrs["classification"] == null ? string.Empty : rootdrawingAttrs["classification"],
+                                                          rootdrawingAttrs["filetypeid"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
                                                           rootdrawingAttrs["revision"] == null ? string.Empty : rootdrawingAttrs["revision"],
                                                           rootdrawingAttrs["drawingid"] == null ? string.Empty : rootdrawingAttrs["drawingid"],
                                                           xgn.Database.Filename == null ? string.Empty : xgn.Database.Filename,
@@ -892,7 +894,7 @@ namespace AutocadPlugIn
                                                 }
                                                 else
                                                 {
-                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString());
+                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString());
                                                 }
                                             }
                                             else
@@ -922,9 +924,30 @@ namespace AutocadPlugIn
                                                     drawingAttrs.Add(en.Key, en.Value);
                                                 }
                                                 if (drawingAttrs.Count != 0)
-                                                    dtTreeGrid.Rows.Add(drawingAttrs["drawingname"].ToString(), drawingAttrs["drawingnumber"].ToString(), drawingAttrs["classification"].ToString(), drawingAttrs["revision"].ToString(), drawingAttrs["drawingid"].ToString(), xgn.Database.Filename.ToString(), drawingAttrs["drawingstate"].ToString(), drawingAttrs["generation"].ToString(), drawingAttrs["type"].ToString(), childrens, "0", drawingAttrs["projectname"].ToString(), drawingAttrs["projectid"].ToString(), Layouts);
+                                                {
+
+
+                                                    dtTreeGrid.Rows.Add(drawingAttrs["drawingname"].ToString(),
+                                                        drawingAttrs["drawingnumber"].ToString(),
+                                                        drawingAttrs["classification"].ToString(),
+                                                        drawingAttrs["filetypeid"].ToString(),
+                                                        drawingAttrs["revision"].ToString(),
+                                                        drawingAttrs["drawingid"].ToString(),
+                                                        xgn.Database.Filename.ToString(),
+                                                        drawingAttrs["drawingstate"].ToString(),
+                                                        drawingAttrs["generation"].ToString(),
+                                                        drawingAttrs["type"].ToString(),
+                                                        childrens,
+                                                        "0",
+                                                        drawingAttrs["projectname"].ToString(),
+                                                        drawingAttrs["projectid"].ToString(),
+                                                        Layouts);
+
+
+                                                }
+
                                                 else
-                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts);
+                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts);
                                             }
                                             tr.Commit();
                                         }

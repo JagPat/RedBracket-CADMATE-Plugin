@@ -72,7 +72,7 @@ namespace RedBracketConnector
 
         public bool hasStatusClosed { set; get; }
 
-        ////public ResultSearchCriteriaType type { set; get; }
+        public ResultSearchCriteriaType type { set; get; }
 
         ////public string resource { set; get; }
     }

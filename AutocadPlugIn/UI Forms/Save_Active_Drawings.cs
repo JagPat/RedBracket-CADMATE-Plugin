@@ -87,7 +87,7 @@ namespace AutocadPlugIn.UI_Forms
             Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true);
             #endregion filestatus
 
-            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true);
+            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "name", "id", true);
 
             //ProjectName.DataSource = dtProjectNo;
             //ProjectName.DisplayMember = "ProjectName";
@@ -130,7 +130,8 @@ namespace AutocadPlugIn.UI_Forms
                     cmbData.Add("Next");
                     ds.DataSource = cmbData;
 
-                    node = savetreeGrid.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["classification"].ToString(), rw["revision"].ToString(), rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"]);
+                    node = savetreeGrid.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["FileTypeID"].ToString(), rw["revision"].ToString(), rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"], rw["projectname"]);
+                    //DataGridViewComboBoxCell C=(DataGridViewComboBoxCell) node.Cells["cadtype"]   ;
                     node.Cells["version"].Value = true;
                     if (rw["drawingid"].ToString() == "")
                     {
@@ -173,7 +174,7 @@ namespace AutocadPlugIn.UI_Forms
                     ArrayList cmbData1 = new ArrayList();
                     cmbData1.Add(rw["revision"].ToString());
                     cmbData1.Add("Next");
-                    TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["classification"].ToString(), rw["revision"].ToString(), rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"]);
+                    TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["FileTypeID"].ToString(), rw["revision"].ToString(), rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"], rw["projectname"]);
                     node1.Cells["version"].Value = true;
                     node1.Cells["version"].ReadOnly = true;
                     ds.DataSource = cmbData1;

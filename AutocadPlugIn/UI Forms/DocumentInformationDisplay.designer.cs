@@ -100,6 +100,7 @@ namespace AutocadPlugIn.UI_Forms
             this.classification.HeaderText = "Classification";
             this.classification.Name = "classification";
             this.classification.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.classification.Visible = false;
             // 
             // currentstate
             // 
@@ -112,6 +113,7 @@ namespace AutocadPlugIn.UI_Forms
             this.currentgeneration.HeaderText = "CurrentGeneration";
             this.currentgeneration.Name = "currentgeneration";
             this.currentgeneration.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.currentgeneration.Visible = false;
             // 
             // currentrevision
             // 
@@ -130,6 +132,7 @@ namespace AutocadPlugIn.UI_Forms
             this.latestgeneration.HeaderText = "LatestGenration";
             this.latestgeneration.Name = "latestgeneration";
             this.latestgeneration.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.latestgeneration.Visible = false;
             // 
             // latestrevision
             // 
@@ -148,6 +151,7 @@ namespace AutocadPlugIn.UI_Forms
             this.projectid.HeaderText = "Project Id";
             this.projectid.Name = "projectid";
             this.projectid.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.projectid.Visible = false;
             // 
             // DocumentInformationDisplay
             // 
@@ -180,6 +184,5 @@ namespace AutocadPlugIn.UI_Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn latestrevision;
         private System.Windows.Forms.DataGridViewTextBoxColumn projectname;
         private System.Windows.Forms.DataGridViewTextBoxColumn projectid;
-
     }
 }
