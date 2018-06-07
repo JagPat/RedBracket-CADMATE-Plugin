@@ -483,16 +483,16 @@ namespace AutocadPlugIn.UI_Forms
             if (e.ColumnIndex == 0)
             {
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                bool flag = false;
-                CADDescription.ReadOnly = false;
-                for (int GridRows = 0; GridRows < savetreeGrid.Rows.Count; GridRows++)
-                {
-                    TreeGridNode MyTreeNode = (TreeGridNode)savetreeGrid.Rows[GridRows];
-                    if ((bool)MyTreeNode.Cells["check"].EditedFormattedValue)
-                    { flag = true; break; }
-                }
-                if (flag)
-                    CADDescription.ReadOnly = true;
+                //bool flag = false;
+                //CADDescription.ReadOnly = false;
+                //for (int GridRows = 0; GridRows < savetreeGrid.Rows.Count; GridRows++)
+                //{
+                //    TreeGridNode MyTreeNode = (TreeGridNode)savetreeGrid.Rows[GridRows];
+                //    if ((bool)MyTreeNode.Cells["check"].EditedFormattedValue)
+                //    { flag = true; break; }
+                //}
+                //if (flag)
+                //    CADDescription.ReadOnly = true;
 
                 //#region "Concate  infromation with ';' for Drawing presented in ARASInnovator"
                 //String id = (String)selectedTreeNode.Cells["drawingid"].Value;
