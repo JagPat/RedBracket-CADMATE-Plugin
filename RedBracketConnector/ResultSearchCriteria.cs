@@ -74,6 +74,8 @@ namespace RedBracketConnector
 
         public ResultSearchCriteriaType type { set; get; }
 
+        public string projectNumber { set; get; }
+
         ////public string resource { set; get; }
     }
 

@@ -974,8 +974,8 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("LockStatus", Drawing.filelock);
                     DrawingProperty.Add("Generation", "123");
                     DrawingProperty.Add("Type", Drawing.coreType.id);
-                    DrawingProperty.Add("ProjectName", Drawing.projectname );
-                    //DrawingProperty.Add("ProjectName", Drawing.projectname+" ("+ Drawing.projectinfo+")");
+                    //DrawingProperty.Add("ProjectName", Drawing.projectname );
+                     DrawingProperty.Add("ProjectName", Drawing.projectname+" ("+ Drawing.projectNumber+")");
                     DrawingProperty.Add("ProjectId", Drawing.projectinfo);
                     DrawingProperty.Add("CreatedOn", Drawing.updatedon);
                     DrawingProperty.Add("CreatedBy", Drawing.createdby);

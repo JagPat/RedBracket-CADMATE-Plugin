@@ -87,7 +87,7 @@ namespace AutocadPlugIn.UI_Forms
             Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true);
             #endregion filestatus
 
-            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "name", "id", true);
+            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true);
 
             //ProjectName.DataSource = dtProjectNo;
             //ProjectName.DisplayMember = "ProjectName";
