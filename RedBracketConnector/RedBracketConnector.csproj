@@ -72,4 +72,7 @@
     <Compile Include="UserLoginDetails.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /y "$(ProjectDir)bin\$(Configuration)\*.dll" "$(SolutionDir)RedBracketConnector.Bundle\Contents\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

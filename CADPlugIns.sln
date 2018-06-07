@@ -24,6 +24,29 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutocadPlugIn", "AutocadPlu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedBracketConnector", "RedBracketConnector\RedBracketConnector.csproj", "{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Artifacts", "Artifacts", "{67D56A0D-545C-4790-A46F-68FA973DBBC3}"
+	ProjectSection(SolutionItems) = preProject
+		Binaries\AcCoreMgd.dll = Binaries\AcCoreMgd.dll
+		Binaries\AcDbMgd.dll = Binaries\AcDbMgd.dll
+		Binaries\AcMgd.dll = Binaries\AcMgd.dll
+		Binaries\AcWindows.dll = Binaries\AcWindows.dll
+		Binaries\AdWindows.dll = Binaries\AdWindows.dll
+		Binaries\ExpandableGridView.dll = Binaries\ExpandableGridView.dll
+		Binaries\IOM.dll = Binaries\IOM.dll
+		Binaries\Newtonsoft.Json.dll = Binaries\Newtonsoft.Json.dll
+		Binaries\RedBracketLogo.ico = Binaries\RedBracketLogo.ico
+		Binaries\RestSharp.dll = Binaries\RestSharp.dll
+	EndProjectSection
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RedBracketConnectorSetup", "RedBracketConnectorSetup\RedBracketConnectorSetup.vdproj", "{20103B48-FC75-4FCF-BE5D-843570228EE7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8460E831-CF6D-40D9-84B8-4225C4B9186F} = {8460E831-CF6D-40D9-84B8-4225C4B9186F}
+		{7FBD7E4A-1DDE-4EC2-AAAD-2DD00347B87C} = {7FBD7E4A-1DDE-4EC2-AAAD-2DD00347B87C}
+		{6A2AB88A-C8E7-4F83-939A-FC9C9D1C6C25} = {6A2AB88A-C8E7-4F83-939A-FC9C9D1C6C25}
+		{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5} = {D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}
+		{C1920DF1-CE81-4B76-90AD-866794176E35} = {C1920DF1-CE81-4B76-90AD-866794176E35}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +117,12 @@ Global
 		{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}.V2003Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}.V2007Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}.V2007Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Debug|Any CPU.ActiveCfg = Debug
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Office2003|Any CPU.ActiveCfg = Release
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Office2007|Any CPU.ActiveCfg = Release
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Release|Any CPU.ActiveCfg = Release
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.V2003Debug|Any CPU.ActiveCfg = Debug
+		{20103B48-FC75-4FCF-BE5D-843570228EE7}.V2007Debug|Any CPU.ActiveCfg = Debug
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
