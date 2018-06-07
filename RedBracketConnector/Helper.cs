@@ -19,7 +19,7 @@ namespace RedBracketConnector
         public static string FirstName = "Archi";
         public static string LastName = "User";
         public static string UserID = "1";
-        public static string FileNamePrefix = "RBDF-";
+        public static string FileNamePrefix = "RB-";
         public static string CompanyName = "RedBracket";
         public static bool IsEventAssign = false;
         public static object GetValueRegistry(string subKeyName, string keyName)
