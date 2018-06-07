@@ -874,7 +874,7 @@ namespace AutocadPlugIn.UI_Forms
                 if (selectedTreeGridNodes.Count < 1)
                 {
                     this.Cursor = Cursors.Default;
-                    MessageBox.Show("Please select at least one file to Open");
+                    MessageBox.Show("Please select at least one main file to Open");
                     return;
                 }
 
