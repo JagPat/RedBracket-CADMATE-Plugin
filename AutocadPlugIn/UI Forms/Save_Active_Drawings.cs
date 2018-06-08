@@ -356,23 +356,27 @@ namespace AutocadPlugIn.UI_Forms
                         // Update document info into document for future refeance
                         try
                         {
-                            Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty, 0);
-                            objMgr.SetAttributes(htCurrentInfo);
-                            objMgr.UpdateLayoutAttribute1(htCurrentInfo);
+                            if (objController.dtDrawingProperty.Rows.Count > 0)
+                            {
+                                Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty, 0);
+                                objMgr.SetAttributes(htCurrentInfo);
+                                objMgr.UpdateLayoutAttribute1(htCurrentInfo);
 
-                            objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
-
+                                objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
+                            }
                         }
                         catch (Exception E)
                         {
 
                         }
-
-
                     }
+
                     // To delete file
                     if (Is_Delete && File.Exists(objCmd.FilePath))
                     {
+                        // Save and close the file before deleting. Otherwise system will not allow you to Delete the file.
+                        objMgr.SaveActiveDrawing(); // Saves the current active drawing.
+                        objMgr.CloseActiveDocument(objCmd.FilePath);    // Close the active document. Specify the file name, other files may be opened.
                         File.Delete(objCmd.FilePath);
                     }
                 }
