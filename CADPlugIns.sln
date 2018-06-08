@@ -26,6 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedBracketConnector", "RedB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Artifacts", "Artifacts", "{67D56A0D-545C-4790-A46F-68FA973DBBC3}"
 	ProjectSection(SolutionItems) = preProject
+		Binaries\acad.lsp = Binaries\acad.lsp
 		Binaries\AcCoreMgd.dll = Binaries\AcCoreMgd.dll
 		Binaries\AcDbMgd.dll = Binaries\AcDbMgd.dll
 		Binaries\AcMgd.dll = Binaries\AcMgd.dll
@@ -37,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Artifacts", "Artifacts", "{
 		Binaries\RedBracketConnector_Integration_UserGuide.chm = Binaries\RedBracketConnector_Integration_UserGuide.chm
 		Binaries\RedBracketLogo.ico = Binaries\RedBracketLogo.ico
 		Binaries\RestSharp.dll = Binaries\RestSharp.dll
+		Binaries\start.scr = Binaries\start.scr
 	EndProjectSection
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RedBracketConnectorSetup", "RedBracketConnectorSetup\RedBracketConnectorSetup.vdproj", "{20103B48-FC75-4FCF-BE5D-843570228EE7}"
