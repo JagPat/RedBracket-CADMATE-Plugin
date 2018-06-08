@@ -899,9 +899,18 @@ namespace AutocadPlugIn.UI_Forms
                         Directory.CreateDirectory(checkoutPath);
                     }
 
+                    //old code
+                    //foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
+                    //{
+                    //    DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
+                    //}
+
                     foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
                     {
-                        DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
+                        if ((bool)childNode.Cells[0].FormattedValue)
+                        {
+                            DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout");
+                        }
                     }
 
                     DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true, currentTreeGrdiNode);
@@ -981,6 +990,16 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("CreatedBy", Drawing.createdby);
                     DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
                     DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+
+                    DrawingProperty.Add("canDelete", Drawing.canDelete);
+                    DrawingProperty.Add("isowner", Drawing.isowner);
+                    DrawingProperty.Add("hasViewPermission", Drawing.hasViewPermission);
+                    DrawingProperty.Add("isActFileLatest", Drawing.isActFileLatest);
+
+                    DrawingProperty.Add("isEditable", Drawing.isEditable);
+                    DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
+                    DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
+                    DrawingProperty.Add("isletest", Drawing.isletest);
                     //DrawingProperty.Add("isroot", true);
                     //DrawingProperty.Add("sourceid","");
                     //DrawingProperty.Add("Layouts","");

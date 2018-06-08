@@ -59,7 +59,7 @@ namespace AutocadPlugIn
                     {
                         foreach (DictionaryEntry entry in currentDocumentProperties)
                         {
-                            DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value.ToString());
+                            DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
 
                         }
                         Db.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
@@ -72,7 +72,11 @@ namespace AutocadPlugIn
 
 
             }
-            catch (System.Exception ex) { throw (new System.Exception("AutoCAD getting problem: AutoCADManager.cs setAttributes" + ex.Message)); }
+            catch (System.Exception ex)
+            {
+                ShowMessage.ErrorMess("AutoCAD getting problem: AutoCADManager.cs setAttributes" + ex.Message);
+                //throw (new System.Exception("AutoCAD getting problem: AutoCADManager.cs setAttributes" + ex.Message));
+            }
         }
 
         public void UpdateExRefInfo(string FilePath, System.Data.DataTable dtFileInfo)
@@ -180,18 +184,24 @@ namespace AutocadPlugIn
                 // Hashtable drawingAttrs = documentProperties; //new Hashtable();
                 Hashtable drawingAttrs = new Hashtable();
                 IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
-                while (en.MoveNext())
+                try
                 {
-                    // if(documentProperties==null)
+
+
+                    while (en.MoveNext())
                     {
-                        drawingAttrs.Add(en.Key, en.Value);
-                    }
-                    // else
-                    {
+                        // if(documentProperties==null)
+                        {
+                            drawingAttrs.Add(en.Key, en.Value);
+                        }
+                        // else
+                        {
+
+                        }
 
                     }
-
                 }
+                catch { }
                 if (drawingAttrs.Count < 0) return;
                 using (Transaction tr = db.TransactionManager.StartTransaction())
                 {
@@ -441,7 +451,7 @@ namespace AutocadPlugIn
                         {
                             foreach (DictionaryEntry entry in currentDocumentProperties)
                             {
-                                DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty :Convert.ToString(entry.Value));
+                                DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
 
                             }
                             mainDb.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
@@ -596,7 +606,8 @@ namespace AutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
+                //throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
+                ShowMessage.ErrorMess(ex.Message);
             }
         }
 
@@ -768,6 +779,20 @@ namespace AutocadPlugIn
             dtTreeGrid.Columns.Add("lockby", typeof(String));
             dtTreeGrid.Columns.Add("Error", typeof(String));
 
+            dtTreeGrid.Columns.Add("candelete", typeof(String));
+            dtTreeGrid.Columns.Add("isowner", typeof(String));
+            dtTreeGrid.Columns.Add("hasviewpermission", typeof(String));
+            dtTreeGrid.Columns.Add("isactfilelatest", typeof(String));
+            dtTreeGrid.Columns.Add("iseditable", typeof(String));
+            dtTreeGrid.Columns.Add("caneditstatus", typeof(String));
+            dtTreeGrid.Columns.Add("hasstatusclosed", typeof(String));
+            dtTreeGrid.Columns.Add("isletest", typeof(String));
+
+
+
+
+       
+
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             Editor ed = doc.Editor;
@@ -884,7 +909,19 @@ namespace AutocadPlugIn
                                                           rootdrawingAttrs["type"] == null ? string.Empty : rootdrawingAttrs["type"],
                                                           childrens, "1", rootdrawingAttrs["projectname"] == null ? string.Empty : rootdrawingAttrs["projectname"],
                                                           rootdrawingAttrs["projectid"] == null ? string.Empty : rootdrawingAttrs["projectid"],
-                                                          Layouts == null ? string.Empty : Layouts);
+                                                          Layouts == null ? string.Empty : Layouts,"","","",
+
+                                                        rootdrawingAttrs["candelete"] == null ? string.Empty : rootdrawingAttrs["candelete"],
+                                                        rootdrawingAttrs["isowner"] == null ? string.Empty : rootdrawingAttrs["isowner"],
+                                                        rootdrawingAttrs["hasviewpermission"] == null ? string.Empty : rootdrawingAttrs["hasviewpermission"],
+                                                        rootdrawingAttrs["isactfilelatest"] == null ? string.Empty : rootdrawingAttrs["isactfilelatest"],
+                                                        rootdrawingAttrs["iseditable"] == null ? string.Empty : rootdrawingAttrs["iseditable"],
+                                                        rootdrawingAttrs["caneditstatus"] == null ? string.Empty : rootdrawingAttrs["caneditstatus"],
+                                                        rootdrawingAttrs["hasstatusclosed"] == null ? string.Empty : rootdrawingAttrs["hasstatusclosed"],
+                                                        rootdrawingAttrs["isletest"] == null ? string.Empty : rootdrawingAttrs["isletest"]);
+
+
+                                                        
 
                                                     }
                                                     catch (System.Exception E)
@@ -894,7 +931,7 @@ namespace AutocadPlugIn
                                                 }
                                                 else
                                                 {
-                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString());
+                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "");
                                                 }
                                             }
                                             else
@@ -921,18 +958,18 @@ namespace AutocadPlugIn
                                                 IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
                                                 while (en.MoveNext())
                                                 {
-                                                    drawingAttrs.Add(en.Key, en.Value==null?string.Empty:Convert.ToString(en.Value));
+                                                    drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
                                                 }
                                                 if (drawingAttrs.Count != 0)
                                                 {
 
 
                                                     dtTreeGrid.Rows.Add(
-                                                        
+
                                                       drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]),
                                                       drawingAttrs["drawingnumber"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingnumber"]),
                                                         drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]),
-                                                        drawingAttrs["filetypeid"] == null ? string.Empty:Convert.ToString(drawingAttrs["filetypeid"]),
+                                                        drawingAttrs["filetypeid"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
 
                                                         drawingAttrs["revision"] == null ? string.Empty : Convert.ToString(drawingAttrs["revision"]),
                                                     drawingAttrs["drawingid"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingid"]),
@@ -941,18 +978,27 @@ namespace AutocadPlugIn
                                                     drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]),
 
                                                       drawingAttrs["type"] == null ? string.Empty : Convert.ToString(drawingAttrs["type"]),
-                                                        drawingAttrs["type"].ToString(),
+
                                                         childrens,
                                                         "0",
-                                                        drawingAttrs["projectid"].ToString(),
-                                                        drawingAttrs["projectid"].ToString(),
-                                                        Layouts);
+                                                         drawingAttrs["projectname"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectname"]),
+                                                          drawingAttrs["projectid"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectid"]),
+                                                        Layouts, "", "", "",
+                                                        drawingAttrs["candelete"] == null ? string.Empty : drawingAttrs["candelete"],
+                                                        drawingAttrs["isowner"] == null ? string.Empty : drawingAttrs["isowner"],
+                                                        drawingAttrs["hasviewpermission"] == null ? string.Empty : drawingAttrs["hasviewpermission"],
+                                                        drawingAttrs["isactfilelatest"] == null ? string.Empty : drawingAttrs["isactfilelatest"],
+                                                        drawingAttrs["iseditable"] == null ? string.Empty : drawingAttrs["iseditable"],
+                                                        drawingAttrs["caneditstatus"] == null ? string.Empty : drawingAttrs["caneditstatus"],
+                                                        drawingAttrs["hasstatusclosed"] == null ? string.Empty : drawingAttrs["hasstatusclosed"],
+                                                        drawingAttrs["isletest"] == null ? string.Empty : drawingAttrs["isletest"]
+                                                        );
 
 
                                                 }
 
                                                 else
-                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts);
+                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "");
                                             }
                                             tr.Commit();
                                         }
@@ -1015,21 +1061,14 @@ namespace AutocadPlugIn
                 DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
                 Database db = doc.Database;
                 Editor ed = doc.Editor;
-                Hashtable drawingAttrs = documentProperties; //new Hashtable();
-                                                             /// Hashtable drawingAttrs =   new Hashtable();
+                //   Hashtable drawingAttrs = documentProperties; //new Hashtable();
+                Hashtable drawingAttrs = new Hashtable();
                 IDictionaryEnumerator en = doc.Database.SummaryInfo.CustomProperties;
                 while (en.MoveNext())
                 {
-                    // if(documentProperties==null)
-                    {
-                        drawingAttrs.Add(en.Key, en.Value);
-                    }
-                    // else
-                    {
-
-                    }
-
+                    drawingAttrs.Add(en.Key, en.Value==null?string.Empty:en.Value);
                 }
+
                 if (drawingAttrs.Count < 0) return;
                 using (Transaction tr = db.TransactionManager.StartTransaction())
                 {

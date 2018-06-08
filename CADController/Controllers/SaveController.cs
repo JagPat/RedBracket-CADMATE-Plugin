@@ -66,7 +66,7 @@ namespace CADController.Controllers
                 foreach (String str in cmd.Drawings)
                 {
                     PLMObject plmObj = new PLMObject();
-                    String[] plmobjInfo = new String[15];
+                    String[] plmobjInfo = new String[17];
                     plmobjInfo = str.Split(';');
                     plmObj.ObjectId = plmobjInfo[0];
                     string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
@@ -75,9 +75,8 @@ namespace CADController.Controllers
                         fileName = fileName.Substring(Helper.FileNamePrefix.Length);
                     }
                     plmObj.ObjectName = fileName;
-                    plmObj.ObjectStatus = cmd.FileStatus;
-                    plmObj.Classification = cmd.FileType;
-                    plmObj.ObjectDescription = cmd.FileDescription;
+                    plmObj.ObjectStatus = plmobjInfo[15];
+                    plmObj.Classification = plmobjInfo[16]; 
                     plmObj.ItemType = plmobjInfo[1];
                     plmObj.FilePath = plmobjInfo[2];
                     plmObj.IsManualVersion = false;
@@ -113,10 +112,9 @@ namespace CADController.Controllers
                         try
                         {
                             PLMObject plmObj = new PLMObject();
-                            String[] plmobjInfo = new String[18];
+                            String[] plmobjInfo = new String[20];
                             plmobjInfo = str.Split(';');
-                            plmObj.ObjectNumber = plmobjInfo[0];
-                            plmObj.Classification = plmobjInfo[1];
+                            plmObj.ObjectNumber = plmobjInfo[0]; 
                             plmObj.ObjectName = plmobjInfo[2];
                             plmObj.FilePath = plmobjInfo[3];
                             // plmObj.ObjectId = plmobjInfo[4];
@@ -130,7 +128,8 @@ namespace CADController.Controllers
                             plmObj.AuthoringTool = "AutoCAD";
                             plmObj.IsCreateNewRevision = false;
                             plmObj.IsNew = true;
-
+                            plmObj.ObjectStatus = plmobjInfo[18];
+                            plmObj.Classification = plmobjInfo[19];
                             plmObj.IsNewStructure = IsNewStructure;
 
                             ProjectName = plmobjInfo[11];
@@ -156,9 +155,7 @@ namespace CADController.Controllers
 
                             }
                             plmObj.ObjectName = fileName;
-                            plmObj.ObjectStatus = cmd.FileStatus;
-                            plmObj.Classification = cmd.FileType;
-                            plmObj.ObjectDescription = cmd.FileDescription;
+                           
                             plmObj.IsRoot = false;
                             if (plmobjInfo[6] == "1")
                                 plmObj.IsRoot = true;

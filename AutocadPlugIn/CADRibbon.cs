@@ -671,7 +671,7 @@ namespace AutocadPlugIn
 
                 String Dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
                 //MessageBox.Show("directory path=" + Dir);
-                objcmd.HelpFilePath = Dir + "\\Avrut_AutoCAD2013_Integration_UserGuide.chm";
+                objcmd.HelpFilePath = Dir + "\\RedBracketConnector_Integration_UserGuide.chm";
                 controller.Execute(objcmd);
                 if (controller.errorString != null)
                 {

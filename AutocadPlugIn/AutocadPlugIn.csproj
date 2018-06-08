@@ -263,6 +263,9 @@
     <None Include="acad.lsp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="RedBracketConnector_Integration_UserGuide.chm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\large.png" />
     <None Include="start.scr">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -32,12 +32,6 @@
             this.submit = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.savetreeGrid = new AdvancedDataGridView.TreeGridView();
-            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
-            this.CADDescription = new System.Windows.Forms.TextBox();
-            this.Comments = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.drawing = new AdvancedDataGridView.TreeGridColumn();
             this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -52,11 +46,22 @@
             this.isroot = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Layouts = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ProjectName = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.ProjectId = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.RealtyName = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.RealtyId = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.canDelete = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.isowner = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hasViewPermission = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.isActFileLatest = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.isEditable = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.canEditStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hasStatusClosed = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.isletest = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.targetrevision = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.Version = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
+            this.CADDescription = new System.Windows.Forms.TextBox();
+            this.Comments = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.savetreeGrid)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -110,9 +115,14 @@
             this.isroot,
             this.Layouts,
             this.ProjectName,
-            this.ProjectId,
-            this.RealtyName,
-            this.RealtyId,
+            this.canDelete,
+            this.isowner,
+            this.hasViewPermission,
+            this.isActFileLatest,
+            this.isEditable,
+            this.canEditStatus,
+            this.hasStatusClosed,
+            this.isletest,
             this.targetrevision,
             this.Version});
             this.savetreeGrid.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -126,81 +136,8 @@
             this.savetreeGrid.TabIndex = 7;
             this.savetreeGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.savetreeGrid_CellContentClick);
             this.savetreeGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.savetreeGrid_CellBeginEdit);
+            this.savetreeGrid.CurrentCellDirtyStateChanged += new System.EventHandler(this.savetreeGrid_CurrentCellDirtyStateChanged);
             this.savetreeGrid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.savetreeGrid_DataError);
-            // 
-            // imageStrip
-            // 
-            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
-            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // CADDescription
-            // 
-            this.CADDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CADDescription.Location = new System.Drawing.Point(103, 3);
-            this.CADDescription.Multiline = true;
-            this.CADDescription.Name = "CADDescription";
-            this.CADDescription.Size = new System.Drawing.Size(394, 35);
-            this.CADDescription.TabIndex = 8;
-            // 
-            // Comments
-            // 
-            this.Comments.AutoSize = true;
-            this.Comments.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Comments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Comments.ForeColor = System.Drawing.Color.Red;
-            this.Comments.Location = new System.Drawing.Point(3, 0);
-            this.Comments.Name = "Comments";
-            this.Comments.Size = new System.Drawing.Size(94, 41);
-            this.Comments.TabIndex = 9;
-            this.Comments.Text = "Comments :";
-            this.Comments.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.savetreeGrid, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 89.01869F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.98131F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1142, 428);
-            this.tableLayoutPanel1.TabIndex = 10;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 5;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 400F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel2.Controls.Add(this.cancel, 4, 0);
-            this.tableLayoutPanel2.Controls.Add(this.submit, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.CADDescription, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.Comments, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.pictureBox1, 2, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 384);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1136, 41);
-            this.tableLayoutPanel2.TabIndex = 11;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.ErrorImage = global::AutocadPlugIn.Properties.Resources.Refresh;
-            this.pictureBox1.Location = new System.Drawing.Point(503, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(100, 35);
-            this.pictureBox1.TabIndex = 10;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Visible = false;
             // 
             // Check
             // 
@@ -306,24 +243,69 @@
             this.ProjectName.HeaderText = "Project Name";
             this.ProjectName.Name = "ProjectName";
             // 
-            // ProjectId
+            // canDelete
             // 
-            this.ProjectId.FillWeight = 91.32983F;
-            this.ProjectId.HeaderText = "ProjectNo";
-            this.ProjectId.Name = "ProjectId";
-            this.ProjectId.Visible = false;
+            this.canDelete.HeaderText = "canDelete";
+            this.canDelete.Name = "canDelete";
+            this.canDelete.ReadOnly = true;
+            this.canDelete.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.canDelete.Visible = false;
             // 
-            // RealtyName
+            // isowner
             // 
-            this.RealtyName.HeaderText = "RealtyName";
-            this.RealtyName.Name = "RealtyName";
-            this.RealtyName.Visible = false;
+            this.isowner.HeaderText = "isowner";
+            this.isowner.Name = "isowner";
+            this.isowner.ReadOnly = true;
+            this.isowner.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.isowner.Visible = false;
             // 
-            // RealtyId
+            // hasViewPermission
             // 
-            this.RealtyId.HeaderText = "RealtyId";
-            this.RealtyId.Name = "RealtyId";
-            this.RealtyId.Visible = false;
+            this.hasViewPermission.HeaderText = "hasViewPermission";
+            this.hasViewPermission.Name = "hasViewPermission";
+            this.hasViewPermission.ReadOnly = true;
+            this.hasViewPermission.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.hasViewPermission.Visible = false;
+            // 
+            // isActFileLatest
+            // 
+            this.isActFileLatest.HeaderText = "isActFileLatest";
+            this.isActFileLatest.Name = "isActFileLatest";
+            this.isActFileLatest.ReadOnly = true;
+            this.isActFileLatest.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.isActFileLatest.Visible = false;
+            // 
+            // isEditable
+            // 
+            this.isEditable.HeaderText = "isEditable";
+            this.isEditable.Name = "isEditable";
+            this.isEditable.ReadOnly = true;
+            this.isEditable.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.isEditable.Visible = false;
+            // 
+            // canEditStatus
+            // 
+            this.canEditStatus.HeaderText = "canEditStatus";
+            this.canEditStatus.Name = "canEditStatus";
+            this.canEditStatus.ReadOnly = true;
+            this.canEditStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.canEditStatus.Visible = false;
+            // 
+            // hasStatusClosed
+            // 
+            this.hasStatusClosed.HeaderText = "hasStatusClosed";
+            this.hasStatusClosed.Name = "hasStatusClosed";
+            this.hasStatusClosed.ReadOnly = true;
+            this.hasStatusClosed.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.hasStatusClosed.Visible = false;
+            // 
+            // isletest
+            // 
+            this.isletest.HeaderText = "isletest";
+            this.isletest.Name = "isletest";
+            this.isletest.ReadOnly = true;
+            this.isletest.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.isletest.Visible = false;
             // 
             // targetrevision
             // 
@@ -339,6 +321,80 @@
             this.Version.MinimumWidth = 25;
             this.Version.Name = "Version";
             this.Version.Width = 88;
+            // 
+            // imageStrip
+            // 
+            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
+            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // CADDescription
+            // 
+            this.CADDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CADDescription.Location = new System.Drawing.Point(103, 3);
+            this.CADDescription.Multiline = true;
+            this.CADDescription.Name = "CADDescription";
+            this.CADDescription.Size = new System.Drawing.Size(394, 35);
+            this.CADDescription.TabIndex = 8;
+            // 
+            // Comments
+            // 
+            this.Comments.AutoSize = true;
+            this.Comments.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Comments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Comments.ForeColor = System.Drawing.Color.Red;
+            this.Comments.Location = new System.Drawing.Point(3, 0);
+            this.Comments.Name = "Comments";
+            this.Comments.Size = new System.Drawing.Size(94, 41);
+            this.Comments.TabIndex = 9;
+            this.Comments.Text = "Comments :";
+            this.Comments.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.savetreeGrid, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 89.01869F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.98131F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1142, 428);
+            this.tableLayoutPanel1.TabIndex = 10;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 400F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel2.Controls.Add(this.cancel, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.submit, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.CADDescription, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.Comments, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.pictureBox1, 2, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 384);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1136, 41);
+            this.tableLayoutPanel2.TabIndex = 11;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.ErrorImage = global::AutocadPlugIn.Properties.Resources.Refresh;
+            this.pictureBox1.Location = new System.Drawing.Point(503, 3);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(100, 35);
+            this.pictureBox1.TabIndex = 10;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
             // 
             // Save_Active_Drawings
             // 
@@ -383,9 +439,14 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn isroot;
         private System.Windows.Forms.DataGridViewTextBoxColumn Layouts;
         private System.Windows.Forms.DataGridViewComboBoxColumn ProjectName;
-        private System.Windows.Forms.DataGridViewComboBoxColumn ProjectId;
-        private System.Windows.Forms.DataGridViewComboBoxColumn RealtyName;
-        private System.Windows.Forms.DataGridViewComboBoxColumn RealtyId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn canDelete;
+        private System.Windows.Forms.DataGridViewTextBoxColumn isowner;
+        private System.Windows.Forms.DataGridViewTextBoxColumn hasViewPermission;
+        private System.Windows.Forms.DataGridViewTextBoxColumn isActFileLatest;
+        private System.Windows.Forms.DataGridViewTextBoxColumn isEditable;
+        private System.Windows.Forms.DataGridViewTextBoxColumn canEditStatus;
+        private System.Windows.Forms.DataGridViewTextBoxColumn hasStatusClosed;
+        private System.Windows.Forms.DataGridViewTextBoxColumn isletest;
         private System.Windows.Forms.DataGridViewComboBoxColumn targetrevision;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Version;
     }

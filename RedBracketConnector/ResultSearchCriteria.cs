@@ -68,7 +68,7 @@ namespace RedBracketConnector
 
         public bool canDelete { set; get; }
 
-        public bool canEditStatuselete { set; get; }
+        public bool canEditStatus { set; get; }
 
         public bool hasStatusClosed { set; get; }
 

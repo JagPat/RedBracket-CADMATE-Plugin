@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Artifacts", "Artifacts", "{
 		Binaries\ExpandableGridView.dll = Binaries\ExpandableGridView.dll
 		Binaries\IOM.dll = Binaries\IOM.dll
 		Binaries\Newtonsoft.Json.dll = Binaries\Newtonsoft.Json.dll
+		Binaries\RedBracketConnector_Integration_UserGuide.chm = Binaries\RedBracketConnector_Integration_UserGuide.chm
 		Binaries\RedBracketLogo.ico = Binaries\RedBracketLogo.ico
 		Binaries\RestSharp.dll = Binaries\RestSharp.dll
 	EndProjectSection
