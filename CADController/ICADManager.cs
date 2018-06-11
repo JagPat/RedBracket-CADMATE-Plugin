@@ -25,6 +25,7 @@ namespace CADController
          void LockActiveDocument();
          void UnLockActiveDocument();
          System.Data.DataTable GetExternalRefreces();         
-         void SaveActiveDrawing();         
+         void SaveActiveDrawing();
+        void SaveActiveDrawing(bool openInReadOnly);
     }
 }

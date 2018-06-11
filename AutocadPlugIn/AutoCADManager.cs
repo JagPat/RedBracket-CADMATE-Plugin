@@ -30,11 +30,16 @@ namespace AutocadPlugIn
         Hashtable currentDocumentProperties;
         public void SaveActiveDrawing()
         {
+            SaveActiveDrawing(true);
+        }
+
+        public void SaveActiveDrawing(bool isOpenInReadOnly = true)
+        {
             try
             {
                 String filePath = acadApp.DocumentManager.MdiActiveDocument.Database.Filename;
                 acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(filePath);
-                acadApp.DocumentManager.Open(filePath, true);
+                acadApp.DocumentManager.Open(filePath, isOpenInReadOnly);
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
