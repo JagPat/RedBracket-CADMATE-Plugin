@@ -1111,49 +1111,53 @@ namespace AutocadPlugIn
                                             if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["drawingnumber"].ToString();//drawingAttrs["drawingnumber"].ToString();
+                                                ar.TextString = LayoutData["drawingnumber"]==null?string.Empty:Convert.ToString(LayoutData["drawingnumber"]);//drawingAttrs["drawingnumber"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "DRAWINGNAME")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["drawingname"].ToString();
+                                                ar.TextString = drawingAttrs["drawingname"]==null?string.Empty:Convert.ToString(drawingAttrs["drawingname"]);
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "PROJECTNAME")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["projectname"].ToString(); //drawingAttrs["projectname"].ToString();
+                                                ar.TextString = LayoutData["projectname"]==null?string.Empty:Convert.ToString(LayoutData["projectname"]); //drawingAttrs["projectname"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "PROJECTID")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["projectid"].ToString(); //drawingAttrs["projectid"].ToString();
+                                                ar.TextString = LayoutData["projectid"] == null ? string.Empty : Convert.ToString(LayoutData["projectid"]); //drawingAttrs["projectid"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "GENERATION")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["generation"].ToString(); //drawingAttrs["generation"].ToString();
+                                                ar.TextString = drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]); //drawingAttrs["generation"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "REVISION")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["revision"].ToString(); //drawingAttrs["revision"].ToString();
+                                                ar.TextString = LayoutData["revision"] == null ? string.Empty : Convert.ToString(LayoutData["revision"]); //drawingAttrs["revision"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "DWGSTATE")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["drawingstate"].ToString();
+                                                ar.TextString = drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]);
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "GOODNOT")
                                             {
                                                 ar.UpgradeOpen();
-                                                if (((LayoutData["drawingstate"].ToString() == "GFC") || (LayoutData["drawingstate"].ToString() == "Released")) && ((drawingAttrs["drawingstate"].ToString() == "GFC") || (drawingAttrs["drawingstate"].ToString() == "Coordinated") || (drawingAttrs["drawingstate"].ToString() == "Const-Dwg")))
+                                                if (((Convert.ToString(LayoutData["drawingstate"])  == "GFC") 
+                                                    || (Convert.ToString(LayoutData["drawingstate"])  == "Released")) &&
+                                                    ((Convert.ToString(drawingAttrs["drawingstate"])  == "GFC") || 
+                                                    (Convert.ToString(drawingAttrs["drawingstate"])  == "Coordinated") || 
+                                                    (Convert.ToString(drawingAttrs["drawingstate"])  == "Const-Dwg")))
                                                 {
                                                     ar.TextString = "GOOD";
                                                 }
@@ -1172,31 +1176,31 @@ namespace AutocadPlugIn
                                             if (ar.Tag.ToUpper() == "CREATEDBY")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["createdby"].ToString(); //drawingAttrs["createdby"].ToString();
+                                                ar.TextString = LayoutData["createdby"] == null ? string.Empty : Convert.ToString(LayoutData["createdby"]); //drawingAttrs["createdby"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "MODIFIEDBY")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["modifiedby"].ToString(); //drawingAttrs["modifiedby"].ToString();
+                                                ar.TextString = LayoutData["modifiedby"] == null ? string.Empty : Convert.ToString(LayoutData["modifiedby"]); //drawingAttrs["modifiedby"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "CREATEDON")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["createdon"].ToString().Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
+                                                ar.TextString = LayoutData["createdon"]==null?string.Empty:Convert.ToString(LayoutData["createdon"]).Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "MODIFIEDON")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["modifiedon"].ToString().Substring(0, 10); //drawingAttrs["modifiedon"].ToString().Substring(0,10);
+                                                ar.TextString = LayoutData["modifiedon"] == null ? string.Empty : Convert.ToString(LayoutData["modifiedon"]).Substring(0, 10); //drawingAttrs["modifiedon"].ToString().Substring(0,10);
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "DRAWINGSTATE")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["drawingstate"].ToString(); //drawingAttrs["drawingstate"].ToString();
+                                                ar.TextString = LayoutData["drawingstate"] == null ? string.Empty : Convert.ToString(LayoutData["drawingstate"]); //drawingAttrs["drawingstate"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                         }
