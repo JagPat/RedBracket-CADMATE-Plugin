@@ -748,7 +748,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
                     //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
-                    MyProjectId= Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
+                    MyProjectId= Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
 
                 }
                 try
@@ -777,6 +777,19 @@ namespace AutocadPlugIn.UI_Forms
                     //FileTypeID = Convert.ToString(selectedTreeNode.Cells["cadtype"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
                     FileStatusID = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
                 }
+
+                if(MyProjectId=="0")
+                {
+                    MyProjectId = "";
+                }
+                if (FileTypeID == "0")
+                {
+                    FileTypeID = "";
+                }
+                if (FileStatusID == "0")
+                {
+                    FileStatusID = "";
+                }
                 //DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
                 //MyProjectId =Convert.ToString(c.Value);
                 Hashtable DrawingData = new Hashtable();
@@ -795,8 +808,8 @@ namespace AutocadPlugIn.UI_Forms
                     ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";"
                     + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";"
                     + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString()
-                   + ";" + selectedTreeNode.Cells["State"].Value.ToString()
-                     + ";" + selectedTreeNode.Cells["cadtype"].Value.ToString();
+                   + ";" + FileStatusID
+                     + ";" + FileTypeID;
 
                 #endregion
 
@@ -840,8 +853,8 @@ namespace AutocadPlugIn.UI_Forms
                             + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString()
                             + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
                             + selectedTreeNode.Cells["Layouts"].Value.ToString()
-                      + ";" + selectedTreeNode.Cells["State"].Value.ToString()
-                     + ";" + selectedTreeNode.Cells["cadtype"].Value.ToString();
+                      + ";" + FileStatusID
+                     + ";" + FileTypeID;
 
                     if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim() == String.Empty)
                         htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);

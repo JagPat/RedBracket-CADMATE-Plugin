@@ -152,6 +152,8 @@ namespace RedBracketConnector
                     //checking if service call was successful or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
+                        //ShowMessage.InfoMess(restResponse.Content);
+                        //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
                         ShowMessage.ErrorMess("Some error occurred while uploading file.");
                         return false;
                     }
