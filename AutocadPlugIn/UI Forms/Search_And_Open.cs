@@ -1040,6 +1040,10 @@ namespace AutocadPlugIn.UI_Forms
                             }
                         }
                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                        if(!Convert.ToBoolean(Drawing.isEditable))
+                        {
+                            ShowMessage.InfoMess("You dont have edit permission for this file.");
+                        }
                     }
                     else
                     {

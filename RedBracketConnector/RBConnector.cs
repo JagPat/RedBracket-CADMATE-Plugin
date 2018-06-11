@@ -157,7 +157,7 @@ namespace RedBracketConnector
                     }
                     else if (restResponse.Content.Trim().Length > 0)
                     {
-
+                       
 
                         //  if (Convert.ToString(obj.ObjectId).Trim().Length > 0)
                         {
@@ -226,6 +226,7 @@ namespace RedBracketConnector
 
 
                 }
+                UnlockObject(plmobjs);
                 return true;
             }
             catch (Exception E)
@@ -1055,7 +1056,7 @@ namespace RedBracketConnector
                         null, false, urlParameters);
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
-                        MessageBox.Show("Some error occurred while locking file.");
+                        MessageBox.Show("Some error occurred while unlocking file.");
                         return true;
                     }
 

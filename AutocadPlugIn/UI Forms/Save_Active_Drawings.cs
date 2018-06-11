@@ -333,11 +333,11 @@ namespace AutocadPlugIn.UI_Forms
                 SaveController objController = new SaveController();
                 AutoCADManager objMgr = new AutoCADManager();
                 SaveCommand objCmd = new SaveCommand();
-
+                 
                 htNewDrawings.Clear();
                 drawings.Clear();
                 GenFileInfo();
-                //return;
+                return;
                 ICollection keys = htNewDrawings.Keys;
                 IEnumerator key = keys.GetEnumerator();
                 while (key.MoveNext())
@@ -608,23 +608,23 @@ namespace AutocadPlugIn.UI_Forms
                     if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim().Length > 0)
                     {
 
-                        if (!Convert.ToBoolean(selectedTreeNode.Cells["isletest"].Value))
-                        {
-                            ShowMessage.ValMess("This file is not latest file, so you can not save it."); selectedTreeNode.Cells["check"].Value = false;savetreeGrid.RefreshEdit();
-                            return;
-                        }
-                        if (Convert.ToBoolean(selectedTreeNode.Cells["hasStatusClosed"].Value))
-                        {
-                            ShowMessage.ValMess("This file is closed, so you can not save it."); selectedTreeNode.Cells["check"].Value = false; savetreeGrid.RefreshEdit();
-                            return;
-                        }
-                        if (!Convert.ToBoolean(selectedTreeNode.Cells["isEditable"].Value))
-                        {
-                            ShowMessage.InfoMess("This file is not editable. so you can not save it.");
-                            selectedTreeNode.Cells["check"].Value = false; 
-                            savetreeGrid.RefreshEdit();
-                            return;
-                        }
+                        //if (!Convert.ToBoolean(selectedTreeNode.Cells["isletest"].Value))
+                        //{
+                        //    ShowMessage.ValMess("This file is not latest file, so you can not save it."); selectedTreeNode.Cells["check"].Value = false;savetreeGrid.RefreshEdit();
+                        //    return;
+                        //}
+                        //if (Convert.ToBoolean(selectedTreeNode.Cells["hasStatusClosed"].Value))
+                        //{
+                        //    ShowMessage.ValMess("This file is closed, so you can not save it."); selectedTreeNode.Cells["check"].Value = false; savetreeGrid.RefreshEdit();
+                        //    return;
+                        //}
+                        //if (!Convert.ToBoolean(selectedTreeNode.Cells["isEditable"].Value))
+                        //{
+                        //    ShowMessage.InfoMess("This file is not editable. so you can not save it.");
+                        //    selectedTreeNode.Cells["check"].Value = false; 
+                        //    savetreeGrid.RefreshEdit();
+                        //    return;
+                        //}
                         if (Convert.ToBoolean(selectedTreeNode.Cells["isowner"].Value))
                         {
                         }
@@ -734,6 +734,49 @@ namespace AutocadPlugIn.UI_Forms
                 String FilePath = (String)selectedTreeNode.Cells["filepath"].Value;
                 String MyProjectName = selectedTreeNode.Cells["projectname"].FormattedValue.ToString();
                 String MyProjectId = selectedTreeNode.Cells["projectname"].Value.ToString();
+                string FileTypeID = "";
+                string FileStatusID = "";
+
+                try
+                {
+
+                    MyProjectId =Convert.ToString(selectedTreeNode.Cells["projectname"].Value)==string.Empty?"0": Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
+                }
+                catch
+                {
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
+
+                    c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
+                    MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
+
+
+                }
+                try
+                {
+                    //FileTypeID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
+                    FileTypeID = Convert.ToString(selectedTreeNode.Cells["cadtype"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
+
+                }
+                catch
+                {
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["cadtype"];
+
+                     c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["cadtype"].Value), "name");
+                    FileTypeID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
+                    
+                }
+                try
+                {
+                    //FileStatusID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
+                    FileStatusID = Convert.ToString(selectedTreeNode.Cells["State"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
+                }
+                catch
+                {
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["State"];
+                    c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
+                    FileTypeID = Convert.ToString(selectedTreeNode.Cells["cadtype"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
+
+                }
                 //DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
                 //MyProjectId =Convert.ToString(c.Value);
                 Hashtable DrawingData = new Hashtable();
