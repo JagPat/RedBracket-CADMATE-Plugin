@@ -337,7 +337,7 @@ namespace AutocadPlugIn.UI_Forms
                 htNewDrawings.Clear();
                 drawings.Clear();
                 GenFileInfo();
-                return;
+                //return;
                 ICollection keys = htNewDrawings.Keys;
                 IEnumerator key = keys.GetEnumerator();
                 while (key.MoveNext())
