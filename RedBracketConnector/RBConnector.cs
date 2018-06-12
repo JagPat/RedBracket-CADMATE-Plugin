@@ -75,22 +75,86 @@ namespace RedBracketConnector
                             //      new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
                             //       new KeyValuePair<string, string>("fileType", obj.Classification),
                             //       new KeyValuePair<string, string>("fileDescription", obj.ObjectDescription) });
+                            List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+
+                            KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
+
+                            if(obj.ObjectId.Trim().Length>0)
+                            {
+                                Keys = new KeyValuePair<string, string>("fileId", obj.ObjectId);
+                                keyValuePairs.Add(Keys);
+                            }
+                            // needs to change
+                          //  if (obj.ObjectId.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("isChecked", "true");
+                                keyValuePairs.Add(Keys);
+                            }
+                            if (obj.ObjectName.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("fileName", obj.ObjectName);
+                                keyValuePairs.Add(Keys);
+                            }
+                            if (obj.ObjectStatus.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus);
+                                keyValuePairs.Add(Keys);
+                            }
+                            //if (obj.ObjectId.Trim().Length > 0)
+                            //{
+                            //    Keys = new KeyValuePair<string, string>("layoutFileId","");
+                            //    keyValuePairs.Add(Keys);
+                            //}
+                            //if (obj.ObjectId.Trim().Length > 0)
+                            //{
+                            //    Keys = new KeyValuePair<string, string>("statusId", "");
+                            //    keyValuePairs.Add(Keys);
+                            //}
+                            //if (obj.ObjectId.Trim().Length > 0)
+                            //{
+                            //    Keys = new KeyValuePair<string, string>("typeId", "");
+                            //    keyValuePairs.Add(Keys);
+                            //}
+                            //if (obj.ObjectId.Trim().Length > 0)
+                            //{
+                            //    Keys = new KeyValuePair<string, string>("layoutFileName", "");
+                            //    keyValuePairs.Add(Keys);
+                            //}
+                            if (obj.Classification.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("fileTypeId", obj.Classification);
+                                keyValuePairs.Add(Keys);
+                            }
+                            if (obj.ObjectDescription.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription);
+                                keyValuePairs.Add(Keys);
+                            }
+                            //if (obj.ObjectId.Trim().Length > 0)
+                            //{
+                            //    Keys = new KeyValuePair<string, string>("layoutDesc","");
+                            //    keyValuePairs.Add(Keys);
+                            //}
 
                             restResponse = (RestResponse)ServiceHelper.UpdateObject(
-                      Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                      "/AutocadFiles/updateFileProperties", obj.FilePath,
-                        true, new List<KeyValuePair<string, string>> {
-                         new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                          new KeyValuePair<string, string>("isChecked", "true"),// Need to change
-                           new KeyValuePair<string, string>("fileName", obj.ObjectName),
-                           new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
-                            new KeyValuePair<string, string>("layoutFileId", ""),
-                             new KeyValuePair<string, string>("statusId", ""),
-                              new KeyValuePair<string, string>("typeId", ""),
-                                 new KeyValuePair<string, string>("layoutFileName", ""),
-                            new KeyValuePair<string, string>("fileTypeId", obj.Classification),
-                            new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription),
-                            new KeyValuePair<string, string>("layoutDesc", "") });
+              Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+              "/AutocadFiles/updateFileProperties", obj.FilePath,
+                true, keyValuePairs);
+                            //      restResponse = (RestResponse)ServiceHelper.UpdateObject(
+                            //Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                            //"/AutocadFiles/updateFileProperties", obj.FilePath,
+                            //  true, new List<KeyValuePair<string, string>> {
+                            //   new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                            //    new KeyValuePair<string, string>("isChecked", "true"),// Need to change
+                            //     new KeyValuePair<string, string>("fileName", obj.ObjectName),
+                            //     new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
+                            //      new KeyValuePair<string, string>("layoutFileId", ""),
+                            //       new KeyValuePair<string, string>("statusId", ""),
+                            //        new KeyValuePair<string, string>("typeId", ""),
+                            //           new KeyValuePair<string, string>("layoutFileName", ""),
+                            //      new KeyValuePair<string, string>("fileTypeId", obj.Classification),
+                            //      new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription),
+                            //      new KeyValuePair<string, string>("layoutDesc", "") });
                         }
                         else
                         {
@@ -100,7 +164,9 @@ namespace RedBracketConnector
                             true, new List<KeyValuePair<string, string>> {
                             new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
                             new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                            new KeyValuePair<string, string>("fileType", obj.Classification)});
+                            new KeyValuePair<string, string>("fileType", obj.Classification),
+                             new KeyValuePair<string, string>("fileId", obj.ObjectId)
+                            });
                         }
 
 
