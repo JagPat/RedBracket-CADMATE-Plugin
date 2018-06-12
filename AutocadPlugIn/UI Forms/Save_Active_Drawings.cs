@@ -87,7 +87,7 @@ namespace AutocadPlugIn.UI_Forms
             Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true);
             #endregion filestatus
 
-            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true);
+            Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true,"My Files");
 
             //ProjectName.DataSource = dtProjectNo;
             //ProjectName.DisplayMember = "ProjectName";
@@ -326,6 +326,7 @@ namespace AutocadPlugIn.UI_Forms
                 if (selectedTreeGridNodes.Count < 1)
                 {
                     MessageBox.Show("Please select at least one file to save.");
+                    this.Cursor = Cursors.Default;
                     return;
                 }
 
@@ -359,6 +360,12 @@ namespace AutocadPlugIn.UI_Forms
                 // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
+                    if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
+                    {
+                        ShowMessage.InfoMess("You dont have edit permission for this file.");
+                        this.Cursor = Cursors.Default;
+                        return;
+                    }
                     objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
                     // Is_Save :needs to make changes for multiple file
@@ -570,7 +577,10 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "2")
                 {
-                    MessageBox.Show("This drawing is not locked by you.");
+                    selectedTreeNode.Cells["Check"].Value = false;
+                    savetreeGrid.RefreshEdit();
+                    MessageBox.Show("This drawing is locked by other user.");
+                     
                     return;
                 }
                 #endregion

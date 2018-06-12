@@ -454,7 +454,7 @@ namespace AutocadPlugIn.UI_Forms
                     resultSearchCriteriaRecord.name,
                     resultSearchCriteriaRecord.fileNo,
                     (bool)resultSearchCriteriaRecord.filelock,
-                    resultSearchCriteriaRecord.coreType.name,
+                    resultSearchCriteriaRecord.type==null?null: resultSearchCriteriaRecord.type.name,
                     resultSearchCriteriaRecord.status.statusname,
                     resultSearchCriteriaRecord.versionno,
                     resultSearchCriteriaRecord.projectname,
@@ -984,7 +984,15 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("Generation", "123");
                     DrawingProperty.Add("Type", Drawing.coreType.id);
                     //DrawingProperty.Add("ProjectName", Drawing.projectname );
-                     DrawingProperty.Add("ProjectName", Drawing.projectname+" ("+ Drawing.projectNumber+")");
+                    if (Drawing.projectname.Trim().Length==0)
+                    {
+                        DrawingProperty.Add("ProjectName", "My Files");
+                    }
+                    else
+                    {
+                        DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
+                    }
+                      
                     DrawingProperty.Add("ProjectId", Drawing.projectinfo);
                     DrawingProperty.Add("CreatedOn", Drawing.updatedon);
                     DrawingProperty.Add("CreatedBy", Drawing.createdby);
@@ -1040,11 +1048,11 @@ namespace AutocadPlugIn.UI_Forms
                             }
                         }
                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
-                        //cadManager.SaveActiveDrawing(false);
-                        if(!Convert.ToBoolean(Drawing.isEditable))
-                        {
-                            ShowMessage.InfoMess("You dont have edit permission for this file.");
-                        }
+                       // cadManager.SaveActiveDrawing(false);
+                        //if(!Convert.ToBoolean(Drawing.isEditable))
+                        //{
+                        //    ShowMessage.InfoMess("You dont have edit permission for this file.");
+                        //}
                     }
                     else
                     {
@@ -1253,15 +1261,31 @@ namespace AutocadPlugIn.UI_Forms
 
         private void sg_SearchType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (sg_SearchType.Text == "Full")
+            try
             {
-                CDRealty.Enabled = true;
+                if(sg_SearchType.Text.ToLower()=="my files")
+                {
+                    CDProjectName.SelectedIndex = 0;
+                    CDProjectName.Enabled = false;
+                }
+                else
+                {
+                    CDProjectName.Enabled = true;
+                }
             }
-            else
+            catch
             {
-                CDRealty.Text = "";
-                CDRealty.Enabled = false;
+
             }
+            //if (sg_SearchType.Text == "Full")
+            //{
+            //    CDRealty.Enabled = true;
+            //}
+            //else
+            //{
+            //    CDRealty.Text = "";
+            //    CDRealty.Enabled = false;
+            //}
         }
 
         private void CDProjectName_SelectedIndexChanged(object sender, EventArgs e)

@@ -68,13 +68,21 @@ namespace RedBracketConnector
                 ShowMessage.ErrorMess(E.Message);
             }
         }
-        public static void FIllCMB(DataGridViewComboBoxColumn cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect)
+        public static void FIllCMB(DataGridViewComboBoxColumn cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect,string FirstRowText=null)
         {
             try
             {
                 String Text = "All";
-                if (IsSelect)
-                    Text = "Select";
+                if(FirstRowText==null)
+                {
+                    if (IsSelect)
+                        Text = "---Select---";
+                }
+                else
+                {
+                    Text = FirstRowText;
+                }
+               
                 dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember);
 
                 cmb.DataSource = dt;

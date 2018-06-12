@@ -53,6 +53,9 @@ namespace AutocadPlugIn
         public RibbonPanelSource panel4Panel = new RibbonPanelSource();
         public RibbonPanel panel4 = new RibbonPanel();
 
+        public RibbonPanelSource rpsSave = new RibbonPanelSource();
+        public RibbonPanel rpSave = new RibbonPanel();
+
         public RibbonButton Btn_Lock = new RibbonButton();
         public RibbonButton Btn_Unlock = new RibbonButton();
         public RibbonButton Btn_Save = new RibbonButton();
@@ -292,6 +295,10 @@ namespace AutocadPlugIn
             panel4.Source = panel4Panel;
             Tab.Panels.Add(panel4);
 
+            rpsSave.Title = "Save";
+            rpSave.Source = rpsSave;
+            Tab.Panels.Add(rpSave);
+
 
             Btn_Lock.Text = "Lock";
             Btn_Lock.ShowText = true;
@@ -325,9 +332,13 @@ namespace AutocadPlugIn
             Btn_Save.CommandHandler = new Save();
             Btn_Save.IsEnabled = SaveEnable;
 
+            RibbonRowPanel rrpSave = new RibbonRowPanel();
+            rrpSave.Items.Add(Btn_Save);
+            rpsSave.Items.Add(rrpSave);
+
             RibbonRowPanel pan4row1 = new RibbonRowPanel();
             pan4row1.Items.Add(Btn_Lock);
-            pan4row1.Items.Add(Btn_Save);
+        
             pan4row1.Items.Add(Btn_Unlock);
             panel4Panel.Items.Add(pan4row1);
 
