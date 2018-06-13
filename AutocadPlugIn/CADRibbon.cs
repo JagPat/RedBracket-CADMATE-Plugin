@@ -1015,7 +1015,7 @@ namespace AutocadPlugIn
                 //}
                 if (Convert.ToDateTime(Drawing.updatedon) > Convert.ToDateTime(updatedon))
                 {
-                    if (RedBracketConnector.ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?.") == DialogResult.Yes)
+                    if (RedBracketConnector.ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?."+Environment.NewLine+"Your changes will be lost.") == DialogResult.Yes)
                     {
                         string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
                         string ProjectName = projectname;
@@ -1031,6 +1031,7 @@ namespace AutocadPlugIn
                         System.Collections.Hashtable DrawingProperty = new System.Collections.Hashtable();
                         string filePathName = objRBC.DownloadOpenDocument(drawingid, checkoutPath, ref DrawingProperty, PreFix);
                         CADController.ICADManager cadManager = new AutoCADManager();
+                        cadManager.CloseActiveDocument(filePathName);
                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
                     }
                     else

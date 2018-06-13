@@ -733,7 +733,8 @@ namespace AutocadPlugIn
                                 {
                                     PreFix = ProjectName + "-";
                                 }
-                                PreFix = PreFix + DrawingNO + "-";
+                                //PreFix = PreFix + DrawingNO + "-";
+                                PreFix += Convert.ToString(DrawingNO) == string.Empty ? string.Empty : Convert.ToString(DrawingNO) + "-";
 
                                 PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
 
@@ -792,6 +793,166 @@ namespace AutocadPlugIn
                         //}//Switch Complete
                     }//For Complete          
                     mainDb.SaveAs(FilePath, DwgVersion.Current);
+                }//using db complete
+
+            }
+            catch (System.Exception ex)
+            {
+                RedBracketConnector.ShowMessage.ErrorMess(ex.Message);
+            }
+        }
+        public void UpdateExRefPathInfo1(string FilePath)
+        {
+            try
+            {
+                //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+
+                Database mainDb = new Database(false, true);
+                using (mainDb)
+                {
+                    //Database db = doc.Database;
+                    //Editor ed = doc.Editor;
+                    string rootid = "";
+                    mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                    mainDb.ResolveXrefs(false, false);
+                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                    for (int i = 0; i < xg.NumNodes; i++)
+                    {
+                        XrefGraphNode xgn = xg.GetXrefNode(i);
+                        GraphNode root = xg.RootNode;
+                        if (xgn.Name == FilePath)
+                        {
+
+                            continue;
+                        }
+                        //switch (xgn.XrefStatus)
+                        //{
+                        if (XrefStatus.Unresolved == xgn.XrefStatus)
+                        {
+                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                        }
+                        else if (XrefStatus.Unloaded == xgn.XrefStatus)
+                        {
+                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
+                        }
+                        else if (XrefStatus.Unreferenced == xgn.XrefStatus)
+                        {
+                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
+                        }
+                        else if (XrefStatus.Resolved == xgn.XrefStatus)
+                        {
+
+
+                            Database xdb = xgn.Database;
+
+
+                            if (xdb != null)
+                            {
+                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
+                                var dbsi = xdb.SummaryInfo.CustomProperties;
+                                while (dbsi.MoveNext())
+                                {
+                                    if (Convert.ToString(dbsi.Key) == "projectno")
+                                    {
+                                        ProjectName = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "drawingnumber")
+                                    {
+                                        DrawingNO = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "filetypeid")
+                                    {
+                                        FileType = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "revision")
+                                    {
+                                        Rev = Convert.ToString(dbsi.Value);
+                                    }
+                                }
+
+                                if (ProjectName.Trim().Length > 0)
+                                {
+                                    PreFix = ProjectName + "-";
+                                }
+                                //PreFix = PreFix + DrawingNO + "-";
+                                PreFix += Convert.ToString(DrawingNO) == string.Empty ? string.Empty : Convert.ToString(DrawingNO) + "-";
+
+                                PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
+
+                                PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
+
+
+                                
+                                 
+
+
+
+
+                                Transaction tr = xdb.TransactionManager.StartTransaction();
+                                String drawingName;
+                                String[] str = new String[14];
+                                using (tr)
+                                {
+                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                                    mainDb.XrefEditEnabled = true;
+
+                                    string originalpath = btr.PathName;
+                                    string childname = Path.GetFileName(originalpath);
+                                    string dir = Path.GetDirectoryName(FilePath);
+                                    string FN = Path.GetFileName(btr.PathName);
+                                    string ChildFilePath = Path.Combine(dir, FN);
+
+                                    if(childname.Trim().Length>PreFix.Length)
+                                    {
+                                        if(childname.Substring(0,PreFix.Length)==PreFix)
+                                        {
+                                            childname = childname.Substring(PreFix.Length);
+                                        }
+                                    }
+                                    string newpath = @"\" + childname;
+
+                                    btr.PathName = newpath;
+                                    //xdb.Filename = "";
+                                    tr.Commit();
+                                    try
+                                    {
+                                        //xdb.SaveAs(ChildFilePath, DwgVersion.Current);
+                                    }
+                                    catch { }
+                                }
+                            }
+                        }
+                        else if (XrefStatus.FileNotFound == xgn.XrefStatus)
+                        {
+
+
+                            //Database xdb = xgn.Database;
+                            //if (xdb != null)
+                            //{
+                            //    Transaction tr = xdb.TransactionManager.StartTransaction();
+                            //    String drawingName;
+                            //    String[] str = new String[14];
+                            //    using (tr)
+                            //    {
+                            //        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                            //        mainDb.XrefEditEnabled = true;
+
+                            //        string originalpath = btr.PathName;
+                            //        string childname = Path.GetFileName(originalpath);
+                            //        string newpath = path + childname;
+
+                            //        btr.PathName = newpath;
+                            //        //xdb.Filename = "";
+                            //        tr.Commit();
+                            //    }
+                            //}
+                        }
+                        //}//Switch Complete
+                    }//For Complete          
+                     mainDb.SaveAs(FilePath, DwgVersion.Current);
                 }//using db complete
 
             }
@@ -1747,6 +1908,27 @@ namespace AutocadPlugIn
                 return true;
             }
 
+        }
+
+        public bool ChecknCloseOpenedDoc(string FilePath)
+        {
+            try
+            {
+                foreach (Document Doc in acadApp.DocumentManager)
+                {
+                    if (Doc.Database.Filename == FilePath)
+                    {
+                        Doc.CloseAndSave(FilePath);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return true;
+            }
         }
     }
 }

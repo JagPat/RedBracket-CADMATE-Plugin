@@ -179,9 +179,9 @@ namespace RedBracketConnector
                             continue;
                         }
                         //for save
-                        //if (obj.ObjectId.Trim().Length == 0)
-                        //{
-                        restResponse = (RestResponse)ServiceHelper.SaveObject(
+                        if (obj.ObjectId.Trim().Length == 0)
+                        {
+                            restResponse = (RestResponse)ServiceHelper.SaveObject(
                                         Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                                         "/AutocadFiles/uploadXRefFiles", obj.FilePath,
                                           false, new List<KeyValuePair<string, string>> {
@@ -192,25 +192,19 @@ namespace RedBracketConnector
                                             new KeyValuePair<string, string>("xrefFileId", obj.ObjectId.Trim()),
                                             new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
                                             new KeyValuePair<string, string>("fileType", obj.Classification) },obj.PreFix);
-                        //}
-                        //else
-                        //{
-                        //    restResponse = (RestResponse)ServiceHelper.UpdateObject(
-                        //     Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        //     "/AutocadFiles/updateFileProperties", obj.FilePath,
-                        //     "test.dwg", true, new List<KeyValuePair<string, string>> {
-                        // new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                        //  new KeyValuePair<string, string>("isChecked", "false"),
-                        //   new KeyValuePair<string, string>("fileName", obj.ObjectName),
-                        //   new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
-                        //    new KeyValuePair<string, string>("layoutFileId", ""),
-                        //     new KeyValuePair<string, string>("statusId", ""),
-                        //      new KeyValuePair<string, string>("typeId", ""),
-                        //         new KeyValuePair<string, string>("layoutFileName", ""),
-                        //    new KeyValuePair<string, string>("fileTypeId", obj.Classification),
-                        //    new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription),
-                        //    new KeyValuePair<string, string>("layoutDesc", "") });
-                        //}
+                        }
+                        else
+                        {
+                            restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                            "/AutocadFiles/uploadFileService", obj.FilePath,
+                                                 true, new List<KeyValuePair<string, string>> {
+                                                                        new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
+                                                                        new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                                                                        new KeyValuePair<string, string>("fileType", obj.Classification),
+                                                                         new KeyValuePair<string, string>("fileId", obj.ObjectId)
+                                                 }, obj.PreFix);
+                        }
 
 
 

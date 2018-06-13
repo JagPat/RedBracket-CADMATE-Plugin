@@ -492,38 +492,46 @@ namespace AutocadPlugIn.UI_Forms
                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                 "/AutocadFiles/getAssoFile",
                 false,
-                new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", resultSearchCriteriaRecord.id) });
-
-            var childRecords = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-
-            if (childRecords == null || childRecords.Count <= 0)
+                new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", resultSearchCriteriaRecord.id),
+                new KeyValuePair<string, string>("userName", Helper.UserName)}); 
+            if (restResponse.StatusCode==System.Net.HttpStatusCode.OK)
             {
-                return;
-            }
+                var childRecords = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
 
-            foreach (ResultSearchCriteria resultSearchCriteriaChildRecord in childRecords)
+                if (childRecords == null || childRecords.Count <= 0)
+                {
+                    return;
+                }
+
+                foreach (ResultSearchCriteria resultSearchCriteriaChildRecord in childRecords)
+                {
+                    TreeGridNode treeGridNode = parentTreeGridNode.Nodes.Add(
+                                                    null,
+                                                    null,
+                                                    resultSearchCriteriaChildRecord.name,
+                                                      resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
+
+                                                    resultSearchCriteriaChildRecord.fileNo,
+                                                    (bool)resultSearchCriteriaChildRecord.filelock,
+                                                    resultSearchCriteriaChildRecord.type.name,
+                                                    resultSearchCriteriaChildRecord.status.statusname,
+                                                    resultSearchCriteriaChildRecord.versionno,
+                                                    resultSearchCriteriaChildRecord.projectname,
+                                                    resultSearchCriteriaChildRecord.projectinfo,
+                                                    resultSearchCriteriaChildRecord.size,
+                                                    resultSearchCriteriaChildRecord.id,
+                                                    null,
+                                                    null,
+                                                    null);
+
+                    //AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
+                }
+            }
+            else
             {
-                TreeGridNode treeGridNode = parentTreeGridNode.Nodes.Add(
-                                                null,
-                                                null,
-                                                resultSearchCriteriaChildRecord.name,
-                                                  resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
-
-                                                resultSearchCriteriaChildRecord.fileNo,
-                                                (bool)resultSearchCriteriaChildRecord.filelock,
-                                                resultSearchCriteriaChildRecord.type.name,
-                                                resultSearchCriteriaChildRecord.status.statusname,
-                                                resultSearchCriteriaChildRecord.versionno,
-                                                resultSearchCriteriaChildRecord.projectname,
-                                                resultSearchCriteriaChildRecord.projectinfo,
-                                                resultSearchCriteriaChildRecord.size,
-                                                resultSearchCriteriaChildRecord.id,
-                                                null,
-                                                null,
-                                                null);
-
-                //AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
+                ShowMessage.ErrorMess("Something went wrong while retreiving associated file. ");
             }
+           
         }
 
 
@@ -867,6 +875,8 @@ namespace AutocadPlugIn.UI_Forms
             //    return;
             //}
             #endregion
+            List<PLMObject> pLMObjects = new List<PLMObject>();
+            RBConnector objRBC = new RBConnector();
             try
             {
                 this.Cursor = Cursors.WaitCursor;
@@ -892,7 +902,7 @@ namespace AutocadPlugIn.UI_Forms
                     MessageBox.Show("Please set checkout path under settings, before opening any file.");
                     return;
                 }
-
+                
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
 
@@ -955,11 +965,14 @@ namespace AutocadPlugIn.UI_Forms
 
 
                             DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout",false,null, PreFix);
+
+                            
+                            pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
                         }
                     }
 
                     DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true, currentTreeGrdiNode, PreFix1);
-
+                    pLMObjects.Add(new PLMObject() { ObjectId = currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString() });
                     //foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
                     //{
                     //    string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
@@ -971,7 +984,7 @@ namespace AutocadPlugIn.UI_Forms
                     //    }
                     //}
                 }
-
+                objRBC.LockObject(pLMObjects);
                 CADRibbon ribbon = new CADRibbon();
                 ribbon.browseDEnable = true;
                 ribbon.createDEnable = true;
@@ -988,6 +1001,7 @@ namespace AutocadPlugIn.UI_Forms
             catch (System.Exception ex)
             {
                 System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                objRBC.UnlockObject(pLMObjects);
                 this.Cursor = Cursors.Default;
                 return;
             }
