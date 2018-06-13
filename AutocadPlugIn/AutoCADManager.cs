@@ -88,8 +88,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                string path = Path.GetDirectoryName(FilePath);
-                path += @"\" + Helper.FileNamePrefix;
+
                 Database mainDb = new Database(false, true);
                 using (mainDb)
                 {
@@ -663,8 +662,7 @@ namespace AutocadPlugIn
             try
             {
                 //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                string path = Path.GetDirectoryName(FilePath);
-                path += @"\" + Helper.FileNamePrefix;
+
                 Database mainDb = new Database(false, true);
                 using (mainDb)
                 {
@@ -705,8 +703,49 @@ namespace AutocadPlugIn
 
 
                             Database xdb = xgn.Database;
+
+
                             if (xdb != null)
                             {
+                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
+                                var dbsi = xdb.SummaryInfo.CustomProperties;
+                                while (dbsi.MoveNext())
+                                {
+                                    if (Convert.ToString(dbsi.Key) == "projectno")
+                                    {
+                                        ProjectName = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "drawingnumber")
+                                    {
+                                        DrawingNO = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "filetypeid")
+                                    {
+                                        FileType = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "revision")
+                                    {
+                                        Rev = Convert.ToString(dbsi.Value);
+                                    }
+                                }
+
+                                if (ProjectName.Trim().Length > 0)
+                                {
+                                    PreFix = ProjectName + "-";
+                                }
+                                PreFix = PreFix + DrawingNO + "-";
+
+                                PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
+
+                                PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
+
+
+                                string path = Path.GetDirectoryName(FilePath);
+                                path += @"\" + PreFix;
+
+
+
+
                                 Transaction tr = xdb.TransactionManager.StartTransaction();
                                 String drawingName;
                                 String[] str = new String[14];
@@ -729,26 +768,26 @@ namespace AutocadPlugIn
                         {
 
 
-                            Database xdb = xgn.Database;
-                            if (xdb != null)
-                            {
-                                Transaction tr = xdb.TransactionManager.StartTransaction();
-                                String drawingName;
-                                String[] str = new String[14];
-                                using (tr)
-                                {
-                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
-                                    mainDb.XrefEditEnabled = true;
+                            //Database xdb = xgn.Database;
+                            //if (xdb != null)
+                            //{
+                            //    Transaction tr = xdb.TransactionManager.StartTransaction();
+                            //    String drawingName;
+                            //    String[] str = new String[14];
+                            //    using (tr)
+                            //    {
+                            //        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                            //        mainDb.XrefEditEnabled = true;
 
-                                    string originalpath = btr.PathName;
-                                    string childname = Path.GetFileName(originalpath);
-                                    string newpath = path + childname;
+                            //        string originalpath = btr.PathName;
+                            //        string childname = Path.GetFileName(originalpath);
+                            //        string newpath = path + childname;
 
-                                    btr.PathName = newpath;
-                                    //xdb.Filename = "";
-                                    tr.Commit();
-                                }
-                            }
+                            //        btr.PathName = newpath;
+                            //        //xdb.Filename = "";
+                            //        tr.Commit();
+                            //    }
+                            //}
                         }
                         //}//Switch Complete
                     }//For Complete          
@@ -792,11 +831,11 @@ namespace AutocadPlugIn
             dtTreeGrid.Columns.Add("caneditstatus", typeof(String));
             dtTreeGrid.Columns.Add("hasstatusclosed", typeof(String));
             dtTreeGrid.Columns.Add("isletest", typeof(String));
+            dtTreeGrid.Columns.Add("projectno", typeof(String));
+            dtTreeGrid.Columns.Add("prefix", typeof(String));
 
 
 
-
-       
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
@@ -904,7 +943,7 @@ namespace AutocadPlugIn
 
                                                         dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"] == null ? string.Empty : rootdrawingAttrs["drawingname"],
                                                           rootdrawingAttrs["drawingnumber"] == null ? string.Empty : rootdrawingAttrs["drawingnumber"],
-                                                          rootdrawingAttrs["classification"] == null ? string.Empty : rootdrawingAttrs["classification"],
+                                                          rootdrawingAttrs["classification"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
                                                           rootdrawingAttrs["filetypeid"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
                                                           rootdrawingAttrs["revision"] == null ? string.Empty : rootdrawingAttrs["revision"],
                                                           rootdrawingAttrs["drawingid"] == null ? string.Empty : rootdrawingAttrs["drawingid"],
@@ -914,7 +953,7 @@ namespace AutocadPlugIn
                                                           rootdrawingAttrs["type"] == null ? string.Empty : rootdrawingAttrs["type"],
                                                           childrens, "1", rootdrawingAttrs["projectname"] == null ? string.Empty : rootdrawingAttrs["projectname"],
                                                           rootdrawingAttrs["projectid"] == null ? string.Empty : rootdrawingAttrs["projectid"],
-                                                          Layouts == null ? string.Empty : Layouts,"","","",
+                                                          Layouts == null ? string.Empty : Layouts, "", "", "",
 
                                                         rootdrawingAttrs["candelete"] == null ? string.Empty : rootdrawingAttrs["candelete"],
                                                         rootdrawingAttrs["isowner"] == null ? string.Empty : rootdrawingAttrs["isowner"],
@@ -923,10 +962,11 @@ namespace AutocadPlugIn
                                                         rootdrawingAttrs["iseditable"] == null ? string.Empty : rootdrawingAttrs["iseditable"],
                                                         rootdrawingAttrs["caneditstatus"] == null ? string.Empty : rootdrawingAttrs["caneditstatus"],
                                                         rootdrawingAttrs["hasstatusclosed"] == null ? string.Empty : rootdrawingAttrs["hasstatusclosed"],
-                                                        rootdrawingAttrs["isletest"] == null ? string.Empty : rootdrawingAttrs["isletest"]);
+                                                        rootdrawingAttrs["isletest"] == null ? string.Empty : rootdrawingAttrs["isletest"],
+                                                        rootdrawingAttrs["projectno"] == null ? string.Empty : rootdrawingAttrs["projectno"],
+                                                        rootdrawingAttrs["prefix"] == null ? string.Empty : rootdrawingAttrs["prefix"]);
 
 
-                                                        
 
                                                     }
                                                     catch (System.Exception E)
@@ -936,7 +976,7 @@ namespace AutocadPlugIn
                                                 }
                                                 else
                                                 {
-                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "");
+                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "");
                                                 }
                                             }
                                             else
@@ -973,7 +1013,7 @@ namespace AutocadPlugIn
 
                                                       drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]),
                                                       drawingAttrs["drawingnumber"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingnumber"]),
-                                                        drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]),
+                                                        drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
                                                         drawingAttrs["filetypeid"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
 
                                                         drawingAttrs["revision"] == null ? string.Empty : Convert.ToString(drawingAttrs["revision"]),
@@ -996,14 +1036,16 @@ namespace AutocadPlugIn
                                                         drawingAttrs["iseditable"] == null ? string.Empty : drawingAttrs["iseditable"],
                                                         drawingAttrs["caneditstatus"] == null ? string.Empty : drawingAttrs["caneditstatus"],
                                                         drawingAttrs["hasstatusclosed"] == null ? string.Empty : drawingAttrs["hasstatusclosed"],
-                                                        drawingAttrs["isletest"] == null ? string.Empty : drawingAttrs["isletest"]
+                                                        drawingAttrs["isletest"] == null ? string.Empty : drawingAttrs["isletest"],
+                                                        drawingAttrs["projectno"] == null ? string.Empty : drawingAttrs["projectno"],
+                                                        drawingAttrs["prefix"] == null ? string.Empty : drawingAttrs["prefix"]
                                                         );
 
 
                                                 }
 
                                                 else
-                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "");
+                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "");
                                             }
                                             tr.Commit();
                                         }
@@ -1036,27 +1078,27 @@ namespace AutocadPlugIn
         {
             try
             {
-                System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
-                dtTreeGrid.Columns.Add("drawingname", typeof(String));
-                dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
-                dtTreeGrid.Columns.Add("classification", typeof(String));
-                dtTreeGrid.Columns.Add("revision", typeof(String));
-                dtTreeGrid.Columns.Add("drawingid", typeof(String));
-                dtTreeGrid.Columns.Add("filepath", typeof(String));
-                dtTreeGrid.Columns.Add("drawingstate", typeof(String));
-                dtTreeGrid.Columns.Add("generation", typeof(String));
-                dtTreeGrid.Columns.Add("type", typeof(String));
-                dtTreeGrid.Columns.Add("sourceid", typeof(String));
-                dtTreeGrid.Columns.Add("isroot", typeof(String));
-                dtTreeGrid.Columns.Add("projectname", typeof(String));
-                dtTreeGrid.Columns.Add("projectid", typeof(String));
-                dtTreeGrid.Columns.Add("createdon", typeof(String));
-                dtTreeGrid.Columns.Add("createdby", typeof(String));
-                dtTreeGrid.Columns.Add("modifiedon", typeof(String));
-                dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
-                dtTreeGrid.Columns.Add("lockstatus", typeof(String));
-                dtTreeGrid.Columns.Add("lockby", typeof(String));
-                dtTreeGrid.Columns.Add("Error", typeof(String));
+                //System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
+                //dtTreeGrid.Columns.Add("drawingname", typeof(String));
+                //dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
+                //dtTreeGrid.Columns.Add("classification", typeof(String));
+                //dtTreeGrid.Columns.Add("revision", typeof(String));
+                //dtTreeGrid.Columns.Add("drawingid", typeof(String));
+                //dtTreeGrid.Columns.Add("filepath", typeof(String));
+                //dtTreeGrid.Columns.Add("drawingstate", typeof(String));
+                //dtTreeGrid.Columns.Add("generation", typeof(String));
+                //dtTreeGrid.Columns.Add("type", typeof(String));
+                //dtTreeGrid.Columns.Add("sourceid", typeof(String));
+                //dtTreeGrid.Columns.Add("isroot", typeof(String));
+                //dtTreeGrid.Columns.Add("projectname", typeof(String));
+                //dtTreeGrid.Columns.Add("projectid", typeof(String));
+                //dtTreeGrid.Columns.Add("createdon", typeof(String));
+                //dtTreeGrid.Columns.Add("createdby", typeof(String));
+                //dtTreeGrid.Columns.Add("modifiedon", typeof(String));
+                //dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
+                //dtTreeGrid.Columns.Add("lockstatus", typeof(String));
+                //dtTreeGrid.Columns.Add("lockby", typeof(String));
+                //dtTreeGrid.Columns.Add("Error", typeof(String));
                 //if (!(ArasConnector.ArasConnector.Isconnected))
                 //{
                 //    MessageBox.Show("Please login into Avrut Innova for this functionality...!!");
@@ -1071,7 +1113,7 @@ namespace AutocadPlugIn
                 IDictionaryEnumerator en = doc.Database.SummaryInfo.CustomProperties;
                 while (en.MoveNext())
                 {
-                    drawingAttrs.Add(en.Key, en.Value==null?string.Empty:en.Value);
+                    drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : en.Value);
                 }
 
                 if (drawingAttrs.Count < 0) return;
@@ -1116,19 +1158,19 @@ namespace AutocadPlugIn
                                             if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["drawingnumber"]==null?string.Empty:Convert.ToString(LayoutData["drawingnumber"]);//drawingAttrs["drawingnumber"].ToString();
+                                                ar.TextString = LayoutData["drawingnumber"] == null ? string.Empty : Convert.ToString(LayoutData["drawingnumber"]);//drawingAttrs["drawingnumber"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "DRAWINGNAME")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["drawingname"]==null?string.Empty:Convert.ToString(drawingAttrs["drawingname"]);
+                                                ar.TextString = drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]);
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "PROJECTNAME")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["projectname"]==null?string.Empty:Convert.ToString(LayoutData["projectname"]); //drawingAttrs["projectname"].ToString();
+                                                ar.TextString = LayoutData["projectname"] == null ? string.Empty : Convert.ToString(LayoutData["projectname"]); //drawingAttrs["projectname"].ToString();
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "PROJECTID")
@@ -1158,11 +1200,11 @@ namespace AutocadPlugIn
                                             if (ar.Tag.ToUpper() == "GOODNOT")
                                             {
                                                 ar.UpgradeOpen();
-                                                if (((Convert.ToString(LayoutData["drawingstate"])  == "GFC") 
-                                                    || (Convert.ToString(LayoutData["drawingstate"])  == "Released")) &&
-                                                    ((Convert.ToString(drawingAttrs["drawingstate"])  == "GFC") || 
-                                                    (Convert.ToString(drawingAttrs["drawingstate"])  == "Coordinated") || 
-                                                    (Convert.ToString(drawingAttrs["drawingstate"])  == "Const-Dwg")))
+                                                if (((Convert.ToString(LayoutData["drawingstate"]) == "GFC")
+                                                    || (Convert.ToString(LayoutData["drawingstate"]) == "Released")) &&
+                                                    ((Convert.ToString(drawingAttrs["drawingstate"]) == "GFC") ||
+                                                    (Convert.ToString(drawingAttrs["drawingstate"]) == "Coordinated") ||
+                                                    (Convert.ToString(drawingAttrs["drawingstate"]) == "Const-Dwg")))
                                                 {
                                                     ar.TextString = "GOOD";
                                                 }
@@ -1193,7 +1235,7 @@ namespace AutocadPlugIn
                                             if (ar.Tag.ToUpper() == "CREATEDON")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["createdon"]==null?string.Empty:Convert.ToString(LayoutData["createdon"]).Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
+                                                ar.TextString = LayoutData["createdon"] == null ? string.Empty : Convert.ToString(LayoutData["createdon"]).Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "MODIFIEDON")
@@ -1306,27 +1348,27 @@ namespace AutocadPlugIn
         {
             try
             {
-                System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
-                dtTreeGrid.Columns.Add("drawingname", typeof(String));
-                dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
-                dtTreeGrid.Columns.Add("classification", typeof(String));
-                dtTreeGrid.Columns.Add("revision", typeof(String));
-                dtTreeGrid.Columns.Add("drawingid", typeof(String));
-                dtTreeGrid.Columns.Add("filepath", typeof(String));
-                dtTreeGrid.Columns.Add("drawingstate", typeof(String));
-                dtTreeGrid.Columns.Add("generation", typeof(String));
-                dtTreeGrid.Columns.Add("type", typeof(String));
-                dtTreeGrid.Columns.Add("sourceid", typeof(String));
-                dtTreeGrid.Columns.Add("isroot", typeof(String));
-                dtTreeGrid.Columns.Add("projectname", typeof(String));
-                dtTreeGrid.Columns.Add("projectid", typeof(String));
-                dtTreeGrid.Columns.Add("createdon", typeof(String));
-                dtTreeGrid.Columns.Add("createdby", typeof(String));
-                dtTreeGrid.Columns.Add("modifiedon", typeof(String));
-                dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
-                dtTreeGrid.Columns.Add("lockstatus", typeof(String));
-                dtTreeGrid.Columns.Add("lockby", typeof(String));
-                dtTreeGrid.Columns.Add("Error", typeof(String));
+                //System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
+                //dtTreeGrid.Columns.Add("drawingname", typeof(String));
+                //dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
+                //dtTreeGrid.Columns.Add("classification", typeof(String));
+                //dtTreeGrid.Columns.Add("revision", typeof(String));
+                //dtTreeGrid.Columns.Add("drawingid", typeof(String));
+                //dtTreeGrid.Columns.Add("filepath", typeof(String));
+                //dtTreeGrid.Columns.Add("drawingstate", typeof(String));
+                //dtTreeGrid.Columns.Add("generation", typeof(String));
+                //dtTreeGrid.Columns.Add("type", typeof(String));
+                //dtTreeGrid.Columns.Add("sourceid", typeof(String));
+                //dtTreeGrid.Columns.Add("isroot", typeof(String));
+                //dtTreeGrid.Columns.Add("projectname", typeof(String));
+                //dtTreeGrid.Columns.Add("projectid", typeof(String));
+                //dtTreeGrid.Columns.Add("createdon", typeof(String));
+                //dtTreeGrid.Columns.Add("createdby", typeof(String));
+                //dtTreeGrid.Columns.Add("modifiedon", typeof(String));
+                //dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
+                //dtTreeGrid.Columns.Add("lockstatus", typeof(String));
+                //dtTreeGrid.Columns.Add("lockby", typeof(String));
+                //dtTreeGrid.Columns.Add("Error", typeof(String));
                 //if (!(ArasConnector.ArasConnector.Isconnected))
                 //{
                 //    MessageBox.Show("Please login into Avrut Innova for this functionality...!!");
@@ -1343,7 +1385,7 @@ namespace AutocadPlugIn
                 {
                     // if(documentProperties==null)
                     {
-                        drawingAttrs.Add(en.Key, en.Value);
+                        drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
                     }
                     // else
                     {
@@ -1385,101 +1427,121 @@ namespace AutocadPlugIn
                                     {
                                         BlockTableRecord bd = (BlockTableRecord)tr.GetObject(br.BlockTableRecord, OpenMode.ForRead);
                                         //MessageBox.Show(bd.Name);//Block Name
+                                        int count = 0;
                                         foreach (ObjectId arId in br.AttributeCollection)
                                         {
-                                            DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
-                                            AttributeReference ar = obj as AttributeReference;
+                                            try
+                                            {
 
-                                            if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["drawingnumber"].ToString();//drawingAttrs["drawingnumber"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "DRAWINGNAME")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["drawingname"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "PROJECTNAME")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["projectname"].ToString(); //drawingAttrs["projectname"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "PROJECTID")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["projectid"].ToString(); //drawingAttrs["projectid"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "GENERATION")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["generation"].ToString(); //drawingAttrs["generation"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "REVISION")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["revision"].ToString(); //drawingAttrs["revision"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "DWGSTATE")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["drawingstate"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "GOODNOT")
-                                            {
-                                                ar.UpgradeOpen();
-                                                if (((LayoutData["drawingstate"].ToString() == "GFC") || (LayoutData["drawingstate"].ToString() == "Released")) && ((drawingAttrs["drawingstate"].ToString() == "GFC") || (drawingAttrs["drawingstate"].ToString() == "Coordinated") || (drawingAttrs["drawingstate"].ToString() == "Const-Dwg")))
+                                                //count++;
+                                                //if(count==15)
+                                                //{
+
+                                                //}
+                                                DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
+                                                AttributeReference ar = obj as AttributeReference;
+
+                                                if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
                                                 {
-                                                    ar.TextString = "GOOD";
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["drawingnumber"] == null ? string.Empty : LayoutData["drawingnumber"].ToString();
+                                                    ar.DowngradeOpen();
                                                 }
-                                                else
+                                                if (ar.Tag.ToUpper() == "DRAWINGNAME")
                                                 {
-                                                    ar.TextString = "NOT";
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = drawingAttrs["drawingname"] == null ? string.Empty : drawingAttrs["drawingname"].ToString();
+                                                    ar.DowngradeOpen();
                                                 }
-                                                ar.DowngradeOpen();
+                                                if (ar.Tag.ToUpper() == "PROJECTNAME")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["projectname"] == null ? string.Empty : LayoutData["projectname"].ToString(); //drawingAttrs["projectname"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "PROJECTID")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["projectid"] == null ? string.Empty : LayoutData["projectid"].ToString(); //drawingAttrs["projectid"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "GENERATION")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = drawingAttrs["generation"] == null ? string.Empty : drawingAttrs["generation"].ToString(); //drawingAttrs["generation"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "REVISION")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["revision"] == null ? string.Empty : LayoutData["revision"].ToString(); //drawingAttrs["revision"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "DWGSTATE")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = drawingAttrs["drawingstate"] == null ? string.Empty : drawingAttrs["drawingstate"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                string DS = drawingAttrs["drawingstate"] == null ? string.Empty : drawingAttrs["drawingstate"].ToString();
+                                                string DS1 = LayoutData["drawingstate"] == null ? string.Empty : LayoutData["drawingstate"].ToString();
+                                                if (ar.Tag.ToUpper() == "GOODNOT")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    if (((DS1 == "GFC") || 
+                                                        (DS1 == "Released")) &&
+                                                        ((DS == "GFC") ||
+                                                        (DS == "Coordinated") ||
+                                                        (DS == "Const-Dwg")))
+                                                    {
+                                                        ar.TextString = "GOOD";
+                                                    }
+                                                    else
+                                                    {
+                                                        ar.TextString = "NOT";
+                                                    }
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "LAYOUTNAME")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = layoutName;
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "CREATEDBY")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["createdby"] == null ? string.Empty : LayoutData["createdby"].ToString(); //drawingAttrs["createdby"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "MODIFIEDBY")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["modifiedby"] == null ? string.Empty : LayoutData["modifiedby"].ToString(); //drawingAttrs["modifiedby"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "CREATEDON")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["createdon"] == null ? string.Empty : LayoutData["createdon"].ToString().Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "MODIFIEDON")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["modifiedon"] == null ? string.Empty : LayoutData["modifiedon"].ToString().Substring(0, 10); //drawingAttrs["modifiedon"].ToString().Substring(0,10);
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "DRAWINGSTATE")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["drawingstate"] == null ? string.Empty : LayoutData["drawingstate"].ToString(); //drawingAttrs["drawingstate"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
                                             }
-                                            if (ar.Tag.ToUpper() == "LAYOUTNAME")
+                                            catch
                                             {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = layoutName;
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "CREATEDBY")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["createdby"].ToString(); //drawingAttrs["createdby"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "MODIFIEDBY")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["modifiedby"].ToString(); //drawingAttrs["modifiedby"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "CREATEDON")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["createdon"].ToString().Substring(0, 10); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "MODIFIEDON")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["modifiedon"].ToString().Substring(0, 10); //drawingAttrs["modifiedon"].ToString().Substring(0,10);
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "DRAWINGSTATE")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["drawingstate"].ToString(); //drawingAttrs["drawingstate"].ToString();
-                                                ar.DowngradeOpen();
+
                                             }
                                         }
                                     }
@@ -1664,6 +1726,28 @@ namespace AutocadPlugIn
         }
          */
         #endregion "Plot Layout to PDF"
+
+        public bool CheckForCurruntlyOpenDoc(string FilePath)
+        {
+            try
+            {
+                foreach (Document Doc in acadApp.DocumentManager)
+                {
+                    if (Doc.Database.Filename == FilePath)
+                    {
+                        acadApp.DocumentManager.MdiActiveDocument = Doc;
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return true;
+            }
+
+        }
     }
 }
 

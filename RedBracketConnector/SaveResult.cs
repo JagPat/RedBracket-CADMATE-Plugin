@@ -124,6 +124,8 @@ namespace RedBracketConnector
         public string creatorName { get; set; }
 
         public bool isAssociate { get; set; }
+
+        public ResultSearchCriteriaType type { set; get; }
     }
 
     public class SaveResultOwnPermissions

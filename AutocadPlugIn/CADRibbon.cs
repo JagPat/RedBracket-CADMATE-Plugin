@@ -89,7 +89,7 @@ namespace AutocadPlugIn
             Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             //  var v = Autodesk.AutoCAD.ApplicationServices.Application.MainWindow.
 
-           // acDoc.SendStringToExecute("EXPORT", false, false, false);
+            // acDoc.SendStringToExecute("EXPORT", false, false, false);
 
             acDoc.BeginDocumentClose += new DocumentBeginCloseEventHandler(docBeginDocClose);
             acDoc.EndDwgOpen += new DrawingOpenEventHandler(docEndDwgOpen);
@@ -97,9 +97,9 @@ namespace AutocadPlugIn
             acDoc.BeginDwgOpen += new DrawingOpenEventHandler(docBeginDwgOpen);
             acDoc.LayoutSwitched += new LayoutSwitchedEventHandler(docLayoutSwitched);
 
-  
 
-            
+
+
         }
         public void docLayoutSwitched(object senderObj,
                            LayoutSwitchedEventArgs docBegClsEvtArgs)
@@ -291,13 +291,15 @@ namespace AutocadPlugIn
                pan3Panel.Items.Add(pan3row1);
             */
             //Lock, Unlock, and Save
-            panel4Panel.Title = "Status";
-            panel4.Source = panel4Panel;
-            Tab.Panels.Add(panel4);
 
             rpsSave.Title = "Save";
             rpSave.Source = rpsSave;
             Tab.Panels.Add(rpSave);
+
+            panel4Panel.Title = "Status";
+            panel4.Source = panel4Panel;
+            Tab.Panels.Add(panel4);
+
 
 
             Btn_Lock.Text = "Lock";
@@ -338,7 +340,7 @@ namespace AutocadPlugIn
 
             RibbonRowPanel pan4row1 = new RibbonRowPanel();
             pan4row1.Items.Add(Btn_Lock);
-        
+
             pan4row1.Items.Add(Btn_Unlock);
             panel4Panel.Items.Add(pan4row1);
 
@@ -428,7 +430,7 @@ namespace AutocadPlugIn
             Btn_Refresh.IsEnabled = LockEnable;
             pan7row1.Items.Add(Btn_Refresh);
 
-            
+
 
             Tab.IsActive = true;
         }
@@ -943,10 +945,11 @@ namespace AutocadPlugIn
             {
                 //Geting File info form summuryinfo
 
-                
 
-                
+
+
                 string drawingid = "", updatedon = "", projectname = "";
+                string ProjectNo = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
                 try
                 {
                     var dbsi = db.SummaryInfo.CustomProperties;
@@ -964,8 +967,34 @@ namespace AutocadPlugIn
                         {
                             projectname = Convert.ToString(dbsi.Value);
                         }
+                        else if (Convert.ToString(dbsi.Key) == "projectno")
+                        {
+                            ProjectNo = Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "drawingnumber")
+                        {
+                            DrawingNO = Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "filetypeid")
+                        {
+                            FileType = Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "revision")
+                        {
+                            Rev = Convert.ToString(dbsi.Value);
+                        }
                     }
-                   
+
+                    if (ProjectNo.Trim().Length > 0)
+                    {
+                        PreFix = ProjectNo + "-";
+                    }
+                    PreFix = PreFix + DrawingNO + "-";
+
+                    PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
+
+                    PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
+
                 }
                 catch (System.Exception E)
                 {
@@ -1000,7 +1029,7 @@ namespace AutocadPlugIn
                             Directory.CreateDirectory(checkoutPath);
                         }
                         System.Collections.Hashtable DrawingProperty = new System.Collections.Hashtable();
-                        string filePathName = objRBC.DownloadOpenDocument(drawingid, checkoutPath, ref DrawingProperty);
+                        string filePathName = objRBC.DownloadOpenDocument(drawingid, checkoutPath, ref DrawingProperty, PreFix);
                         CADController.ICADManager cadManager = new AutoCADManager();
                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
                     }
@@ -1013,7 +1042,7 @@ namespace AutocadPlugIn
                 {
                     RedBracketConnector.ShowMessage.InfoMess("This file is latest file.");
                 }
-          
+
             }
             catch (System.Exception ex)
             {

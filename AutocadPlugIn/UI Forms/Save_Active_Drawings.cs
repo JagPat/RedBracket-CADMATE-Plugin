@@ -131,7 +131,7 @@ namespace AutocadPlugIn.UI_Forms
                     cmbData.Add("Next");
                     ds.DataSource = cmbData;
 
-                    node = savetreeGrid.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["FileTypeID"].ToString(), rw["revision"].ToString(),
+                    node = savetreeGrid.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(), rw["revision"].ToString(),
                         rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString()
                         , rw["isroot"].ToString(), rw["Layouts"], rw["projectname"]
                         , rw["candelete"]
@@ -142,6 +142,7 @@ namespace AutocadPlugIn.UI_Forms
                         , rw["caneditstatus"]
                         , rw["hasstatusclosed"]
                         , rw["isletest"]
+                        , rw["prefix"]
                         );
 
 
@@ -194,7 +195,7 @@ namespace AutocadPlugIn.UI_Forms
                     ArrayList cmbData1 = new ArrayList();
                     cmbData1.Add(rw["revision"].ToString());
                     cmbData1.Add("Next");
-                    TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["FileTypeID"].ToString(),
+                    TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
                         rw["revision"].ToString(), rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(),
                         rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"], rw["projectname"]
                             , rw["candelete"]
@@ -204,7 +205,8 @@ namespace AutocadPlugIn.UI_Forms
                         , rw["iseditable"]
                         , rw["caneditstatus"]
                         , rw["hasstatusclosed"]
-                        , rw["isletest"]);
+                        , rw["isletest"]
+                        , rw["prefix"]);
                     node1.Cells["version"].Value = true;
                     node1.Cells["version"].ReadOnly = true;
                     ds.DataSource = cmbData1;
@@ -360,17 +362,21 @@ namespace AutocadPlugIn.UI_Forms
                 // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
-                    if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
+                    if(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).Length>3)
                     {
-                        ShowMessage.InfoMess("You dont have edit permission for this file.");
-                        this.Cursor = Cursors.Default;
-                        return;
+                        if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
+                        {
+                            ShowMessage.InfoMess("You dont have edit permission for this file.");
+                            this.Cursor = Cursors.Default;
+                            return;
+                        }
                     }
+                    
                     objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
                     // Is_Save :needs to make changes for multiple file
-                    DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["State"];
-                    System.Data.DataTable dt = (System.Data.DataTable)cell.DataSource;
+                    //DataGridViewComboBoxCell cell = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["State"];
+                    //System.Data.DataTable dt = (System.Data.DataTable)cell.DataSource;
 
                     //objCmd.IsVerChange = Convert.ToString(Convert.ToBoolean(currentTreeGrdiNode.Cells["Version"].Value)).ToLower();
                     //objCmd.ProjectID = Convert.ToString(currentTreeGrdiNode.Cells["ProjectName"].Value);
@@ -744,13 +750,18 @@ namespace AutocadPlugIn.UI_Forms
                 String FilePath = (String)selectedTreeNode.Cells["filepath"].Value;
                 String MyProjectName = selectedTreeNode.Cells["projectname"].FormattedValue.ToString();
                 String MyProjectId = selectedTreeNode.Cells["projectname"].Value.ToString();
-                string FileTypeID = "";
+                String MyProjectNo = "";
+                string PreFix = Convert.ToString(selectedTreeNode.Cells["prefix"].Value);
+               string FileTypeID = "";
                 string FileStatusID = "";
+                string FileType = "";
 
                 try
                 {
 
                     MyProjectId =Convert.ToString(selectedTreeNode.Cells["projectname"].Value)==string.Empty?"0": Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
+                    MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "id");
                 }
                 catch
                 {
@@ -759,18 +770,19 @@ namespace AutocadPlugIn.UI_Forms
                     //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
                     //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                     MyProjectId= Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-
+                    MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
                 }
+
                 try
                 {
                     //FileTypeID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
                     FileTypeID = Convert.ToString(selectedTreeNode.Cells["cadtype"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
-
+                    FileType= Convert.ToString(selectedTreeNode.Cells["cadtype"].FormattedValue) == string.Empty ? "" :  Convert.ToString(selectedTreeNode.Cells["cadtype"].FormattedValue);
                 }
                 catch
                 {
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["cadtype"];
-
+                    FileType =Convert.ToString(c.Value);
                     // c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["cadtype"].Value), "name");
                     //FileTypeID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
                     FileTypeID = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["cadtype"].Value), "name");
@@ -788,15 +800,15 @@ namespace AutocadPlugIn.UI_Forms
                     FileStatusID = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
                 }
 
-                if(MyProjectId=="0")
+                if(MyProjectId=="0"|| MyProjectId=="-1")
                 {
                     MyProjectId = "";
                 }
-                if (FileTypeID == "0")
+                if (FileTypeID == "0" || FileTypeID == "-1")
                 {
                     FileTypeID = "";
                 }
-                if (FileStatusID == "0")
+                if (FileStatusID == "0" || FileStatusID == "-1")
                 {
                     FileStatusID = "";
                 }
@@ -819,8 +831,10 @@ namespace AutocadPlugIn.UI_Forms
                     + DrawingData["createdon"].ToString() + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";"
                     + DrawingData["modifiedby"].ToString() + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString()
                    + ";" + FileStatusID
-                     + ";" + FileTypeID;
+                     + ";" + FileTypeID+";"+ selectedTreeNode.Cells["revision"].Value.ToString()+";"+ MyProjectNo + ";" + selectedTreeNode.Cells["DrawingNumber"].Value.ToString()
+                     +";"+ FileType + ";" + PreFix;
 
+                
                 #endregion
 
                 #region "Drawing is present in redbracket"
@@ -864,7 +878,8 @@ namespace AutocadPlugIn.UI_Forms
                             + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
                             + selectedTreeNode.Cells["Layouts"].Value.ToString()
                       + ";" + FileStatusID
-                     + ";" + FileTypeID;
+                     + ";" + FileTypeID + ";" + selectedTreeNode.Cells["revision"].Value.ToString() + ";" + MyProjectNo + ";" + selectedTreeNode.Cells["DrawingNumber"].Value.ToString()
+                     + ";" + FileType + ";" + PreFix;
 
                     if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim() == String.Empty)
                         htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);

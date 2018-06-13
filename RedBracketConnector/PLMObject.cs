@@ -237,6 +237,18 @@ namespace RedBracketConnector
             set { this.uiData = value; }
         }
 
+        public bool canDelete { get; set; }
+        public bool isowner { get; set; }
+        public bool hasViewPermission { get; set; }
+        public bool isActFileLatest { get; set; }
+        public bool isEditable { get; set; }
+        public bool canEditStatus { get; set; }
+        public bool hasStatusClosed { get; set; }
+        public bool isletest { get; set; }
+        public String objectProjectNo { get; set; }
+        public String objectType { get; set; }
+        public String PreFix { get; set; }
+
         private List<Relationship> fromRelationships = new List<Relationship>();
         private List<Relationship> toRelationships = new List<Relationship>();
 

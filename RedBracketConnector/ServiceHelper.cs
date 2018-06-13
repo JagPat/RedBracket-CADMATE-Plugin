@@ -106,7 +106,8 @@ namespace RedBracketConnector
         /// <param name="addUserNametoUrl">Username should be added to URL?</param>
         /// <param name="urlParameters">Specify list of parameters if any.</param>
         /// <returns>Response of the server in IRestResponse format.</returns>
-        public static IRestResponse SaveObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
+        public static IRestResponse SaveObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, 
+            List<KeyValuePair<string, string>> urlParameters = null,string PreFix=null)
         {
             try
             {
@@ -140,10 +141,14 @@ namespace RedBracketConnector
                 var request = new RestRequest(relevantAddress, Method.POST);
 
                 fileName = Path.GetFileName(filePath);
-                if(fileName.Substring(0,Helper.FileNamePrefix.Length)==Helper.FileNamePrefix)
+                if(fileName.Trim().Length>= PreFix.Length)
                 {
-                    fileName = fileName.Substring(Helper.FileNamePrefix.Length);
+                    if (fileName.Substring(0,  PreFix.Length) == PreFix)
+                    {
+                        fileName = fileName.Substring(PreFix.Length);
+                    }
                 }
+               
                 //request.AddFile("files", File.ReadAllBytes(filePath), fileName);
                 request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
 
@@ -156,7 +161,7 @@ namespace RedBracketConnector
         }
 
 
-        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null)
+        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null,String PreFix=null)
         {
             try
             {
@@ -195,9 +200,12 @@ namespace RedBracketConnector
                 var request = new RestRequest(relevantAddress, Method.POST);
 
                 fileName = Path.GetFileName(filePath);
-                if (fileName.Substring(0, Helper.FileNamePrefix.Length) == Helper.FileNamePrefix)
+                if (fileName.Trim().Length >= PreFix.Length)
                 {
-                    fileName = fileName.Substring(Helper.FileNamePrefix.Length);
+                    if (fileName.Substring(0, PreFix.Length) == PreFix)
+                    {
+                        fileName = fileName.Substring(PreFix.Length);
+                    }
                 }
                 //request.AddFile("files", File.ReadAllBytes(filePath), fileName);
                 request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);

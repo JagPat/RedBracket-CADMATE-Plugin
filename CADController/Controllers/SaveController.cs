@@ -27,6 +27,7 @@ namespace CADController.Controllers
                 bool IsNewStructure = false;
                 bool IsCreateNewRevision = false;
                 String ProjectName = "";
+                String ProjectNo = "";
                 String ProjectId = "";
                 String ModifiedOn = "";
                 String ModifiedBy = "";
@@ -52,6 +53,18 @@ namespace CADController.Controllers
                 dtDrawingProperty.Columns.Add("sourceid");
                 dtDrawingProperty.Columns.Add("Layouts");
 
+                dtDrawingProperty.Columns.Add("canDelete");
+                dtDrawingProperty.Columns.Add("isowner");
+                dtDrawingProperty.Columns.Add("hasViewPermission");
+                dtDrawingProperty.Columns.Add("isActFileLatest");
+                dtDrawingProperty.Columns.Add("isEditable");
+                dtDrawingProperty.Columns.Add("canEditStatus");
+                dtDrawingProperty.Columns.Add("hasStatusClosed");
+                dtDrawingProperty.Columns.Add("isletest");
+                dtDrawingProperty.Columns.Add("projectno");
+                dtDrawingProperty.Columns.Add("prefix");
+
+
                 SaveCommand cmd = (SaveCommand)command;
                 List<PLMObject> plmObjs = new List<PLMObject>();
                 // gethering document info
@@ -66,17 +79,18 @@ namespace CADController.Controllers
                 foreach (String str in cmd.Drawings)
                 {
                     PLMObject plmObj = new PLMObject();
-                    String[] plmobjInfo = new String[17];
+                    String[] plmobjInfo = new String[22];
                     plmobjInfo = str.Split(';');
                     plmObj.ObjectId = plmobjInfo[0];
                     string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
-                    if (fileName.Substring(0, Helper.FileNamePrefix.Length) == Helper.FileNamePrefix)
-                    {
-                        fileName = fileName.Substring(Helper.FileNamePrefix.Length);
-                    }
-                    plmObj.ObjectName = fileName;
+                    plmObj.objectProjectNo = plmobjInfo[18];
+                    ProjectName = plmobjInfo[8];
+                    plmObj.ObjectRevision = plmobjInfo[17];
+                    
+                   
+                   
                     plmObj.ObjectStatus = plmobjInfo[15];
-                    plmObj.Classification = plmobjInfo[16]; 
+                    plmObj.Classification = plmobjInfo[16];
                     plmObj.ItemType = plmobjInfo[1];
                     plmObj.FilePath = plmobjInfo[2];
                     plmObj.IsManualVersion = false;
@@ -97,13 +111,42 @@ namespace CADController.Controllers
                     IsCreateNewRevision = false;
                     plmObj.ObjectDescription = plmobjInfo[6];
                     plmObj.ObjectSourceId = plmobjInfo[7];
-                    ProjectName = plmobjInfo[8];
-                    ProjectId = plmobjInfo[9];
+
+                    plmObj.ObjectProjectId=ProjectId = plmobjInfo[9];
                     CreatedOn = plmobjInfo[10];
                     CreatedBy = plmobjInfo[11];
                     ModifiedOn = plmobjInfo[12];
                     ModifiedBy = plmobjInfo[13];
                     plmObj.ObjectLayouts = plmobjInfo[14];
+                    plmObj.ObjectNumber = plmobjInfo[19];
+                    plmObj.objectType= plmobjInfo[20];
+                    try
+                    {
+                        string PreFix = plmobjInfo[21];
+                        plmObj.PreFix = PreFix;
+                        //if (ProjectName != "MyFiles")
+                        //{
+                        //    PreFix = plmObj.objectProjectNo + "-";
+                        //}
+                        //PreFix = PreFix + Convert.ToString(plmObj.ObjectNumber) + "-";
+
+                        //PreFix += Convert.ToString(plmObj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmObj.objectType) + "-";
+
+                        //PreFix += Convert.ToString(plmObj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmObj.ObjectRevision) + "#";
+                        if (PreFix.Length <= fileName.Trim().Length)
+                        {
+                            if (fileName.Substring(0, PreFix.Length) == PreFix)
+                            {
+                                fileName = fileName.Substring(PreFix.Length);
+                            }
+                        }
+
+                    }
+                    catch
+                    {
+
+                    }
+                    plmObj.ObjectName = fileName;
                 }
                 //if (cmd.Drawings.Count==0)
                 {
@@ -112,16 +155,17 @@ namespace CADController.Controllers
                         try
                         {
                             PLMObject plmObj = new PLMObject();
-                            String[] plmobjInfo = new String[20];
+                            String[] plmobjInfo = new String[24];
                             plmobjInfo = str.Split(';');
-                            plmObj.ObjectNumber = plmobjInfo[0]; 
+                            plmObj.ObjectNumber = plmobjInfo[0];
                             plmObj.ObjectName = plmobjInfo[2];
                             plmObj.FilePath = plmobjInfo[3];
+                            plmObj.ObjectRevision = plmobjInfo[20];
                             // plmObj.ObjectId = plmobjInfo[4];
                             //Needs to Change
                             plmObj.ObjectId = "";
                             plmObj.ItemType = plmobjInfo[5];
-                            plmObj.ObjectProjectId = plmobjInfo[7];
+                            plmObj.ObjectProjectId = ProjectId = plmobjInfo[7];
                             plmObj.ObjectRealtyId = plmobjInfo[8];
                             plmObj.ObjectDescription = plmobjInfo[9];
                             plmObj.ObjectSourceId = plmobjInfo[10];
@@ -133,20 +177,36 @@ namespace CADController.Controllers
                             plmObj.IsNewStructure = IsNewStructure;
 
                             ProjectName = plmobjInfo[11];
-                            ProjectId = cmd.ProjectID;
+                             
                             CreatedOn = plmobjInfo[13];
                             CreatedBy = plmobjInfo[14];
                             ModifiedOn = plmobjInfo[15];
                             ModifiedBy = plmobjInfo[16];
                             plmObj.ObjectLayouts = plmobjInfo[17];
+                            plmObj.objectProjectNo = plmobjInfo[20];
+                            plmObj.ObjectNumber = plmobjInfo[21];
+                            plmObj.objectType = plmobjInfo[22];
                             string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
                             try
                             {
-                                if (Helper.FileNamePrefix.Length <= fileName.Trim().Length)
+                                string PreFix = plmobjInfo[23];
+                                plmObj.PreFix = PreFix;
+                                //if (ProjectName != "MyFiles")
+                                //{
+                                //    PreFix = plmObj.objectProjectNo + "-";
+                                //}
+                                //PreFix = PreFix + Convert.ToString(plmObj.ObjectNumber) + "-";
+
+                                //PreFix += Convert.ToString(plmObj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmObj.objectType) + "-";
+
+                                //PreFix += Convert.ToString(plmObj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmObj.ObjectRevision) + "#";
+
+
+                                if (PreFix.Length <= fileName.Trim().Length)
                                 {
-                                    if (fileName.Substring(0, Helper.FileNamePrefix.Length) == Helper.FileNamePrefix)
+                                    if (fileName.Substring(0, PreFix.Length) == PreFix)
                                     {
-                                        fileName = fileName.Substring(Helper.FileNamePrefix.Length);
+                                        fileName = fileName.Substring(PreFix.Length);
                                     }
                                 }
                             }
@@ -155,7 +215,7 @@ namespace CADController.Controllers
 
                             }
                             plmObj.ObjectName = fileName;
-                           
+                    
                             plmObj.IsRoot = false;
                             if (plmobjInfo[6] == "1")
                                 plmObj.IsRoot = true;
@@ -170,7 +230,7 @@ namespace CADController.Controllers
                         }
                     }
                 }
-                
+
 
                 //  objConnector.SaveObject(ref plmObjs);
                 bool RetVal = ObjRBC.SaveObject(ref plmObjs);
@@ -180,7 +240,20 @@ namespace CADController.Controllers
                     // updating document info
                     foreach (PLMObject plmobj in plmObjs)
                     {
-                        dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.Classification, plmobj.ObjectNumber, plmobj.ObjectState, plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy);
+                        //dtDrawingProperty.Rows.Clear();
+                        dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.objectType, plmobj.ObjectNumber, plmobj.ObjectState,
+                            plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId,
+                            CreatedOn, CreatedBy, ModifiedOn, ModifiedBy,"",plmobj.ObjectLayouts
+                            , plmobj.canDelete
+                            , plmobj.isowner
+                            , plmobj.hasViewPermission
+                            , plmobj.isActFileLatest
+                            , plmobj.isEditable
+                            , plmobj.canEditStatus
+                            , plmobj.hasStatusClosed
+                            , plmobj.isletest
+                            , plmobj.objectProjectNo
+                            , plmobj.PreFix);
                     }
                 }
                 catch (System.Exception E)

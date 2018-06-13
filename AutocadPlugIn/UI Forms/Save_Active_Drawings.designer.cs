@@ -60,6 +60,7 @@
             this.canEditStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hasStatusClosed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.isletest = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.prefix = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.targetrevision = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.Version = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.savetreeGrid)).BeginInit();
@@ -123,6 +124,7 @@
             this.canEditStatus,
             this.hasStatusClosed,
             this.isletest,
+            this.prefix,
             this.targetrevision,
             this.Version});
             this.savetreeGrid.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -381,6 +383,14 @@
             this.isletest.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.isletest.Visible = false;
             // 
+            // prefix
+            // 
+            this.prefix.HeaderText = "prefix";
+            this.prefix.Name = "prefix";
+            this.prefix.ReadOnly = true;
+            this.prefix.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.prefix.Visible = false;
+            // 
             // targetrevision
             // 
             this.targetrevision.HeaderText = "Taget Rev";
@@ -448,6 +458,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn canEditStatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn hasStatusClosed;
         private System.Windows.Forms.DataGridViewTextBoxColumn isletest;
+        private System.Windows.Forms.DataGridViewTextBoxColumn prefix;
         private System.Windows.Forms.DataGridViewComboBoxColumn targetrevision;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Version;
     }

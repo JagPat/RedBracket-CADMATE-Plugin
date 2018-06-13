@@ -252,6 +252,17 @@ namespace RedBracketConnector
                     DrawingProperty.Add("ModifiedBy", dt.Rows[i]["modifiedby"]);
                     DrawingProperty.Add("sourceid", dt.Rows[i]["sourceid"]);
                     DrawingProperty.Add("Layouts", dt.Rows[i]["Layouts"]);
+
+                    DrawingProperty.Add("canDelete", dt.Rows[i]["canDelete"]);
+                    DrawingProperty.Add("isowner", dt.Rows[i]["isowner"]);
+                    DrawingProperty.Add("hasViewPermission", dt.Rows[i]["hasViewPermission"]);
+                    DrawingProperty.Add("isActFileLatest", dt.Rows[i]["isActFileLatest"]);
+                    DrawingProperty.Add("isEditable", dt.Rows[i]["isEditable"]);
+                    DrawingProperty.Add("canEditStatus", dt.Rows[i]["canEditStatus"]);
+                    DrawingProperty.Add("hasStatusClosed", dt.Rows[i]["hasStatusClosed"]);
+                    DrawingProperty.Add("isletest", dt.Rows[i]["isletest"]);
+                    DrawingProperty.Add("projectno", dt.Rows[i]["projectno"]);
+                    DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
                 }
                 else
                 {
