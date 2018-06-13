@@ -18,6 +18,7 @@ using RedBracketConnector;
 using Newtonsoft.Json;
 using System.IO;
 using Microsoft.CSharp;
+using AutocadPlugIn.Properties;
 
 namespace AutocadPlugIn.UI_Forms
 {
@@ -450,6 +451,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
+                    resultSearchCriteriaRecord.name == null ? null : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
                     null,
                     resultSearchCriteriaRecord.name,
                     resultSearchCriteriaRecord.fileNo,
