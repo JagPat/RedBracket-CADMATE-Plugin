@@ -451,9 +451,9 @@ namespace AutocadPlugIn.UI_Forms
             {
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
-                    resultSearchCriteriaRecord.name == null ? null : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
                     null,
                     resultSearchCriteriaRecord.name,
+                    resultSearchCriteriaRecord.name == null ? null : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
                     resultSearchCriteriaRecord.fileNo,
                     (bool)resultSearchCriteriaRecord.filelock,
                     resultSearchCriteriaRecord.type == null ? null : resultSearchCriteriaRecord.type.name,
@@ -901,7 +901,7 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         Directory.CreateDirectory(checkoutPath);
                     }
-                    
+
                     string PreFix = "";
                     string PreFix1 = "";
                     if (ProjectName != "MyFiles")
@@ -947,11 +947,11 @@ namespace AutocadPlugIn.UI_Forms
 
                             PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
 
-                            
+
                             DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout",false,null, PreFix);
                         }
                     }
-                     
+
                     DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true, currentTreeGrdiNode, PreFix1);
 
                     //foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
@@ -1062,7 +1062,7 @@ namespace AutocadPlugIn.UI_Forms
                             fileName = fileName.Substring(FilePreFix.Length);
                         }
                     }
-                    
+
 
                     string filePathName = Path.Combine(checkoutPath, fileName);
 
@@ -1101,7 +1101,7 @@ namespace AutocadPlugIn.UI_Forms
 
                             PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
 
-                               
+
                             string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
                             string newFileName = Path.Combine(checkoutPath, PreFix + Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
                             if (File.Exists(oldFileName))
