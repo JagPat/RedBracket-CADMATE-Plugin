@@ -291,7 +291,6 @@
     <None Include="Resources\LoginUserSettings.png" />
     <None Include="Resources\CheckinUserSettings.png" />
     <None Include="Resources\RedBracket.png" />
-    <None Include="Resources\ReferenceImage.jpg" />
     <Content Include="Resources\Refresh.png" />
     <Content Include="Resources\save.png" />
     <Content Include="Resources\Setting.png" />
