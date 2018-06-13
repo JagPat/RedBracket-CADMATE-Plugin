@@ -52,6 +52,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             RBConnector objRBC = new RBConnector();
             sg_SearchType.SelectedIndex = 0;
+           
             //Read the keys from the user registry and load it to the UI.
             RestResponse restResponse;
             //RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/fetchFileType", DataFormat.Json, null, true, null);
@@ -449,11 +450,14 @@ namespace AutocadPlugIn.UI_Forms
 
             foreach (ResultSearchCriteria resultSearchCriteriaRecord in resultSearchCriteriaResponseList)
             {
+                
+                    
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
                     null,
-                    resultSearchCriteriaRecord.name,
-                    resultSearchCriteriaRecord.name == null ? null : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
+                     resultSearchCriteriaRecord.name,
+                      
+                     resultSearchCriteriaRecord.name == null ? new Bitmap(1,1) : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
                     resultSearchCriteriaRecord.fileNo,
                     (bool)resultSearchCriteriaRecord.filelock,
                     resultSearchCriteriaRecord.type == null ? null : resultSearchCriteriaRecord.type.name,
@@ -503,6 +507,8 @@ namespace AutocadPlugIn.UI_Forms
                                                 null,
                                                 null,
                                                 resultSearchCriteriaChildRecord.name,
+                                                  resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
+
                                                 resultSearchCriteriaChildRecord.fileNo,
                                                 (bool)resultSearchCriteriaChildRecord.filelock,
                                                 resultSearchCriteriaChildRecord.type.name,
@@ -1451,6 +1457,11 @@ namespace AutocadPlugIn.UI_Forms
 
             // re-set list
             CDProjectName.Items.AddRange(newList.ToArray());
+        }
+
+        private void treeGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+
         }
     }
 }
