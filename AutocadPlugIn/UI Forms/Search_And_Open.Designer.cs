@@ -67,8 +67,8 @@ namespace AutocadPlugIn.UI_Forms
             this.Doc_Number = new System.Windows.Forms.Label();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ExpandButton = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.IsXRefFile = new System.Windows.Forms.DataGridViewImageColumn();
             this.DrawingName = new AdvancedDataGridView.TreeGridColumn();
+            this.IsXRefFile = new System.Windows.Forms.DataGridViewImageColumn();
             this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LockStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CADType = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -204,8 +204,8 @@ namespace AutocadPlugIn.UI_Forms
             this.treeGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Check,
             this.ExpandButton,
-            this.IsXRefFile,
             this.DrawingName,
+            this.IsXRefFile,
             this.DrawingNumber,
             this.LockStatus,
             this.CADType,
@@ -472,44 +472,45 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // Check
             // 
-            this.Check.FillWeight = 55.92374F;
+            this.Check.FillWeight = 55.62941F;
             this.Check.HeaderText = "";
             this.Check.MinimumWidth = 20;
             this.Check.Name = "Check";
             // 
             // ExpandButton
             // 
-            this.ExpandButton.FillWeight = 22.2834F;
+            this.ExpandButton.FillWeight = 22.16612F;
             this.ExpandButton.HeaderText = "";
             this.ExpandButton.Name = "ExpandButton";
             this.ExpandButton.ReadOnly = true;
             this.ExpandButton.Text = "Expand Node";
             // 
-            // IsXRefFile
-            // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.IsXRefFile.DefaultCellStyle = dataGridViewCellStyle1;
-            this.IsXRefFile.FillWeight = 31.94506F;
-            this.IsXRefFile.HeaderText = "XRef?";
-            this.IsXRefFile.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
-            this.IsXRefFile.Name = "IsXRefFile";
-            this.IsXRefFile.ReadOnly = true;
-            this.IsXRefFile.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            // 
             // DrawingName
             // 
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle1;
             this.DrawingName.DefaultNodeImage = null;
-            this.DrawingName.FillWeight = 202.8797F;
+            this.DrawingName.FillWeight = 201.8119F;
             this.DrawingName.HeaderText = "Name";
             this.DrawingName.Name = "DrawingName";
             this.DrawingName.ReadOnly = true;
             this.DrawingName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
+            // IsXRefFile
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.IsXRefFile.DefaultCellStyle = dataGridViewCellStyle2;
+            this.IsXRefFile.FillWeight = 36.50863F;
+            this.IsXRefFile.HeaderText = "XRef?";
+            this.IsXRefFile.Image = global::AutocadPlugIn.Properties.Resources.ReferenceImage;
+            this.IsXRefFile.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
+            this.IsXRefFile.Name = "IsXRefFile";
+            this.IsXRefFile.ReadOnly = true;
+            this.IsXRefFile.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
             // DrawingNumber
             // 
-            this.DrawingNumber.FillWeight = 108.5172F;
+            this.DrawingNumber.FillWeight = 107.9461F;
             this.DrawingNumber.HeaderText = "Number";
             this.DrawingNumber.Name = "DrawingNumber";
             this.DrawingNumber.ReadOnly = true;
@@ -526,7 +527,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // CADType
             // 
-            this.CADType.FillWeight = 108.5172F;
+            this.CADType.FillWeight = 107.9461F;
             this.CADType.HeaderText = "Type";
             this.CADType.Name = "CADType";
             this.CADType.ReadOnly = true;
@@ -534,7 +535,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // State
             // 
-            this.State.FillWeight = 75.96207F;
+            this.State.FillWeight = 75.56227F;
             this.State.HeaderText = "Status";
             this.State.Name = "State";
             this.State.ReadOnly = true;
@@ -542,7 +543,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // Generation
             // 
-            this.Generation.FillWeight = 32.55518F;
+            this.Generation.FillWeight = 32.38384F;
             this.Generation.HeaderText = "Ver No";
             this.Generation.Name = "Generation";
             this.Generation.ReadOnly = true;
@@ -550,7 +551,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // ProjectId
             // 
-            this.ProjectId.FillWeight = 108.5172F;
+            this.ProjectId.FillWeight = 107.9461F;
             this.ProjectId.HeaderText = "Project";
             this.ProjectId.Name = "ProjectId";
             this.ProjectId.ReadOnly = true;
@@ -558,7 +559,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // ProjectName
             // 
-            this.ProjectName.FillWeight = 75.96207F;
+            this.ProjectName.FillWeight = 75.56227F;
             this.ProjectName.HeaderText = "Project No";
             this.ProjectName.Name = "ProjectName";
             this.ProjectName.ReadOnly = true;
@@ -566,7 +567,7 @@ namespace AutocadPlugIn.UI_Forms
             // 
             // Size
             // 
-            this.Size.FillWeight = 75.96207F;
+            this.Size.FillWeight = 75.56227F;
             this.Size.HeaderText = "Size";
             this.Size.Name = "Size";
             this.Size.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -690,8 +691,8 @@ namespace AutocadPlugIn.UI_Forms
         private System.Windows.Forms.Label Doc_Number;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private System.Windows.Forms.DataGridViewButtonColumn ExpandButton;
-        private System.Windows.Forms.DataGridViewImageColumn IsXRefFile;
         private TreeGridColumn DrawingName;
+        private System.Windows.Forms.DataGridViewImageColumn IsXRefFile;
         private System.Windows.Forms.DataGridViewTextBoxColumn DrawingNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn LockStatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn CADType;
