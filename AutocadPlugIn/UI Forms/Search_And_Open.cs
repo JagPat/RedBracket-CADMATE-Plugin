@@ -970,9 +970,11 @@ namespace AutocadPlugIn.UI_Forms
                             pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
                         }
                     }
-
+                    string FileID = currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString();
                     DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true, currentTreeGrdiNode, PreFix1);
-                    pLMObjects.Add(new PLMObject() { ObjectId = currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString() });
+                    PLMObject objplmo = new PLMObject();
+                    objplmo.ObjectId = FileID;
+                    pLMObjects.Add(objplmo);
                     //foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
                     //{
                     //    string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
@@ -1103,33 +1105,33 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         cadManager.UpdateExRefPathInfo(filePathName);
 
-                        foreach (TreeGridNode childNode in tgnParent.Nodes)
-                        {
-                            string PreFix = "";
-                            string ProjectName = Convert.ToString(childNode.Cells["ProjectId"].FormattedValue);
-                            if (ProjectName.Trim().Length == 0)
-                            {
-                                ProjectName = "MyFiles";
-                            }
-                            if (ProjectName != "MyFiles")
-                            {
-                                PreFix = Convert.ToString(childNode.Cells["ProjectName"].Value) + "-";
-                            }
-                            PreFix = PreFix + Convert.ToString(childNode.Cells["DrawingNumber"].Value) + "-";
+                        //foreach (TreeGridNode childNode in tgnParent.Nodes)
+                        //{
+                        //    string PreFix = "";
+                        //    string ProjectName = Convert.ToString(childNode.Cells["ProjectId"].FormattedValue);
+                        //    if (ProjectName.Trim().Length == 0)
+                        //    {
+                        //        ProjectName = "MyFiles";
+                        //    }
+                        //    if (ProjectName != "MyFiles")
+                        //    {
+                        //        PreFix = Convert.ToString(childNode.Cells["ProjectName"].Value) + "-";
+                        //    }
+                        //    PreFix = PreFix + Convert.ToString(childNode.Cells["DrawingNumber"].Value) + "-";
 
-                            PreFix += Convert.ToString(childNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["CADType"].Value) + "-";
+                        //    PreFix += Convert.ToString(childNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["CADType"].Value) + "-";
 
-                            PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
+                        //    PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
 
 
-                            string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
-                            string newFileName = Path.Combine(checkoutPath, PreFix + Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
-                            if (File.Exists(oldFileName))
-                            {
-                                File.Delete(newFileName); // Delete the existing file if exists
-                                File.Move(oldFileName, newFileName); // Rename the oldFileName into newFileName
-                            }
-                        }
+                        //    string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
+                        //    string newFileName = Path.Combine(checkoutPath, PreFix + Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
+                        //    if (File.Exists(oldFileName))
+                        //    {
+                        //        File.Delete(newFileName); // Delete the existing file if exists
+                        //        File.Move(oldFileName, newFileName); // Rename the oldFileName into newFileName
+                        //    }
+                        //}
                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
                         // cadManager.SaveActiveDrawing(false);
                         //if(!Convert.ToBoolean(Drawing.isEditable))

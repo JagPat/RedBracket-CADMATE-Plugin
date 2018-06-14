@@ -105,9 +105,9 @@ namespace AutocadPlugIn.UI_Forms
                             Directory.CreateDirectory(checkoutPath);
                         }
                         System.Collections.Hashtable DrawingProperty = new System.Collections.Hashtable();
-                        string filePathName = objRBC.DownloadOpenDocument(drawingid, checkoutPath, ref DrawingProperty);
-                        CADController.ICADManager cadManager = new AutoCADManager();
-                        cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                        //string filePathName = objRBC.DownloadOpenDocument(drawingid, checkoutPath, ref DrawingProperty);
+                        //CADController.ICADManager cadManager = new AutoCADManager();
+                        //cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
                     }
                     else
                     {

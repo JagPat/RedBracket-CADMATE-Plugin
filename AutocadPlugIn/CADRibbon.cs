@@ -12,6 +12,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using RedBracketConnector;
+using System.Collections.Generic;
+using System.Collections;
 namespace AutocadPlugIn
 {
     public class CADRibbon
@@ -948,7 +951,7 @@ namespace AutocadPlugIn
 
 
 
-                string drawingid = "", updatedon = "", projectname = "";
+                string drawingid = "", updatedon = "", projectname = "", projectnameOnly = "";
                 string ProjectNo = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
                 try
                 {
@@ -983,17 +986,25 @@ namespace AutocadPlugIn
                         {
                             Rev = Convert.ToString(dbsi.Value);
                         }
+                        else if (Convert.ToString(dbsi.Key) == "projectid")
+                        {
+                            projectnameOnly = Convert.ToString(dbsi.Value);
+                        }
+                        else if (Convert.ToString(dbsi.Key) == "prefix")
+                        {
+                            PreFix = Convert.ToString(dbsi.Value);
+                        }
                     }
 
-                    if (ProjectNo.Trim().Length > 0)
-                    {
-                        PreFix = ProjectNo + "-";
-                    }
-                    PreFix = PreFix + DrawingNO + "-";
+                    //if (ProjectNo.Trim().Length > 0)
+                    //{
+                    //    PreFix = ProjectNo + "-";
+                    //}
+                    //PreFix = PreFix + DrawingNO + "-";
 
-                    PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
+                    //PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
 
-                    PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
+                    //PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
 
                 }
                 catch (System.Exception E)
@@ -1004,9 +1015,19 @@ namespace AutocadPlugIn
                 {
                     return;
                 }
+
+
+
+
+
+
+
+
+
                 //Checking if file is in redbracket or not;
                 RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
-                RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(drawingid);
+
+                RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
 
                 //if (Drawing == null)
                 //{
@@ -1015,10 +1036,10 @@ namespace AutocadPlugIn
                 //}
                 if (Convert.ToDateTime(Drawing.updatedon) > Convert.ToDateTime(updatedon))
                 {
-                    if (RedBracketConnector.ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?."+Environment.NewLine+"Your changes will be lost.") == DialogResult.Yes)
+                    if (RedBracketConnector.ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes will be lost.") == DialogResult.Yes)
                     {
                         string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-                        string ProjectName = projectname;
+                        string ProjectName = projectnameOnly;
                         if (ProjectName.Trim().Length == 0)
                         {
                             ProjectName = "MyFiles";
@@ -1028,11 +1049,11 @@ namespace AutocadPlugIn
                         {
                             Directory.CreateDirectory(checkoutPath);
                         }
-                        System.Collections.Hashtable DrawingProperty = new System.Collections.Hashtable();
-                        string filePathName = objRBC.DownloadOpenDocument(drawingid, checkoutPath, ref DrawingProperty, PreFix);
-                        CADController.ICADManager cadManager = new AutoCADManager();
-                        cadManager.CloseActiveDocument(filePathName);
-                        cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                        AutoCADManager objMgr = new AutoCADManager();
+                        objMgr.ChecknCloseOpenedDoc(db.Filename);
+
+                        DownloadOpenDocument(Drawing.id, checkoutPath);
+
                     }
                     else
                     {
@@ -1049,6 +1070,129 @@ namespace AutocadPlugIn
             {
                 ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
             }
+        }
+        public void DownloadOpenDocument1(string fileId, string checkoutPath, bool IsParent = false)
+        {
+            try
+            {
+                RBConnector objRBC = new RBConnector();
+                Hashtable DrawingProperty = new Hashtable();
+
+                byte[] RawBytes = null;
+                ResultSearchCriteria Drawing = objRBC.GetSingleFileInfo(fileId, ref RawBytes);
+
+                if (Drawing != null)
+                {
+                    DrawingProperty.Add("DrawingId", Drawing.id);
+                    DrawingProperty.Add("DrawingName", Drawing.name);
+                    DrawingProperty.Add("Classification", "");
+                    DrawingProperty.Add("FileTypeID", Drawing.type.name);
+                    DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+                    DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+                    DrawingProperty.Add("Revision", Drawing.versionno);
+                    DrawingProperty.Add("LockStatus", Drawing.filelock);
+                    DrawingProperty.Add("Generation", "123");
+                    DrawingProperty.Add("Type", Drawing.coreType.id);
+                    //DrawingProperty.Add("ProjectName", Drawing.projectname );
+                    if (Drawing.projectname.Trim().Length == 0)
+                    {
+                        DrawingProperty.Add("ProjectName", "My Files");
+                    }
+                    else
+                    {
+                        DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
+                    }
+
+                    DrawingProperty.Add("ProjectId", Drawing.projectinfo);
+                    DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                    DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                    DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                    DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+
+                    DrawingProperty.Add("canDelete", Drawing.canDelete);
+                    DrawingProperty.Add("isowner", Drawing.isowner);
+                    DrawingProperty.Add("hasViewPermission", Drawing.hasViewPermission);
+                    DrawingProperty.Add("isActFileLatest", Drawing.isActFileLatest);
+
+                    DrawingProperty.Add("isEditable", Drawing.isEditable);
+                    DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
+                    DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
+                    DrawingProperty.Add("isletest", Drawing.isletest);
+
+                    DrawingProperty.Add("projectno", Drawing.projectNumber);
+
+                    string PreFix = "";
+                    if (Drawing.projectNumber.Trim().Length > 0)
+                    {
+                        PreFix = Drawing.projectNumber + "-";
+                    }
+                    PreFix = PreFix + Drawing.fileNo + "-";
+
+                    PreFix += Convert.ToString(Drawing.type.name) == string.Empty ? string.Empty : Convert.ToString(Drawing.type.name) + "-";
+
+                    PreFix += Convert.ToString(Drawing.versionno) == string.Empty ? string.Empty : Convert.ToString(Drawing.versionno) + "#";
+
+                    DrawingProperty.Add("prefix", PreFix);
+                    //DrawingProperty.Add("isroot", true);
+                    //DrawingProperty.Add("sourceid","");
+                    //DrawingProperty.Add("Layouts","");
+
+                    string filePathName = Path.Combine(checkoutPath,  Drawing.name);
+                    if (IsParent)
+                    {
+                        filePathName = Path.Combine(checkoutPath, PreFix + Drawing.name);
+                    }
+
+                        using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
+                    {
+                        binaryWriter.Write(RawBytes);
+                    }
+                    AutoCADManager objMgr = new AutoCADManager();
+                    if (IsParent)
+                    {
+
+                        objMgr.UpdateExRefPathInfo(filePathName);
+                        objMgr.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                    }
+                    else
+                    {
+                        objMgr.SetAttributesXrefFiles(DrawingProperty, filePathName);
+                        objMgr.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
+                    }
+
+                }
+                else
+                {
+                    ShowMessage.ErrorMess("Some error occures while retrieving file.");
+                }
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+
+        public void DownloadOpenDocument(string fileId, string checkoutPath)
+        {
+            try
+            {
+                RBConnector objRBC = new RBConnector();
+                var XrefFIle = objRBC.GetXrefFIleInfo(fileId);
+
+                foreach (ResultSearchCriteria obj in XrefFIle)
+                {
+                    DownloadOpenDocument1(obj.id, checkoutPath, false);
+                }
+
+                DownloadOpenDocument1(fileId, checkoutPath, true);
+
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
         }
     }
 
