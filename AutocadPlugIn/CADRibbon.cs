@@ -1086,9 +1086,10 @@ namespace AutocadPlugIn
                     DrawingProperty.Add("DrawingId", Drawing.id);
                     DrawingProperty.Add("DrawingName", Drawing.name);
                     DrawingProperty.Add("Classification", "");
-                    DrawingProperty.Add("FileTypeID", Drawing.type.name);
+                    DrawingProperty.Add("FileTypeID", Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
                     DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
-                    DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+
+                    DrawingProperty.Add("DrawingState", Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname);
                     DrawingProperty.Add("Revision", Drawing.versionno);
                     DrawingProperty.Add("LockStatus", Drawing.filelock);
                     DrawingProperty.Add("Generation", "123");
@@ -1119,16 +1120,21 @@ namespace AutocadPlugIn
                     DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
                     DrawingProperty.Add("isletest", Drawing.isletest);
 
-                    DrawingProperty.Add("projectno", Drawing.projectNumber);
+                    DrawingProperty.Add("projectno", Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber);
+
+                    string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;
+
+
+                    string FileType = Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name;
 
                     string PreFix = "";
-                    if (Drawing.projectNumber.Trim().Length > 0)
+                    if (ProjectNo.Trim().Length > 0)
                     {
-                        PreFix = Drawing.projectNumber + "-";
+                        PreFix = ProjectNo + "-";
                     }
                     PreFix = PreFix + Drawing.fileNo + "-";
 
-                    PreFix += Convert.ToString(Drawing.type.name) == string.Empty ? string.Empty : Convert.ToString(Drawing.type.name) + "-";
+                    PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
 
                     PreFix += Convert.ToString(Drawing.versionno) == string.Empty ? string.Empty : Convert.ToString(Drawing.versionno) + "#";
 

@@ -412,13 +412,13 @@ namespace AutocadPlugIn.UI_Forms
                         {
                             if (!Is_Delete)
                             {
-                                string MyProjectId = "", MyProjectNo = ""; string ProjectName ="";
+                                string MyProjectId = "", MyProjectNo = ""; string ProjectName = "";
                                 try
                                 {
 
                                     MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
                                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-                                    MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
+                                    MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
                                     ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].FormattedValue);
                                 }
                                 catch
@@ -430,7 +430,7 @@ namespace AutocadPlugIn.UI_Forms
                                     ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
                                 }
                                 string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-                                  
+
                                 if (ProjectName.Trim().Length == 0)
                                 {
                                     ProjectName = "MyFiles";
@@ -440,14 +440,27 @@ namespace AutocadPlugIn.UI_Forms
                                 {
                                     Directory.CreateDirectory(checkoutPath);
                                 }
-                                DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
-                                File.Delete(objCmd.FilePath);
-                                foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                                try
                                 {
-                                    if ((bool)ChildNode.Cells[0].FormattedValue)
+
+                                }
+                                catch { }
+
+                                if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
+                                {
+                                    DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
+                                    File.Delete(objCmd.FilePath);
+                                    foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
                                     {
-                                        File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                        if ((bool)ChildNode.Cells[0].FormattedValue)
+                                        {
+                                            File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
                                 }
                             }
                         }
@@ -589,23 +602,30 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("DrawingId", Drawing.id);
                     DrawingProperty.Add("DrawingName", Drawing.name);
                     DrawingProperty.Add("Classification", "");
-                    DrawingProperty.Add("FileTypeID", Drawing.type.name);
+                    DrawingProperty.Add("FileTypeID", Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
                     DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
-                    DrawingProperty.Add("DrawingState", Drawing.status.statusname);
+
+                    DrawingProperty.Add("DrawingState", Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname);
                     DrawingProperty.Add("Revision", Drawing.versionno);
                     DrawingProperty.Add("LockStatus", Drawing.filelock);
                     DrawingProperty.Add("Generation", "123");
                     DrawingProperty.Add("Type", Drawing.coreType.id);
                     //DrawingProperty.Add("ProjectName", Drawing.projectname );
-                    if (Drawing.projectname.Trim().Length == 0)
+                    if (Drawing.projectname != null)
                     {
-                        DrawingProperty.Add("ProjectName", "My Files");
+                        if (Drawing.projectname.Trim().Length == 0)
+                        {
+                            DrawingProperty.Add("ProjectName", "My Files");
+                        }
+                        else
+                        {
+                            DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
+                        }
                     }
                     else
                     {
-                        DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
+                        DrawingProperty.Add("ProjectName", "My Files");
                     }
-
                     DrawingProperty.Add("ProjectId", Drawing.projectinfo);
                     DrawingProperty.Add("CreatedOn", Drawing.updatedon);
                     DrawingProperty.Add("CreatedBy", Drawing.createdby);
@@ -622,18 +642,33 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
                     DrawingProperty.Add("isletest", Drawing.isletest);
 
-                    DrawingProperty.Add("projectno", Drawing.projectNumber);
+                    DrawingProperty.Add("projectno", Drawing.projectNumber==null?string.Empty: Drawing.projectNumber);
+
+                    string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;
+
+                     
+                    string FileType = Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name;
+
+
+
+
+
+
+
+
 
                     string PreFix = "";
-                    if (Drawing.projectNumber.Trim().Length > 0)
+                    if (ProjectNo.Trim().Length > 0)
                     {
-                        PreFix = Drawing.projectNumber + "-";
+                        PreFix = ProjectNo + "-";
                     }
                     PreFix = PreFix + Drawing.fileNo + "-";
+                     
 
-                    PreFix += Convert.ToString(Drawing.type.name) == string.Empty ? string.Empty : Convert.ToString(Drawing.type.name) + "-";
+                    PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
 
                     PreFix += Convert.ToString(Drawing.versionno) == string.Empty ? string.Empty : Convert.ToString(Drawing.versionno) + "#";
+
 
                     DrawingProperty.Add("prefix", PreFix);
                     //DrawingProperty.Add("isroot", true);
@@ -943,7 +978,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
-                    MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "id");
+                    MyProjectNo = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "id");
                 }
                 catch
                 {

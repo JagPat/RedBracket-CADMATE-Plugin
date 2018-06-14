@@ -656,6 +656,7 @@ namespace AutocadPlugIn
                         XrefGraphNode xgn = xg.GetXrefNode(i);
                         GraphNode root = xg.RootNode;
                         string OldChildPath = "";
+                        string newpath = "";
                         if (xgn.Name == FilePath)
                         {
 
@@ -738,9 +739,9 @@ namespace AutocadPlugIn
 
                                     string originalpath = btr.PathName;
                                     string childname = Path.GetFileName(originalpath);
-                                    string newpath = path + childname;
+                                      newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), childname);
-                                    if(File.Exists(OldChildPath))
+                                    if(File.Exists(OldChildPath)&& OldChildPath!=newpath)
                                     {
                                         File.Delete(newpath); 
                                        File.Copy(OldChildPath, newpath);
@@ -755,7 +756,7 @@ namespace AutocadPlugIn
                         {
                         }
 
-                        if (File.Exists(OldChildPath))
+                        if (File.Exists(OldChildPath)&& OldChildPath!=newpath)
                         {
                             File.Delete(OldChildPath);
                         }
@@ -777,6 +778,7 @@ namespace AutocadPlugIn
                 //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
                 Database mainDb = new Database(false, true);
+
                 using (mainDb)
                 {
                     //Database db = doc.Database;
@@ -822,6 +824,7 @@ namespace AutocadPlugIn
                             {
                                 string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
                                 var dbsi = xdb.SummaryInfo.CustomProperties;
+                               
                                 while (dbsi.MoveNext())
                                 {
                                     if (Convert.ToString(dbsi.Key) == "projectno")
@@ -882,10 +885,23 @@ namespace AutocadPlugIn
                                         }
                                     }
 
-                                    if (File.Exists(originalpath))
+                                    try
                                     {
-                                        File.Copy(originalpath, Path.Combine(Path.GetDirectoryName(originalpath), childname));
+                                        if(Directory.Exists(Path.GetDirectoryName(originalpath)))
+                                        {
+                                            string newPath = Path.Combine(Path.GetDirectoryName(originalpath), childname);
+                                            if (File.Exists(originalpath)&& originalpath!= newPath)
+                                            {
+                                                File.Copy(originalpath,newPath );
+                                            }
+                                        }
+                                        
                                     }
+                                    catch
+                                    {
+
+                                    }
+                                    
                                     string newpath = @"\" + childname;
 
                                     btr.PathName = newpath;
