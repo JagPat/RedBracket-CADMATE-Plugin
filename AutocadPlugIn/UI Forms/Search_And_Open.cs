@@ -892,14 +892,14 @@ namespace AutocadPlugIn.UI_Forms
                 if (selectedTreeGridNodes.Count < 1)
                 {
                     this.Cursor = Cursors.Default;
-                    MessageBox.Show("Please select at least one main file to Open");
+                    ShowMessage.ValMess("Please select at least one main file to Open");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(checkoutPath))
                 {
                     this.Cursor = Cursors.Default;
-                    MessageBox.Show("Please set checkout path under settings, before opening any file.");
+                    ShowMessage.ValMess("Please set checkout path under settings, before opening any file.");
                     return;
                 }
                 
@@ -937,6 +937,7 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         if (cadManager.CheckForCurruntlyOpenDoc(filePathName))
                         {
+                            this.Cursor = Cursors.Default;
                             ShowMessage.ValMess("This file is already open.");
                             this.Close();
                             return;
@@ -974,7 +975,14 @@ namespace AutocadPlugIn.UI_Forms
                     DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true, currentTreeGrdiNode, PreFix1);
                     PLMObject objplmo = new PLMObject();
                     objplmo.ObjectId = FileID;
-                    pLMObjects.Add(objplmo);
+                   
+
+                    try
+                    {
+                        pLMObjects.Add(objplmo);
+                        cadManager.SaveActiveDrawing(false);
+                    }
+                    catch { }
                     //foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
                     //{
                     //    string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
@@ -1002,7 +1010,8 @@ namespace AutocadPlugIn.UI_Forms
             }
             catch (System.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                ShowMessage.ErrorMess("Exception Occur: " + ex);
+               // System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
                 objRBC.UnlockObject(pLMObjects);
                 this.Cursor = Cursors.Default;
                 return;
@@ -1096,56 +1105,26 @@ namespace AutocadPlugIn.UI_Forms
                     using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
                     {
                         binaryWriter.Write(restResponse.RawBytes);
-                        //binaryWriter.Flush();
-                        //binaryWriter.Close();
-                        //binaryWriter.Dispose();
                     }
 
                     if (isParentFile)
                     {
                         cadManager.UpdateExRefPathInfo(filePathName);
 
-                        //foreach (TreeGridNode childNode in tgnParent.Nodes)
-                        //{
-                        //    string PreFix = "";
-                        //    string ProjectName = Convert.ToString(childNode.Cells["ProjectId"].FormattedValue);
-                        //    if (ProjectName.Trim().Length == 0)
-                        //    {
-                        //        ProjectName = "MyFiles";
-                        //    }
-                        //    if (ProjectName != "MyFiles")
-                        //    {
-                        //        PreFix = Convert.ToString(childNode.Cells["ProjectName"].Value) + "-";
-                        //    }
-                        //    PreFix = PreFix + Convert.ToString(childNode.Cells["DrawingNumber"].Value) + "-";
-
-                        //    PreFix += Convert.ToString(childNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["CADType"].Value) + "-";
-
-                        //    PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
-
-
-                        //    string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
-                        //    string newFileName = Path.Combine(checkoutPath, PreFix + Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
-                        //    if (File.Exists(oldFileName))
-                        //    {
-                        //        File.Delete(newFileName); // Delete the existing file if exists
-                        //        File.Move(oldFileName, newFileName); // Rename the oldFileName into newFileName
-                        //    }
-                        //}
+                      
                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
-                        // cadManager.SaveActiveDrawing(false);
-                        //if(!Convert.ToBoolean(Drawing.isEditable))
-                        //{
-                        //    ShowMessage.InfoMess("You dont have edit permission for this file.");
-                        //}
+                        try
+                        {
+                          //  cadManager.SaveActiveDrawing(false);
+                        }
+                        catch { }
+                        
+                        
                     }
                     else
-                    {
-                        // Code pending of Updating XrefFile Attributes
+                    {                      
                         cadManager.SetAttributesXrefFiles(DrawingProperty, filePathName);
-                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
-                        //cadManager.SetAttributes(DrawingProperty);
-                        //cadManager.UpdateLayoutAttribute1(DrawingProperty);
+                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);                       
                     }
                 }
                 else

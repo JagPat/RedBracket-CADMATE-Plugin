@@ -359,6 +359,10 @@ namespace AutocadPlugIn.UI_Forms
                     Is_Delete = true;
                 }
 
+                
+                progressBar1.Value = progressBar1.Minimum = 0;
+                progressBar1.Maximum = 5;
+                progressBar1.Visible = true;
                 // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
@@ -366,6 +370,8 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
                         {
+                            progressBar1.Visible = false;
+                            progressBar1.Value = progressBar1.Minimum = 0;
                             ShowMessage.InfoMess("You dont have edit permission for this file.");
                             this.Cursor = Cursors.Default;
                             return;
@@ -376,7 +382,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     try
                     {
-                        objMgr.SaveActiveDrawing();
+                        objMgr.SaveActiveDrawing(false);
                     }
                     catch { }
                    
@@ -389,7 +395,10 @@ namespace AutocadPlugIn.UI_Forms
                             objMgr.ChecknCloseOpenedDoc(Convert.ToString(ChildNode.Cells["filepath"].Value));
                         }
                     }
+                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+
                     Is_Save = objController.ExecuteSave(objCmd);
+                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
                     objMgr.UpdateExRefPathInfo(objCmd.FilePath);
                     //foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
                     //{
@@ -400,7 +409,7 @@ namespace AutocadPlugIn.UI_Forms
                     //    objCmd.IsAssociated = "true";
                     //    Is_Save = objController.ExecuteSave(objCmd);
                     //}
-
+                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
                     if (Is_Save)
                     {
                         //// Update document info into document for future refeance
@@ -444,11 +453,7 @@ namespace AutocadPlugIn.UI_Forms
                                 {
                                     Directory.CreateDirectory(checkoutPath);
                                 }
-                                try
-                                {
-
-                                }
-                                catch { }
+                                
 
                                 if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
                                 {
@@ -468,9 +473,10 @@ namespace AutocadPlugIn.UI_Forms
                                 }
                                 try
                                 {
-                                    objMgr.SaveActiveDrawing();
+                                    objMgr.SaveActiveDrawing(false);
                                 }
                                 catch { }
+                                progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
                             }
                         }
                         catch (Exception E)
@@ -495,17 +501,21 @@ namespace AutocadPlugIn.UI_Forms
                                 File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
                             }
                         }
+                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
                     }
                 }
                 this.Cursor = Cursors.Default;
                 if (Is_Save)
                 {
+                    progressBar1.Value = progressBar1.Maximum; progressBar1.Refresh(); this.Refresh();
                     ShowMessage.InfoMess("Save operation successfully completed.");
                     this.Close();
                     return;
                 }
                 else
                 {
+                    progressBar1.Value = progressBar1.Maximum; progressBar1.Refresh(); this.Refresh();
+                    progressBar1.Visible = false;
                     ShowMessage.ErrorMess("Save operation unsuccessfully completed.");
                     return;
                 }
@@ -591,6 +601,7 @@ namespace AutocadPlugIn.UI_Forms
             }
             catch (Exception ex)
             {
+                progressBar1.Visible = false;
                 ShowMessage.ErrorMess(ex.Message);
                 this.Cursor = Cursors.Default;
             }

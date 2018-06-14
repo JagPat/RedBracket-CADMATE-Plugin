@@ -1908,6 +1908,7 @@ namespace AutocadPlugIn
                 {
                     if (Doc.Database.Filename == FilePath)
                     {
+                        
                         Doc.CloseAndSave(FilePath);
                         return true;
                     }
