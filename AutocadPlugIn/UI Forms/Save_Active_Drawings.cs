@@ -374,8 +374,12 @@ namespace AutocadPlugIn.UI_Forms
 
                     objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
-
-                    objMgr.SaveActiveDrawing();
+                    try
+                    {
+                        objMgr.SaveActiveDrawing();
+                    }
+                    catch { }
+                   
                     objMgr.ChecknCloseOpenedDoc(objCmd.FilePath);
                     objMgr.UpdateExRefPathInfo1(objCmd.FilePath);
                     foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
@@ -462,6 +466,11 @@ namespace AutocadPlugIn.UI_Forms
                                 {
                                     DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
                                 }
+                                try
+                                {
+                                    objMgr.SaveActiveDrawing();
+                                }
+                                catch { }
                             }
                         }
                         catch (Exception E)
