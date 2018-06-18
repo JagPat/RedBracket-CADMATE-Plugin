@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -359,13 +360,13 @@ namespace AutocadPlugIn.UI_Forms
                     Is_Delete = true;
                 }
 
-                
+
                 progressBar1.Value = progressBar1.Minimum = 0;
                 progressBar1.Maximum = 5;
                 progressBar1.Visible = true;
                 // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
-                {
+               {
                     if (Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).Length > 3)
                     {
                         if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
@@ -377,114 +378,294 @@ namespace AutocadPlugIn.UI_Forms
                             return;
                         }
                     }
-
-                    objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
+                    String FilePath = objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
                     try
                     {
                         objMgr.SaveActiveDrawing(false);
                     }
                     catch { }
-                   
-                    objMgr.ChecknCloseOpenedDoc(objCmd.FilePath);
-                    objMgr.UpdateExRefPathInfo1(objCmd.FilePath);
-                    foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+
+
+                    bool IsRenameXref = true;
+
+                    if(IsRenameXref)
                     {
-                        if ((bool)ChildNode.Cells[0].FormattedValue)
+                        #region Close Files
+                        bool IsCloseFile = true;
+
+                        if (IsCloseFile)
                         {
-                            objMgr.ChecknCloseOpenedDoc(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                            objMgr.ChecknCloseOpenedDoc(FilePath);
+                            foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                            {
+                                if ((bool)ChildNode.Cells[0].FormattedValue)
+                                {
+                                    objMgr.ChecknCloseOpenedDoc(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                }
+                            }
+                        }
+                        #endregion
+
+                        //Update Xref name to wihout prefix 
+                        objMgr.UpdateExRefPathInfo1(FilePath);
+
+
+                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+                        // save in RB
+                        Is_Save = objController.ExecuteSave(objCmd);
+                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+
+                        #region Deleting XrefFile with Old Name
+                        try
+                        {
+                            foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                            {
+                                if ((bool)ChildNode.Cells[0].FormattedValue)
+                                {
+                                    File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                }
+                            }
+                        }
+                        catch { }
+                        #endregion
+
+                        #region Update File Properties
+                        bool IsdownloadNewFile = false;
+
+                        if (IsdownloadNewFile)
+                        {
+                            #region Download and open updated file from RB
+                            try
+                            {
+                                if (!Is_Delete)
+                                {
+                                    string MyProjectId = "", MyProjectNo = ""; string ProjectName = "";
+                                    try
+                                    {
+
+                                        MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
+                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
+                                        ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].FormattedValue);
+                                    }
+                                    catch
+                                    {
+                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+
+                                        MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                        ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                    }
+                                    string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+
+                                    if (ProjectName.Trim().Length == 0)
+                                    {
+                                        ProjectName = "MyFiles";
+                                    }
+                                    checkoutPath = Path.Combine(checkoutPath, ProjectName);
+                                    if (!Directory.Exists(checkoutPath))
+                                    {
+                                        Directory.CreateDirectory(checkoutPath);
+                                    }
+
+
+                                    if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
+                                    {
+                                        DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
+                                        File.Delete(objCmd.FilePath);
+                                        foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                                        {
+                                            if ((bool)ChildNode.Cells[0].FormattedValue)
+                                            {
+                                                File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
+                                    }
+                                    try
+                                    {
+                                        objMgr.SaveActiveDrawing(false);
+                                    }
+                                    catch { }
+                                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+                                }
+                            }
+                            catch (Exception E)
+                            {
+                                ShowMessage.ErrorMess(E.Message);
+                                this.Cursor = Cursors.Default;
+                                return;
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            // Update document info into document for future referance 
+                            if (objController.dtDrawingProperty.Rows.Count > 0)
+                            {
+                                objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
+                            }
+                        }
+                        #endregion
+
+                        #region  Renaming Parent and XRef Files
+                        
+                        //update Xref name to NewXref Name with PreFix
+                        objMgr.UpdateExRefPathInfo(objCmd.FilePath);
+
+                        #endregion
+                    }
+                    else
+                    {
+                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+                        //
+                        Is_Save = objController.ExecuteSave(objCmd);
+                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+
+                        #region Update File Properties
+                        bool IsdownloadNewFile = false;
+
+                        if (IsdownloadNewFile)
+                        {
+                            #region Download and open updated file from RB
+                            try
+                            {
+                                if (!Is_Delete)
+                                {
+                                    string MyProjectId = "", MyProjectNo = ""; string ProjectName = "";
+                                    try
+                                    {
+
+                                        MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
+                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
+                                        ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].FormattedValue);
+                                    }
+                                    catch
+                                    {
+                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+
+                                        MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                        ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                    }
+                                    string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+
+                                    if (ProjectName.Trim().Length == 0)
+                                    {
+                                        ProjectName = "MyFiles";
+                                    }
+                                    checkoutPath = Path.Combine(checkoutPath, ProjectName);
+                                    if (!Directory.Exists(checkoutPath))
+                                    {
+                                        Directory.CreateDirectory(checkoutPath);
+                                    }
+
+
+                                    if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
+                                    {
+                                        DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
+                                        File.Delete(objCmd.FilePath);
+                                        foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                                        {
+                                            if ((bool)ChildNode.Cells[0].FormattedValue)
+                                            {
+                                                File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
+                                    }
+                                    try
+                                    {
+                                        objMgr.SaveActiveDrawing(false);
+                                    }
+                                    catch { }
+                                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+                                }
+                            }
+                            catch (Exception E)
+                            {
+                                ShowMessage.ErrorMess(E.Message);
+                                this.Cursor = Cursors.Default;
+                                return;
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            // Update document info into document for future referance 
+                            if (objController.dtDrawingProperty.Rows.Count > 0)
+                            {
+                                objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
+                            }
+                        }
+                        #endregion
+
+                        //Rename Parent File
+                        string OldPath = FilePath, NewPath ="";
+                        string PPriFix = Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["prefix"]);
+                        string Dir = Path.GetDirectoryName(FilePath);
+                        NewPath = Path.Combine(Dir, PPriFix + Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingName"]));
+                        if (File.Exists(OldPath)&&OldPath!=NewPath)
+                        {
+                            File.Delete(NewPath);
+                            objMgr.ChecknCloseOpenedDoc(OldPath);
+                            File.Move(OldPath, NewPath);
+                            objMgr.OpenDoc(NewPath);
                         }
                     }
-                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
 
-                    Is_Save = objController.ExecuteSave(objCmd);
-                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
-                    objMgr.UpdateExRefPathInfo(objCmd.FilePath);
-                    //foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                    //{
-                    //    objCmd.IsVerChange = Convert.ToString(Convert.ToBoolean(ChildNode.Cells["Version"].Value)).ToLower();
-                    //    objCmd.FileStatus = Convert.ToString(ChildNode.Cells["State"].Value);
-                    //    objCmd.FileType = Convert.ToString(ChildNode.Cells["cadtype"].Value);
-                    //    objCmd.IsRoot = "false";
-                    //    objCmd.IsAssociated = "true";
-                    //    Is_Save = objController.ExecuteSave(objCmd);
-                    //}
+
+
+
+
+
                     progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
                     if (Is_Save)
                     {
-                        //// Update document info into document for future refeance
-                        //if (objController.dtDrawingProperty.Rows.Count > 0)
-                        //{
-                        //    Hashtable htCurrentInfo = Helper.Table2HashTable(objController.dtDrawingProperty, 0);
-                        //    objMgr.SetAttributes(htCurrentInfo);
-                        //    objMgr.UpdateLayoutAttribute1(htCurrentInfo);
-
-                        //    objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
-                        //}
+                        //Save layout info
                         try
                         {
-                            if (!Is_Delete)
+                            System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)currentTreeGrdiNode.Tag;
+                            string MyProjectId = "";
+
+                            if(dtLayoutInfo!=null)
                             {
-                                string MyProjectId = "", MyProjectNo = ""; string ProjectName = "";
                                 try
                                 {
 
                                     MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
-                                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-                                    MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
-                                    ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].FormattedValue);
                                 }
                                 catch
                                 {
                                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
 
+                                    //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
+                                    //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                                     MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                    MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                    ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
                                 }
-                                string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
 
-                                if (ProjectName.Trim().Length == 0)
-                                {
-                                    ProjectName = "MyFiles";
-                                }
-                                checkoutPath = Path.Combine(checkoutPath, ProjectName);
-                                if (!Directory.Exists(checkoutPath))
-                                {
-                                    Directory.CreateDirectory(checkoutPath);
-                                }
-                                
+                                MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? string.Empty : MyProjectId;
 
-                                if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
-                                {
-                                    DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
-                                    File.Delete(objCmd.FilePath);
-                                    foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                                    {
-                                        if ((bool)ChildNode.Cells[0].FormattedValue)
-                                        {
-                                            File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
-                                }
-                                try
-                                {
-                                    objMgr.SaveActiveDrawing(false);
-                                }
-                                catch { }
-                                progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+                                objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]));
+
                             }
+
                         }
-                        catch (Exception E)
+                        catch
                         {
-                            ShowMessage.ErrorMess(E.Message);
-                            this.Cursor = Cursors.Default;
-                            return;
+
                         }
+
+
+
                     }
 
                     // To delete file
@@ -662,11 +843,11 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
                     DrawingProperty.Add("isletest", Drawing.isletest);
 
-                    DrawingProperty.Add("projectno", Drawing.projectNumber==null?string.Empty: Drawing.projectNumber);
+                    DrawingProperty.Add("projectno", Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber);
 
                     string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;
 
-                     
+
                     string FileType = Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name;
 
 
@@ -683,7 +864,7 @@ namespace AutocadPlugIn.UI_Forms
                         PreFix = ProjectNo + "-";
                     }
                     PreFix = PreFix + Drawing.fileNo + "-";
-                     
+
 
                     PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
 
@@ -874,67 +1055,37 @@ namespace AutocadPlugIn.UI_Forms
                                 return;
                             }
                         }
-                        //if (!Convert.ToBoolean(selectedTreeNode.Cells["canEditStatus"].Value))
-                        //{
-                        //    ShowMessage.InfoMess("You dont have permission to change status of this file.");
-                        //}
+                        if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
+                        {
+                            System.Data.DataTable dtLayoutInfo = selectedTreeNode.Tag == null ? new System.Data.DataTable() : (System.Data.DataTable)selectedTreeNode.Tag;
+                            frmLayoutVersionUpdate objfrm = new frmLayoutVersionUpdate(
+                                Convert.ToString(selectedTreeNode.Cells["drawingid"].Value),
+                                 Convert.ToString(selectedTreeNode.Cells["drawing"].Value),
+                                  Convert.ToString(selectedTreeNode.Cells["cadtype"].FormattedValue),
+                                   Convert.ToString(selectedTreeNode.Cells["State"].FormattedValue),
+                                    Convert.ToString(selectedTreeNode.Cells["revision"].Value));
+                            objfrm.dtLayoutInfo = dtLayoutInfo.Copy();
+                            objfrm.ShowDialog();
+                            if (objfrm.dtLayoutInfo.Rows.Count > 0)
+                            {
+                                selectedTreeNode.Tag = objfrm.dtLayoutInfo;
+                            }
+                        }
+
                     }
 
 
 
-                    if (e.RowIndex == 0)
+
+                    if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value) == string.Empty)
                     {
-                        if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value) == string.Empty)
-                        {
-                            selectedTreeNode.Cells["projectname"].ReadOnly = false;
-                        }
-                        else
-                        {
-                            selectedTreeNode.Cells["projectname"].ReadOnly = true;
-                        }
-
-                        // selectedTreeNode.Cells["projectid"].ReadOnly = false;
-
-                        //        String[] strarry = new String[5];
-                        //        String DrawingInformation1;
-                        //        String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();
-                        //        int index = DrawingNameandNumber.IndexOf('.');
-                        //        int length = DrawingNameandNumber.Length;
-                        //        if (index > 0)
-                        //            DrawingNameandNumber = DrawingNameandNumber.Remove(index);
-                        //        DrawingInformation1 = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" +
-                        //                selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() +
-                        //                ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" +Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";"
-                        //                + Convert.ToString(selectedTreeNode.Cells["realtyname"].Value ) + ";" + CADDescription.Text + ";"
-                        //                + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + DrawingData["createdon"].ToString()
-                        //                + ";" + DrawingData["createdby"].ToString() + ";" + DrawingData["modifiedon"].ToString() + ";" + DrawingData["modifiedby"].ToString() + ";"
-                        //                + selectedTreeNode.Cells["Layouts"].Value.ToString();
-                        //        htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);
-
-                        //        //selectedTreeNode.Cells["drawingnumber"].Value = DrawingNameandNumber;
-                        //        //selectedTreeNode.Cells["drawing"].Value = DrawingNameandNumber;
+                        selectedTreeNode.Cells["projectname"].ReadOnly = false;
                     }
                     else
                     {
-                        if (e.RowIndex == 0)
-                        {
-                            //selectedTreeNode.Cells["projectname"].ReadOnly = false;
-                            //selectedTreeNode.Cells["projectid"].ReadOnly = false;
-                        }
-                        //selectedTreeNode.Cells["realtyname"].ReadOnly = false;
-                        //selectedTreeNode.Cells["realtyid"].ReadOnly = false;
-                        //if (htNewDrawings.Contains(selectedTreeNode.Cells["drawing"].Value.ToString()))
-                        //{
-                        //    htNewDrawings.Remove(selectedTreeNode.Cells["drawing"].Value.ToString());
-                        //}
-
-                        //if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim() == String.Empty)
-                        //{
-                        //    //selectedTreeNode.Cells["drawingnumber"].Value = "";
-                        //    selectedTreeNode.Cells["cadtype"].Value = "";
-                        //}
-
+                        selectedTreeNode.Cells["projectname"].ReadOnly = true;
                     }
+
                 }
             }
             if (e.ColumnIndex == 5)

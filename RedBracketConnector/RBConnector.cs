@@ -759,11 +759,137 @@ namespace RedBracketConnector
             return true;
         }
 
-        public List<PLMObject> GetPLMObjectInformation(List<PLMObject> plmobjs)
+        public bool SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid)
         {
             try
             {
-                List<PLMObject> newplmobjs = new List<PLMObject>();
+              
+                foreach (DataRow dr in dtLayoutInfo.Rows)
+                {
+                    if(Convert.ToString(dr["IsFile"])=="1")
+                    {
+                        continue;
+                    }
+                    SaveFileCommand objSFC = new SaveFileCommand();
+                    RestResponse restResponse;
+                    //service calling to upload document.
+
+                    if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
+                    {
+
+
+                        restResponse = (RestResponse)ServiceHelper.PostData(
+                  Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                  "/AutocadFiles/uploadLayoutACFiles", DataFormat.Json, null, true
+                     , new List<KeyValuePair<string, string>> {
+                                         new KeyValuePair<string, string>("fileId", Fileid),
+                                              new KeyValuePair<string, string>("layoutId", Convert.ToString(dr["LayoutID"]).Trim()), 
+                                                 new KeyValuePair<string, string>("layoutFileName",  Convert.ToString(dr["FileLayoutName"]).Trim()),
+                                                      new KeyValuePair<string, string>("project",  ProjectID),
+                                             new KeyValuePair<string, string>("status",  Convert.ToString(dr["StatusID"]).Trim()),
+                                              new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
+                                              new KeyValuePair<string, string>("source",  "Computer"),//need to change
+                                           /* new KeyValuePair<string, string>("layoutDesc",  Convert.ToString(dr["Description"]).Trim())*/ });
+
+
+
+
+
+
+                    }
+                    else
+                    {
+
+
+
+                        restResponse = (RestResponse)ServiceHelper.PostData(
+                  Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                  "/AutocadFiles/updateFileProperties", DataFormat.Json, null, false
+                     , new List<KeyValuePair<string, string>> {
+                                         new KeyValuePair<string, string>("fileId", Fileid),
+                                          new KeyValuePair<string, string>("isChecked", Convert.ToString(dr["ChangeVersion"]).Trim().ToLower()),
+                                            new KeyValuePair<string, string>("layoutFileId", Convert.ToString(dr["LayoutID"]).Trim()),
+                                             new KeyValuePair<string, string>("statusId",  Convert.ToString(dr["StatusID"]).Trim()),
+                                              new KeyValuePair<string, string>("typeId",  Convert.ToString(dr["TypeID"]).Trim()),
+                                                 new KeyValuePair<string, string>("layoutFileName",  Convert.ToString(dr["FileLayoutName"]).Trim()),
+                                            new KeyValuePair<string, string>("layoutDesc",  Convert.ToString(dr["Description"]).Trim()) });
+                    }
+
+
+                    //checking if service call was successful or not.
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        //ShowMessage.InfoMess(restResponse.Content);
+                        //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
+                        ShowMessage.ErrorMess("Some error occurred while uploading file.");
+                        return false;
+                    }
+                    else if (restResponse.Content.Trim().Length > 0)
+                    {
+
+
+
+                    }
+
+
+
+
+                }
+
+
+                return true;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+
+
+        }
+
+        /// <summary>
+        /// Get Layout version and other info from RB by providing fileid
+        /// </summary>
+        /// <param name="FileID"></param>
+        /// <returns></returns>
+        public DataTable GetLayoutInfo(string FileID)
+        {
+            DataTable dtLayoutInfoRB = new DataTable();
+            try
+            {
+
+                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
+                         Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                         "/AutocadFiles/downloadAutocadSingleFile",
+                         false,
+                         new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",FileID ) ,
+                                    new KeyValuePair<string, string>("userName", Helper.UserName)
+
+                         });
+                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    RBConnector objRBC = new RBConnector();
+                    //Drawing = objRBC.GetDrawingInformation(FileID); 
+                    //Rowdata = restResponse.RawBytes;
+                }
+                else
+                {
+                    ShowMessage.ErrorMess("Some error while retrieving file.");
+                }
+            }
+            catch(Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return dtLayoutInfoRB;
+        }
+
+        public List<PLMObject> GetPLMObjectInformation(List<PLMObject> plmobjs)
+        {
+            List<PLMObject> newplmobjs = new List<PLMObject>();
+            try
+            { 
                 foreach (PLMObject obj in plmobjs)
                 {
 
@@ -777,7 +903,7 @@ namespace RedBracketConnector
                         null, true, urlParameters);
 
 
-                    var ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                   
 
 
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
@@ -786,6 +912,7 @@ namespace RedBracketConnector
                     }
                     else
                     {
+                        var ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
                         string Response = restResponse.Content;
 
 
@@ -800,45 +927,16 @@ namespace RedBracketConnector
                         objPlm.ObjectProjectName = ObjFileInfo.projectname;
                         objPlm.LockStatus = ObjFileInfo.filelock.ToString();
                         newplmobjs.Add(objPlm);
-
-                        //DataTable dataTableFileInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
-                        //if(dataTableFileInfo.Rows.Count>0)
-                        //{
-                        //    bool FileLock = Convert.ToBoolean(Convert.ToString(dataTableFileInfo.Rows[0]["filelock"]));
-                        //    string UpdatedBy = Convert.ToString(dataTableFileInfo.Rows[0]["updatedBy"]);
-
-                        //    if(FileLock)
-                        //    {
-                        //        if(UpdatedBy== Helper.UserName)
-                        //        {
-                        //            rw["lockstatus"] = "1";
-                        //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
-                        //        }
-                        //        else
-                        //        {
-                        //            rw["lockstatus"] = "2";
-                        //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-
-                        //    }
-                        //}
-
-                    }
-
-
-
-                }
-                return newplmobjs;
-
+                         
+                    } 
+                } 
             }
             catch (Exception ex)
             {
-                throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+                ShowMessage.ErrorMess(ex.Message);
+                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
             }
-
+            return newplmobjs;
         }
 
         public DataTable GetFIleType()
@@ -1171,6 +1269,7 @@ namespace RedBracketConnector
 
         public ResultSearchCriteria GetDrawingInformation(String drawingid)
         {
+            ResultSearchCriteria ObjFileInfo = null;
             try
             {
                 KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
@@ -1183,16 +1282,17 @@ namespace RedBracketConnector
                     null, true, urlParameters);
 
 
-                ResultSearchCriteria ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                 
 
 
-                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                if (restResponse==null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     MessageBox.Show("Some error occurred while fetching file information.");
                     return null;
                 }
                 else
                 {
+                    ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
                     string Response = restResponse.Content;
                     #region Commented Code
                     //DataTable dataTableFileInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
@@ -1221,19 +1321,21 @@ namespace RedBracketConnector
                     //}
                     #endregion
                 }
-                return ObjFileInfo;
+               
             }
             catch (Exception ex)
             {
-                throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+                ShowMessage.ErrorMess(ex.Message);
+                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
             }
-
+            return ObjFileInfo;
         }
         public List<ResultSearchCriteria> GetXrefFIleInfo(String drawingid)
         {
+            List<ResultSearchCriteria> ObjFileInfo = null;
             try
             {
-                List<ResultSearchCriteria> ObjFileInfo = null;
+               
                 KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
                 //KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
 
@@ -1262,13 +1364,14 @@ namespace RedBracketConnector
                     string Response = restResponse.Content;
 
                 }
-                return ObjFileInfo;
+                
             }
             catch (Exception ex)
             {
-                throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+                ShowMessage.ErrorMess(ex.Message);
+                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
             }
-
+            return ObjFileInfo;
         }
 
         public ResultSearchCriteria GetSingleFileInfo(string fileID, ref byte[] Rowdata)

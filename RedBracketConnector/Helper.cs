@@ -22,6 +22,8 @@ namespace RedBracketConnector
         public static string FileNamePrefix = "RB-";
         public static string CompanyName = "RedBracket";
         public static bool IsEventAssign = false;
+
+        public static bool IsRenameChild = true;
         public static object GetValueRegistry(string subKeyName, string keyName)
         {
             // Read the keys from the user registry and load it to the UI.

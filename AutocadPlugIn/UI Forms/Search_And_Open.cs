@@ -964,6 +964,10 @@ namespace AutocadPlugIn.UI_Forms
 
                             PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
 
+                            if(!Helper.IsRenameChild)
+                            {
+                                PreFix = "";
+                            }
 
                             DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout",false,null, PreFix);
 
@@ -974,9 +978,13 @@ namespace AutocadPlugIn.UI_Forms
                     string FileID = currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString();
                     DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true, currentTreeGrdiNode, PreFix1);
                     PLMObject objplmo = new PLMObject();
-                    objplmo.ObjectId = FileID;
-                   
 
+                    try
+                    {
+                        
+                        objplmo.ObjectId = FileID;
+                    }
+                    catch { }
                     try
                     {
                         pLMObjects.Add(objplmo);
@@ -1102,15 +1110,17 @@ namespace AutocadPlugIn.UI_Forms
                         filePathName = Path.Combine(checkoutPath, FilePreFix + fileName);
                     }
 
-                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
+                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate,FileAccess.Write,FileShare.Delete)))
                     {
                         binaryWriter.Write(restResponse.RawBytes);
                     }
 
                     if (isParentFile)
                     {
-                        cadManager.UpdateExRefPathInfo(filePathName);
-
+                        if (Helper.IsRenameChild)
+                        {
+                            cadManager.UpdateExRefPathInfo(filePathName);
+                        }
                       
                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
                         try

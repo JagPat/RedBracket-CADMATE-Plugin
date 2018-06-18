@@ -86,9 +86,9 @@ namespace CADController.Controllers
                     plmObj.objectProjectNo = plmobjInfo[18];
                     ProjectName = plmobjInfo[8];
                     plmObj.ObjectRevision = plmobjInfo[17];
-                    
-                   
-                   
+
+
+
                     plmObj.ObjectStatus = plmobjInfo[15];
                     plmObj.Classification = plmobjInfo[16];
                     plmObj.ItemType = plmobjInfo[1];
@@ -112,14 +112,14 @@ namespace CADController.Controllers
                     plmObj.ObjectDescription = plmobjInfo[6];
                     plmObj.ObjectSourceId = plmobjInfo[7];
 
-                    plmObj.ObjectProjectId=ProjectId = plmobjInfo[9];
+                    plmObj.ObjectProjectId = ProjectId = plmobjInfo[9];
                     CreatedOn = plmobjInfo[10];
                     CreatedBy = plmobjInfo[11];
                     ModifiedOn = plmobjInfo[12];
                     ModifiedBy = plmobjInfo[13];
                     plmObj.ObjectLayouts = plmobjInfo[14];
                     plmObj.ObjectNumber = plmobjInfo[19];
-                    plmObj.objectType= plmobjInfo[20];
+                    plmObj.objectType = plmobjInfo[20];
                     try
                     {
                         string PreFix = plmobjInfo[21];
@@ -177,7 +177,7 @@ namespace CADController.Controllers
                             plmObj.IsNewStructure = IsNewStructure;
 
                             ProjectName = plmobjInfo[11];
-                             
+
                             CreatedOn = plmobjInfo[13];
                             CreatedBy = plmobjInfo[14];
                             ModifiedOn = plmobjInfo[15];
@@ -215,7 +215,7 @@ namespace CADController.Controllers
 
                             }
                             plmObj.ObjectName = fileName;
-                    
+
                             plmObj.IsRoot = false;
                             if (plmobjInfo[6] == "1")
                                 plmObj.IsRoot = true;
@@ -240,10 +240,41 @@ namespace CADController.Controllers
                     // updating document info
                     foreach (PLMObject plmobj in plmObjs)
                     {
+                        string PreFix = "";
+
+                        if (plmobj.ObjectRevision.Contains("Ver"))
+                        {
+                            plmobj.ObjectRevision = plmobj.ObjectRevision.Substring(plmobj.ObjectRevision.IndexOf("0"));
+                        }
+
+                        if (ProjectName != "MyFiles" && ProjectName != "My Files")
+                        {
+                            PreFix = plmobj.objectProjectNo + "-";
+                        }
+                        PreFix = PreFix + Convert.ToString(plmobj.ObjectNumber) + "-";
+
+                        PreFix += Convert.ToString(plmobj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmobj.objectType) + "-";
+
+                        PreFix += Convert.ToString(plmobj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectRevision) + "#";
+
                         //dtDrawingProperty.Rows.Clear();
-                        dtDrawingProperty.Rows.Add(plmobj.ObjectId, plmobj.ObjectName, plmobj.objectType, plmobj.ObjectNumber, plmobj.ObjectState,
-                            plmobj.ObjectRevision, plmobj.ObjectGeneration, plmobj.ItemType, plmobj.FilePath, plmobj.IsRoot, ProjectName, ProjectId,
-                            CreatedOn, CreatedBy, ModifiedOn, ModifiedBy,"",plmobj.ObjectLayouts
+                        dtDrawingProperty.Rows.Add(plmobj.ObjectId,
+                            plmobj.ObjectName,
+                            plmobj.objectType,
+                            plmobj.ObjectNumber,
+                            plmobj.ObjectState,
+                            plmobj.ObjectRevision,
+                            plmobj.ObjectGeneration,
+                            plmobj.ItemType,
+                            plmobj.FilePath,
+                            plmobj.IsRoot,
+                            ProjectName,
+                            ProjectId,
+                            CreatedOn,
+                            CreatedBy,
+                            ModifiedOn,
+                            ModifiedBy, ""
+                            , plmobj.ObjectLayouts
                             , plmobj.canDelete
                             , plmobj.isowner
                             , plmobj.hasViewPermission
@@ -253,7 +284,7 @@ namespace CADController.Controllers
                             , plmobj.hasStatusClosed
                             , plmobj.isletest
                             , plmobj.objectProjectNo
-                            , plmobj.PreFix);
+                            , PreFix);
                     }
                 }
                 catch (System.Exception E)

@@ -37,13 +37,14 @@ namespace AutocadPlugIn
         {
             try
             {
-                String filePath = acadApp.DocumentManager.MdiActiveDocument.Database.Filename;
-                acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(filePath);
-                acadApp.DocumentManager.Open(filePath, isOpenInReadOnly);
+                //String filePath = acadApp.DocumentManager.MdiActiveDocument.Database.Filename;
+                //acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(filePath);
+              
+                //acadApp.DocumentManager.Open(filePath, isOpenInReadOnly);
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
-                throw (new CADController.Exception.CADManagerException("CADController Exception : " + ex.Message.ToString()));
+               // throw (new CADController.Exception.CADManagerException("CADController Exception : " + ex.Message.ToString()));
             }
         }
 
@@ -100,10 +101,11 @@ namespace AutocadPlugIn
                     {
                         XrefGraphNode xgn = xg.GetXrefNode(i);
                         GraphNode root = xg.RootNode;
-                        if (xgn.Name == FilePath)
-                        {
-                            continue;
-                        }
+                        //if (xgn.Name == FilePath)
+                        //{
+
+                        //    continue;
+                        //}
                         switch (xgn.XrefStatus)
                         {
                             case XrefStatus.Unresolved:
@@ -127,11 +129,22 @@ namespace AutocadPlugIn
                                         String drawingName = Path.GetFileName(xgn.Database.Filename);
                                         for (int j = 0; j < dtFileInfo.Rows.Count; j++)
                                         {
+
+                                            string CDrawingName = Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]);
+                                            string PreFix = Convert.ToString(dtFileInfo.Rows[j]["prefix"]);
+                                            if (drawingName.Trim().Length >= PreFix.Length)
+                                            {
+                                                if (drawingName.Substring(0, PreFix.Length) == PreFix)
+                                                {
+                                                    drawingName = drawingName.Substring(PreFix.Length);
+                                                }
+                                            }
                                             if (Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]) == drawingName)
                                             {
                                                 Hashtable ht = Helper.Table2HashTable(dtFileInfo, j);
                                                 SetAttributesXrefFiles(ht, xgn.Database.Filename);
                                                 UpdateLayoutAttributeArefFile(ht, xgn.Database.Filename);
+                                                break;
                                             }
 
                                         }
@@ -156,11 +169,11 @@ namespace AutocadPlugIn
         {
             try
             {
-              
-         
+
+
                 Database db = new Database(false, true); ;
                 db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-              
+
                 Hashtable drawingAttrs = new Hashtable();
                 IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
                 try
@@ -171,7 +184,7 @@ namespace AutocadPlugIn
                     {
                         // if(documentProperties==null)
                         {
-                            drawingAttrs.Add(en.Key, en.Value==null?string.Empty: en.Value);
+                            drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : en.Value);
                         }
                         // else
                         {
@@ -443,7 +456,7 @@ namespace AutocadPlugIn
                             mainDb.SaveAs(FilePath, DwgVersion.Current);
                         }
 
-                         
+
                     }//using db complete
 
                 }
@@ -657,11 +670,11 @@ namespace AutocadPlugIn
                         GraphNode root = xg.RootNode;
                         string OldChildPath = "";
                         string newpath = "";
-                        if (xgn.Name == FilePath)
-                        {
+                        //if (xgn.Name == FilePath)
+                        //{
 
-                            continue;
-                        }
+                        //    continue;
+                        //}
                         //switch (xgn.XrefStatus)
                         //{
                         if (XrefStatus.Unresolved == xgn.XrefStatus)
@@ -688,7 +701,7 @@ namespace AutocadPlugIn
 
                             if (xdb != null)
                             {
-                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
+                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "", oldPreFix = "";
                                 var dbsi = xdb.SummaryInfo.CustomProperties;
                                 while (dbsi.MoveNext())
                                 {
@@ -707,6 +720,15 @@ namespace AutocadPlugIn
                                     else if (Convert.ToString(dbsi.Key) == "revision")
                                     {
                                         Rev = Convert.ToString(dbsi.Value);
+                                        if(Rev.Contains("Ver"))
+                                        {
+                                             
+                                            Rev=Rev.Substring(Rev.IndexOf("0"));
+                                        }
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "prefix")
+                                    {
+                                        oldPreFix = Convert.ToString(dbsi.Value);
                                     }
                                 }
 
@@ -725,7 +747,27 @@ namespace AutocadPlugIn
                                 string path = Path.GetDirectoryName(FilePath);
                                 path += @"\" + PreFix;
 
+                                if (xgn.Name == FilePath  )
+                                {
+                                    string PName = Path.GetFileName(FilePath);
+                                    if (PName.Trim().Length > oldPreFix.Length)
+                                    {
+                                        if (PName.Substring(0, oldPreFix.Length) == oldPreFix)
+                                        {
+                                            PName = PName.Substring(oldPreFix.Length);
 
+                                            string NewFilePath = path + PName;
+                                            if (File.Exists(FilePath) && FilePath != NewFilePath)
+                                            {
+                                                File.Delete(NewFilePath);
+                                                File.Move(FilePath, NewFilePath);
+                                                FilePath = NewFilePath;
+                                            }
+                                        }
+                                    }
+                                    
+                                    continue;
+                                }
 
 
                                 Transaction tr = xdb.TransactionManager.StartTransaction();
@@ -739,14 +781,17 @@ namespace AutocadPlugIn
 
                                     string originalpath = btr.PathName;
                                     string childname = Path.GetFileName(originalpath);
-                                      newpath = path + childname;
+                                    newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), childname);
-                                    if(File.Exists(OldChildPath)&& OldChildPath!=newpath)
-                                    {
-                                        File.Delete(newpath); 
-                                       File.Copy(OldChildPath, newpath);
-                                    }
-                                    btr.PathName = newpath;
+                                      if (File.Exists(OldChildPath) && OldChildPath != newpath)
+                                        {
+                                            File.Delete(newpath);
+                                            File.Move(OldChildPath, newpath);
+                                        }
+
+                                        btr.PathName = newpath;
+                                    
+
                                     //xdb.Filename = "";
                                     tr.Commit();
                                 }
@@ -756,7 +801,7 @@ namespace AutocadPlugIn
                         {
                         }
 
-                        if (File.Exists(OldChildPath)&& OldChildPath!=newpath)
+                        if (File.Exists(OldChildPath) && OldChildPath != newpath)
                         {
                             File.Delete(OldChildPath);
                         }
@@ -824,7 +869,7 @@ namespace AutocadPlugIn
                             {
                                 string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
                                 var dbsi = xdb.SummaryInfo.CustomProperties;
-                               
+
                                 while (dbsi.MoveNext())
                                 {
                                     if (Convert.ToString(dbsi.Key) == "projectno")
@@ -887,21 +932,21 @@ namespace AutocadPlugIn
 
                                     try
                                     {
-                                        if(Directory.Exists(Path.GetDirectoryName(originalpath)))
+                                        if (Directory.Exists(Path.GetDirectoryName(originalpath)))
                                         {
                                             string newPath = Path.Combine(Path.GetDirectoryName(originalpath), childname);
-                                            if (File.Exists(originalpath)&& originalpath!= newPath)
+                                            if (File.Exists(originalpath) && originalpath != newPath)
                                             {
-                                                File.Copy(originalpath,newPath );
+                                                File.Copy(originalpath, newPath);
                                             }
                                         }
-                                        
+
                                     }
                                     catch
                                     {
 
                                     }
-                                    
+
                                     string newpath = @"\" + childname;
 
                                     btr.PathName = newpath;
@@ -943,6 +988,7 @@ namespace AutocadPlugIn
                         //}//Switch Complete
                     }//For Complete          
                     mainDb.SaveAs(FilePath, DwgVersion.Current);
+
                 }//using db complete
 
             }
@@ -1213,7 +1259,82 @@ namespace AutocadPlugIn
             }
             return dtTreeGrid;
         }
+        public string GetLayoutInfo()
+        {
+            string Layouts = "";
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+            try
+            {
+                Database mainDb = new Database(false, true);
+                String rootid = "";
+                using (mainDb)
+                {
+                    mainDb.ReadDwgFile(doc.Name, FileOpenMode.OpenForReadAndAllShare, true, null);
+                    mainDb.ResolveXrefs(false, false);
+                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                    for (int i = 0; i < xg.NumNodes; i++)
+                    {
+                        XrefGraphNode xgn = xg.GetXrefNode(i);
+                        switch (xgn.XrefStatus)
+                        {
+                            case XrefStatus.Unresolved:
+                                ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Unloaded:
+                                ed.WriteMessage("\nUnloaded xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Unreferenced:
+                                ed.WriteMessage("\nUnreferenced xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Resolved:
+                                {
+                                    Database xdb = xgn.Database;
+                                    if (xdb != null)
+                                    {
+                                        if (xdb.Filename != mainDb.Filename)
+                                        {
+                                            break;
+                                        }
 
+
+                                        Transaction tr = xdb.TransactionManager.StartTransaction();
+
+                                        String[] str = new String[14];
+                                        using (tr)
+                                        {
+
+                                            DBDictionary layoutDict = tr.GetObject(xdb.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
+                                            foreach (DBDictionaryEntry de in layoutDict)
+                                            {
+                                                String layoutName = de.Key;
+                                                if (layoutName != "Model")
+                                                {
+                                                    Layouts += de.Key.ToString() + "$";
+                                                }
+                                                else
+                                                {
+                                                    continue;
+                                                }
+                                            }
+
+
+                                            tr.Commit();
+                                        }
+                                    }
+                                    break;
+                                }
+                        }//Switch Complete
+                    }//For Complete                    
+                }//Complete MainDB
+            }
+            catch (System.Exception ex)
+            {
+                ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
+            }
+            return Layouts;
+        }
         public int IsXrNodeEqual(XrefGraph xrGraph, GraphNode grNode)
         {
             for (int i = 0; i < xrGraph.NumNodes; i++)
@@ -1229,32 +1350,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                //System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
-                //dtTreeGrid.Columns.Add("drawingname", typeof(String));
-                //dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
-                //dtTreeGrid.Columns.Add("classification", typeof(String));
-                //dtTreeGrid.Columns.Add("revision", typeof(String));
-                //dtTreeGrid.Columns.Add("drawingid", typeof(String));
-                //dtTreeGrid.Columns.Add("filepath", typeof(String));
-                //dtTreeGrid.Columns.Add("drawingstate", typeof(String));
-                //dtTreeGrid.Columns.Add("generation", typeof(String));
-                //dtTreeGrid.Columns.Add("type", typeof(String));
-                //dtTreeGrid.Columns.Add("sourceid", typeof(String));
-                //dtTreeGrid.Columns.Add("isroot", typeof(String));
-                //dtTreeGrid.Columns.Add("projectname", typeof(String));
-                //dtTreeGrid.Columns.Add("projectid", typeof(String));
-                //dtTreeGrid.Columns.Add("createdon", typeof(String));
-                //dtTreeGrid.Columns.Add("createdby", typeof(String));
-                //dtTreeGrid.Columns.Add("modifiedon", typeof(String));
-                //dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
-                //dtTreeGrid.Columns.Add("lockstatus", typeof(String));
-                //dtTreeGrid.Columns.Add("lockby", typeof(String));
-                //dtTreeGrid.Columns.Add("Error", typeof(String));
-                //if (!(ArasConnector.ArasConnector.Isconnected))
-                //{
-                //    MessageBox.Show("Please login into Avrut Innova for this functionality...!!");
-                //    return;
-                //}
+
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
                 Database db = doc.Database;
@@ -1908,7 +2004,7 @@ namespace AutocadPlugIn
                 {
                     if (Doc.Database.Filename == FilePath)
                     {
-                        
+
                         Doc.CloseAndSave(FilePath);
                         return true;
                     }
@@ -1921,7 +2017,18 @@ namespace AutocadPlugIn
                 return true;
             }
         }
-    }
+        public void OpenDoc(string FilePath)
+        {
+            try
+            {
+                acadApp.DocumentManager.Open(FilePath, false);
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); 
+            }
+        }
+        }
 }
 
 
