@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RedBracketConnector;
 using AdvancedDataGridView;
+using System.Collections;
 
 namespace AutocadPlugIn.UI_Forms
 {
@@ -52,43 +53,77 @@ namespace AutocadPlugIn.UI_Forms
                                    , "1"
                                    , ""
                                    , ""
+                                   , ""
                                    );
                 node.Expand();
                 node.ReadOnly = true;
+                Hashtable htLayoutInfo = CadManager.GetLayoutInfo();
                 if (dtLayoutInfo.Rows.Count > 0)
                 {
+
+
                     foreach (DataRow rw in dtLayoutInfo.Rows)
                     {
-                        if(Convert.ToString(rw["IsFile"])=="1")
+                        if (Convert.ToString(rw["IsFile"]) == "1")
                         {
                             continue;
                         }
-                        node = tgvLayouts.Nodes.Add(Convert.ToBoolean(rw["ChangeVersion"])
-                           , rw["FileLayoutName"]
-                            , rw["FileID1"]
-                       , rw["LayoutID"]
-                       , rw["LayoutType"]
-                       , rw["LayoutStatus"]
-                       , rw["Version"]
-                       , rw["Description"]
-                       , rw["IsFile"]
-                       , rw["TypeID"]
-                       , rw["StatusID"]
-                       );
+
+
+
+                        // string Layouts = CadManager.GetLayoutInfo();
+                        // var Layout = Layouts.Split('$');
+
+                        bool IsAvailable = false;
+                        foreach (DictionaryEntry key in htLayoutInfo)
+                        {
+                            string LayoutName = key.Key.ToString();
+                            string LayoutID1 = key.Value.ToString();
+                            if (LayoutName.Trim().Length == 0)
+                            {
+                                continue;
+                            }
+
+
+                            //(140688313392624)
+                             if (LayoutName == Convert.ToString(rw["FileLayoutName"]))
+                            //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
+                            {
+                                IsAvailable = true; break;
+                            }
+                        }
+
+                        if (IsAvailable)
+                        {
+                            node = tgvLayouts.Nodes[0].Nodes.Add(Convert.ToBoolean(rw["ChangeVersion"])
+                                       , rw["FileLayoutName"]
+                                        , rw["FileID1"]
+                                   , rw["LayoutID"]
+                                   , rw["LayoutType"]
+                                   , rw["LayoutStatus"]
+                                   , rw["Version"]
+                                   , rw["Description"]
+                                   , rw["IsFile"]
+                                   , rw["TypeID"]
+                                   , rw["StatusID"]
+                                   , rw["ACLayoutID"]
+                                   );
+                        }
                     }
                 }
-                else
+                // else
                 {
                     // write code to get layout data from RB and compare them with current layout
                     // if no data available at RB then load default data as follow
 
                     DataTable dtLayoutInfoRB = new DataTable();
 
-                    string Layouts = CadManager.GetLayoutInfo();
-                    var Layout = Layouts.Split('$');
-                    ;
-                    foreach (string LayoutName in Layout)
+                    //Hashtable htLayoutInfo = CadManager.GetLayoutInfo();
+
+
+                    foreach (DictionaryEntry key in htLayoutInfo)
                     {
+                        string LayoutName = key.Key.ToString();
                         if (LayoutName.Trim().Length == 0)
                         {
                             continue;
@@ -108,18 +143,21 @@ namespace AutocadPlugIn.UI_Forms
 
                         if (!IsAvailable)
                         {
-                            tgvLayouts.Nodes[0].Nodes.Add(false,
-                                       LayoutName
-                                     , Convert.ToString(tgvLayouts.Nodes[0].Cells["FileID1"].Value)
-                                     , ""
-                                     , ""
-                                     , ""
-                                     , "0.1"
-                                     , ""
-                                     , "0"
-                                     ,""
-                                     ,""
-                                     );
+                            node = tgvLayouts.Nodes[0].Nodes.Add(true,
+                                         LayoutName
+                                       , Convert.ToString(tgvLayouts.Nodes[0].Cells["FileID1"].Value)
+                                       , ""
+                                       , ""
+                                       , ""
+                                       , "0.0"
+                                       , ""
+                                       , "0"
+                                       , ""
+                                       , ""
+                                       , key.Value.ToString()
+                                       );
+
+                            node.Cells[0].ReadOnly = true;
                         }
                     }
 
@@ -187,17 +225,17 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                if(e.RowIndex<0 || e.ColumnIndex<0)
+                if (e.RowIndex < 0 || e.ColumnIndex < 0)
                 {
                     return;
                 }
                 TreeGridNode selectedTreeNode = (TreeGridNode)tgvLayouts.CurrentRow;
-                if (e.ColumnIndex==4)//FileType
+                if (e.ColumnIndex == 4)//FileType
                 {
                     string FileTypeID = "";
                     try
                     {
-                        
+
                         FileTypeID = Convert.ToString(selectedTreeNode.Cells["LayoutType"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["LayoutType"].Value));
                         FileType = Convert.ToString(selectedTreeNode.Cells["LayoutType"].FormattedValue) == string.Empty ? "" : Convert.ToString(selectedTreeNode.Cells["LayoutType"].FormattedValue);
                     }
@@ -231,14 +269,14 @@ namespace AutocadPlugIn.UI_Forms
                         FileStatusID = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["LayoutStatus"].Value), "statusname");
                     }
 
-                    if(FileStatusID=="0"||FileStatus=="-1")
+                    if (FileStatusID == "0" || FileStatus == "-1")
                     {
                         FileStatusID = "";
                     }
                     selectedTreeNode.Cells["StatusID"].Value = FileStatusID;
                 }
             }
-            catch(Exception E)
+            catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }

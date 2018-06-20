@@ -125,6 +125,12 @@
     <Compile Include="UI Forms\DocumentInformationDisplay.designer.cs">
       <DependentUpon>DocumentInformationDisplay.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI Forms\frmDrawingInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI Forms\frmDrawingInfo.Designer.cs">
+      <DependentUpon>frmDrawingInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI Forms\frmLayoutVersionUpdate.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -219,6 +225,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\DocumentInformationDisplay.resx">
       <DependentUpon>DocumentInformationDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI Forms\frmDrawingInfo.resx">
+      <DependentUpon>frmDrawingInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmLayoutVersionUpdate.resx">
       <DependentUpon>frmLayoutVersionUpdate.cs</DependentUpon>

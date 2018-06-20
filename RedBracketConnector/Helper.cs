@@ -280,7 +280,131 @@ namespace RedBracketConnector
 
         }
 
+        public static string GetLayoutInfo(List<LayoutInfo> fileLayout)
+        {
+            string LayoutInfos = "";
+            try
+            {
+               
+                if ( fileLayout != null)
+                {
+                    LayoutInfos = "[";
+                    int count = 0;
 
+                    foreach (LayoutInfo obj in  fileLayout)
+                    {
+                        if (count == 0)
+                            LayoutInfos += "{";
+                        else
+                            LayoutInfos += ",{";
+                        count++;
+
+
+                        LayoutInfos += @"""id""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.id;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""active""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.active;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""deleted""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.deleted;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""description""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.description;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""islatest""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.islatest;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""name""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.name;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""number""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.number;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""statusId""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.status == null ? string.Empty : Convert.ToString(obj.status.id);
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""statusname""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.status == null ? string.Empty : obj.status.statusname;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""typeId""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.type == null ? string.Empty : Convert.ToString(obj.type.id);
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""versionNo""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.versionNo;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""layoutId""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.layoutId;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""typename""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.type == null ? string.Empty : obj.type.name;
+                        LayoutInfos += @"""";
+                        //LayoutInfos += @",";
+
+
+                        LayoutInfos += "}";
+
+                    }
+                    LayoutInfos += "]";
+                }
+            }
+            catch(Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return string.Empty;
+            }
+            return LayoutInfos;
+        }
 
 
     }

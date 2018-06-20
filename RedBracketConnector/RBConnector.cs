@@ -226,9 +226,14 @@ namespace RedBracketConnector
 
 
                             SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
-                            var saveObjectResponseValueObject = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
+                            //var saveObjectResponseValueObject = JsonConvert.DeserializeObject< DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
 
-                            var Drawing = saveObjectResponseValueObject;
+                            //var saveObjectResponseValueObject1 = JsonConvert.DeserializeObject<List< DataofData>>(saveResult.dataofdata );
+                            //var saveObjectResponseValueObject = saveObjectResponseValueObject1[0];
+                            //var Drawing = saveObjectResponseValueObject;
+
+                            var Drawing = JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
+
 
                             if (Drawing != null)
                             {
@@ -763,13 +768,14 @@ namespace RedBracketConnector
         {
             try
             {
-              
+
                 foreach (DataRow dr in dtLayoutInfo.Rows)
                 {
-                    if(Convert.ToString(dr["IsFile"])=="1")
+                    if (Convert.ToString(dr["IsFile"]) == "1" || (Convert.ToString(dr["ChangeVersion"]) == "False"))
                     {
                         continue;
                     }
+
                     SaveFileCommand objSFC = new SaveFileCommand();
                     RestResponse restResponse;
                     //service calling to upload document.
@@ -783,36 +789,35 @@ namespace RedBracketConnector
                   "/AutocadFiles/uploadLayoutACFiles", DataFormat.Json, null, true
                      , new List<KeyValuePair<string, string>> {
                                          new KeyValuePair<string, string>("fileId", Fileid),
-                                              new KeyValuePair<string, string>("layoutId", Convert.ToString(dr["LayoutID"]).Trim()), 
+                                              new KeyValuePair<string, string>("layoutId", Convert.ToString(dr["ACLayoutID"]).Trim()),
                                                  new KeyValuePair<string, string>("layoutFileName",  Convert.ToString(dr["FileLayoutName"]).Trim()),
                                                       new KeyValuePair<string, string>("project",  ProjectID),
                                              new KeyValuePair<string, string>("status",  Convert.ToString(dr["StatusID"]).Trim()),
                                               new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
-                                              new KeyValuePair<string, string>("source",  "Computer"),//need to change
-                                           /* new KeyValuePair<string, string>("layoutDesc",  Convert.ToString(dr["Description"]).Trim())*/ });
-
-
+                                              new KeyValuePair<string, string>("source",  "Computer"),
+                                             new KeyValuePair<string, string>("description",  Convert.ToString(dr["Description"]).Trim())  });
 
 
 
 
                     }
                     else
-                    {
-
-
+                    { 
 
                         restResponse = (RestResponse)ServiceHelper.PostData(
-                  Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                  "/AutocadFiles/updateFileProperties", DataFormat.Json, null, false
-                     , new List<KeyValuePair<string, string>> {
+                      Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                      "/AutocadFiles/uploadLayoutACFileVersion", DataFormat.Json, null, false
+                         , new List<KeyValuePair<string, string>> {
+                              new KeyValuePair<string, string>("source", "Computer"),
                                          new KeyValuePair<string, string>("fileId", Fileid),
-                                          new KeyValuePair<string, string>("isChecked", Convert.ToString(dr["ChangeVersion"]).Trim().ToLower()),
-                                            new KeyValuePair<string, string>("layoutFileId", Convert.ToString(dr["LayoutID"]).Trim()),
-                                             new KeyValuePair<string, string>("statusId",  Convert.ToString(dr["StatusID"]).Trim()),
-                                              new KeyValuePair<string, string>("typeId",  Convert.ToString(dr["TypeID"]).Trim()),
-                                                 new KeyValuePair<string, string>("layoutFileName",  Convert.ToString(dr["FileLayoutName"]).Trim()),
-                                            new KeyValuePair<string, string>("layoutDesc",  Convert.ToString(dr["Description"]).Trim()) });
+                                             new KeyValuePair<string, string>("layoutId", Convert.ToString(dr["LayoutID"]).Trim())                                             ,
+                                            new KeyValuePair<string, string>("versiondesc",  Convert.ToString(dr["Description"]).Trim()),
+                                                 new KeyValuePair<string, string>("userName",  Helper.UserName),
+                                             new KeyValuePair<string, string>("status",  Convert.ToString(dr["StatusID"]).Trim()),
+                                              new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
+                                              new KeyValuePair<string, string>("layoutname",  Convert.ToString(dr["FileLayoutName"]).Trim()),
+                                               new KeyValuePair<string, string>("project", ProjectID)
+                                                 });
                     }
 
 
@@ -821,7 +826,7 @@ namespace RedBracketConnector
                     {
                         //ShowMessage.InfoMess(restResponse.Content);
                         //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
-                        ShowMessage.ErrorMess("Some error occurred while uploading file.");
+                        ShowMessage.ErrorMess("Some error occurred while uploading layout info.");
                         return false;
                     }
                     else if (restResponse.Content.Trim().Length > 0)
@@ -878,7 +883,7 @@ namespace RedBracketConnector
                     ShowMessage.ErrorMess("Some error while retrieving file.");
                 }
             }
-            catch(Exception E)
+            catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
@@ -889,7 +894,7 @@ namespace RedBracketConnector
         {
             List<PLMObject> newplmobjs = new List<PLMObject>();
             try
-            { 
+            {
                 foreach (PLMObject obj in plmobjs)
                 {
 
@@ -903,7 +908,7 @@ namespace RedBracketConnector
                         null, true, urlParameters);
 
 
-                   
+
 
 
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
@@ -927,9 +932,9 @@ namespace RedBracketConnector
                         objPlm.ObjectProjectName = ObjFileInfo.projectname;
                         objPlm.LockStatus = ObjFileInfo.filelock.ToString();
                         newplmobjs.Add(objPlm);
-                         
-                    } 
-                } 
+
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1282,10 +1287,10 @@ namespace RedBracketConnector
                     null, true, urlParameters);
 
 
-                 
 
 
-                if (restResponse==null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     MessageBox.Show("Some error occurred while fetching file information.");
                     return null;
@@ -1321,7 +1326,7 @@ namespace RedBracketConnector
                     //}
                     #endregion
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -1330,12 +1335,110 @@ namespace RedBracketConnector
             }
             return ObjFileInfo;
         }
+
+        public Hashtable GetDrawingInformationHT(String drawingid)
+        {
+            Hashtable DrawingProperty = new Hashtable();
+
+            try
+            {
+                KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
+                //KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
+
+                List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                urlParameters.Add(L);
+                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                    "/AutocadFiles/fetchFileInfo", DataFormat.Json,
+                    null, true, urlParameters);
+
+
+
+
+
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    MessageBox.Show("Some error occurred while fetching file information.");
+                    return null;
+                }
+                else
+                {
+                    ResultSearchCriteria Drawing = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                    string Response = restResponse.Content;
+
+
+                    DrawingProperty.Add("DrawingId", Drawing.id);
+                    DrawingProperty.Add("DrawingName", Drawing.name);
+                    DrawingProperty.Add("Classification", "");
+                    DrawingProperty.Add("FileTypeID", Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
+                    DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+
+                    DrawingProperty.Add("DrawingState", Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname);
+                    DrawingProperty.Add("Revision", Drawing.versionno);
+                    DrawingProperty.Add("LockStatus", Drawing.filelock);
+                    DrawingProperty.Add("Generation", "123");
+                    DrawingProperty.Add("Type", Drawing.coreType.id);
+                    //DrawingProperty.Add("ProjectName", Drawing.projectname );
+                    if (Drawing.projectname.Trim().Length == 0)
+                    {
+                        DrawingProperty.Add("ProjectName", "My Files");
+                    }
+                    else
+                    {
+                        DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
+                    }
+
+                    DrawingProperty.Add("ProjectId", Drawing.projectinfo);
+                    DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                    DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                    DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                    DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+
+                    DrawingProperty.Add("canDelete", Drawing.canDelete);
+                    DrawingProperty.Add("isowner", Drawing.isowner);
+                    DrawingProperty.Add("hasViewPermission", Drawing.hasViewPermission);
+                    DrawingProperty.Add("isActFileLatest", Drawing.isActFileLatest);
+
+                    DrawingProperty.Add("isEditable", Drawing.isEditable);
+                    DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
+                    DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
+                    DrawingProperty.Add("isletest", Drawing.isletest);
+
+
+                    DrawingProperty.Add("projectno", Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber);
+
+                    string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;
+
+
+                    string FileType = Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name;
+
+                    string PreFix = "";
+                    if (ProjectNo.Trim().Length > 0)
+                    {
+                        PreFix = ProjectNo + "-";
+                    }
+                    PreFix = PreFix + Drawing.fileNo + "-";
+
+                    PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
+
+                    PreFix += Convert.ToString(Drawing.versionno) == string.Empty ? string.Empty : Convert.ToString(Drawing.versionno) + "#";
+
+                    DrawingProperty.Add("prefix", PreFix);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ShowMessage.ErrorMess(ex.Message);
+                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+            }
+            return DrawingProperty;
+        }
         public List<ResultSearchCriteria> GetXrefFIleInfo(String drawingid)
         {
             List<ResultSearchCriteria> ObjFileInfo = null;
             try
             {
-               
+
                 KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
                 //KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
 
@@ -1364,7 +1467,7 @@ namespace RedBracketConnector
                     string Response = restResponse.Content;
 
                 }
-                
+
             }
             catch (Exception ex)
             {

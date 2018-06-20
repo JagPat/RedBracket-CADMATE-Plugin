@@ -39,12 +39,12 @@ namespace AutocadPlugIn
             {
                 //String filePath = acadApp.DocumentManager.MdiActiveDocument.Database.Filename;
                 //acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(filePath);
-              
+
                 //acadApp.DocumentManager.Open(filePath, isOpenInReadOnly);
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
-               // throw (new CADController.Exception.CADManagerException("CADController Exception : " + ex.Message.ToString()));
+                // throw (new CADController.Exception.CADManagerException("CADController Exception : " + ex.Message.ToString()));
             }
         }
 
@@ -65,7 +65,9 @@ namespace AutocadPlugIn
                     {
                         foreach (DictionaryEntry entry in currentDocumentProperties)
                         {
-                            DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                             DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                           // DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString( entry.Value));
+
 
                         }
                         Db.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
@@ -447,7 +449,21 @@ namespace AutocadPlugIn
                         {
                             foreach (DictionaryEntry entry in currentDocumentProperties)
                             {
-                                DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                                try
+                                {
+                                     DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                                    //if (entry.Key.ToString() != "LayoutInfo")
+                                    {
+                                     //   DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                                    }
+                                    //else
+                                    //{
+                                    //    DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty :  (entry.Value));
+                                    //}
+                                }
+                                catch (System.Exception E)
+                                { }
+
 
                             }
                             mainDb.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
@@ -720,10 +736,10 @@ namespace AutocadPlugIn
                                     else if (Convert.ToString(dbsi.Key) == "revision")
                                     {
                                         Rev = Convert.ToString(dbsi.Value);
-                                        if(Rev.Contains("Ver"))
+                                        if (Rev.Contains("Ver"))
                                         {
-                                             
-                                            Rev=Rev.Substring(Rev.IndexOf("0"));
+
+                                            Rev = Rev.Substring(Rev.IndexOf("0"));
                                         }
                                     }
                                     else if (Convert.ToString(dbsi.Key) == "prefix")
@@ -747,7 +763,7 @@ namespace AutocadPlugIn
                                 string path = Path.GetDirectoryName(FilePath);
                                 path += @"\" + PreFix;
 
-                                if (xgn.Name == FilePath  )
+                                if (xgn.Name == FilePath)
                                 {
                                     string PName = Path.GetFileName(FilePath);
                                     if (PName.Trim().Length > oldPreFix.Length)
@@ -765,7 +781,7 @@ namespace AutocadPlugIn
                                             }
                                         }
                                     }
-                                    
+
                                     continue;
                                 }
 
@@ -783,14 +799,14 @@ namespace AutocadPlugIn
                                     string childname = Path.GetFileName(originalpath);
                                     newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), childname);
-                                      if (File.Exists(OldChildPath) && OldChildPath != newpath)
-                                        {
-                                            File.Delete(newpath);
-                                            File.Move(OldChildPath, newpath);
-                                        }
+                                    if (File.Exists(OldChildPath) && OldChildPath != newpath)
+                                    {
+                                        File.Delete(newpath);
+                                        File.Move(OldChildPath, newpath);
+                                    }
 
-                                        btr.PathName = newpath;
-                                    
+                                    btr.PathName = newpath;
+
 
                                     //xdb.Filename = "";
                                     tr.Commit();
@@ -1031,7 +1047,9 @@ namespace AutocadPlugIn
             dtTreeGrid.Columns.Add("projectno", typeof(String));
             dtTreeGrid.Columns.Add("prefix", typeof(String));
 
-
+            dtTreeGrid.Columns.Add("createdby", typeof(String));
+            dtTreeGrid.Columns.Add("modifiedby", typeof(String));
+            dtTreeGrid.Columns.Add("layoutinfo", typeof(String));
 
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -1161,7 +1179,11 @@ namespace AutocadPlugIn
                                                         rootdrawingAttrs["hasstatusclosed"] == null ? string.Empty : rootdrawingAttrs["hasstatusclosed"],
                                                         rootdrawingAttrs["isletest"] == null ? string.Empty : rootdrawingAttrs["isletest"],
                                                         rootdrawingAttrs["projectno"] == null ? string.Empty : rootdrawingAttrs["projectno"],
-                                                        rootdrawingAttrs["prefix"] == null ? string.Empty : rootdrawingAttrs["prefix"]);
+                                                        rootdrawingAttrs["prefix"] == null ? string.Empty : rootdrawingAttrs["prefix"],
+                                                        rootdrawingAttrs["createdby"] == null ? string.Empty : rootdrawingAttrs["createdby"],
+                                                        rootdrawingAttrs["modifiedby"] == null ? string.Empty : rootdrawingAttrs["modifiedby"]
+                                                        ,
+                                                        rootdrawingAttrs["layoutinfo"] == null ? string.Empty : rootdrawingAttrs["layoutinfo"]);
 
 
 
@@ -1173,7 +1195,8 @@ namespace AutocadPlugIn
                                                 }
                                                 else
                                                 {
-                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "");
+                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
+                                                        childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","");
                                                 }
                                             }
                                             else
@@ -1235,14 +1258,18 @@ namespace AutocadPlugIn
                                                         drawingAttrs["hasstatusclosed"] == null ? string.Empty : drawingAttrs["hasstatusclosed"],
                                                         drawingAttrs["isletest"] == null ? string.Empty : drawingAttrs["isletest"],
                                                         drawingAttrs["projectno"] == null ? string.Empty : drawingAttrs["projectno"],
-                                                        drawingAttrs["prefix"] == null ? string.Empty : drawingAttrs["prefix"]
+                                                        drawingAttrs["prefix"] == null ? string.Empty : drawingAttrs["prefix"],
+                                                        drawingAttrs["createdby"] == null ? string.Empty : drawingAttrs["createdby"],
+                                                        drawingAttrs["modifiedby"] == null ? string.Empty : drawingAttrs["modifiedby"],
+                                                        drawingAttrs["layoutinfo"] == null ? string.Empty : drawingAttrs["layoutinfo"]
                                                         );
 
 
                                                 }
 
                                                 else
-                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "", childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "");
+                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
+                                                        childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","");
                                             }
                                             tr.Commit();
                                         }
@@ -1259,12 +1286,13 @@ namespace AutocadPlugIn
             }
             return dtTreeGrid;
         }
-        public string GetLayoutInfo()
+        public Hashtable GetLayoutInfo()
         {
             string Layouts = "";
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             Editor ed = doc.Editor;
+            Hashtable LayoutInfo = new Hashtable();
             try
             {
                 Database mainDb = new Database(false, true);
@@ -1312,6 +1340,8 @@ namespace AutocadPlugIn
                                                 if (layoutName != "Model")
                                                 {
                                                     Layouts += de.Key.ToString() + "$";
+                                                    LayoutInfo.Add(de.Key, de.Value);
+
                                                 }
                                                 else
                                                 {
@@ -1333,7 +1363,18 @@ namespace AutocadPlugIn
             {
                 ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
             }
-            return Layouts;
+
+            try
+            {
+                Hashtable ht = new Hashtable();
+                foreach (DictionaryEntry key in LayoutInfo)
+                {
+                    ht.Add(key.Key, key.Value);
+                }
+                LayoutInfo = ht;
+                }
+            catch { }
+            return LayoutInfo;
         }
         public int IsXrNodeEqual(XrefGraph xrGraph, GraphNode grNode)
         {
@@ -2025,10 +2066,10 @@ namespace AutocadPlugIn
             }
             catch (System.Exception E)
             {
-                ShowMessage.ErrorMess(E.Message); 
+                ShowMessage.ErrorMess(E.Message);
             }
         }
-        }
+    }
 }
 
 

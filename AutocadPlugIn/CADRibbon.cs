@@ -648,7 +648,8 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-            DocumentInformationDisplay objDRGInfo = new DocumentInformationDisplay();
+            //DocumentInformationDisplay objDRGInfo = new DocumentInformationDisplay();
+            frmDrawingInfo objDRGInfo = new frmDrawingInfo();
             objDRGInfo.ShowDialog();
         }
     }
@@ -1083,6 +1084,10 @@ namespace AutocadPlugIn
 
                 if (Drawing != null)
                 {
+                    #region LayoutInfo
+                    String LayoutInfos = "";
+                    LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
+                    #endregion
                     DrawingProperty.Add("DrawingId", Drawing.id);
                     DrawingProperty.Add("DrawingName", Drawing.name);
                     DrawingProperty.Add("Classification", "");
@@ -1119,7 +1124,7 @@ namespace AutocadPlugIn
                     DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
                     DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
                     DrawingProperty.Add("isletest", Drawing.isletest);
-
+                    DrawingProperty.Add("LayoutInfo", LayoutInfos);
                     DrawingProperty.Add("projectno", Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber);
 
                     string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;

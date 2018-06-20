@@ -76,6 +76,8 @@ namespace RedBracketConnector
 
         public string projectNumber { set; get; }
 
+        public List<LayoutInfo> fileLayout { set; get; }
+
         ////public string resource { set; get; }
     }
 
@@ -160,5 +162,33 @@ namespace RedBracketConnector
         public bool active { set; get; }
 
         public bool deleted { set; get; }
+    }
+
+
+
+
+    public class LayoutInfo
+    {
+        public string id { set; get; }    
+
+        public string name { set; get; }
+        public string number { set; get; }
+
+        public ResultSearchCriteriaType type { set; get; }
+        public ResultSearchCriteriaStatus status { set; get; }
+
+        public string islatest { set; get; }
+        public string description { set; get; }
+        public string active { set; get; }
+        public string deleted { set; get; }
+
+        public string statusId { set; get; }
+        public string statusname { set; get; }
+        public string typeId { set; get; }
+        public string typename { set; get; }
+
+        public string versionNo { set; get; }
+        public string layoutId { set; get; }
+
     }
 }

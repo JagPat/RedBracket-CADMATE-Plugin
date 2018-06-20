@@ -44,6 +44,7 @@
             this.IsFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TypeID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StatusID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ACLayoutID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tgvLayouts)).BeginInit();
@@ -125,7 +126,8 @@
             this.Description,
             this.IsFile,
             this.TypeID,
-            this.StatusID});
+            this.StatusID,
+            this.ACLayoutID});
             this.tgvLayouts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tgvLayouts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.tgvLayouts.ImageList = null;
@@ -213,6 +215,13 @@
             this.StatusID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.StatusID.Visible = false;
             // 
+            // ACLayoutID
+            // 
+            this.ACLayoutID.HeaderText = "ACLayoutID";
+            this.ACLayoutID.Name = "ACLayoutID";
+            this.ACLayoutID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.ACLayoutID.Visible = false;
+            // 
             // frmLayoutVersionUpdate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -248,5 +257,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn IsFile;
         private System.Windows.Forms.DataGridViewTextBoxColumn TypeID;
         private System.Windows.Forms.DataGridViewTextBoxColumn StatusID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ACLayoutID;
     }
 }
