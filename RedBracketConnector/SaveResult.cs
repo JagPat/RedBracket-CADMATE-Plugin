@@ -12,6 +12,7 @@ namespace RedBracketConnector
     public class SaveResult
     {
         public string msg { get; set; }
+        public string message { get; set; }
 
         public string dataofdata { get; set; }
     }

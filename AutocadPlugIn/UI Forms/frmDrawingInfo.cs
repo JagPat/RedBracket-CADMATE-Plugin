@@ -15,6 +15,13 @@ namespace AutocadPlugIn.UI_Forms
         public string DrawingID = "";
         AutoCADManager cadManager = new AutoCADManager();
         RBConnector objRBC = new RBConnector();
+        bool IsFilePropertiesChanged = false;
+        bool IsLayoutPropertiesChanged = false;
+        bool LoadFlag = false;
+        string FileID = "";
+        string ProjectID = "";
+        string FilePath = "";
+        string PreFix = "";
         public frmDrawingInfo()
         {
             InitializeComponent();
@@ -22,18 +29,13 @@ namespace AutocadPlugIn.UI_Forms
 
         private void frmDrawingInfo_Load(object sender, EventArgs e)
         {
+            LoadFlag = true;
             try
             {
                 this.Hide();
                 int LocalFileLayoutCount = 0;
                 int FileInfoRowCount = 0;
-                Helper.FIllCMB(cmbFileTypeC, objRBC.GetFIleType(), "name", "id", true);
-                Helper.FIllCMB(cmbLayoutTypeC1, objRBC.GetFIleType(), "name", "id", true);
-                Helper.FIllCMB(cmbLayoutTypeC2, objRBC.GetFIleType(), "name", "id", true);
 
-                Helper.FIllCMB(cmbFileStatusC, objRBC.GetFIleStatus(), "statusname", "id", true);
-                Helper.FIllCMB(cmbLayoutStatusC1, objRBC.GetFIleStatus(), "statusname", "id", true);
-                Helper.FIllCMB(cmbLayoutStatusC2, objRBC.GetFIleStatus(), "statusname", "id", true);
                 //if (DrawingID.Trim().Length == 0)
                 //{
                 //    ShowMessage.ValMess("Please save this drawing to RedBracket.");
@@ -44,7 +46,18 @@ namespace AutocadPlugIn.UI_Forms
                 DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=1");
                 if (dtCurrentData.Length > 0)
                 {
-                    lbDrawingIDC.Text = DrawingID = Convert.ToString(dtCurrentData[0]["drawingid"]);
+                    FilePath = Convert.ToString(dtCurrentData[0]["filepath"]);
+                    PreFix = Convert.ToString(dtCurrentData[0]["prefix"]);
+                    DataTable dtProjectDetail = objRBC.GetProjectDetail();
+
+                    Helper.FIllCMB(cmbFileTypeC, objRBC.GetFIleType(), "name", "id", true);
+                    Helper.FIllCMB(cmbLayoutTypeC1, objRBC.GetFIleType(), "name", "id", true);
+                    Helper.FIllCMB(cmbLayoutTypeC2, objRBC.GetFIleType(), "name", "id", true);
+
+                    Helper.FIllCMB(cmbFileStatusC, objRBC.GetFIleStatus(), "statusname", "id", true);
+                    Helper.FIllCMB(cmbLayoutStatusC1, objRBC.GetFIleStatus(), "statusname", "id", true);
+                    Helper.FIllCMB(cmbLayoutStatusC2, objRBC.GetFIleStatus(), "statusname", "id", true);
+                    FileID = lbDrawingIDC.Text = DrawingID = Convert.ToString(dtCurrentData[0]["drawingid"]);
                     if (DrawingID.Trim().Length == 0)
                     {
                         ShowMessage.ValMess("Please save this drawing to RedBracket."); this.Close();
@@ -55,10 +68,21 @@ namespace AutocadPlugIn.UI_Forms
                     lbDrawingNoC.Text = Convert.ToString(dtCurrentData[0]["drawingnumber"]);
                     lbVersionC.Text = Convert.ToString(dtCurrentData[0]["revision"]);
                     lbProjectNameC.Text = Convert.ToString(dtCurrentData[0]["projectid"]);
+
+                    DataRow[] drl = dtProjectDetail.Select("PNAMENO='" + lbProjectNameC.Text + "'");
+                    if (drl.Length > 0)
+                    {
+                        ProjectID = Convert.ToString(drl[0]["id"]);
+                    }
+                    else
+                    {
+                        ProjectID = "";
+                    }
+
                     lbProjectNoC.Text = Convert.ToString(dtCurrentData[0]["projectno"]);
                     string T = Convert.ToString(dtCurrentData[0]["FileTypeID"]) == string.Empty ? "---Select---" : Convert.ToString(dtCurrentData[0]["FileTypeID"]);
-                    cmbFileTypeC.Text = T;
-                    cmbFileStatusC.Text = Convert.ToString(dtCurrentData[0]["drawingstate"]) == string.Empty ? "---Select---" : Convert.ToString(dtCurrentData[0]["drawingstate"]);
+                    cmbFileTypeC.Tag = cmbFileTypeC.Text = T;
+                    cmbFileStatusC.Tag = cmbFileStatusC.Text = Convert.ToString(dtCurrentData[0]["drawingstate"]) == string.Empty ? "---Select---" : Convert.ToString(dtCurrentData[0]["drawingstate"]);
                     lbDrawingIDC.Text = DrawingID = Convert.ToString(dtCurrentData[0]["drawingid"]);
 
                     lbCreatedByC.Text = Convert.ToString(dtCurrentData[0]["createdby"]);
@@ -80,25 +104,30 @@ namespace AutocadPlugIn.UI_Forms
                             if (count == 1)
                             {
                                 lbLayoutNameC1.Text = Convert.ToString(objLI1.name);
+                                lbLayoutNameC1.Tag = objLI1.id;
                                 lbLayoutNoC1.Text = Convert.ToString(objLI1.number);
+                                lbLayoutNoC1.Tag = objLI1.description;
                                 lbLayoutVersionC1.Text = Convert.ToString(objLI1.versionNo);
                                 object o = objLI1.statusId == null || objLI1.statusId == string.Empty ? 0 : Convert.ToInt16(objLI1.statusId);
-                                cmbLayoutStatusC1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? 0 : Convert.ToInt16(objLI1.statusId);
-                                cmbLayoutTypeC1.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? 0 : Convert.ToInt16(objLI1.typeId);
+                                cmbLayoutStatusC1.Tag = cmbLayoutStatusC1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
+                                cmbLayoutTypeC1.Tag = cmbLayoutTypeC1.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
                             }
                             else if (count == 2)
                             {
                                 lbLayoutNameC2.Text = Convert.ToString(objLI1.name);
+                                lbLayoutNameC2.Tag = objLI1.id;
                                 lbLayoutNoC2.Text = Convert.ToString(objLI1.number);
+                                lbLayoutNoC2.Tag = objLI1.description;
                                 lbLayoutVersionC2.Text = Convert.ToString(objLI1.versionNo);
-                                cmbLayoutStatusC2.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? 0 : Convert.ToInt16(objLI1.statusId);
-                                cmbLayoutTypeC2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? 0 : Convert.ToInt16(objLI1.typeId);
+                                cmbLayoutStatusC2.Tag = cmbLayoutStatusC2.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
+                                cmbLayoutTypeC2.Tag = cmbLayoutTypeC2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
 
                                 FileInfoRowCount = tlpMain.RowCount;
                             }
                             else
                             {
                                 Font font = label14.Font;
+                                Font font1 = cmbFileTypeC.Font;
                                 int CRC = tlpMain.RowCount;
                                 if (count == 3)
                                 {
@@ -120,18 +149,19 @@ namespace AutocadPlugIn.UI_Forms
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Discipline", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
 
                                 CRC -= 5;
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNameC" + count }, 1, CRC++);
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.number), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNameC" + count, Tag = objLI1.id }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.number), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNoC" + count, Tag = objLI1.description }, 1, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 1, CRC++);
-                                tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutStatusC" + count, Dock = DockStyle.Fill }, 1, CRC++);
-                                tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutTypeC" + count, Dock = DockStyle.Fill }, 1, CRC++);
+                                tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutStatusC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
+                                tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutTypeC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
 
                                 ComboBox combo1 = tlpMain.Controls.Find("cmbLayoutStatusC" + count, true).FirstOrDefault() as ComboBox;
 
                                 if (combo1 != null)
                                 {
                                     Helper.FIllCMB(combo1, objRBC.GetFIleStatus(), "statusname", "id", true);
-                                    combo1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? 0 : Convert.ToInt16(objLI1.statusId);
+                                    combo1.Tag = combo1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
+                                    combo1.SelectedValueChanged += new System.EventHandler(cmbFileTypeC_SelectedValueChanged);
                                 }
 
                                 ComboBox combo2 = tlpMain.Controls.Find("cmbLayoutTypeC" + count, true).FirstOrDefault() as ComboBox;
@@ -139,7 +169,8 @@ namespace AutocadPlugIn.UI_Forms
                                 if (combo2 != null)
                                 {
                                     Helper.FIllCMB(combo2, objRBC.GetFIleType(), "name", "id", true);
-                                    combo2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? 0 : Convert.ToInt16(objLI1.typeId);
+                                    combo2.Tag = combo2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
+                                    combo2.SelectedValueChanged += new System.EventHandler(cmbFileTypeC_SelectedValueChanged);
                                 }
                             }
                         }
@@ -152,155 +183,388 @@ namespace AutocadPlugIn.UI_Forms
 
 
                 }
-
+                else
+                {
+                    ShowMessage.ValMess("Please save this drawing to RedBracket."); this.Close();
+                    return;
+                }
                 // Get Latest FIle Info from RB and Display
 
                 ResultSearchCriteria objRSC = objRBC.GetDrawingInformation(DrawingID);
 
-
-                lbDrawingNameL.Text = Convert.ToString(objRSC.name);
-
-                lbDrawingNoL.Text = Convert.ToString(objRSC.fileNo);
-                lbVersionL.Text = Convert.ToString(objRSC.versionno);
-                lbProjectNameL.Text = Convert.ToString(objRSC.projectname);
-                lbProjectNoL.Text = Convert.ToString(objRSC.projectNumber);
-                lbFileTypeL.Text = Convert.ToString(objRSC.type == null ? string.Empty : objRSC.type.name == null ? string.Empty : objRSC.type.name);
-                lbFileStatusL.Text = Convert.ToString(objRSC.status == null ? string.Empty : objRSC.status.statusname == null ? string.Empty : objRSC.status.statusname);
-                lbDrawingIDL.Text = DrawingID = Convert.ToString(objRSC.id);
-
-                lbCreatedByL.Text = Convert.ToString(objRSC.createdby);
-                lbModifiedByL.Text = Convert.ToString(objRSC.updatedby);
-
-                List<LayoutInfo> objLI2 = objRSC.fileLayout;
-                int count1 = 0;
-
-                foreach (LayoutInfo objLI1 in objLI2)
+                if (objRSC != null)
                 {
 
-                    string LLName = objLI1.name;
-                    bool IsLayoutFound = false;
-                    for (int i = 1; i <= LocalFileLayoutCount; i++)
+                    lbDrawingNameL.Text = Convert.ToString(objRSC.name);
+
+                    lbDrawingNoL.Text = Convert.ToString(objRSC.fileNo);
+                    lbVersionL.Text = Convert.ToString(objRSC.versionno);
+                    lbProjectNameL.Text = Convert.ToString(objRSC.projectname);
+                    lbProjectNoL.Text = Convert.ToString(objRSC.projectNumber);
+                    lbFileTypeL.Text = Convert.ToString(objRSC.type == null ? string.Empty : objRSC.type.name == null ? string.Empty : objRSC.type.name);
+                    lbFileStatusL.Text = Convert.ToString(objRSC.status == null ? string.Empty : objRSC.status.statusname == null ? string.Empty : objRSC.status.statusname);
+                    lbDrawingIDL.Text = DrawingID = Convert.ToString(objRSC.id);
+
+                    lbCreatedByL.Text = Convert.ToString(objRSC.createdby);
+                    lbModifiedByL.Text = Convert.ToString(objRSC.updatedby);
+
+                    List<LayoutInfo> objLI2 = Helper.SortLayoutInfo(objRSC.fileLayout);
+                    int count1 = 0;
+                    int count2 = 0;
+                    foreach (LayoutInfo objLI1 in objLI2)
                     {
-                        string CLName = "";
-                        if (i == 1)
+
+                        string LLName = objLI1.number;
+                        bool IsLayoutFound = false;
+                        for (int i = 1; i <= LocalFileLayoutCount; i++)
                         {
-                            CLName = lbLayoutNameC1.Text;
+                            string CLName = "";
+                            if (i == 1)
+                            {
+                                CLName = lbLayoutNoC1.Text;
+                            }
+                            else if (i == 2)
+                            {
+                                CLName = lbLayoutNoC2.Text;
+                            }
+                            else
+                            {
+                                Label lblLayoutName = tlpMain.Controls.Find("lbLayoutNoC" + i, true).FirstOrDefault() as Label;
+
+                                if (lblLayoutName != null)
+                                {
+                                    CLName = lblLayoutName.Text;
+                                }
+                            }
+                            if (LLName == CLName)
+                            {
+                                IsLayoutFound = true;
+                                count1 = i;
+                                break;
+                            }
+
                         }
-                        else if (i == 2)
+                        if (IsLayoutFound)
                         {
-                            CLName = lbLayoutNameC2.Text;
+
                         }
                         else
                         {
-                            Label lblLayoutName = tlpMain.Controls.Find("lbLayoutNameC" + i, true).FirstOrDefault() as Label;
+                            count1 = count2 + 1;
+                        }
+                        //count1++;
 
-                            if(lblLayoutName!=null)
+                        if (count1 == 1)
+                        {
+                            lbLayoutNameL1.Text = Convert.ToString(objLI1.name);
+                            lbLayoutNoL1.Text = Convert.ToString(objLI1.number);
+                            lbLayoutVersionL1.Text = Convert.ToString(objLI1.versionNo);
+                            lbLayoutStatusL1.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
+
+                            lbLayoutTypeL1.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
+
+                        }
+                        else if (count1 == 2)
+                        {
+                            lbLayoutNameL2.Text = Convert.ToString(objLI1.name);
+                            lbLayoutNoL2.Text = Convert.ToString(objLI1.number);
+                            lbLayoutVersionL2.Text = Convert.ToString(objLI1.versionNo);
+                            lbLayoutStatusL2.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
+                            lbLayoutTypeL2.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
+                        }
+                        else
+                        {
+
+                            int CRC = FileInfoRowCount + (6 * (count1 - 3));
+                            Font font = label14.Font;
+                            if (count1 > LocalFileLayoutCount)
                             {
-                                CLName = lblLayoutName.Text;
+
+                                //CRC = tlpMain.RowCount;
+                                tlpMain.RowCount += 6;
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
+
+
+
+                                tlpMain.Controls.Add(new Label() { Text = "Layout Name", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = "Layout No", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = "Layout Version", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = "Layout Status", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = "Layout Discipline", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
+
+                                CRC -= 5;
                             }
+
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.number), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutStatusL" + count1 }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutTypeL" + count1 }, 2, CRC++);
+
+
+                            //tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutStatusC" + count1, Dock = DockStyle.Fill }, 2, CRC++);
+                            //tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutTypeC" + count1, Dock = DockStyle.Fill }, 2, CRC++);
+
+                            //ComboBox combo1 = tlpMain.Controls.Find("cmbLayoutStatusC" + count1, true).FirstOrDefault() as ComboBox;
+
+                            //if (combo1 != null)
+                            //{
+                            //    Helper.FIllCMB(combo1, objRBC.GetFIleStatus(), "statusname", "id", true);
+                            //    combo1.SelectedValue = objLI1.statusId == null ? 0 : Convert.ToInt16(objLI1.statusId);
+                            //}
+
+                            //ComboBox combo2 = tlpMain.Controls.Find("cmbLayoutTypeC" + count1, true).FirstOrDefault() as ComboBox;
+
+                            //if (combo2 != null)
+                            //{
+                            //    Helper.FIllCMB(combo2, objRBC.GetFIleType(), "name", "id", true);
+                            //    combo2.SelectedValue = objLI1.typeId == null ? 0 : Convert.ToInt16(objLI1.typeId);
+                            //}
+
                         }
-                        if(LLName==CLName)
-                        {
-                            IsLayoutFound = true;
-                            count1 = i;
-                            break;
-                        }
-
-                    }
-                    if(IsLayoutFound)
-                    {
-
-                    }
-                    else
-                    {
-                        count1 = LocalFileLayoutCount + 1;
-                    }
-                    //count1++;
-
-                    if (count1 == 1)
-                    {
-                        lbLayoutNameL1.Text = Convert.ToString(objLI1.name);
-                        lbLayoutNoL1.Text = Convert.ToString(objLI1.number);
-                        lbLayoutVersionL1.Text = Convert.ToString(objLI1.versionNo);
-                        lbLayoutStatusL1.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
-
-                        lbLayoutTypeL1.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
-
-                    }
-                    else if (count1 == 2)
-                    {
-                        lbLayoutNameL2.Text = Convert.ToString(objLI1.name);
-                        lbLayoutNoL2.Text = Convert.ToString(objLI1.number);
-                        lbLayoutVersionL2.Text = Convert.ToString(objLI1.versionNo);
-                        lbLayoutStatusL2.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
-                        lbLayoutTypeL2.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
-                    }
-                    else
-                    {
-
-                        int CRC = FileInfoRowCount + (6 * (count1 - 3));
-                        Font font = label14.Font;
-                        if (count1 > LocalFileLayoutCount)
-                        {
-
-                            //CRC = tlpMain.RowCount;
-                            tlpMain.RowCount += 6;
-                            tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                            tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                            tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                            tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                            tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                            tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
-
-
-
-                            tlpMain.Controls.Add(new Label() { Text = "Layout Name", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = "Layout No", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = "Layout Version", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = "Layout Status", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = "Layout Discipline", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
-
-                            CRC -= 5;
-                        }
-
-                        tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                        tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.number), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                        tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                        tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                        tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-
-
-                        //tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutStatusC" + count1, Dock = DockStyle.Fill }, 2, CRC++);
-                        //tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutTypeC" + count1, Dock = DockStyle.Fill }, 2, CRC++);
-
-                        //ComboBox combo1 = tlpMain.Controls.Find("cmbLayoutStatusC" + count1, true).FirstOrDefault() as ComboBox;
-
-                        //if (combo1 != null)
-                        //{
-                        //    Helper.FIllCMB(combo1, objRBC.GetFIleStatus(), "statusname", "id", true);
-                        //    combo1.SelectedValue = objLI1.statusId == null ? 0 : Convert.ToInt16(objLI1.statusId);
-                        //}
-
-                        //ComboBox combo2 = tlpMain.Controls.Find("cmbLayoutTypeC" + count1, true).FirstOrDefault() as ComboBox;
-
-                        //if (combo2 != null)
-                        //{
-                        //    Helper.FIllCMB(combo2, objRBC.GetFIleType(), "name", "id", true);
-                        //    combo2.SelectedValue = objLI1.typeId == null ? 0 : Convert.ToInt16(objLI1.typeId);
-                        //}
-
+                        count2++;
                     }
                 }
+                else
+                {
+                    // ShowMessage.ValMess("Please save this drawing to RedBracket.");
+                    this.Close();
+                    return;
+                }
+
+                tlpMain.RowCount += 1;
+                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));
+
+                TableLayoutPanel tlpSave = new TableLayoutPanel();
+
+                tlpSave.ColumnCount = 3;
+                tlpSave.RowCount = 1;
+                tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+                tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 200));
+                tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+                tlpSave.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
+                tlpSave.Controls.Add(btnSave, 1, 0);
+                btnSave.Visible = true;
+                btnSave.Dock = DockStyle.Fill;
+                btnSave.Font = label2.Font;
+
+                btnSave.Margin = new Padding(5);
+                tlpSave.Margin = new Padding(0);
+                tlpMain.Controls.Add(tlpSave, 0, tlpMain.RowCount - 1);
+                tlpMain.SetColumnSpan(tlpSave, 3);
+                tlpSave.Dock = DockStyle.Fill;
+
+                if (lbVersionC.Text != lbVersionL.Text)
+                {
+                    cmbFileStatusC.Enabled = false;
+                    cmbFileTypeC.Enabled = false;
+                    cmbLayoutTypeC1.Enabled = false;
+                    cmbLayoutStatusC1.Enabled = false;
+                    cmbLayoutTypeC2.Enabled = false;
+                    cmbLayoutStatusC2.Enabled = false;
+
+
+
+                    bool IsControlNull = false;
+
+                    int count = 3;
+                    while (!IsControlNull)
+                    {
+                        ComboBox cmbtype = tlpMain.Controls.Find("cmbLayoutTypeC" + count, false).FirstOrDefault() as ComboBox;
+                        ComboBox cmbstatus = tlpMain.Controls.Find("cmbLayoutStatusC" + count, false).FirstOrDefault() as ComboBox;
+
+
+                        if (cmbstatus == null || cmbtype == null)
+                        {
+                            IsControlNull = true;
+                        }
+                        else
+                        {
+                            cmbtype.Enabled = false;
+                            cmbstatus.Enabled = false;
+                        }
+                        count++;
+                    }
+                }
+                btnSave.Enabled = false;
 
             }
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message); this.Close(); return;
             }
-
+            LoadFlag = false;
             this.Show();
         }
 
+        private void tlpMain_Paint(object sender, PaintEventArgs e)
+        {
 
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (IsFilePropertiesChanged)
+                {
+
+                    if(objRBC.UpdateFileProperties(FileID, Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue), ProjectID,FilePath,PreFix))
+                    {
+                        cmbFileTypeC.Tag = cmbFileTypeC.SelectedValue;
+                        cmbFileStatusC.Tag = cmbFileStatusC.SelectedValue;
+
+                        lbFileTypeL.Text = Convert.ToString(cmbFileTypeC.SelectedValue) == "-1" ? string.Empty : cmbFileTypeC.Text;
+                        lbFileStatusL.Text = Convert.ToString(cmbFileStatusC.SelectedValue) == "-1" ? string.Empty : cmbFileStatusC.Text;
+
+                    }
+                }
+                if (IsLayoutPropertiesChanged)
+                {
+                    bool IsControlNull = false;
+
+                    int count = 1;
+                    while (!IsControlNull)
+                    {
+                        bool IsValueChanged = false;
+                        ComboBox cmbtype = tlpMain.Controls.Find("cmbLayoutTypeC" + count, false).FirstOrDefault() as ComboBox;
+                        ComboBox cmbstatus = tlpMain.Controls.Find("cmbLayoutStatusC" + count, false).FirstOrDefault() as ComboBox;
+                        Label lblLName = tlpMain.Controls.Find("lbLayoutNameC" + count, false).FirstOrDefault() as Label;
+
+                        Label lblStatus = tlpMain.Controls.Find("lbLayoutStatusL" + count, false).FirstOrDefault() as Label;
+                        Label lblType = tlpMain.Controls.Find("lbLayoutTypeL" + count, false).FirstOrDefault() as Label;
+                        Label lblLNumber = tlpMain.Controls.Find("lbLayoutNoC" + count, false).FirstOrDefault() as Label;
+
+                        if (cmbstatus == null || cmbtype == null || lblLName == null|| lblStatus==null|| lblType==null || lblLNumber == null)
+                        {
+                            IsControlNull = true;
+                        }
+                        else
+                        {
+                            if (Convert.ToString(cmbtype.SelectedValue) != Convert.ToString(cmbtype.Tag))
+                            {
+                                IsValueChanged = true;
+                            }
+                            if (Convert.ToString(cmbstatus.SelectedValue) != Convert.ToString(cmbstatus.Tag))
+                            {
+                                IsValueChanged = true;
+                            }
+
+                            if (IsValueChanged)
+                            {
+                                string TypeID = "", StatusID = "", LayoutID = "";
+                                LayoutID = Convert.ToString(lblLName.Tag);
+                                StatusID = Convert.ToString(cmbstatus.SelectedValue);
+                                TypeID = Convert.ToString(cmbtype.SelectedValue);
+                                string LayoutName = Convert.ToString(lblLName.Text);
+                                string LayoutDesc = Convert.ToString(lblLNumber.Text);
+                                TypeID = TypeID == "-1" ? string.Empty : TypeID;
+                                StatusID = StatusID == "-1" ? string.Empty : StatusID;
+                                if (objRBC.UpdateLayoutInfo(ProjectID, FileID, LayoutID, StatusID, TypeID, LayoutName, LayoutDesc))
+                                {
+                                    cmbstatus.Tag = cmbstatus.SelectedValue;
+                                    cmbtype.Tag = cmbtype.SelectedValue;
+
+                                    lblType.Text = Convert.ToString(cmbtype.SelectedValue) == "-1" ? string.Empty : cmbtype.Text;
+                                    lblStatus.Text = Convert.ToString(cmbstatus.SelectedValue) == "-1" ? string.Empty : cmbstatus.Text;
+                                }
+                            }
+
+
+                            count++;
+                        }
+
+                    }
+
+                    
+                }
+                cmbFileTypeC_SelectedValueChanged(null, null);
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+
+        private void cmbFileTypeC_SelectedValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (LoadFlag)
+                    return;
+
+                bool IsValueChanged = false;
+                IsFilePropertiesChanged = false;
+                IsLayoutPropertiesChanged = false;
+
+                if (Convert.ToString(cmbFileStatusC.Text) != Convert.ToString(cmbFileStatusC.Tag))
+                {
+                    IsValueChanged = true; IsFilePropertiesChanged = true;
+                }
+                if (Convert.ToString(cmbFileTypeC.Text) != Convert.ToString(cmbFileTypeC.Tag))
+                {
+                    IsValueChanged = true; IsFilePropertiesChanged = true;
+                }
+                if (Convert.ToString(cmbLayoutTypeC1.SelectedValue) != Convert.ToString(cmbLayoutTypeC1.Tag))
+                {
+                    IsLayoutPropertiesChanged = IsValueChanged = true;
+                }
+                if (Convert.ToString(cmbLayoutStatusC1.SelectedValue) != Convert.ToString(cmbLayoutStatusC1.Tag))
+                {
+                    IsLayoutPropertiesChanged = IsValueChanged = true;
+                }
+                if (Convert.ToString(cmbLayoutTypeC2.SelectedValue) != Convert.ToString(cmbLayoutTypeC2.Tag))
+                {
+                    IsLayoutPropertiesChanged = IsValueChanged = true;
+                }
+                if (Convert.ToString(cmbLayoutStatusC2.SelectedValue) != Convert.ToString(cmbLayoutStatusC2.Tag))
+                {
+                    IsLayoutPropertiesChanged = IsValueChanged = true;
+                }
+
+                bool IsControlNull = false;
+
+                int count = 3;
+                while (!IsControlNull)
+                {
+                    ComboBox cmbtype = tlpMain.Controls.Find("cmbLayoutTypeC" + count, false).FirstOrDefault() as ComboBox;
+                    ComboBox cmbstatus = tlpMain.Controls.Find("cmbLayoutStatusC" + count, false).FirstOrDefault() as ComboBox;
+
+
+                    if (cmbstatus == null || cmbtype == null)
+                    {
+                        IsControlNull = true;
+                    }
+                    else
+                    {
+                        if (Convert.ToString(cmbtype.SelectedValue) != Convert.ToString(cmbtype.Tag))
+                        {
+                            IsLayoutPropertiesChanged = IsValueChanged = true;
+                        }
+                        if (Convert.ToString(cmbstatus.SelectedValue) != Convert.ToString(cmbstatus.Tag))
+                        {
+                            IsLayoutPropertiesChanged = IsValueChanged = true;
+                        }
+                        count++;
+                    }
+
+                }
+
+
+
+
+                btnSave.Enabled = IsValueChanged;
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
     }
 }

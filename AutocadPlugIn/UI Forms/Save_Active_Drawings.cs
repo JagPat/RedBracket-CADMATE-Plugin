@@ -161,6 +161,7 @@ namespace AutocadPlugIn.UI_Forms
                     dtLayoutInfo.Columns.Add("TypeID");
                     dtLayoutInfo.Columns.Add("StatusID");
                     dtLayoutInfo.Columns.Add("ACLayoutID");
+                    dtLayoutInfo.Columns.Add("LayoutName1");
                     if (objLI != null)
                     {
                         foreach (LayoutInfo obj in objLI)
@@ -178,6 +179,7 @@ namespace AutocadPlugIn.UI_Forms
                             dr["TypeID"] = obj.typeId;
                             dr["StatusID"] = obj.statusId;
                             dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
+                            dr["LayoutName1"] = obj.name;
                             dtLayoutInfo.Rows.Add(dr);
                         }
                     }
@@ -360,7 +362,81 @@ namespace AutocadPlugIn.UI_Forms
                     }
                 }
 
+                //To check whether any file with same name exist or not
+                #region Duplication Check
+                bool IsDuplicationCheck = false;
+                if(IsDuplicationCheck)
+                {
+                    foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
+                    {
+                        string MyProjectId = "";
+                        try
+                        {
 
+                            MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
+                        }
+                        catch
+                        {
+                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+
+                            MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                        }
+                        MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
+                        if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Trim().Length == 0)
+                        {
+                            if (File.Exists(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()))
+                            {
+                                string FN = Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim());
+                                if (!objRBC.CheckFileExistance(MyProjectId, FN))
+                                {
+                                    this.Cursor = Cursors.Default;
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                ShowMessage.ErrorMess(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File does not exists.");
+                                this.Cursor = Cursors.Default;
+                                return;
+                            }
+                        }
+                        foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                        {
+                            MyProjectId = "";
+                            try
+                            {
+
+                                MyProjectId = Convert.ToString(ChildNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(ChildNode.Cells["projectname"].Value));
+                            }
+                            catch
+                            {
+                                DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+
+                                MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
+                            }
+                            MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
+                            if (Convert.ToString(ChildNode.Cells["drawingID"].Value).Trim().Length == 0)
+                            {
+                                if (File.Exists(Convert.ToString(ChildNode.Cells["filepath"].Value).Trim()))
+                                {
+                                    string FN = Path.GetFileName(Convert.ToString(ChildNode.Cells["filepath"].Value).Trim());
+                                    if (!objRBC.CheckFileExistance(MyProjectId, FN))
+                                    {
+                                        this.Cursor = Cursors.Default;
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    ShowMessage.ErrorMess(Convert.ToString(ChildNode.Cells["filepath"].Value).Trim() + "\n File does not exists.");
+                                    this.Cursor = Cursors.Default;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
                 //To check whether any file is selected or not
                 if (selectedTreeGridNodes.Count < 1)
                 {
@@ -403,6 +479,7 @@ namespace AutocadPlugIn.UI_Forms
                 // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
+
                     if (Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).Length > 3)
                     {
                         if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
@@ -452,136 +529,177 @@ namespace AutocadPlugIn.UI_Forms
                         Is_Save = objController.ExecuteSave(objCmd);
                         progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
 
-                        #region Deleting XrefFile with Old Name
-                        try
+                        if (Is_Save)
                         {
-                            foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                            {
-                                if ((bool)ChildNode.Cells[0].FormattedValue)
-                                {
-                                    string Dir = Path.GetDirectoryName(Convert.ToString(ChildNode.Cells["filepath"].Value));
-
-                                    string MyProjectNo = ""; string ProjectName = "";
-                                    try
-                                    {
-
-                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(ChildNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(ChildNode.Cells["projectname"].Value), "id");
-                                        ProjectName = Convert.ToString(ChildNode.Cells["projectname"].FormattedValue);
-                                    }
-                                    catch
-                                    {
-                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-
-                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
-                                        ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
-                                    }
-                                    string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-
-                                    if (ProjectName.Trim().Length == 0)
-                                    {
-                                        ProjectName = "MyFiles";
-                                    }
-                                    checkoutPath = Path.Combine(checkoutPath, ProjectName);
-
-
-                                    if (Dir == checkoutPath)
-                                        File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
-                                }
-                            }
-                        }
-                        catch { }
-                        #endregion
-
-                        #region Update File Properties
-                        bool IsdownloadNewFile = true;
-
-                        if (IsdownloadNewFile)
-                        {
-                            #region Download and open updated file from RB
+                            //Save layout info
+                            #region
                             try
                             {
-                                if (!Is_Delete)
+                                System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)currentTreeGrdiNode.Tag;
+                                string MyProjectId = "";
+
+                                if (dtLayoutInfo != null)
                                 {
-                                    string MyProjectId = "", MyProjectNo = ""; string ProjectName = "";
                                     try
                                     {
 
                                         MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
-                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
-                                        ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].FormattedValue);
                                     }
                                     catch
                                     {
                                         DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
 
+                                        //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
+                                        //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                                         MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                        MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                        ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                    }
-                                    string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-
-                                    if (ProjectName.Trim().Length == 0)
-                                    {
-                                        ProjectName = "MyFiles";
-                                    }
-                                    checkoutPath = Path.Combine(checkoutPath, ProjectName);
-                                    if (!Directory.Exists(checkoutPath))
-                                    {
-                                        Directory.CreateDirectory(checkoutPath);
                                     }
 
+                                    MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? string.Empty : MyProjectId;
 
-                                    if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
-                                    {
-                                        DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
-                                        File.Delete(objCmd.FilePath);
-                                        foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                                        {
-                                            if ((bool)ChildNode.Cells[0].FormattedValue)
-                                            {
-                                                File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
-                                    }
-                                    try
-                                    {
-                                        objMgr.SaveActiveDrawing(false);
-                                    }
-                                    catch { }
-                                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+                                    objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]));
+
                                 }
+
                             }
-                            catch (Exception E)
+                            catch
                             {
-                                ShowMessage.ErrorMess(E.Message);
-                                this.Cursor = Cursors.Default;
-                                return;
+
                             }
                             #endregion
-                        }
-                        else
-                        {
-                            // Update document info into document for future referance 
-                            if (objController.dtDrawingProperty.Rows.Count > 0)
+
+                            #region Deleting XrefFile with Old Name
+                            try
                             {
-                                objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
+                                foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                                {
+                                    if ((bool)ChildNode.Cells[0].FormattedValue)
+                                    {
+                                        string Dir = Path.GetDirectoryName(Convert.ToString(ChildNode.Cells["filepath"].Value));
+
+                                        string MyProjectNo = ""; string ProjectName = "";
+                                        try
+                                        {
+
+                                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+                                            MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(ChildNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(ChildNode.Cells["projectname"].Value), "id");
+                                            ProjectName = Convert.ToString(ChildNode.Cells["projectname"].FormattedValue);
+                                        }
+                                        catch
+                                        {
+                                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+
+                                            MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
+                                            ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
+                                        }
+                                        string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+
+                                        if (ProjectName.Trim().Length == 0)
+                                        {
+                                            ProjectName = "MyFiles";
+                                        }
+                                        checkoutPath = Path.Combine(checkoutPath, ProjectName);
+
+
+                                        if (Dir == checkoutPath)
+                                            File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                    }
+                                }
                             }
+                            catch { }
+                            #endregion
 
+                            #region Update File Properties
+                            bool IsdownloadNewFile = true;
+
+                            if (IsdownloadNewFile)
+                            {
+                                #region Download and open updated file from RB
+                                try
+                                {
+                                    if (!Is_Delete)
+                                    {
+                                        string MyProjectId = "", MyProjectNo = ""; string ProjectName = "";
+                                        try
+                                        {
+
+                                            MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
+                                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+                                            MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
+                                            ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].FormattedValue);
+                                        }
+                                        catch
+                                        {
+                                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+
+                                            MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                            MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                            ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                        }
+                                        string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+
+                                        if (ProjectName.Trim().Length == 0)
+                                        {
+                                            ProjectName = "MyFiles";
+                                        }
+                                        checkoutPath = Path.Combine(checkoutPath, ProjectName);
+                                        if (!Directory.Exists(checkoutPath))
+                                        {
+                                            Directory.CreateDirectory(checkoutPath);
+                                        }
+
+
+                                        if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
+                                        {
+                                            DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
+                                            File.Delete(objCmd.FilePath);
+                                            foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
+                                            {
+                                                if ((bool)ChildNode.Cells[0].FormattedValue)
+                                                {
+                                                    File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
+                                        }
+                                        try
+                                        {
+                                            objMgr.SaveActiveDrawing(false);
+                                        }
+                                        catch { }
+                                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+                                    }
+                                }
+                                catch (Exception E)
+                                {
+                                    ShowMessage.ErrorMess(E.Message);
+                                    this.Cursor = Cursors.Default;
+                                    return;
+                                }
+                                #endregion
+                            }
+                            else
+                            {
+                                // Update document info into document for future referance 
+                                if (objController.dtDrawingProperty.Rows.Count > 0)
+                                {
+                                    objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
+                                }
+
+                            }
+                            #endregion
+
+                            #region  Renaming Parent and XRef Files
+
+                            //update Xref name to NewXref Name with PreFix
+                            objMgr.UpdateExRefPathInfo(objCmd.FilePath);
+
+                            #endregion
                         }
-                        #endregion
 
-                        #region  Renaming Parent and XRef Files
 
-                        //update Xref name to NewXref Name with PreFix
-                        objMgr.UpdateExRefPathInfo(objCmd.FilePath);
-
-                        #endregion
                     }
                     else
                     {
@@ -589,6 +707,47 @@ namespace AutocadPlugIn.UI_Forms
                         //
                         Is_Save = objController.ExecuteSave(objCmd);
                         progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
+
+                        if (Is_Save)
+                        {
+                            //Save layout info
+                            #region
+                            try
+                            {
+                                System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)currentTreeGrdiNode.Tag;
+                                string MyProjectId = "";
+
+                                if (dtLayoutInfo != null)
+                                {
+                                    try
+                                    {
+
+                                        MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
+                                    }
+                                    catch
+                                    {
+                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+
+                                        //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
+                                        //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
+                                        MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                                    }
+
+                                    MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? string.Empty : MyProjectId;
+
+                                    objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]));
+
+                                }
+
+                            }
+                            catch
+                            {
+
+                            }
+                            #endregion
+
+
+                        }
 
                         #region Update File Properties
                         bool IsdownloadNewFile = false;
@@ -692,45 +851,7 @@ namespace AutocadPlugIn.UI_Forms
 
 
                     progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
-                    if (Is_Save)
-                    {
-                        //Save layout info
-                        try
-                        {
-                            System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)currentTreeGrdiNode.Tag;
-                            string MyProjectId = "";
-
-                            if (dtLayoutInfo != null)
-                            {
-                                try
-                                {
-
-                                    MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
-                                }
-                                catch
-                                {
-                                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-
-                                    //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
-                                    //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
-                                    MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                }
-
-                                MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? string.Empty : MyProjectId;
-
-                                objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]));
-
-                            }
-
-                        }
-                        catch
-                        {
-
-                        }
-
-
-
-                    }
+                  
 
                     // To delete file
                     if (Is_Delete && File.Exists(objCmd.FilePath))
@@ -875,6 +996,10 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("LockStatus", Drawing.filelock);
                     DrawingProperty.Add("Generation", "123");
                     DrawingProperty.Add("Type", Drawing.coreType.id);
+                    #region LayoutInfo
+                    String LayoutInfos = "";
+                    LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
+                    #endregion
                     //DrawingProperty.Add("ProjectName", Drawing.projectname );
                     if (Drawing.projectname != null)
                     {
@@ -906,7 +1031,7 @@ namespace AutocadPlugIn.UI_Forms
                     DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
                     DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
                     DrawingProperty.Add("isletest", Drawing.isletest);
-
+                    DrawingProperty.Add("LayoutInfo", LayoutInfos);
                     DrawingProperty.Add("projectno", Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber);
 
                     string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;
@@ -1124,13 +1249,26 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
                     {
+                        string MyProjectId = "";
+                        try
+                        {
+                            MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
+                        }
+                        catch
+                        {
+                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
+                            MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                        }
+
+                        MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
                         System.Data.DataTable dtLayoutInfo = selectedTreeNode.Tag == null ? new System.Data.DataTable() : (System.Data.DataTable)selectedTreeNode.Tag;
                         frmLayoutVersionUpdate objfrm = new frmLayoutVersionUpdate(
                             Convert.ToString(selectedTreeNode.Cells["drawingid"].Value),
                              Convert.ToString(selectedTreeNode.Cells["drawing"].Value),
                               Convert.ToString(selectedTreeNode.Cells["cadtype"].FormattedValue),
                                Convert.ToString(selectedTreeNode.Cells["State"].FormattedValue),
-                                Convert.ToString(selectedTreeNode.Cells["revision"].Value));
+                                Convert.ToString(selectedTreeNode.Cells["revision"].Value),
+                                MyProjectId);
                         objfrm.dtLayoutInfo = dtLayoutInfo.Copy();
                         objfrm.ShowDialog();
                         if (objfrm.dtLayoutInfo.Rows.Count > 0)

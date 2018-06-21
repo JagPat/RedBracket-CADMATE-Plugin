@@ -20,10 +20,11 @@ namespace AutocadPlugIn.UI_Forms
         public string FileType = "";
         public string FileStatus = "";
         public string FileVersion = "";
+        public string ProjectID = "";
         public DataTable dtLayoutInfo = new DataTable();
         RBConnector objRBC = new RBConnector();
         AutoCADManager CadManager = new AutoCADManager();
-        public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "")
+        public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "", string ProjectID = "")
         {
             InitializeComponent();
             this.Fileid = Fileid;
@@ -31,6 +32,7 @@ namespace AutocadPlugIn.UI_Forms
             this.FileType = FileType;
             this.FileStatus = FileStatus;
             this.FileVersion = FileVersion;
+            this.ProjectID = ProjectID;
         }
 
         private void frmLayoutVersionUpdate_Load(object sender, EventArgs e)
@@ -51,6 +53,7 @@ namespace AutocadPlugIn.UI_Forms
                                    , FileVersion
                                    , ""
                                    , "1"
+                                   , ""
                                    , ""
                                    , ""
                                    , ""
@@ -107,6 +110,7 @@ namespace AutocadPlugIn.UI_Forms
                                    , rw["TypeID"]
                                    , rw["StatusID"]
                                    , rw["ACLayoutID"]
+                                   , rw["LayoutName1"]
                                    );
                         }
                     }
@@ -155,6 +159,7 @@ namespace AutocadPlugIn.UI_Forms
                                        , ""
                                        , ""
                                        , key.Value.ToString()
+                                       , LayoutName
                                        );
 
                             node.Cells[0].ReadOnly = true;
@@ -179,6 +184,28 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+
+                //foreach(TreeGridNode ParentNode in tgvLayouts.Nodes)
+                //{
+                //    foreach(TreeGridNode ChildNode in ParentNode.Nodes)
+                //    {
+                //        if((bool)ChildNode.Cells[0].Value && Convert.ToString(ChildNode.Cells["LayoutID"].Value).Length==0)
+                //        {
+                //          bool RetVal=  objRBC.CheckLayoutExistance(ProjectID, Convert.ToString(ChildNode.Cells["LayoutName1"].Value), Convert.ToString(ChildNode.Cells["FileID1"].Value));
+
+                //            if(!RetVal)
+                //            {
+                //                return;
+                //            }
+                //        }
+                //    }
+                //}
+
+
+
+
+
+
                 DataTable dt = new DataTable();
                 foreach (DataGridViewColumn C in tgvLayouts.Columns)
                 {
@@ -269,7 +296,7 @@ namespace AutocadPlugIn.UI_Forms
                         FileStatusID = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["LayoutStatus"].Value), "statusname");
                     }
 
-                    if (FileStatusID == "0" || FileStatus == "-1")
+                    if (FileStatusID == "0" || FileStatusID == "-1")
                     {
                         FileStatusID = "";
                     }

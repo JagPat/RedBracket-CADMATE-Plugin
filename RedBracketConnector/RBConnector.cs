@@ -764,6 +764,198 @@ namespace RedBracketConnector
             return true;
         }
 
+        public bool UpdateFileProperties(string FileID,string Type,string Status,string Project, string FilePath,string PreFix)
+        {
+            try
+            {
+                Type = Type == "-1" ? string.Empty : Type;
+                Status = Status == "-1" ? string.Empty : Status;
+                RestResponse restResponse;
+                //restResponse = (RestResponse)ServiceHelper.PostData(
+                //                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                //                "/AutocadFiles/uploadFileService", DataFormat.Json, null, true
+                //                , new List<KeyValuePair<string, string>> {
+                //                     new KeyValuePair<string, string>("project", Project) ,
+                //            new KeyValuePair<string, string>("fileStatus", Status),
+                //            new KeyValuePair<string, string>("fileType", Type),
+                //             new KeyValuePair<string, string>("fileId", FileID)
+                //                            });
+
+
+                restResponse = (RestResponse)ServiceHelper.SaveObject(
+                   Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                   "/AutocadFiles/uploadFileService",  FilePath,
+                        true, new List<KeyValuePair<string, string>> {
+                            new KeyValuePair<string, string>("project", Project) ,
+                            new KeyValuePair<string, string>("fileStatus", Status),
+                            new KeyValuePair<string, string>("fileType", Type),
+                             new KeyValuePair<string, string>("fileId", FileID)
+                        },  PreFix);
+
+
+                //checking if service call was successful or not.
+                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                { 
+                    ShowMessage.ErrorMess("Some error occurred while updating file properties.");
+                    return false;
+                }
+                else if (restResponse.Content.Trim().Length > 0)
+                {
+
+                    //SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
+
+                    //if (saveResult.message == "allow")
+                    //{
+                    //    return true;
+                    //}
+                    //else
+                    //{
+                    //    ShowMessage.ValMess(FileName + Environment.NewLine + "File with the same name exist in this peoject, please change file name.");
+                    //    return false;
+                    //}
+                    return true;
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
+        }
+
+        public bool UpdateLayoutInfo(string ProjectID, string Fileid, string LayoutID, string StatusID, string TypeID,string LayoutName, string LayoutDesc)
+        {
+            try
+            {
+
+                 
+                    
+
+                    SaveFileCommand objSFC = new SaveFileCommand();
+                    RestResponse restResponse;
+                    //service calling 
+
+                    
+
+                        restResponse = (RestResponse)ServiceHelper.PostData(
+                      Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                      "/AutocadFiles/uploadLayoutACFileVersion", DataFormat.Json, null, false
+                         , new List<KeyValuePair<string, string>> {
+                              new KeyValuePair<string, string>("source", "Computer"),
+                                         new KeyValuePair<string, string>("fileId", Fileid),
+                                             new KeyValuePair<string, string>("layoutId", LayoutID)                                             ,
+                                             new KeyValuePair<string, string>("versiondesc",  LayoutDesc), 
+                                                 new KeyValuePair<string, string>("userName",  Helper.UserName),
+                                             new KeyValuePair<string, string>("status",  StatusID),
+                                              new KeyValuePair<string, string>("type",  TypeID),
+                                             new KeyValuePair<string, string>("layoutname",  LayoutName), 
+                                               new KeyValuePair<string, string>("project", ProjectID)
+                                                 });
+                    
+
+
+                    //checking if service call was successful or not.
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        //ShowMessage.InfoMess(restResponse.Content);
+                        //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
+                        ShowMessage.ErrorMess("Some error occurred while uploading layout info.");
+                        return false;
+                    }
+                    else if (restResponse.Content.Trim().Length > 0)
+                    {
+
+
+
+                    }
+
+
+
+
+               
+
+
+                return true;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+
+
+        }
+
+        public bool CheckFileExistance(string ProjectID, string FileName)
+        {
+            try
+            {
+
+
+
+
+
+                RestResponse restResponse;
+                //service calling to Check File Existance.
+
+                //http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/checkFileName?fileName=M1.dwg&userName=archi@yopmail.com&projectId=0
+
+                //https://test.redbracket.in:8090/AutocadFiles/checkFileName?fileName=Parent114.dwg&userName=archi@yopmail.com&projectId=0
+
+                restResponse = (RestResponse)ServiceHelper.GetData(
+                  Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                  "/AutocadFiles/checkFileName", false
+                     , new List<KeyValuePair<string, string>> {
+                                         new KeyValuePair<string, string>("fileName", FileName),
+                                              new KeyValuePair<string, string>("userName", Helper.UserName),
+                                                      new KeyValuePair<string, string>("projectId",  ProjectID)   });
+
+
+
+
+
+
+
+                //checking if service call was successful or not.
+                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    //ShowMessage.InfoMess(restResponse.Content);
+                    //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
+                    ShowMessage.ErrorMess("Some error occurred while checking for file duplication.");
+                    return false;
+                }
+                else if (restResponse.Content.Trim().Length > 0)
+                {
+
+                    SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
+
+                    if (saveResult.message == "allow")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        ShowMessage.ValMess(FileName + Environment.NewLine + "File with the same name exist in this peoject, please change file name.");
+                        return false;
+                    }
+                }
+
+
+
+
+
+                return true;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+
+
+        }
+
         public bool SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid)
         {
             try
@@ -790,7 +982,7 @@ namespace RedBracketConnector
                      , new List<KeyValuePair<string, string>> {
                                          new KeyValuePair<string, string>("fileId", Fileid),
                                               new KeyValuePair<string, string>("layoutId", Convert.ToString(dr["ACLayoutID"]).Trim()),
-                                                 new KeyValuePair<string, string>("layoutFileName",  Convert.ToString(dr["FileLayoutName"]).Trim()),
+                                                 new KeyValuePair<string, string>("layoutFileName",  Convert.ToString(dr["LayoutName1"]).Trim()),
                                                       new KeyValuePair<string, string>("project",  ProjectID),
                                              new KeyValuePair<string, string>("status",  Convert.ToString(dr["StatusID"]).Trim()),
                                               new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
@@ -802,7 +994,7 @@ namespace RedBracketConnector
 
                     }
                     else
-                    { 
+                    {
 
                         restResponse = (RestResponse)ServiceHelper.PostData(
                       Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
@@ -840,6 +1032,77 @@ namespace RedBracketConnector
 
 
                 }
+
+
+                return true;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+
+
+        }
+
+
+        public bool CheckLayoutExistance(string ProjectID, string LayoutName, string FIleID)
+        {
+            try
+            {
+
+
+
+
+
+                RestResponse restResponse;
+                //service calling to Check File Existance.
+
+                // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/checkLayoutACFileName?userName=archi@yopmail.com&
+                //fileId =601188bf-1be0-4cc3-9498-b5c6d4d651c5&layoutFileName=Layout33&projectId=0
+
+                restResponse = (RestResponse)ServiceHelper.GetData(
+                  Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                  "/AutocadFiles/checkLayoutACFileName", false
+                     , new List<KeyValuePair<string, string>> {
+
+                                              new KeyValuePair<string, string>("userName", Helper.UserName),
+                                                  new KeyValuePair<string, string>("fileId", FIleID),
+                                               new KeyValuePair<string, string>("layoutFileName", LayoutName),
+                                                      new KeyValuePair<string, string>("projectId",  ProjectID)   });
+
+
+
+
+
+
+
+                //checking if service call was successful or not.
+                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    //ShowMessage.InfoMess(restResponse.Content);
+                    //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
+                    ShowMessage.ErrorMess("Some error occurred while checking for file duplication.");
+                    return false;
+                }
+                else if (restResponse.Content.Trim().Length > 0)
+                {
+
+                    SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
+
+                    if (saveResult.message == "allow")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        ShowMessage.ValMess(LayoutName + Environment.NewLine + "This layout is already exist in this file, please change layout name.");
+                        return false;
+                    }
+                }
+
+
+
 
 
                 return true;
@@ -1292,7 +1555,7 @@ namespace RedBracketConnector
 
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    MessageBox.Show("Some error occurred while fetching file information.");
+                    ShowMessage.ErrorMess("Some error occurred while fetching file information.");
                     return null;
                 }
                 else
@@ -1357,7 +1620,7 @@ namespace RedBracketConnector
 
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    MessageBox.Show("Some error occurred while fetching file information.");
+                    ShowMessage.ErrorMess("Some error occurred while fetching file information.");
                     return null;
                 }
                 else
@@ -1457,7 +1720,7 @@ namespace RedBracketConnector
 
                 if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    MessageBox.Show("Some error occurred while fetching file information.");
+                    ShowMessage.ErrorMess("Some error occurred while fetching file information.");
                     return null;
                 }
                 else

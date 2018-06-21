@@ -70,12 +70,12 @@ namespace RedBracketConnector
                 ShowMessage.ErrorMess(E.Message);
             }
         }
-        public static void FIllCMB(DataGridViewComboBoxColumn cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect,string FirstRowText=null)
+        public static void FIllCMB(DataGridViewComboBoxColumn cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect, string FirstRowText = null)
         {
             try
             {
                 String Text = "All";
-                if(FirstRowText==null)
+                if (FirstRowText == null)
                 {
                     if (IsSelect)
                         Text = "---Select---";
@@ -84,7 +84,7 @@ namespace RedBracketConnector
                 {
                     Text = FirstRowText;
                 }
-               
+
                 dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember);
 
                 cmb.DataSource = dt;
@@ -280,18 +280,133 @@ namespace RedBracketConnector
 
         }
 
+        public static DataTable  SortTable(DataTable dt,string ColumnName)
+        {
+            
+            try
+            {
+                DataView dv = dt.Copy().DefaultView;
+                dv.Sort = ColumnName+" ASC";
+                dt = dv.ToTable();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return dt;
+        }
+        public static List<LayoutInfo> SortLayoutInfo(List<LayoutInfo> fileLayout)
+        {
+            try
+            {
+                #region Sorting
+                DataTable dtLayoutInfo = new DataTable();
+                try
+                {
+
+
+
+                    dtLayoutInfo.Columns.Add("LayoutNo");
+                    dtLayoutInfo.Columns.Add("FileLayoutName");
+                    dtLayoutInfo.Columns.Add("LayoutID");
+                    dtLayoutInfo.Columns.Add("LayoutType");
+                    dtLayoutInfo.Columns.Add("LayoutStatus");
+                    dtLayoutInfo.Columns.Add("Version");
+                    dtLayoutInfo.Columns.Add("Description");
+                    dtLayoutInfo.Columns.Add("TypeID");
+                    dtLayoutInfo.Columns.Add("StatusID");
+                    dtLayoutInfo.Columns.Add("ACLayoutID");
+                    dtLayoutInfo.Columns.Add("active");
+                    dtLayoutInfo.Columns.Add("deleted");
+                    dtLayoutInfo.Columns.Add("islatest");
+                    dtLayoutInfo.Columns.Add("Seq",typeof(decimal));
+                    if (fileLayout != null)
+                    {
+                        foreach (LayoutInfo obj in fileLayout)
+                        {
+                            DataRow dr = dtLayoutInfo.NewRow();
+
+                            dr["LayoutID"] = obj.id;
+                            dr["active"] = obj.active;
+                            dr["deleted"] = obj.deleted;
+                            dr["Description"] = obj.description;
+                            dr["islatest"] = obj.islatest;
+                            dr["FileLayoutName"] = obj.name;
+                            dr["LayoutNo"] = obj.number;
+                            dr["StatusID"] = obj.statusId==null|| obj.statusId==string.Empty? obj.status==null?string.Empty:Convert.ToString( obj.status.id) : obj.statusId;
+                            dr["LayoutStatus"] = obj.statusname == null || obj.statusname == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.statusname) : obj.statusname;  
+                            dr["TypeID"] = obj.typeId == null || obj.typeId == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.id) : obj.typeId;
+                            dr["Version"] = obj.versionNo;
+                            dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
+                            dr["LayoutType"] = obj.typename == null || obj.typename == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.name) : obj.typename; 
+                            dr["Seq"] = obj.number.Substring(0, obj.number.IndexOf("_"));
+                            dtLayoutInfo.Rows.Add(dr);
+                        }
+                        dtLayoutInfo = Helper.SortTable(dtLayoutInfo.Copy(), "Seq");
+                    }
+                }
+                catch (Exception E)
+                {
+                    ShowMessage.ErrorMess(E.Message);
+                }
+                List<LayoutInfo> objFLI = new List<LayoutInfo>();
+                foreach (DataRow dr in dtLayoutInfo.Rows)
+                {
+                    LayoutInfo objLI = new LayoutInfo();
+                    objLI.id = Convert.ToString(dr["LayoutID"]);
+                    objLI.active = Convert.ToString(dr["active"]);
+                    objLI.deleted = Convert.ToString(dr["deleted"]);
+                    objLI.description = Convert.ToString(dr["Description"]);
+                    objLI.islatest = Convert.ToString(dr["islatest"]);
+                    objLI.name = Convert.ToString(dr["FileLayoutName"]);
+                    objLI.number = Convert.ToString(dr["LayoutNo"]);
+                    objLI.statusId = Convert.ToString(dr["StatusID"]);
+                    objLI.statusname = Convert.ToString(dr["LayoutStatus"]);
+                    objLI.typeId = Convert.ToString(dr["TypeID"]);
+                    objLI.versionNo = Convert.ToString(dr["Version"]);
+                    objLI.layoutId = Convert.ToString(dr["ACLayoutID"]);
+                    objLI.typename = Convert.ToString(dr["LayoutType"]);
+
+                     if(objLI.typeId.Trim().Length>0)
+                    {
+                        objLI.type = new ResultSearchCriteriaType();
+                        objLI.type.id = Convert.ToInt16(objLI.typeId);
+                        objLI.type.name = objLI.typename;
+                    }
+                    if (objLI.statusId.Trim().Length > 0)
+                    {
+                        objLI.status = new ResultSearchCriteriaStatus();
+                        objLI.status.id = Convert.ToInt16(objLI.statusId);
+                        objLI.status.statusname = objLI.statusname;
+                    }
+
+                    objFLI.Add(objLI);
+                }
+                fileLayout = objFLI;
+                #endregion
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return fileLayout;
+        }
         public static string GetLayoutInfo(List<LayoutInfo> fileLayout)
         {
             string LayoutInfos = "";
             try
             {
-               
-                if ( fileLayout != null)
+
+                if (fileLayout != null && fileLayout.Count>0)
                 {
                     LayoutInfos = "[";
                     int count = 0;
 
-                    foreach (LayoutInfo obj in  fileLayout)
+
+                    
+
+                    fileLayout = Helper.SortLayoutInfo(fileLayout);
+                    foreach (LayoutInfo obj in fileLayout)
                     {
                         if (count == 0)
                             LayoutInfos += "{";
@@ -398,7 +513,7 @@ namespace RedBracketConnector
                     LayoutInfos += "]";
                 }
             }
-            catch(Exception E)
+            catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
                 return string.Empty;

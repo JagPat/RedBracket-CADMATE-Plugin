@@ -118,8 +118,18 @@ namespace AutocadPlugIn.UI_Forms
             #endregion projectdetails
 
             restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/getLatestRecords", true, null);
-            var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-            BindDataToGrid(resultSearchCriteriaResponseList);
+
+            if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                ShowMessage.ErrorMess("Some error occurred while fetching latest records.");
+                return  ;
+            }
+            else
+            {
+                var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+                BindDataToGrid(resultSearchCriteriaResponseList);
+            }
+         
 
 
             //CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();

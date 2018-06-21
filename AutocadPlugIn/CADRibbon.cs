@@ -649,8 +649,28 @@ namespace AutocadPlugIn
         public void Execute(object parameter)
         {
             //DocumentInformationDisplay objDRGInfo = new DocumentInformationDisplay();
-            frmDrawingInfo objDRGInfo = new frmDrawingInfo();
-            objDRGInfo.ShowDialog();
+            AutoCADManager cadManager = new AutoCADManager();
+            System.Data.DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=1");
+
+            if (dtCurrentData.Length > 0)
+            {
+                string DrawingID = Convert.ToString(dtCurrentData[0]["drawingid"]);
+                if (DrawingID.Trim().Length > 0)
+                {
+                    frmDrawingInfo objDRGInfo = new frmDrawingInfo();
+                    objDRGInfo.ShowDialog();
+                }
+                else
+                {
+                    ShowMessage.ValMess("Please save this drawing to RedBracket.");
+                    return;
+                }
+            }
+            else
+            {
+                ShowMessage.ValMess("Please save this drawing to RedBracket.");
+                return;
+            }
         }
     }
 
@@ -1148,13 +1168,13 @@ namespace AutocadPlugIn
                     //DrawingProperty.Add("sourceid","");
                     //DrawingProperty.Add("Layouts","");
 
-                    string filePathName = Path.Combine(checkoutPath,  Drawing.name);
+                    string filePathName = Path.Combine(checkoutPath, Drawing.name);
                     if (IsParent)
                     {
                         filePathName = Path.Combine(checkoutPath, PreFix + Drawing.name);
                     }
 
-                        using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
+                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
                     {
                         binaryWriter.Write(RawBytes);
                     }
