@@ -65,8 +65,8 @@ namespace AutocadPlugIn
                     {
                         foreach (DictionaryEntry entry in currentDocumentProperties)
                         {
-                             DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
-                           // DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString( entry.Value));
+                            DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                            // DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString( entry.Value));
 
 
                         }
@@ -451,10 +451,10 @@ namespace AutocadPlugIn
                             {
                                 try
                                 {
-                                     DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                                    DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
                                     //if (entry.Key.ToString() != "LayoutInfo")
                                     {
-                                     //   DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
+                                        //   DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
                                     }
                                     //else
                                     //{
@@ -1053,6 +1053,8 @@ namespace AutocadPlugIn
 
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+
+
             Database db = doc.Database;
             Editor ed = doc.Editor;
             try
@@ -1196,7 +1198,7 @@ namespace AutocadPlugIn
                                                 else
                                                 {
                                                     dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
-                                                        childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","");
+                                                        childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
                                                 }
                                             }
                                             else
@@ -1269,7 +1271,7 @@ namespace AutocadPlugIn
 
                                                 else
                                                     dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
-                                                        childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","");
+                                                        childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
                                             }
                                             tr.Commit();
                                         }
@@ -1286,12 +1288,12 @@ namespace AutocadPlugIn
             }
             return dtTreeGrid;
         }
-        public Hashtable GetLayoutInfo()
+        public Hashtable GetLayoutInfo(string FilePath)
         {
             string Layouts = "";
-            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
+
+
+
             Hashtable LayoutInfo = new Hashtable();
             try
             {
@@ -1299,8 +1301,9 @@ namespace AutocadPlugIn
                 String rootid = "";
                 using (mainDb)
                 {
-                    mainDb.ReadDwgFile(doc.Name, FileOpenMode.OpenForReadAndAllShare, true, null);
+                    mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                     mainDb.ResolveXrefs(false, false);
+
                     XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
                     for (int i = 0; i < xg.NumNodes; i++)
                     {
@@ -1308,13 +1311,13 @@ namespace AutocadPlugIn
                         switch (xgn.XrefStatus)
                         {
                             case XrefStatus.Unresolved:
-                                ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
                                 break;
                             case XrefStatus.Unloaded:
-                                ed.WriteMessage("\nUnloaded xref \"{0}\"", xgn.Name);
+                                //ed.WriteMessage("\nUnloaded xref \"{0}\"", xgn.Name);
                                 break;
                             case XrefStatus.Unreferenced:
-                                ed.WriteMessage("\nUnreferenced xref \"{0}\"", xgn.Name);
+                                // ed.WriteMessage("\nUnreferenced xref \"{0}\"", xgn.Name);
                                 break;
                             case XrefStatus.Resolved:
                                 {
@@ -1340,8 +1343,23 @@ namespace AutocadPlugIn
                                                 if (layoutName != "Model")
                                                 {
                                                     Layouts += de.Key.ToString() + "$";
-                                                    LayoutInfo.Add(de.Key, de.Value);
+                                                    Layout layout = tr.GetObject(de.Value, OpenMode.ForRead) as Layout;
+                                                    object OwnID = layout.OwnerId;
 
+                                                    
+                                                    string LayoutUnqID = "";
+
+                                                    if (Convert.ToString(OwnID) != Convert.ToString(de.Key))
+                                                    {
+                                                        LayoutUnqID = "";
+                                                    }
+                                                    else
+                                                    {
+                                                        LayoutUnqID = Convert.ToString(de.Key);
+                                                    }
+
+
+                                                    LayoutInfo.Add(de.Key, LayoutUnqID); 
                                                 }
                                                 else
                                                 {
@@ -1361,7 +1379,8 @@ namespace AutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
+                ShowMessage.ErrorMess("Error reading layout info from document " + FilePath + Environment.NewLine + ex.Message);
+                // ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
             }
 
             try
@@ -1372,9 +1391,61 @@ namespace AutocadPlugIn
                     ht.Add(key.Key, key.Value);
                 }
                 LayoutInfo = ht;
-                }
+            }
             catch { }
             return LayoutInfo;
+        }
+        public bool SetLayoutOwnerID(System.Data.DataTable dtLayoutInfo,string FilePath)
+        {
+            try
+            {
+                Database mainDb = new Database(false, true);
+                mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                mainDb.ResolveXrefs(false, false);
+                Transaction tr = mainDb.TransactionManager.StartTransaction();
+
+                String[] str = new String[14];
+                using (tr)
+                {
+
+                    DBDictionary layoutDict = tr.GetObject(mainDb.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
+                    foreach (DBDictionaryEntry de in layoutDict)
+                    {
+                        String layoutName = de.Key;
+                        if (layoutName != "Model")
+                        {                            
+                            Layout layout = tr.GetObject(de.Value, OpenMode.ForRead) as Layout;
+                             
+                            string LayoutUnqID = "";
+
+                            for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
+                            {
+                                if(Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"])==de.Key)
+                                {
+                                    layout.OwnerId = (Autodesk.AutoCAD.DatabaseServices.ObjectId)  dtLayoutInfo.Rows[i]["ACLayoutID"] ;
+                                    break;
+                                }
+
+                            }
+
+
+                             
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+
+
+                    tr.Commit();
+                }
+            }
+            catch(System.Exception E)
+            {
+                ShowMessage.ErrorMess("Error while setting layout owner id." + Environment.NewLine + E.Message);return false;
+            }
+            return true;
         }
         public int IsXrNodeEqual(XrefGraph xrGraph, GraphNode grNode)
         {

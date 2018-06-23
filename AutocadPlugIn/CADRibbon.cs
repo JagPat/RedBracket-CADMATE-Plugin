@@ -295,7 +295,7 @@ namespace AutocadPlugIn
             */
             //Lock, Unlock, and Save
 
-            rpsSave.Title = "Save";
+            rpsSave.Title = "Save to redbracket";
             rpSave.Source = rpsSave;
             Tab.Panels.Add(rpSave);
 
@@ -327,7 +327,7 @@ namespace AutocadPlugIn
             Btn_Unlock.IsEnabled = UnlockEnable;
 
 
-            Btn_Save.Text = "Save";
+            Btn_Save.Text = "Save to redbracket";
             Btn_Save.ShowText = true;
             Btn_Save.ShowImage = true;
             Btn_Save.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
@@ -469,7 +469,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                if (MessageBox.Show("Do you want to disconnect from Redbracket?", "Confirmation", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                if (ShowMessage.InfoYNMess("Do you want to disconnect from Redbracket?", "Confirmation" ) == System.Windows.Forms.DialogResult.Yes)
                 {
                     DisconnectCommand objCmd = new DisconnectCommand();
                     BaseController controller = new DisconnectController();

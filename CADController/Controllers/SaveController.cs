@@ -19,7 +19,7 @@ namespace CADController.Controllers
         public override void Execute(Command command)
         {
         }
-        public bool ExecuteSave(SaveCommand command)
+        public bool ExecuteSave(SaveCommand command,bool IsFileSave=false)
         {
             try
             {

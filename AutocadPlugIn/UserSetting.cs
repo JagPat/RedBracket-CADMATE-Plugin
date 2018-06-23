@@ -131,12 +131,7 @@ namespace AutocadPlugIn.UI_Forms
             loginUserSettings.UserName = txtSettingUserNm.Text.Trim();
             loginUserSettings.Url = txtSettingUrl.Text.Trim();
             loginUserSettings.DbName = txtSettingDbNm.Text.Trim();
-
-            checkinUserSettings.isBackgroundCheckin = BkCheckinEnableRadioBtn.Checked;
-            checkinUserSettings.isCheckinExpandAll = CheckInExpEnableRadioBtn.Checked;
-
-            checkoutUserSettings.isCheckoutExpandAll = CheckOutExpEnableRadioBtn.Checked;
-            checkoutUserSettings.checkoutDirPath = CheckoutdirListBox.Path;
+ 
 
             XmlDocument xmldoc = new XmlDocument();
             XmlNode xmlRoot;
@@ -327,8 +322,7 @@ namespace AutocadPlugIn.UI_Forms
             redBracketConnectorRegistryKey.CreateSubKey("CheckinSettings");
             RegistryKey checkinSettingsRegistryKey = redBracketConnectorRegistryKey.OpenSubKey("CheckinSettings", true);
 
-            checkinSettingsRegistryKey.SetValue("BackGroundCheckinEnabled", BkCheckinEnableRadioBtn.Checked);
-            checkinSettingsRegistryKey.SetValue("CheckinExpandAllEnabled", CheckInExpEnableRadioBtn.Checked);
+ 
             #endregion Checkin Settings
 
             #region Checkout Settings
@@ -341,12 +335,11 @@ namespace AutocadPlugIn.UI_Forms
                 Directory.CreateDirectory(WorkDir);
             }
             checkoutSettingsRegistryKey.SetValue("CheckoutDirectoryPath", WorkDir);
-            //checkoutSettingsRegistryKey.SetValue("CheckoutDirectoryPath", CheckoutdirListBox.Path);
-            checkoutSettingsRegistryKey.SetValue("CheckoutExpandAllEnabled", CheckOutExpEnableRadioBtn.Checked);
+
             #endregion Checkout Settings.
 
-            MessageBox.Show("User Settings saved successfully...");
-
+            ShowMessage.InfoMess("User Settings saved successfully...");
+            this.Close();
             return;
         }
 
@@ -365,21 +358,12 @@ namespace AutocadPlugIn.UI_Forms
 
             loginUserSettings = new LoginUserSettings();
 
-            ////readFromXML();
+          
             readUserSettings();
 
             txtSettingUserNm.Text = loginUserSettings.UserName;
             txtSettingUrl.Text = loginUserSettings.Url;
-            ////txtSettingDbNm.Text = loginUserSettings.DbName;
-
-            CheckInExpEnableRadioBtn.Checked = checkinUserSettings.isCheckinExpandAll;
-            CheckInExpDisableRadioBtn.Checked = !(CheckInExpEnableRadioBtn.Checked);
-
-            BkCheckinEnableRadioBtn.Checked = checkinUserSettings.isBackgroundCheckin;
-            BkCheckinDisableRadioBtn.Checked = !(BkCheckinEnableRadioBtn.Checked);
-            CheckOutExpEnableRadioBtn.Checked = checkoutUserSettings.isCheckoutExpandAll;
-            CheckOutExpDisableRadioBtn.Checked = !(CheckOutExpEnableRadioBtn.Checked);
-            //CheckoutdirListBox.Path = checkoutUserSettings.checkoutDirPath;
+         
 
             lbDriveList.Items.Clear();
             DriveInfo[] allDrives = DriveInfo.GetDrives();
@@ -419,7 +403,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void CheckoutdirListBox_DoubleClick(object sender, EventArgs e)
         {
-            checkoutUserSettings.checkoutDirPath = CheckoutdirListBox.Path;
+           
             MessageBox.Show(checkoutUserSettings.checkoutDirPath);
         }
 
@@ -492,7 +476,21 @@ namespace AutocadPlugIn.UI_Forms
                 string DriveName = lbDriveList.SelectedItem.ToString();
                 string Username = txtSettingUserNm.Text;
                 if (Helper.UserName.Trim().Length > 0)
+                {                    
                     Username = Helper.FirstName;
+                }
+                else
+                {
+                    RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
+                    registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
+                    registryKey = registryKey.OpenSubKey("LoginSettings", true);
+                    if(registryKey.GetValue("firstName").ToString().Length>0)
+                    {
+                        Username =Convert.ToString(registryKey.GetValue("firstName"));
+                    }
+                    
+                }
+
                 string WorkDir = Path.Combine(DriveName, Helper.CompanyName, Username + "-" +Helper.UserID);
                 txtWorkingDirectory.Text = WorkDir;
             }

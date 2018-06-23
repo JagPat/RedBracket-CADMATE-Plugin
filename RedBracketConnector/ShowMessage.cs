@@ -14,9 +14,12 @@ namespace RedBracketConnector
             MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public static DialogResult InfoYNMess(string Message)
+        public static DialogResult InfoYNMess(string Message,string Header=null)
         {
-            return MessageBox.Show(Message, "System Message", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            if (Header == null)
+                Header = "System Message";
+
+            return MessageBox.Show(Message, Header, MessageBoxButtons.YesNo, MessageBoxIcon.Information);
         }
 
         public static void ErrorMess(string Message)

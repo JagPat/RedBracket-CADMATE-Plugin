@@ -22,6 +22,8 @@ namespace RedBracketConnector
         public static string FileNamePrefix = "RB-";
         public static string CompanyName = "RedBracket";
         public static bool IsEventAssign = false;
+        public static bool IsSavePassword = false;
+        public static decimal FileLayoutNameLength = 255;
 
         public static bool IsRenameChild = true;
         public static object GetValueRegistry(string subKeyName, string keyName)
@@ -42,6 +44,27 @@ namespace RedBracketConnector
             }
 
             return null;
+        }
+
+        public static bool SetValueRegistry(string subKeyName, string keyName, string Value)
+        {
+            // Read the keys from the user registry and load it to the UI.
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
+
+            registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
+
+            if (registryKey != null)
+            {
+                registryKey = registryKey.OpenSubKey(subKeyName, true);
+
+                if (registryKey != null)
+                {
+                    registryKey.SetValue(keyName, Value);
+                    return true;
+                }
+            }
+
+            return false;
         }
         /// <summary>
         /// Passing True for IsSelect Means that you want first item of Combobox as ---Select---
@@ -108,6 +131,7 @@ namespace RedBracketConnector
 
                 if (dt == null)
                 {
+                    dt = new DataTable();
                     dt.Columns.Add("id");
                     dt.Columns.Add(DisplayMember);
 
@@ -280,13 +304,13 @@ namespace RedBracketConnector
 
         }
 
-        public static DataTable  SortTable(DataTable dt,string ColumnName)
+        public static DataTable SortTable(DataTable dt, string ColumnName)
         {
-            
+
             try
             {
                 DataView dv = dt.Copy().DefaultView;
-                dv.Sort = ColumnName+" ASC";
+                dv.Sort = ColumnName + " ASC";
                 dt = dv.ToTable();
             }
             catch (Exception E)
@@ -319,7 +343,7 @@ namespace RedBracketConnector
                     dtLayoutInfo.Columns.Add("active");
                     dtLayoutInfo.Columns.Add("deleted");
                     dtLayoutInfo.Columns.Add("islatest");
-                    dtLayoutInfo.Columns.Add("Seq",typeof(decimal));
+                    dtLayoutInfo.Columns.Add("Seq", typeof(decimal));
                     if (fileLayout != null)
                     {
                         foreach (LayoutInfo obj in fileLayout)
@@ -333,12 +357,12 @@ namespace RedBracketConnector
                             dr["islatest"] = obj.islatest;
                             dr["FileLayoutName"] = obj.name;
                             dr["LayoutNo"] = obj.number;
-                            dr["StatusID"] = obj.statusId==null|| obj.statusId==string.Empty? obj.status==null?string.Empty:Convert.ToString( obj.status.id) : obj.statusId;
-                            dr["LayoutStatus"] = obj.statusname == null || obj.statusname == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.statusname) : obj.statusname;  
+                            dr["StatusID"] = obj.statusId == null || obj.statusId == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.id) : obj.statusId;
+                            dr["LayoutStatus"] = obj.statusname == null || obj.statusname == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.statusname) : obj.statusname;
                             dr["TypeID"] = obj.typeId == null || obj.typeId == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.id) : obj.typeId;
                             dr["Version"] = obj.versionNo;
                             dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
-                            dr["LayoutType"] = obj.typename == null || obj.typename == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.name) : obj.typename; 
+                            dr["LayoutType"] = obj.typename == null || obj.typename == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.name) : obj.typename;
                             dr["Seq"] = obj.number.Substring(0, obj.number.IndexOf("_"));
                             dtLayoutInfo.Rows.Add(dr);
                         }
@@ -367,7 +391,7 @@ namespace RedBracketConnector
                     objLI.layoutId = Convert.ToString(dr["ACLayoutID"]);
                     objLI.typename = Convert.ToString(dr["LayoutType"]);
 
-                     if(objLI.typeId.Trim().Length>0)
+                    if (objLI.typeId.Trim().Length > 0)
                     {
                         objLI.type = new ResultSearchCriteriaType();
                         objLI.type.id = Convert.ToInt16(objLI.typeId);
@@ -397,13 +421,13 @@ namespace RedBracketConnector
             try
             {
 
-                if (fileLayout != null && fileLayout.Count>0)
+                if (fileLayout != null && fileLayout.Count > 0)
                 {
                     LayoutInfos = "[";
                     int count = 0;
 
 
-                    
+
 
                     fileLayout = Helper.SortLayoutInfo(fileLayout);
                     foreach (LayoutInfo obj in fileLayout)

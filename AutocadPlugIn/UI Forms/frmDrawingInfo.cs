@@ -88,6 +88,7 @@ namespace AutocadPlugIn.UI_Forms
                     lbCreatedByC.Text = Convert.ToString(dtCurrentData[0]["createdby"]);
                     lbModifiedByC.Text = Convert.ToString(dtCurrentData[0]["modifiedby"]);
 
+                    lbModifiedByC.Text = Convert.ToString(dtCurrentData[0]["modifiedby"]);
 
                     string LayoutInfo1 = Convert.ToString(dtCurrentData[0]["layoutinfo"]);
                     if (LayoutInfo1.Trim().Length > 0)
@@ -207,7 +208,15 @@ namespace AutocadPlugIn.UI_Forms
 
                     lbCreatedByL.Text = Convert.ToString(objRSC.createdby);
                     lbModifiedByL.Text = Convert.ToString(objRSC.updatedby);
-
+                    if (Convert.ToBoolean(objRSC.filelock))
+                    {
+                        lblLockedByL.Text = Convert.ToString(objRSC.updatedby);
+                        if (objRSC.updatedby == Helper.UserFullName && lbVersionC.Text== lbVersionL.Text)
+                        {
+                            lblLockedByC.Text = Convert.ToString(objRSC.updatedby);
+                        }
+                    }
+                     
                     List<LayoutInfo> objLI2 = Helper.SortLayoutInfo(objRSC.fileLayout);
                     int count1 = 0;
                     int count2 = 0;
@@ -411,16 +420,19 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                Cursor.Current = Cursors.WaitCursor;
                 if (IsFilePropertiesChanged)
                 {
 
-                    if(objRBC.UpdateFileProperties(FileID, Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue), ProjectID,FilePath,PreFix))
+                    if (objRBC.UpdateFileProperties(FileID, Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue), ProjectID, FilePath, PreFix))
                     {
                         cmbFileTypeC.Tag = cmbFileTypeC.SelectedValue;
                         cmbFileStatusC.Tag = cmbFileStatusC.SelectedValue;
 
                         lbFileTypeL.Text = Convert.ToString(cmbFileTypeC.SelectedValue) == "-1" ? string.Empty : cmbFileTypeC.Text;
                         lbFileStatusL.Text = Convert.ToString(cmbFileStatusC.SelectedValue) == "-1" ? string.Empty : cmbFileStatusC.Text;
+
+                        ShowMessage.InfoMess("File properties updated successfully.");
 
                     }
                 }
@@ -440,7 +452,7 @@ namespace AutocadPlugIn.UI_Forms
                         Label lblType = tlpMain.Controls.Find("lbLayoutTypeL" + count, false).FirstOrDefault() as Label;
                         Label lblLNumber = tlpMain.Controls.Find("lbLayoutNoC" + count, false).FirstOrDefault() as Label;
 
-                        if (cmbstatus == null || cmbtype == null || lblLName == null|| lblStatus==null|| lblType==null || lblLNumber == null)
+                        if (cmbstatus == null || cmbtype == null || lblLName == null || lblStatus == null || lblType == null || lblLNumber == null)
                         {
                             IsControlNull = true;
                         }
@@ -462,7 +474,7 @@ namespace AutocadPlugIn.UI_Forms
                                 StatusID = Convert.ToString(cmbstatus.SelectedValue);
                                 TypeID = Convert.ToString(cmbtype.SelectedValue);
                                 string LayoutName = Convert.ToString(lblLName.Text);
-                                string LayoutDesc = Convert.ToString(lblLNumber.Text);
+                                string LayoutDesc = Convert.ToString(lblLNumber.Tag);
                                 TypeID = TypeID == "-1" ? string.Empty : TypeID;
                                 StatusID = StatusID == "-1" ? string.Empty : StatusID;
                                 if (objRBC.UpdateLayoutInfo(ProjectID, FileID, LayoutID, StatusID, TypeID, LayoutName, LayoutDesc))
@@ -472,6 +484,7 @@ namespace AutocadPlugIn.UI_Forms
 
                                     lblType.Text = Convert.ToString(cmbtype.SelectedValue) == "-1" ? string.Empty : cmbtype.Text;
                                     lblStatus.Text = Convert.ToString(cmbstatus.SelectedValue) == "-1" ? string.Empty : cmbstatus.Text;
+                                    ShowMessage.InfoMess("Layout properties updated successfully.");
                                 }
                             }
 
@@ -481,7 +494,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     }
 
-                    
+
                 }
                 cmbFileTypeC_SelectedValueChanged(null, null);
             }
@@ -489,6 +502,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 ShowMessage.ErrorMess(E.Message);
             }
+            Cursor.Current = Cursors.Default;
         }
 
         private void cmbFileTypeC_SelectedValueChanged(object sender, EventArgs e)

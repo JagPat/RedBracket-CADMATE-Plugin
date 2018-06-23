@@ -158,6 +158,12 @@ namespace RedBracketConnector
                         //          }
                         //          else
                         {
+                  //          restResponse = (RestResponse)ServiceHelper.SaveObject(
+                  //Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                  //"/AutocadFiles/uploadFileService", obj.FilePath,
+                  //     true, new List<KeyValuePair<string, string>> { 
+                  //           new KeyValuePair<string, string>("fileId", obj.ObjectId)
+                  //     }, obj.PreFix);
                             restResponse = (RestResponse)ServiceHelper.SaveObject(
                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                        "/AutocadFiles/uploadFileService", obj.FilePath,
@@ -963,7 +969,7 @@ namespace RedBracketConnector
 
                 foreach (DataRow dr in dtLayoutInfo.Rows)
                 {
-                    if (Convert.ToString(dr["IsFile"]) == "1" || (Convert.ToString(dr["ChangeVersion"]) == "False"))
+                    if (/*Convert.ToString(dr["IsFile"]) == "1" ||*/ (Convert.ToString(dr["ChangeVersion"]) == "False"))
                     {
                         continue;
                     }
@@ -1023,15 +1029,23 @@ namespace RedBracketConnector
                     }
                     else if (restResponse.Content.Trim().Length > 0)
                     {
+                        SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
+              
+
+                        var Drawing = JsonConvert.DeserializeObject< DataofData >(saveResult.dataofdata) ;
+                        if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
+                        {
+                            dr["ACLayoutID"] = Drawing.id;
+                        }
+
+
+
+                        }
+
 
 
 
                     }
-
-
-
-
-                }
 
 
                 return true;
@@ -1247,12 +1261,16 @@ namespace RedBracketConnector
             {
                 dataTableProjectInfo = GetDataFromWS("/ProjectAutocad/fetchUserAutocadProjectsService", "project detail", "GET");
 
-                dataTableProjectInfo.Columns.Add("PNAMENO");
-
-                for (int i = 0; i < dataTableProjectInfo.Rows.Count; i++)
+                if(dataTableProjectInfo!=null)
                 {
-                    dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) + " (" + Convert.ToString(dataTableProjectInfo.Rows[i]["number"]) + ")";
+                    dataTableProjectInfo.Columns.Add("PNAMENO");
+
+                    for (int i = 0; i < dataTableProjectInfo.Rows.Count; i++)
+                    {
+                        dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) + " (" + Convert.ToString(dataTableProjectInfo.Rows[i]["number"]) + ")";
+                    }
                 }
+                
             }
             catch (Exception E)
             {

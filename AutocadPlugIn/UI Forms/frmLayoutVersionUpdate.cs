@@ -21,10 +21,12 @@ namespace AutocadPlugIn.UI_Forms
         public string FileStatus = "";
         public string FileVersion = "";
         public string ProjectID = "";
+        public string FilePath = "";
         public DataTable dtLayoutInfo = new DataTable();
         RBConnector objRBC = new RBConnector();
         AutoCADManager CadManager = new AutoCADManager();
-        public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "", string ProjectID = "")
+        public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "",
+            string ProjectID = "", string FilePath = "")
         {
             InitializeComponent();
             this.Fileid = Fileid;
@@ -33,12 +35,14 @@ namespace AutocadPlugIn.UI_Forms
             this.FileStatus = FileStatus;
             this.FileVersion = FileVersion;
             this.ProjectID = ProjectID;
+            this.FilePath = FilePath;
         }
 
         private void frmLayoutVersionUpdate_Load(object sender, EventArgs e)
         {
             try
             {
+                Cursor.Current = Cursors.WaitCursor;
                 Helper.FIllCMB(LayoutType, objRBC.GetFIleType(), "name", "id", true);
                 Helper.FIllCMB(LayoutStatus, objRBC.GetFIleStatus(), "statusname", "id", true);
 
@@ -60,7 +64,7 @@ namespace AutocadPlugIn.UI_Forms
                                    );
                 node.Expand();
                 node.ReadOnly = true;
-                Hashtable htLayoutInfo = CadManager.GetLayoutInfo();
+                Hashtable htLayoutInfo = CadManager.GetLayoutInfo(FilePath);
                 if (dtLayoutInfo.Rows.Count > 0)
                 {
 
@@ -89,7 +93,7 @@ namespace AutocadPlugIn.UI_Forms
 
 
                             //(140688313392624)
-                             if (LayoutName == Convert.ToString(rw["FileLayoutName"]))
+                            if (LayoutName == Convert.ToString(rw["FileLayoutName"]))
                             //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
                             {
                                 IsAvailable = true; break;
@@ -168,11 +172,18 @@ namespace AutocadPlugIn.UI_Forms
 
 
                 }
+                foreach (TreeGridNode ChildNode in tgvLayouts.Nodes[0].Nodes)
+                {
+                    ChildNode.Cells["LayoutType"].ReadOnly = ChildNode.Cells["LayoutStatus"].ReadOnly = ChildNode.Cells["Description"].ReadOnly = !(bool)ChildNode.Cells[0].Value;
+
+                }
+
             }
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
+            Cursor.Current = Cursors.Default;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -184,7 +195,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-
+                Cursor.Current = Cursors.WaitCursor;
                 //foreach(TreeGridNode ParentNode in tgvLayouts.Nodes)
                 //{
                 //    foreach(TreeGridNode ChildNode in ParentNode.Nodes)
@@ -241,6 +252,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 ShowMessage.ErrorMess(E.Message);
             }
+            Cursor.Current = Cursors.Default;
         }
 
         private void tgvLayouts_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -257,6 +269,11 @@ namespace AutocadPlugIn.UI_Forms
                     return;
                 }
                 TreeGridNode selectedTreeNode = (TreeGridNode)tgvLayouts.CurrentRow;
+                if (e.ColumnIndex == 0)//FileType
+                {
+                    //LayoutType.ReadOnly = LayoutStatus.ReadOnly = Description.ReadOnly = !(bool)selectedTreeNode.Cells[0].Value;
+                    selectedTreeNode.Cells["LayoutType"].ReadOnly = selectedTreeNode.Cells["LayoutStatus"].ReadOnly = selectedTreeNode.Cells["Description"].ReadOnly = !(bool)selectedTreeNode.Cells[0].Value;
+                }
                 if (e.ColumnIndex == 4)//FileType
                 {
                     string FileTypeID = "";
@@ -306,6 +323,14 @@ namespace AutocadPlugIn.UI_Forms
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
+            }
+        }
+
+        private void tgvLayouts_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (tgvLayouts.IsCurrentCellDirty)
+            {
+                tgvLayouts.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
         }
     }

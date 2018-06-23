@@ -13,7 +13,7 @@ namespace RibbonSample.UI_Forms
     {
         public About()
         {
-            InitializeComponent();
+            InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
         }
 
         private void logoPictureBox_Click(object sender, EventArgs e)

@@ -125,6 +125,12 @@
     <Compile Include="UI Forms\DocumentInformationDisplay.designer.cs">
       <DependentUpon>DocumentInformationDisplay.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI Forms\frmBorder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI Forms\frmBorder.Designer.cs">
+      <DependentUpon>frmBorder.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI Forms\frmDrawingInfo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -226,6 +232,9 @@
     <EmbeddedResource Include="UI Forms\DocumentInformationDisplay.resx">
       <DependentUpon>DocumentInformationDisplay.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI Forms\frmBorder.resx">
+      <DependentUpon>frmBorder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmDrawingInfo.resx">
       <DependentUpon>frmDrawingInfo.cs</DependentUpon>
     </EmbeddedResource>
@@ -298,6 +307,7 @@
     <Content Include="Resources\Add To Aras.png" />
     <Content Include="Resources\Add_blocks.png" />
     <Content Include="Resources\blocks.png" />
+    <None Include="Resources\bracket.jpg" />
     <Content Include="Resources\CheckoutUserSettings.png" />
     <Content Include="Resources\Connect.png" />
     <Content Include="Resources\Disconnect.png" />
@@ -305,11 +315,13 @@
     <Content Include="Resources\Help.png" />
     <Content Include="Resources\lock.png" />
     <Content Include="Resources\LocknewStrip.png" />
+    <None Include="Resources\Login.png" />
     <Content Include="Resources\Open.png" />
     <None Include="Resources\LoginUserSettings.png" />
     <None Include="Resources\CheckinUserSettings.png" />
     <None Include="Resources\RedBracket.png" />
     <None Include="Resources\ReferenceImage.jpg" />
+    <None Include="Resources\RBName.png" />
     <Content Include="Resources\Refresh.png" />
     <Content Include="Resources\save.png" />
     <Content Include="Resources\Setting.png" />

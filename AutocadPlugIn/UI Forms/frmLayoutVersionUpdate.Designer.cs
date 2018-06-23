@@ -140,6 +140,7 @@
             this.tgvLayouts.Size = new System.Drawing.Size(1101, 384);
             this.tgvLayouts.TabIndex = 8;
             this.tgvLayouts.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.tgvLayouts_CellValueChanged);
+            this.tgvLayouts.CurrentCellDirtyStateChanged += new System.EventHandler(this.tgvLayouts_CurrentCellDirtyStateChanged);
             this.tgvLayouts.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.tgvLayouts_DataError);
             // 
             // ChangeVersion
@@ -154,6 +155,7 @@
             this.FileLayoutName.DefaultNodeImage = null;
             this.FileLayoutName.HeaderText = "FIle Layout Name";
             this.FileLayoutName.Name = "FileLayoutName";
+            this.FileLayoutName.ReadOnly = true;
             this.FileLayoutName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // FileID1
@@ -172,26 +174,31 @@
             // 
             // LayoutType
             // 
+            this.LayoutType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.LayoutType.HeaderText = "Type";
             this.LayoutType.Name = "LayoutType";
+            this.LayoutType.Width = 150;
             // 
             // LayoutStatus
             // 
+            this.LayoutStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.LayoutStatus.HeaderText = "Status";
             this.LayoutStatus.Name = "LayoutStatus";
             this.LayoutStatus.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.LayoutStatus.Width = 150;
             // 
             // Version
             // 
-            this.Version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.Version.HeaderText = "Version";
             this.Version.Name = "Version";
             this.Version.ReadOnly = true;
             this.Version.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Version.Width = 48;
             // 
             // Description
             // 
-            this.Description.HeaderText = "Description";
+            this.Description.HeaderText = "Version Note";
             this.Description.Name = "Description";
             this.Description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 

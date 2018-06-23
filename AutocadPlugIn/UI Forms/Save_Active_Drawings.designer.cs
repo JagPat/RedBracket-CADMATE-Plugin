@@ -341,10 +341,10 @@
             // CADDescription
             // 
             this.CADDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CADDescription.Location = new System.Drawing.Point(103, 3);
+            this.CADDescription.Location = new System.Drawing.Point(110, 3);
             this.CADDescription.Multiline = true;
             this.CADDescription.Name = "CADDescription";
-            this.CADDescription.Size = new System.Drawing.Size(394, 35);
+            this.CADDescription.Size = new System.Drawing.Size(387, 35);
             this.CADDescription.TabIndex = 8;
             // 
             // Comments
@@ -352,12 +352,13 @@
             this.Comments.AutoSize = true;
             this.Comments.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Comments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Comments.ForeColor = System.Drawing.Color.Red;
-            this.Comments.Location = new System.Drawing.Point(3, 0);
+            this.Comments.ForeColor = System.Drawing.Color.Black;
+            this.Comments.Location = new System.Drawing.Point(3, 3);
+            this.Comments.Margin = new System.Windows.Forms.Padding(3);
             this.Comments.Name = "Comments";
-            this.Comments.Size = new System.Drawing.Size(94, 41);
+            this.Comments.Size = new System.Drawing.Size(101, 35);
             this.Comments.TabIndex = 9;
-            this.Comments.Text = "Comments :";
+            this.Comments.Text = "Version Note :";
             this.Comments.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tableLayoutPanel1
@@ -378,8 +379,8 @@
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 5;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 400F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 107F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 393F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
