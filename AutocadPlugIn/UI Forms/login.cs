@@ -157,7 +157,7 @@ namespace AutocadPlugIn
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
         }
 
         public void ConnectToRB()
@@ -192,7 +192,7 @@ namespace AutocadPlugIn
 
                 if (controller1.errorString != null)
                 {
-                    MessageBox.Show(controller1.errorString);
+                    ShowMessage.ErrorMess(controller1.errorString);
                     //Globals.Ribbons.ARASRibbon.IsConnected = false;
                     this.Cursor = Cursors.Default;
                     return;

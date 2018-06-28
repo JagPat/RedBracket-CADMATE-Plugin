@@ -22,9 +22,10 @@ namespace AutocadPlugIn.UI_Forms
         string ProjectID = "";
         string FilePath = "";
         string PreFix = "";
+        bool IsLayoutinLocalFile = false;
         public frmDrawingInfo()
         {
-            InitializeComponent();
+            InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
         }
 
         private void frmDrawingInfo_Load(object sender, EventArgs e)
@@ -42,6 +43,7 @@ namespace AutocadPlugIn.UI_Forms
                 //    return;
                 //}
 
+                Panel pnlSaperator = new Panel() { BackColor = Color.FromArgb(46, 49, 50), Margin = new Padding(3) ,Dock = DockStyle.Fill };
                 // Get Current File Info from Custum Properties and Display
                 DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=1");
                 if (dtCurrentData.Length > 0)
@@ -100,15 +102,16 @@ namespace AutocadPlugIn.UI_Forms
 
                         foreach (LayoutInfo objLI1 in objLI)
                         {
+                            IsLayoutinLocalFile = true;
                             count++;
 
                             if (count == 1)
                             {
                                 lbLayoutNameC1.Text = Convert.ToString(objLI1.name);
                                 lbLayoutNameC1.Tag = objLI1.id;
-                                lbLayoutNoC1.Text = Convert.ToString(objLI1.number);
+                                lbLayoutNoC1.Text = Convert.ToString(objLI1.fileNo);
                                 lbLayoutNoC1.Tag = objLI1.description;
-                                lbLayoutVersionC1.Text = Convert.ToString(objLI1.versionNo);
+                                lbLayoutVersionC1.Text = Convert.ToString(objLI1.versionno);
                                 object o = objLI1.statusId == null || objLI1.statusId == string.Empty ? 0 : Convert.ToInt16(objLI1.statusId);
                                 cmbLayoutStatusC1.Tag = cmbLayoutStatusC1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
                                 cmbLayoutTypeC1.Tag = cmbLayoutTypeC1.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
@@ -117,9 +120,9 @@ namespace AutocadPlugIn.UI_Forms
                             {
                                 lbLayoutNameC2.Text = Convert.ToString(objLI1.name);
                                 lbLayoutNameC2.Tag = objLI1.id;
-                                lbLayoutNoC2.Text = Convert.ToString(objLI1.number);
+                                lbLayoutNoC2.Text = Convert.ToString(objLI1.fileNo);
                                 lbLayoutNoC2.Tag = objLI1.description;
-                                lbLayoutVersionC2.Text = Convert.ToString(objLI1.versionNo);
+                                lbLayoutVersionC2.Text = Convert.ToString(objLI1.versionno);
                                 cmbLayoutStatusC2.Tag = cmbLayoutStatusC2.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
                                 cmbLayoutTypeC2.Tag = cmbLayoutTypeC2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
 
@@ -135,24 +138,26 @@ namespace AutocadPlugIn.UI_Forms
                                     FileInfoRowCount = CRC;
                                 }
                                 tlpMain.RowCount += 6;
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 14));
 
-
+                                Panel pnl = pnlSaperator;
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Name", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = "Layout No", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Version", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Status", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Discipline", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
+                                tlpMain.Controls.Add(pnl, 0, CRC++);
+                                tlpMain.SetColumnSpan(pnl, 3);
 
-                                CRC -= 5;
+                                CRC -= 6;
                                 tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNameC" + count, Tag = objLI1.id }, 1, CRC++);
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.number), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNoC" + count, Tag = objLI1.description }, 1, CRC++);
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNoC" + count, Tag = objLI1.description }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 1, CRC++);
                                 tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutStatusC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
                                 tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutTypeC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
 
@@ -223,7 +228,7 @@ namespace AutocadPlugIn.UI_Forms
                     foreach (LayoutInfo objLI1 in objLI2)
                     {
 
-                        string LLName = objLI1.number;
+                        string LLName = objLI1.fileNo;
                         bool IsLayoutFound = false;
                         for (int i = 1; i <= LocalFileLayoutCount; i++)
                         {
@@ -266,8 +271,8 @@ namespace AutocadPlugIn.UI_Forms
                         if (count1 == 1)
                         {
                             lbLayoutNameL1.Text = Convert.ToString(objLI1.name);
-                            lbLayoutNoL1.Text = Convert.ToString(objLI1.number);
-                            lbLayoutVersionL1.Text = Convert.ToString(objLI1.versionNo);
+                            lbLayoutNoL1.Text = Convert.ToString(objLI1.fileNo);
+                            lbLayoutVersionL1.Text = Convert.ToString(objLI1.versionno);
                             lbLayoutStatusL1.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
 
                             lbLayoutTypeL1.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
@@ -276,8 +281,8 @@ namespace AutocadPlugIn.UI_Forms
                         else if (count1 == 2)
                         {
                             lbLayoutNameL2.Text = Convert.ToString(objLI1.name);
-                            lbLayoutNoL2.Text = Convert.ToString(objLI1.number);
-                            lbLayoutVersionL2.Text = Convert.ToString(objLI1.versionNo);
+                            lbLayoutNoL2.Text = Convert.ToString(objLI1.fileNo);
+                            lbLayoutVersionL2.Text = Convert.ToString(objLI1.versionno);
                             lbLayoutStatusL2.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
                             lbLayoutTypeL2.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
                         }
@@ -288,15 +293,15 @@ namespace AutocadPlugIn.UI_Forms
                             Font font = label14.Font;
                             if (count1 > LocalFileLayoutCount)
                             {
-
+                                Panel pnl = pnlSaperator;
                                 //CRC = tlpMain.RowCount;
                                 tlpMain.RowCount += 6;
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 14));
 
 
 
@@ -305,13 +310,15 @@ namespace AutocadPlugIn.UI_Forms
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Version", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Status", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Discipline", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
+                                tlpMain.Controls.Add(pnl, 0, CRC++);
+                                tlpMain.SetColumnSpan(pnl, 3);
 
-                                CRC -= 5;
+                                CRC -= 6;
                             }
 
                             tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.number), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
                             tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutStatusL" + count1 }, 2, CRC++);
                             tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutTypeL" + count1 }, 2, CRC++);
 
@@ -347,22 +354,30 @@ namespace AutocadPlugIn.UI_Forms
                 }
 
                 tlpMain.RowCount += 1;
-                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));
+                tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
 
                 TableLayoutPanel tlpSave = new TableLayoutPanel();
 
-                tlpSave.ColumnCount = 3;
+                tlpSave.ColumnCount = 4;
                 tlpSave.RowCount = 1;
                 tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-                tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 200));
+                tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
+                tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
                 tlpSave.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-                tlpSave.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));
+                tlpSave.RowStyles.Add(new RowStyle(SizeType.Absolute, 41));
+
                 tlpSave.Controls.Add(btnSave, 1, 0);
                 btnSave.Visible = true;
                 btnSave.Dock = DockStyle.Fill;
                 btnSave.Font = label2.Font;
-
                 btnSave.Margin = new Padding(5);
+
+                tlpSave.Controls.Add(btnCancel, 1, 0);
+                btnCancel.Visible = true;
+                btnCancel.Dock = DockStyle.Fill;
+                btnCancel.Font = label2.Font;
+                btnCancel.Margin = new Padding(5);
+
                 tlpSave.Margin = new Padding(0);
                 tlpMain.Controls.Add(tlpSave, 0, tlpMain.RowCount - 1);
                 tlpMain.SetColumnSpan(tlpSave, 3);
@@ -436,7 +451,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     }
                 }
-                if (IsLayoutPropertiesChanged)
+                if (IsLayoutPropertiesChanged && IsLayoutinLocalFile)
                 {
                     bool IsControlNull = false;
 
@@ -579,6 +594,11 @@ namespace AutocadPlugIn.UI_Forms
             {
                 ShowMessage.ErrorMess(E.Message);
             }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -28,7 +28,7 @@ namespace AutocadPlugIn.UI_Forms
         public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "",
             string ProjectID = "", string FilePath = "")
         {
-            InitializeComponent();
+            InitializeComponent();this.FormBorderStyle = FormBorderStyle.None;
             this.Fileid = Fileid;
             this.FileName = FileName;
             this.FileType = FileType;
@@ -54,8 +54,9 @@ namespace AutocadPlugIn.UI_Forms
                                    , ""
                                    , FileType
                                    , FileStatus
-                                   , FileVersion
+                                  
                                    , ""
+                                    , FileVersion
                                    , "1"
                                    , ""
                                    , ""
@@ -108,8 +109,8 @@ namespace AutocadPlugIn.UI_Forms
                                    , rw["LayoutID"]
                                    , rw["LayoutType"]
                                    , rw["LayoutStatus"]
-                                   , rw["Version"]
-                                   , rw["Description"]
+                                   
+                                   , rw["Description"], rw["Version"]
                                    , rw["IsFile"]
                                    , rw["TypeID"]
                                    , rw["StatusID"]
@@ -157,8 +158,8 @@ namespace AutocadPlugIn.UI_Forms
                                        , ""
                                        , ""
                                        , ""
-                                       , "0.0"
-                                       , ""
+                                       
+                                       , "", "0.0"
                                        , "0"
                                        , ""
                                        , ""

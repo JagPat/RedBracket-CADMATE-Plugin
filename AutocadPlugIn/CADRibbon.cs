@@ -29,7 +29,7 @@ namespace AutocadPlugIn
         public bool UnlockEnable = false;
         public bool SaveEnable = false;
         public bool DrawingInfoEnable = false;
-
+        public Timer timerVersion = new Timer();
         //Button structure in ribbon
 
         public Autodesk.Windows.RibbonControl ribbonControl = Autodesk.Windows.ComponentManager.Ribbon;
@@ -80,7 +80,19 @@ namespace AutocadPlugIn
         public RibbonButton Btn_DrawingInfo = new RibbonButton();
 
         public RibbonButton Btn_Refresh = new RibbonButton();
+        public RibbonButton Btn_Refresh_H = new RibbonButton();
 
+        public RibbonPanel rpCurrentDI = new RibbonPanel();
+        public RibbonPanelSource rpsCurrentDI = new RibbonPanelSource();
+        public RibbonLabel lblCurrentFileVersion = new RibbonLabel();
+        public RibbonLabel lblCurrentFileVersion1 = new RibbonLabel();
+        public RibbonLabel lblCurrentFileVersionRB = new RibbonLabel();
+        public RibbonLabel lblCurrentFileVersionRB1 = new RibbonLabel();
+        public RibbonLabel txtCurrentFileVersion = new RibbonLabel();
+        public RibbonLabel txtCurrentFileVersionRB = new RibbonLabel();
+
+        public string CurrentVersion = "";
+        public string LatestVersion = "";
 
 
         [CommandMethod("AddDocEvent")]
@@ -100,10 +112,11 @@ namespace AutocadPlugIn
             acDoc.BeginDwgOpen += new DrawingOpenEventHandler(docBeginDwgOpen);
             acDoc.LayoutSwitched += new LayoutSwitchedEventHandler(docLayoutSwitched);
 
-
+        
 
 
         }
+
         public void docLayoutSwitched(object senderObj,
                            LayoutSwitchedEventArgs docBegClsEvtArgs)
         {
@@ -161,17 +174,215 @@ namespace AutocadPlugIn
             //}
         }
 
+
+
+
+        [assembly: CommandClass(typeof(DocumentActevatedEvent.MyCommands))]
+        [assembly: ExtensionApplication(typeof(DocumentActevatedEvent.MyCommands))]
+
+
+        public class MyCommands : IExtensionApplication
+        {
+            #region IExtensionApplication Members
+
+            public void Initialize()
+            {
+                Document dwg = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Editor ed = dwg.Editor;
+
+                try
+                {
+                    ed.WriteMessage("\nInitializing...");
+
+                    Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+
+                    ed.WriteMessage("completed.");
+                }
+                catch (System.Exception ex)
+                {
+                    ed.WriteMessage("failed:\n");
+                    ed.WriteMessage(ex.Message);
+                }
+
+                Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
+            }
+
+            private void DocumentManager_DocumentActivated(object sender, DocumentCollectionEventArgs e)
+            {
+                Cursor.Current = Cursors.WaitCursor;
+                e.Document.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
+                CADRibbon objcr = new CADRibbon();
+                // find version of local file and assign.
+                //string drawingid = "", Rev = "", DrawingNO = "";
+
+                //try
+                //{
+                //    var dbsi = e.Document.Database.SummaryInfo.CustomProperties;
+                //    while (dbsi.MoveNext())
+                //    {
+                //        if (Convert.ToString(dbsi.Key) == "drawingid")
+                //        {
+                //            drawingid = Convert.ToString(dbsi.Value);
+                //        }
+                //        else if (Convert.ToString(dbsi.Key) == "revision")
+                //        {
+                //            Rev = Convert.ToString(dbsi.Value);
+                //        }
+                //        else if (Convert.ToString(dbsi.Key) == "drawingnumber")
+                //        {
+                //            DrawingNO = Convert.ToString(dbsi.Value);
+                //        }
+                //    }
+
+
+                //    // objcr.txtCurrentFileVersion.Tag = objcr.txtCurrentFileVersion.Text = Rev;
+                //}
+                //catch (System.Exception E)
+                //{
+
+                //}
+                //if (drawingid.Trim().Length == 0)
+                //{
+                //    //write code to hide current drawing information panel.
+                //    objcr.CurrentVersion = "";
+                //    objcr.LatestVersion = "";
+                //    objcr.MyRibbon();
+                //    return;
+                //}
+
+
+                //// find version of file in RB and assign 
+
+                ////Checking if file is in redbracket or not;
+                //RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
+
+                //RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
+                ////        public RibbonLabel lblCurrentFileVersion = new RibbonLabel();
+                ////public RibbonLabel lblCurrentFileVersionRB = new RibbonLabel();
+                ////public RibbonLabel txtCurrentFileVersion = new RibbonLabel();
+                ////public RibbonLabel txtCurrentFileVersionRB = new RibbonLabel();
+                //// objcr.txtCurrentFileVersionRB.Text = Drawing.versionno;
+
+
+                //objcr.CurrentVersion = Rev;
+                //objcr.LatestVersion = Drawing.versionno;
+                objcr.MyRibbon();
+                if (Helper.CurrentVersion != Helper.LatestVersion)
+                {
+                    Refresh objrfs = new Refresh();
+                    objrfs.Execute(null);
+                }
+                // objcr.AssignVersion(Rev, Drawing.versionno);
+                Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
+                Cursor.Current = Cursors.Default;
+            }
+
+            public void Terminate()
+            {
+
+            }
+
+            #endregion
+
+            [CommandMethod("AddNewDoc", CommandFlags.Session)]
+            public static void RunMyCommand()
+            {
+                Document dwg = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Add(null);
+                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument = dwg;
+
+            }
+        }
+        public void GetVersion(ref string CurrentVersion, ref string LatestVersion)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+
+
+            // find version of local file and assign.
+            string drawingid = "", Rev = "", DrawingNO = "";
+
+            try
+            {
+                var dbsi = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.SummaryInfo.CustomProperties;
+                string FilePath = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.Filename;
+                while (dbsi.MoveNext())
+                {
+                    if (Convert.ToString(dbsi.Key) == "drawingid")
+                    {
+                        drawingid = Convert.ToString(dbsi.Value);
+                    }
+                    else if (Convert.ToString(dbsi.Key) == "revision")
+                    {
+                        Rev = Convert.ToString(dbsi.Value);
+                    }
+                    else if (Convert.ToString(dbsi.Key) == "drawingnumber")
+                    {
+                        DrawingNO = Convert.ToString(dbsi.Value);
+                    }
+                }
+
+
+                // objcr.txtCurrentFileVersion.Tag = objcr.txtCurrentFileVersion.Text = Rev;
+            }
+            catch (System.Exception E)
+            {
+
+            }
+            if (drawingid.Trim().Length == 0)
+            {
+                //write code to hide current drawing information panel.
+                Helper.CurrentVersion = "";
+                Helper.LatestVersion = "";
+                return;
+            }
+
+
+            // find version of file in RB and assign 
+
+            //Checking if file is in redbracket or not;
+            RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
+
+            RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
+            //        public RibbonLabel lblCurrentFileVersion = new RibbonLabel();
+            //public RibbonLabel lblCurrentFileVersionRB = new RibbonLabel();
+            //public RibbonLabel txtCurrentFileVersion = new RibbonLabel();
+            //public RibbonLabel txtCurrentFileVersionRB = new RibbonLabel();
+            // objcr.txtCurrentFileVersionRB.Text = Drawing.versionno;
+
+            if (Drawing != null)
+            {
+
+                Helper.CurrentVersion = CurrentVersion =Helper.VerTextAdjustment(Rev);
+                Helper.LatestVersion = LatestVersion = Drawing.versionno == null ? string.Empty : Helper.VerTextAdjustment(Drawing.versionno);
+
+               
+            }
+
+
+
+
+
+            Cursor.Current = Cursors.Default;
+        }
+
         //AutoCAD Command
 
         [CommandMethod("MyRibbon")]
         public void MyRibbon()
         {
-            if (!RedBracketConnector.Helper.IsEventAssign)
+            //string CurrentVersion = null, string LatestVersion = null
+            //if (!RedBracketConnector.Helper.IsEventAssign)
             {
                 AddDocEvent();
-                //RedBracketConnector.Helper.IsEventAssign = true;
+                timerVersion.Tick += new System.EventHandler(timerVersion_Tick);
+                timerVersion.Interval = 1000;
+                timerVersion.Start();
+                RedBracketConnector.Helper.IsEventAssign = true;
             }
-
+            //if (CurrentVersion != null && LatestVersion != null)
+            //{
+            //    txtCurrentFileVersion.Tag = txtCurrentFileVersion.Text = CurrentVersion;
+            //    txtCurrentFileVersionRB.Text = LatestVersion;
+            //}
             Tab.Title = "Redbracket";
             Tab.Id = "RibbonSample_TAB_ID";
 
@@ -431,11 +642,121 @@ namespace AutocadPlugIn
             Btn_Refresh.Orientation = System.Windows.Controls.Orientation.Vertical;
             Btn_Refresh.CommandHandler = new Refresh();
             Btn_Refresh.IsEnabled = LockEnable;
-            pan7row1.Items.Add(Btn_Refresh);
+
+            Btn_Refresh_H.Text = "Refresh";
+            Btn_Refresh_H.ShowText = true;
+            Btn_Refresh_H.ShowImage = true;
+            Btn_Refresh_H.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+            Btn_Refresh_H.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+            Btn_Refresh_H.Size = RibbonItemSize.Large;
+            Btn_Refresh_H.Orientation = System.Windows.Controls.Orientation.Horizontal;
+            Btn_Refresh_H.Width = 300;
+            Btn_Refresh_H.CommandHandler = new Refresh();
+            Btn_Refresh_H.IsEnabled = LockEnable;
+            //pan7row1.Items.Add(Btn_Refresh);
+
+
+
+
+
+
+
+
+
+
+
+
+
+            lblCurrentFileVersion.Text = "  Current  ";
+            lblCurrentFileVersion1.Text = "  Version  ";
+            lblCurrentFileVersionRB.Text = "   Latest  ";
+            lblCurrentFileVersionRB1.Text = "  Version  ";
+            GetVersion(ref CurrentVersion, ref LatestVersion);
+            txtCurrentFileVersion.Text = CurrentVersion;//"        0.1       ";
+            txtCurrentFileVersion.Tag = CurrentVersion;// "        0.1       ";
+            txtCurrentFileVersionRB.Text = LatestVersion;// "        0.2       ";
+
+            RibbonRowPanel rrpCurrentDI = new RibbonRowPanel();
+
+
+            rrpCurrentDI.Items.Add(lblCurrentFileVersion);
+            rrpCurrentDI.Items.Add(new RibbonRowBreak());
+            rrpCurrentDI.Items.Add(lblCurrentFileVersion1);
+            rrpCurrentDI.Items.Add(new RibbonRowBreak());
+            rrpCurrentDI.Items.Add(txtCurrentFileVersion);
+
+            rpsCurrentDI.Items.Add(rrpCurrentDI);
+
+            RibbonRowPanel rrpCurrentDIV = new RibbonRowPanel();
+
+
+            rrpCurrentDIV.Items.Add(lblCurrentFileVersionRB);
+            rrpCurrentDIV.Items.Add(new RibbonRowBreak());
+            rrpCurrentDIV.Items.Add(lblCurrentFileVersionRB1);
+            rrpCurrentDIV.Items.Add(new RibbonRowBreak());
+            rrpCurrentDIV.Items.Add(txtCurrentFileVersionRB);
+
+
+            
+            rpsCurrentDI.Items.Add(rrpCurrentDIV);
+            rpsCurrentDI.Items.Add(new RibbonRowBreak());
+            rpsCurrentDI.Items.Add(Btn_Refresh_H);
+            //Compare Drawing Info
+            rpsCurrentDI.Title = "Compare Drawing Info";
+            rpCurrentDI.Source = rpsCurrentDI;
+            Tab.Panels.Add(rpCurrentDI);
+
+            //RibbonPanel rplblCurrentFileVersion = new RibbonPanel();
+            //RibbonPanel rpCurrentFileVersionRB = new RibbonPanel();
+            //RibbonPanel rptxtCurrentFileVersion = new RibbonPanel();
+            //RibbonPanel rpltxtCurrentFileVersionRB = new RibbonPanel();
 
 
 
             Tab.IsActive = true;
+        }
+
+        public void AssignVersion(string CurrentVersion = null, string LatestVersion = null)
+        {
+            if (CurrentVersion != null && LatestVersion != null)
+            {
+                txtCurrentFileVersion.Tag = txtCurrentFileVersion.Text = CurrentVersion;
+                txtCurrentFileVersionRB.Text = LatestVersion;
+            }
+        }
+
+        private void timerVersion_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                //string V1 = txtCurrentFileVersion.Text == null ? string.Empty : txtCurrentFileVersion.Text.Trim();
+                //string V2 = txtCurrentFileVersionRB.Text == null ? string.Empty : txtCurrentFileVersionRB.Text.Trim();
+
+                string V1 = Helper.CurrentVersion;
+                string V2 = Helper.LatestVersion;
+
+                if (V1 != V2 && V1.Length > 0)
+                {
+                    int s = DateTime.Now.Second;
+
+                    if (s % 2 == 0)
+                    {
+
+                        txtCurrentFileVersion.Text = Helper.VerTextAdjustment("is old");// "      is old      ";
+                    }
+                    else
+                    {
+                        txtCurrentFileVersion.Text = Helper.CurrentVersion;
+                    }
+                  // MyRibbon();
+                    
+
+                }
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
         }
     }
 
@@ -469,7 +790,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                if (ShowMessage.InfoYNMess("Do you want to disconnect from Redbracket?", "Confirmation" ) == System.Windows.Forms.DialogResult.Yes)
+                if (ShowMessage.InfoYNMess("Do you want to disconnect from Redbracket?", "Confirmation") == System.Windows.Forms.DialogResult.Yes)
                 {
                     DisconnectCommand objCmd = new DisconnectCommand();
                     BaseController controller = new DisconnectController();
@@ -521,7 +842,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                AutocadPlugIn.UI_Forms.Search_And_Open browseDrawing = new AutocadPlugIn.UI_Forms.Search_And_Open();
+                AutocadPlugIn.UI_Forms.frmSearch_And_Open browseDrawing = new AutocadPlugIn.UI_Forms.frmSearch_And_Open();
                 browseDrawing.ShowDialog();
             }
             catch (System.Exception ex)
@@ -575,7 +896,7 @@ namespace AutocadPlugIn
             }
             try
             {
-                AutocadPlugIn.UI_Forms.Save_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.Save_Active_Drawings();
+                AutocadPlugIn.UI_Forms.frmSave_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.frmSave_Active_Drawings();
                 //Save_Active_Drawings objSave = new Save_Active_Drawings();
                 objSave.ShowDialog();
 
@@ -909,7 +1230,9 @@ namespace AutocadPlugIn
             }
             try
             {
-                AutocadPlugIn.UI_Forms.UnLock lockForm = new AutocadPlugIn.UI_Forms.UnLock();
+                //AutocadPlugIn.UI_Forms.UnLock lockForm = new AutocadPlugIn.UI_Forms.UnLock();
+                AutocadPlugIn.UI_Forms.frmLockUnLock lockForm = new AutocadPlugIn.UI_Forms.frmLockUnLock();
+
                 lockForm.ShowDialog();
 
 

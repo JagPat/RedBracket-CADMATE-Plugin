@@ -22,8 +22,11 @@ namespace RedBracketConnector
         public static string FileNamePrefix = "RB-";
         public static string CompanyName = "RedBracket";
         public static bool IsEventAssign = false;
-        public static bool IsSavePassword = false;
+        public static bool IsSavePassword = true;
         public static decimal FileLayoutNameLength = 255;
+
+        public static string CurrentVersion = "";
+        public static string LatestVersion = "";
 
         public static bool IsRenameChild = true;
         public static object GetValueRegistry(string subKeyName, string keyName)
@@ -289,6 +292,8 @@ namespace RedBracketConnector
                     DrawingProperty.Add("isletest", dt.Rows[i]["isletest"]);
                     DrawingProperty.Add("projectno", dt.Rows[i]["projectno"]);
                     DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
+                    DrawingProperty.Add("filetypeid", dt.Rows[i]["Classification"]);
+                    
                 }
                 else
                 {
@@ -340,8 +345,7 @@ namespace RedBracketConnector
                     dtLayoutInfo.Columns.Add("TypeID");
                     dtLayoutInfo.Columns.Add("StatusID");
                     dtLayoutInfo.Columns.Add("ACLayoutID");
-                    dtLayoutInfo.Columns.Add("active");
-                    dtLayoutInfo.Columns.Add("deleted");
+                 
                     dtLayoutInfo.Columns.Add("islatest");
                     dtLayoutInfo.Columns.Add("Seq", typeof(decimal));
                     if (fileLayout != null)
@@ -351,19 +355,18 @@ namespace RedBracketConnector
                             DataRow dr = dtLayoutInfo.NewRow();
 
                             dr["LayoutID"] = obj.id;
-                            dr["active"] = obj.active;
-                            dr["deleted"] = obj.deleted;
+                          
                             dr["Description"] = obj.description;
-                            dr["islatest"] = obj.islatest;
+                            dr["islatest"] = obj.isletest;
                             dr["FileLayoutName"] = obj.name;
-                            dr["LayoutNo"] = obj.number;
+                            dr["LayoutNo"] = obj.fileNo;
                             dr["StatusID"] = obj.statusId == null || obj.statusId == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.id) : obj.statusId;
                             dr["LayoutStatus"] = obj.statusname == null || obj.statusname == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.statusname) : obj.statusname;
                             dr["TypeID"] = obj.typeId == null || obj.typeId == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.id) : obj.typeId;
-                            dr["Version"] = obj.versionNo;
+                            dr["Version"] = obj.versionno;
                             dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
                             dr["LayoutType"] = obj.typename == null || obj.typename == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.name) : obj.typename;
-                            dr["Seq"] = obj.number.Substring(0, obj.number.IndexOf("_"));
+                            dr["Seq"] = obj.fileNo.Substring(0, obj.fileNo.IndexOf("_"));
                             dtLayoutInfo.Rows.Add(dr);
                         }
                         dtLayoutInfo = Helper.SortTable(dtLayoutInfo.Copy(), "Seq");
@@ -378,16 +381,15 @@ namespace RedBracketConnector
                 {
                     LayoutInfo objLI = new LayoutInfo();
                     objLI.id = Convert.ToString(dr["LayoutID"]);
-                    objLI.active = Convert.ToString(dr["active"]);
-                    objLI.deleted = Convert.ToString(dr["deleted"]);
+                   
                     objLI.description = Convert.ToString(dr["Description"]);
-                    objLI.islatest = Convert.ToString(dr["islatest"]);
+                    objLI.isletest = Convert.ToBoolean(dr["islatest"]);
                     objLI.name = Convert.ToString(dr["FileLayoutName"]);
-                    objLI.number = Convert.ToString(dr["LayoutNo"]);
+                    objLI.fileNo = Convert.ToString(dr["LayoutNo"]);
                     objLI.statusId = Convert.ToString(dr["StatusID"]);
                     objLI.statusname = Convert.ToString(dr["LayoutStatus"]);
                     objLI.typeId = Convert.ToString(dr["TypeID"]);
-                    objLI.versionNo = Convert.ToString(dr["Version"]);
+                    objLI.versionno = Convert.ToString(dr["Version"]);
                     objLI.layoutId = Convert.ToString(dr["ACLayoutID"]);
                     objLI.typename = Convert.ToString(dr["LayoutType"]);
 
@@ -445,21 +447,8 @@ namespace RedBracketConnector
                         LayoutInfos += obj.id;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
-
-                        LayoutInfos += @"""active""";
-                        LayoutInfos += @":";
-                        LayoutInfos += @"""";
-                        LayoutInfos += obj.active;
-                        LayoutInfos += @"""";
-                        LayoutInfos += @",";
-
-                        LayoutInfos += @"""deleted""";
-                        LayoutInfos += @":";
-                        LayoutInfos += @"""";
-                        LayoutInfos += obj.deleted;
-                        LayoutInfos += @"""";
-                        LayoutInfos += @",";
-
+                         
+                        
                         LayoutInfos += @"""description""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
@@ -467,10 +456,10 @@ namespace RedBracketConnector
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
-                        LayoutInfos += @"""islatest""";
+                        LayoutInfos += @"""isletest""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
-                        LayoutInfos += obj.islatest;
+                        LayoutInfos += obj.isletest;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
@@ -481,10 +470,10 @@ namespace RedBracketConnector
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
-                        LayoutInfos += @"""number""";
+                        LayoutInfos += @"""fileNo""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
-                        LayoutInfos += obj.number;
+                        LayoutInfos += obj.fileNo;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
@@ -512,7 +501,7 @@ namespace RedBracketConnector
                         LayoutInfos += @"""versionNo""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
-                        LayoutInfos += obj.versionNo;
+                        LayoutInfos += obj.versionno;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
@@ -543,6 +532,37 @@ namespace RedBracketConnector
                 return string.Empty;
             }
             return LayoutInfos;
+        }
+
+        public static string VerTextAdjustment(string Ver)
+        {
+            string RetVal = "";
+            try
+            {
+                RetVal= Ver = Ver.Trim();
+                if (Ver.Length>0)
+                {
+                    int VL = Ver.Length;
+                    int RS = 14 - VL;
+
+                    for (int i = 0; i < RS/2; i++)
+                    {
+                        RetVal = " " + RetVal;
+                    }
+                    RS = 11 - RetVal.Length;
+                    for (int i = 0; i < RS; i++)
+                    {
+                        RetVal = RetVal + " ";
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                RetVal = "";
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return RetVal;
+          
         }
 
 

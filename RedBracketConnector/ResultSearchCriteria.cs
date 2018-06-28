@@ -169,25 +169,91 @@ namespace RedBracketConnector
 
     public class LayoutInfo
     {
-        public string id { set; get; }    
+        public string id { set; get; }
+
+        public string fileNo { set; get; }
 
         public string name { set; get; }
-        public string number { set; get; }
 
-        public ResultSearchCriteriaType type { set; get; }
+        public string updatedon { set; get; }
+
+        public ResultSearchCriteriaCoreType coreType { set; get; }
+
+        public string updatedby { set; get; }
+
+        public string size { set; get; }
+
         public ResultSearchCriteriaStatus status { set; get; }
 
-        public string islatest { set; get; }
+        public string createdby { set; get; }
+
+        public string versionno { set; get; }
+
+        public string projectname { set; get; }
+
+        public string projectinfo { set; get; }
+
+        public bool isletest { set; get; }
+
+        public bool shared { set; get; }
+
+        public bool sharing { set; get; }
+
+        public bool isImportant { set; get; }
+
+        public string fileExt { set; get; }
+
+        public bool filelock { set; get; }
+
+        public string fileicon { set; get; }
+
+        public int unreadcount { set; get; }
+
+        public bool isCollection { set; get; }
+
+        public int milisecond { set; get; }
+
+        public bool previewavailable { set; get; }
+
+        public bool isowner { set; get; }
+
+        public bool supportpdf { set; get; }
+
+        public bool unreadItem { set; get; }
+
+        public bool hasViewPermission { set; get; }
+
+        public bool isActFileLatest { set; get; }
+
+        public bool isEditable { set; get; }
+
+        public bool canDelete { set; get; }
+
+        public bool canEditStatus { set; get; }
+
+        public bool hasStatusClosed { set; get; }
+
+        public ResultSearchCriteriaType type { set; get; }
+
+        //public string id { set; get; }    
+
+        //public string name { set; get; }
+        //public string number { set; get; }
+
+        //public ResultSearchCriteriaType type { set; get; }
+        //public ResultSearchCriteriaStatus status { set; get; }
+
+        //public string islatest { set; get; }
         public string description { set; get; }
-        public string active { set; get; }
-        public string deleted { set; get; }
+        //public string active { set; get; }
+        //public string deleted { set; get; }
 
         public string statusId { set; get; }
         public string statusname { set; get; }
         public string typeId { set; get; }
         public string typename { set; get; }
 
-        public string versionNo { set; get; }
+        //public string versionNo { set; get; }
         public string layoutId { set; get; }
 
     }

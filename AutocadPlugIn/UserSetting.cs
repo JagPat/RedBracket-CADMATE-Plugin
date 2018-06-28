@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System; 
 using System.Windows.Forms;
 using System.Xml;
-using System.IO;
-using ArasConnector;
+using System.IO; 
 using Microsoft.Win32;
 using RedBracketConnector;
 
@@ -60,7 +53,7 @@ namespace AutocadPlugIn.UI_Forms
         public static UserSettings us = null;
         private UserSettings()
         {
-            InitializeComponent();
+            InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
 
 
         }
@@ -130,7 +123,7 @@ namespace AutocadPlugIn.UI_Forms
 
             loginUserSettings.UserName = txtSettingUserNm.Text.Trim();
             loginUserSettings.Url = txtSettingUrl.Text.Trim();
-            loginUserSettings.DbName = txtSettingDbNm.Text.Trim();
+            loginUserSettings.DbName = "";
  
 
             XmlDocument xmldoc = new XmlDocument();
@@ -345,7 +338,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void userSettingsCancelBtn_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
         }
 
         //Load all user settings during loading of the setting dialog
@@ -420,10 +413,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void txtSettingDbNm_Click(object sender, EventArgs e)
         {
-            string serverPath = this.txtSettingUrl.Text;
-            ArasConnector.ArasConnector arasConnector = new ArasConnector.ArasConnector();
-            String[] dataBases = arasConnector.getDataBaseList(serverPath);
-            txtSettingDbNm.DataSource = dataBases;
+           
         }
 
         private void panel_Settings_Paint(object sender, PaintEventArgs e)
@@ -487,6 +477,7 @@ namespace AutocadPlugIn.UI_Forms
                     if(registryKey.GetValue("firstName").ToString().Length>0)
                     {
                         Username =Convert.ToString(registryKey.GetValue("firstName"));
+                        Helper.UserID = Convert.ToString(registryKey.GetValue("id"));
                     }
                     
                 }

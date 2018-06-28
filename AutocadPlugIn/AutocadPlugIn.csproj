@@ -137,6 +137,12 @@
     <Compile Include="UI Forms\frmDrawingInfo.Designer.cs">
       <DependentUpon>frmDrawingInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI Forms\frmFolderSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI Forms\frmFolderSelection.Designer.cs">
+      <DependentUpon>frmFolderSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI Forms\frmLayoutVersionUpdate.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -148,6 +154,12 @@
     </Compile>
     <Compile Include="UI Forms\frmLock.Designer.cs">
       <DependentUpon>frmLock.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI Forms\frmLockUnLock.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI Forms\frmLockUnLock.Designer.cs">
+      <DependentUpon>frmLockUnLock.cs</DependentUpon>
     </Compile>
     <Compile Include="UI Forms\frmRefresh.cs">
       <SubType>Form</SubType>
@@ -197,17 +209,17 @@
     <Compile Include="UI Forms\Add Document.Designer.cs">
       <DependentUpon>Add Document.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI Forms\Save_Active_Drawings.cs">
+    <Compile Include="UI Forms\frmSave_Active_Drawings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI Forms\Save_Active_Drawings.designer.cs">
-      <DependentUpon>Save_Active_Drawings.cs</DependentUpon>
+    <Compile Include="UI Forms\frmSave_Active_Drawings.designer.cs">
+      <DependentUpon>frmSave_Active_Drawings.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI Forms\Search_And_Open.cs">
+    <Compile Include="UI Forms\frmSearch_And_Open.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI Forms\Search_And_Open.Designer.cs">
-      <DependentUpon>Search_And_Open.cs</DependentUpon>
+    <Compile Include="UI Forms\frmSearch_And_Open.Designer.cs">
+      <DependentUpon>frmSearch_And_Open.cs</DependentUpon>
     </Compile>
     <Compile Include="UI Forms\UnLock.cs">
       <SubType>Form</SubType>
@@ -238,11 +250,17 @@
     <EmbeddedResource Include="UI Forms\frmDrawingInfo.resx">
       <DependentUpon>frmDrawingInfo.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI Forms\frmFolderSelection.resx">
+      <DependentUpon>frmFolderSelection.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmLayoutVersionUpdate.resx">
       <DependentUpon>frmLayoutVersionUpdate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmLock.resx">
       <DependentUpon>frmLock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI Forms\frmLockUnLock.resx">
+      <DependentUpon>frmLockUnLock.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmRefresh.resx">
       <DependentUpon>frmRefresh.cs</DependentUpon>
@@ -271,12 +289,12 @@
     <EmbeddedResource Include="UI Forms\Add Document.resx">
       <DependentUpon>Add Document.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\Save_Active_Drawings.resx">
-      <DependentUpon>Save_Active_Drawings.cs</DependentUpon>
+    <EmbeddedResource Include="UI Forms\frmSave_Active_Drawings.resx">
+      <DependentUpon>frmSave_Active_Drawings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\Search_And_Open.resx">
-      <DependentUpon>Search_And_Open.cs</DependentUpon>
+    <EmbeddedResource Include="UI Forms\frmSearch_And_Open.resx">
+      <DependentUpon>frmSearch_And_Open.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\UnLock.resx">
       <DependentUpon>UnLock.cs</DependentUpon>
@@ -312,6 +330,7 @@
     <Content Include="Resources\Connect.png" />
     <Content Include="Resources\Disconnect.png" />
     <Content Include="Resources\DrawingInfo.png" />
+    <None Include="Resources\FolderBrowse.jpg" />
     <Content Include="Resources\Help.png" />
     <Content Include="Resources\lock.png" />
     <Content Include="Resources\LocknewStrip.png" />

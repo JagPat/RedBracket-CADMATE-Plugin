@@ -248,6 +248,8 @@ namespace RedBracketConnector
         public String objectProjectNo { get; set; }
         public String objectType { get; set; }
         public String PreFix { get; set; }
+        public String FolderID { get; set; }
+        public String FolderPath { get; set; }
 
         private List<Relationship> fromRelationships = new List<Relationship>();
         private List<Relationship> toRelationships = new List<Relationship>();

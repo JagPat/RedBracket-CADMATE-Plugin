@@ -1,45 +1,12 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+{"id":"73e2172f-16e9-4690-9dca-4ef5996c1331","fileNo":"DWG00078","name":"Child.dwg","projectname":"Alex Recreational","projectinfo":"Alex Recreational","updatedon":"Jun 7, 2018 6:25:32 AM","coreType":
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+{"id":25,"name":"CAD","type":"FILE","iscustom":false,"companyid":0,"master":"CORETYPE","createdBy":7,"createdOn":"Jan 4, 2017 1:02:39 PM","updatedBy":7,"updatedOn":"Jan 4, 2017 1:02:39 PM","active":true,"deleted":false}
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+,"updatedby":"Archi User","type":
+{"iscustom":false,"active":false,"deleted":false},
 
----
+"size":"37.06 KB","status":{"id":905,"statusname":"Draft","type":"FILE","iscustom":true,"companyid":127,"coretype":{"id":4,"name":"OPEN","type":"FILE","iscustom":false,"companyid":0,"master":"STATUS","colorId":"#13BBE2","createdBy":4,"createdOn":"Dec 27, 2016 10:08:45 AM","updatedBy":22,"updatedOn":"Dec 31, 2016 2:25:26 PM","active":true,"deleted":false},"priority":0,"createdBy":98,"createdOn":"Jun 30, 2017 12:13:37 PM","updatedBy":98,"updatedOn":"Jun 30, 2017 12:38:26 PM","active":true,"deleted":false}
 
-## Edit a file
+,"createdby":"Archi User","versionno":"0.1","isletest":true,"shared":false,"sharing":false,"isImportant":false,"fileExt":"dwg","filelock":false,"fileicon":"DWG.png","unreadcount":0,"isCollection":false,"milisecond":0,"previewavailable":false,"isowner":false,"supportpdf":false,"unreadItem":false,"defaultPermission":{"map":{"VIEW_OWN_FILE":true,"EDIT_OWN_FILE":true}},"hasViewPermission":false,"companyId":127,"isActFileLatest":false,"isEditable":false,"canDelete":false,"canEditStatus":false,"hasStatusClosed":false,"isAssociate":true,"parentId":"3fdfecd9-06b1-46af-a10b-dfedea9a6084 , ","filebean":
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
-
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
-
----
-
-## Create a file
-
-Next, you’ll add a new file to this repository.
-
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
-
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
-
----
-
-## Clone a repository
-
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
-
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
-
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+[{"id":"3fdfecd9-06b1-46af-a10b-dfedea9a6084","fileNo":"DWG00077","name":"Parent.dwg","projectname":"Alex Recreational","projectinfo":"PRJ-1012","updatedon":"Jun 7, 2018 6:25:30 AM","coreType":{"id":25,"name":"CAD","type":"FILE","iscustom":false,"companyid":0,"master":"CORETYPE","createdBy":7,"createdOn":"Jan 4, 2017 1:02:39 PM","updatedBy":7,"updatedOn":"Jan 4, 2017 1:02:39 PM","active":true,"deleted":false},"updatedby":"Archi User","type":{"id":695,"name":"General","type":"FILE","iscustom":true,"companyid":127,"createdBy":98,"createdOn":"Jun 28, 2017 6:15:11 AM","updatedBy":98,"updatedOn":"Jun 28, 2017 6:15:11 AM","active":true,"deleted":false},"size":"38.39 KB","status":{"id":806,"statusname":"Conceptual","type":"FILE","iscustom":true,"companyid":127,"coretype":{"id":4,"name":"OPEN","type":"FILE","iscustom":false,"companyid":0,"master":"STATUS","colorId":"#13BBE2","createdBy":4,"createdOn":"Dec 27, 2016 10:08:45 AM","updatedBy":22,"updatedOn":"Dec 31, 2016 2:25:26 PM","active":true,"deleted":false},"priority":1,"createdBy":98,"createdOn":"Jun 28, 2017 6:15:11 AM","updatedBy":98,"updatedOn":"Jun 30, 2017 12:38:26 PM","active":true,"deleted":false},"createdby":"Archi User","versionno":"0.1","isletest":false,"shared":false,"sharing":false,"isImportant":false,"fileExt":"dwg","filelock":false,"fileicon":"DWG.png","typeName":"General","unreadcount":0,"isCollection":false,"milisecond":0,"previewavailable":false,"isowner":false,"supportpdf":false,"unreadItem":false,"hasViewPermission":false,"companyId":127,"isActFileLatest":false,"isEditable":false,"canDelete":false,"canEditStatus":false,"hasStatusClosed":false,"isAssociate":true,"parentId":"73e2172f-16e9-4690-9dca-4ef5996c1331 , ","filebean":[],"fileLayout":[],"hasLayoutTabView":false}],"fileLayout":[],"hasLayoutTabView":false}

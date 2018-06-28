@@ -106,8 +106,8 @@ namespace RedBracketConnector
         /// <param name="addUserNametoUrl">Username should be added to URL?</param>
         /// <param name="urlParameters">Specify list of parameters if any.</param>
         /// <returns>Response of the server in IRestResponse format.</returns>
-        public static IRestResponse SaveObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, 
-            List<KeyValuePair<string, string>> urlParameters = null,string PreFix=null)
+        public static IRestResponse SaveObject(string baseAddress, string relevantAddress, string filePath, bool addUserNametoUrl = true,
+            List<KeyValuePair<string, string>> urlParameters = null, string PreFix = null, bool IsFileUpload = true)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace RedBracketConnector
                 {
                     foreach (KeyValuePair<string, string> urlParameter in urlParameters)
                     {
-                        
+
                         if (count == 0 && !addUserNametoUrl)
                         {
                             relevantAddress += ("?" + urlParameter.Key + "=" + urlParameter.Value);
@@ -141,16 +141,20 @@ namespace RedBracketConnector
                 var request = new RestRequest(relevantAddress, Method.POST);
 
                 fileName = Path.GetFileName(filePath);
-                if(fileName.Trim().Length>= PreFix.Length)
+                if (fileName.Trim().Length >= PreFix.Length)
                 {
-                    if (fileName.Substring(0,  PreFix.Length) == PreFix)
+                    if (fileName.Substring(0, PreFix.Length) == PreFix)
                     {
                         fileName = fileName.Substring(PreFix.Length);
                     }
                 }
-               
+
                 //request.AddFile("files", File.ReadAllBytes(filePath), fileName);
-                request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
+                if (IsFileUpload)
+                    request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
+                //else
+                //    request.AddFile("files", "");
+
 
                 return restClient.Execute(request);
             }
@@ -161,7 +165,7 @@ namespace RedBracketConnector
         }
 
 
-        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath,  bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null,String PreFix=null)
+        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath, bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null, String PreFix = null)
         {
             try
             {

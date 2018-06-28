@@ -40,7 +40,7 @@ namespace RedBracketConnector
             }
         }
 
-        public bool SaveObject(ref List<PLMObject> plmobjs)
+        public bool SaveObject(ref List<PLMObject> plmobjs, bool IsFileSave = false)
         {
             try
             {
@@ -57,166 +57,173 @@ namespace RedBracketConnector
                     RestResponse restResponse;
                     //service calling to upload document.
                     String PreFix = obj.PreFix;
-                    if (obj.IsRoot)
+                    // if (obj.IsRoot)
                     {
                         if (!File.Exists(obj.FilePath))
                         {
                             ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
                             return false;
                         }
-                        //          if (Convert.ToString(obj.ObjectId).Trim().Length > 0)
-                        //          {
-                        //              //     restResponse = (RestResponse)ServiceHelper.UpdateObject(
-                        //              //Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        //              //"/AutocadFiles/updateFile", obj.FilePath,
-                        //              //"test.dwg", true, new List<KeyValuePair<string, string>> {
-                        //              //    new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                        //              //      new KeyValuePair<string, string>("fileName", obj.ObjectName),
-                        //              //      new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                        //              //       new KeyValuePair<string, string>("fileType", obj.Classification),
-                        //              //       new KeyValuePair<string, string>("fileDescription", obj.ObjectDescription) });
-                        //              List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
 
-                        //              KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
+                        //     restResponse = (RestResponse)ServiceHelper.SaveObject(
+                        //Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                        //"/AutocadFiles/uploadFileService", obj.FilePath,
+                        //     true, new List<KeyValuePair<string, string>> {
+                        //          new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
+                        //          new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                        //          new KeyValuePair<string, string>("fileType", obj.Classification),
+                        //           new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                        //           new KeyValuePair<string, string>("isNew","true")
+                        //     }, obj.PreFix, true);
 
-                        //              if(obj.ObjectId.Trim().Length>0)
-                        //              {
-                        //                  Keys = new KeyValuePair<string, string>("fileId", obj.ObjectId);
-                        //                  keyValuePairs.Add(Keys);
-                        //              }
-                        //              // needs to change
-                        //            //  if (obj.ObjectId.Trim().Length > 0)
-                        //              {
-                        //                  Keys = new KeyValuePair<string, string>("isChecked", "true");
-                        //                  keyValuePairs.Add(Keys);
-                        //              }
-                        //              if (obj.ObjectName.Trim().Length > 0)
-                        //              {
-                        //                  Keys = new KeyValuePair<string, string>("fileName", obj.ObjectName);
-                        //                  keyValuePairs.Add(Keys);
-                        //              }
-                        //              if (obj.ObjectStatus.Trim().Length > 0)
-                        //              {
-                        //                  Keys = new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus);
-                        //                  keyValuePairs.Add(Keys);
-                        //              }
-                        //              //if (obj.ObjectId.Trim().Length > 0)
-                        //              //{
-                        //              //    Keys = new KeyValuePair<string, string>("layoutFileId","");
-                        //              //    keyValuePairs.Add(Keys);
-                        //              //}
-                        //              //if (obj.ObjectId.Trim().Length > 0)
-                        //              //{
-                        //              //    Keys = new KeyValuePair<string, string>("statusId", "");
-                        //              //    keyValuePairs.Add(Keys);
-                        //              //}
-                        //              //if (obj.ObjectId.Trim().Length > 0)
-                        //              //{
-                        //              //    Keys = new KeyValuePair<string, string>("typeId", "");
-                        //              //    keyValuePairs.Add(Keys);
-                        //              //}
-                        //              //if (obj.ObjectId.Trim().Length > 0)
-                        //              //{
-                        //              //    Keys = new KeyValuePair<string, string>("layoutFileName", "");
-                        //              //    keyValuePairs.Add(Keys);
-                        //              //}
-                        //              if (obj.Classification.Trim().Length > 0)
-                        //              {
-                        //                  Keys = new KeyValuePair<string, string>("fileTypeId", obj.Classification);
-                        //                  keyValuePairs.Add(Keys);
-                        //              }
-                        //              if (obj.ObjectDescription.Trim().Length > 0)
-                        //              {
-                        //                  Keys = new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription);
-                        //                  keyValuePairs.Add(Keys);
-                        //              }
-                        //              //if (obj.ObjectId.Trim().Length > 0)
-                        //              //{
-                        //              //    Keys = new KeyValuePair<string, string>("layoutDesc","");
-                        //              //    keyValuePairs.Add(Keys);
-                        //              //}
 
-                        ////              restResponse = (RestResponse)ServiceHelper.UpdateObject(
-                        ////Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        ////"/AutocadFiles/updateFileProperties", obj.FilePath,
-                        ////  true, keyValuePairs);
-                        //              restResponse = (RestResponse)ServiceHelper.UpdateObject(
-                        //        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        //        "/AutocadFiles/updateFileProperties", obj.FilePath,
-                        //          true, new List<KeyValuePair<string, string>> {
-                        //                 new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                        //                  new KeyValuePair<string, string>("isChecked", "true"),// Need to change
-                        //                   new KeyValuePair<string, string>("fileName", obj.ObjectName),
-                        //                   new KeyValuePair<string, string>("fileStatusId", obj.ObjectStatus),
-                        //                    new KeyValuePair<string, string>("layoutFileId", ""),
-                        //                     new KeyValuePair<string, string>("statusId", ""),
-                        //                      new KeyValuePair<string, string>("typeId", ""),
-                        //                         new KeyValuePair<string, string>("layoutFileName", ""),
-                        //                    new KeyValuePair<string, string>("fileTypeId", obj.Classification),
-                        //                    new KeyValuePair<string, string>("fileDesc", obj.ObjectDescription),
-                        //                    new KeyValuePair<string, string>("layoutDesc", "") }, PreFix);
-                        //          }
-                        //          else
+
+                        if (IsFileSave)
                         {
-                  //          restResponse = (RestResponse)ServiceHelper.SaveObject(
-                  //Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                  //"/AutocadFiles/uploadFileService", obj.FilePath,
-                  //     true, new List<KeyValuePair<string, string>> { 
-                  //           new KeyValuePair<string, string>("fileId", obj.ObjectId)
-                  //     }, obj.PreFix);
-                            restResponse = (RestResponse)ServiceHelper.SaveObject(
-                       Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                       "/AutocadFiles/uploadFileService", obj.FilePath,
-                            true, new List<KeyValuePair<string, string>> {
-                            new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
-                            new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                            new KeyValuePair<string, string>("fileType", obj.Classification),
-                             new KeyValuePair<string, string>("fileId", obj.ObjectId)
-                            }, obj.PreFix);
-                        }
+                            string IsNew = "false";
 
+                            if (obj.FolderID.Trim().Length > 0)
+                            {
+                                //Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
+                            }
 
-                    }
-                    else
-                    {
-                        if (!File.Exists(obj.FilePath))
-                        {
-                            ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
-                            continue;
-                        }
-                        //for save
-                        if (obj.ObjectId.Trim().Length == 0)
-                        {
-                            restResponse = (RestResponse)ServiceHelper.SaveObject(
-                                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                        "/AutocadFiles/uploadXRefFiles", obj.FilePath,
-                                          false, new List<KeyValuePair<string, string>> {
-                                                 new KeyValuePair<string, string>("source", "Computer") ,
-                                                  new KeyValuePair<string, string>("userName", Helper.UserName) ,
-                                            new KeyValuePair<string, string>("fileId", ParentFileID) ,
-                                            new KeyValuePair<string, string>("project", obj.ObjectProjectId)  ,
-                                            new KeyValuePair<string, string>("xrefFileId", obj.ObjectId.Trim()),
-                                            new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                                            new KeyValuePair<string, string>("fileType", obj.Classification) }, obj.PreFix);
-                        }
-                        else
-                        {
+                            //save =false
                             restResponse = (RestResponse)ServiceHelper.SaveObject(
                                             Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                                             "/AutocadFiles/uploadFileService", obj.FilePath,
-                                                 true, new List<KeyValuePair<string, string>> {
-                                                                        new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
-                                                                        new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                                                                        new KeyValuePair<string, string>("fileType", obj.Classification),
-                                                                         new KeyValuePair<string, string>("fileId", obj.ObjectId)
-                                                 }, obj.PreFix);
+                                            true, new List<KeyValuePair<string, string>>
+                                            {       new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                                                    new KeyValuePair<string, string>("isNew",Convert.ToString(IsNew).ToLower()),
+                                                    new KeyValuePair<string, string>("folderidString", obj.FolderID.Trim())
+                                            }, PreFix, true);
+
+                            if (!obj.IsRoot && obj.IsNew)
+                            {
+                                List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+                                KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
+
+
+                                Keys = new KeyValuePair<string, string>("parentFileId", ParentFileID);
+                                keyValuePairs.Add(Keys);
+
+                                Keys = new KeyValuePair<string, string>("childFileId", obj.ObjectId);
+                                keyValuePairs.Add(Keys);
+
+
+                                // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
+                                restResponse = (RestResponse)ServiceHelper.PostData(
+                                                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                                "/AutocadFiles/uploadXRef", DataFormat.Json, null,
+                                                     true, keyValuePairs);
+                            }
+                            else
+                            {
+                                ParentFileID = obj.ObjectId;
+                            }
+                        }
+                        else
+                        {
+                            List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+                            KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
+
+
+                            Keys = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
+                            keyValuePairs.Add(Keys);
+
+                            Keys = new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus);
+                            keyValuePairs.Add(Keys);
+
+                            Keys = new KeyValuePair<string, string>("fileType", obj.Classification);
+                            keyValuePairs.Add(Keys);
+
+                            Keys = new KeyValuePair<string, string>("source", "Computer");
+                            keyValuePairs.Add(Keys);
+                            string s = Path.GetExtension(obj.FilePath);
+                            Keys = new KeyValuePair<string, string>("fileName", obj.ObjectName + s);
+                            keyValuePairs.Add(Keys);
+
+                            string IsNew = "";
+                            if (obj.ObjectId.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("fileId", obj.ObjectId);
+                                keyValuePairs.Add(Keys);
+                            }
+
+
+
+                            if (obj.ObjectId == string.Empty)
+                            {
+                                IsNew = "false";
+                            }
+                            else
+                            {
+                                IsNew = "true";
+                            }
+
+                            Keys = new KeyValuePair<string, string>("isNew", IsNew);
+                            if (obj.FolderID.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
+                            }
+                            keyValuePairs.Add(Keys);
+                            // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
+                            restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                            "/AutocadFiles/uploadFileServiceProp", obj.FilePath,
+                                                 true, keyValuePairs, obj.PreFix, false);
                         }
 
 
 
+
+
                     }
+                    //else
+                    //{
+                    //    if (!File.Exists(obj.FilePath))
+                    //    {
+                    //        ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
+                    //        continue;
+                    //    }
+
+
+
+                    //    //for save
+                    //    if (obj.ObjectId.Trim().Length == 0)
+                    //    {
+                    //        restResponse = (RestResponse)ServiceHelper.SaveObject(
+                    //                    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                    //                    "/AutocadFiles/uploadXRefFiles", obj.FilePath,
+                    //                      false, new List<KeyValuePair<string, string>> {
+                    //                             new KeyValuePair<string, string>("source", "Computer") ,
+                    //                              new KeyValuePair<string, string>("userName", Helper.UserName) ,
+                    //                        new KeyValuePair<string, string>("parentFileId", ParentFileID) ,
+                    //                        new KeyValuePair<string, string>("project", obj.ObjectProjectId)  ,
+                    //                        new KeyValuePair<string, string>("xrefFileId", obj.ObjectId.Trim()),
+                    //                        new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                    //                        new KeyValuePair<string, string>("fileType", obj.Classification),
+                    //                        new KeyValuePair<string, string>("isNew", "false") }, obj.PreFix);
+                    //    }
+                    //    else
+                    //    {
+                    //        restResponse = (RestResponse)ServiceHelper.SaveObject(
+                    //                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                    //                        "/AutocadFiles/uploadFileService", obj.FilePath,
+                    //                             true, new List<KeyValuePair<string, string>> {
+                    //                                                    new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
+                    //                                                    new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
+                    //                                                    new KeyValuePair<string, string>("fileType", obj.Classification),
+                    //                                                     new KeyValuePair<string, string>("fileId", obj.ObjectId)
+                    //                             }, obj.PreFix);
+                    //    }
+
+
+
+                    //}
+
+
                     //checking if service call was successful or not.
-                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK && restResponse.StatusCode != System.Net.HttpStatusCode.NotAcceptable)
                     {
                         //ShowMessage.InfoMess(restResponse.Content);
                         //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
@@ -225,8 +232,10 @@ namespace RedBracketConnector
                     }
                     else if (restResponse.Content.Trim().Length > 0)
                     {
-
-
+                        if (restResponse.StatusCode == System.Net.HttpStatusCode.NotAcceptable)
+                        {
+                        }
+                        else
                         //  if (Convert.ToString(obj.ObjectId).Trim().Length > 0)
                         {
 
@@ -238,8 +247,29 @@ namespace RedBracketConnector
                             //var saveObjectResponseValueObject = saveObjectResponseValueObject1[0];
                             //var Drawing = saveObjectResponseValueObject;
 
-                            var Drawing = JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
 
+                            bool isError = false;
+                            try
+                            {
+                                //var Drawing3 = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata);
+                                try
+                                {
+                                    var Drawing1 = JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
+                                }
+                                catch
+                                {
+                                    isError = true;
+                                    var Drawing2 = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata);
+                                }
+
+                            }
+                            catch (Exception E)
+                            {
+
+                            }
+
+
+                            var Drawing = isError ? JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata) : JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
 
                             if (Drawing != null)
                             {
@@ -247,20 +277,21 @@ namespace RedBracketConnector
                                     obj.ObjectId = ParentFileID = Drawing.id;
                                 else
                                     obj.ObjectId = Drawing.id;
+
                                 obj.ObjectName = Drawing.name;
                                 obj.Classification = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.id);
-                                obj.ObjectState = Drawing.status.statusname;
-                                obj.ObjectRevision = Drawing.versionno;
+                                obj.ObjectState = Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname;
+                                obj.ObjectRevision = Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno;
                                 obj.LockStatus = Convert.ToString(Drawing.filelock);
                                 obj.ObjectGeneration = "123";
-                                obj.ItemType = Drawing.coreType.name;
+                                obj.ItemType = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
                                 obj.ObjectProjectName = Drawing.projectname == null ? string.Empty : Drawing.projectname;
                                 //obj.ObjectProjectId = "123";
                                 obj.ObjectCreatedById = Drawing.createdby;
                                 obj.ObjectCreatedOn = Drawing.created0n;
                                 obj.ObjectModifiedById = Drawing.updatedby;
                                 obj.ObjectModifiedOn = Drawing.updatedon;
-                                obj.ObjectNumber = Drawing.fileNo;
+                                obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
 
                                 obj.canDelete = Drawing.canDelete;
                                 obj.isowner = Drawing.isowner;
@@ -271,6 +302,7 @@ namespace RedBracketConnector
                                 obj.hasStatusClosed = Drawing.hasStatusClosed;
                                 obj.isletest = Drawing.isletest;
                                 obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
+                                
 
                             }
 
@@ -318,490 +350,67 @@ namespace RedBracketConnector
                 ShowMessage.ErrorMess(E.Message);
                 return false;
             }
-            #region Old Code
-            //Hashtable SavedData = new Hashtable();
-            //try
-            //{
-            //    String sourceid = "";
-            //    String newDrawingId = "";
-            //    String ProjectName = "";
 
-
-            //    #region "Release PLMObjects"
-            //    //ReleasePLMObjects(plmobjs);
-            //    #endregion
-
-            //    #region "Save PLMObjects"
-            //    foreach (PLMObject obj in plmobjs)
-            //    {
-            //        Item cadDocument_QRY = null;
-            //        Item cadDocument_RES = null;
-            //        Array Layouts = obj.ObjectLayouts.Split('$');
-
-            //        #region "If Drawing is in ARASInnovator"
-
-            //        if (!obj.IsNew)
-            //        {
-            //            if ((ProjectName == null || ProjectName == "") && (obj.ObjectId != null || obj.ObjectId != ""))
-            //            {
-            //                // Get this info by get file info
-            //                Item MyCAD = myInnovator.getItemById(obj.ItemType, obj.ObjectId);
-            //                ProjectName = MyCAD.getItemByIndex(0).getProperty("sg_project_name");
-            //            }
-
-            //            #region CreateManualVersion
-            //            if (obj.IsManualVersion)
-            //            {
-            //                //
-            //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                cadDocument_QRY.setProperty("id", obj.ObjectId);
-            //                cadDocument_RES = cadDocument_QRY.apply();
-            //                if (cadDocument_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.getErrorString()));
-            //                }
-            //                string prevFileId = cadDocument_RES.getItemByIndex(0).getProperty("native_file");
-            //                Item fileItem = myInnovator.newItem("File", "add");
-            //                fileItem.setAttribute("where", "id='" + prevFileId + "'");
-            //                string seperatefilename = Path.GetFileName(obj.FilePath);
-            //                fileItem.setProperty("filename", seperatefilename);
-            //                fileItem.setID(myInnovator.getNewID());
-            //                fileItem.attachPhysicalFile(obj.FilePath);
-            //                Item checkin_result = fileItem.apply();
-            //                string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
-            //                if (checkin_result.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + checkin_result.getErrorString()));
-            //                }
-            //                if (obj.IsCreateNewRevision)
-            //                {
-            //                    cadDocument_RES.unlockItem();
-            //                    if (cadDocument_RES.apply("PE_CreateNewRevision").isError())
-            //                    {
-            //                        throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.apply("PE_CreateNewRevision").getErrorString()));
-            //                    }
-
-            //                }
-            //                else
-            //                {
-            //                    //if (cadDocument_RES.getProperty("is_released").ToString() != "1")
-            //                    if (cadDocument_RES.apply("version").isError())
-            //                    {
-            //                        throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.apply("version").getErrorString()));
-            //                    }
-            //                }
-            //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                cadDocument_QRY.setProperty("item_number", cadDocument_RES.getProperty("item_number"));
-            //                cadDocument_QRY.setProperty("is_current", "1");
-            //                cadDocument_RES = cadDocument_QRY.apply();
-            //                if (cadDocument_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is : " + cadDocument_RES.getErrorString()));
-            //                }
-            //                Item newCadFile = myInnovator.newItem(obj.ItemType, "edit");
-            //                newCadFile.setAttribute("where", "id='" + cadDocument_RES.getProperty("id").ToString() + "'");
-            //                newCadFile.setProperty("native_file", newFileId);
-            //                if (obj.ObjectDescription.ToString().Length > 0)
-            //                    newCadFile.setProperty("description", obj.ObjectDescription);
-            //                Item newCadFile_RES = newCadFile.apply();
-            //                newCadFile_RES.unlockItem();
-            //                SavedData.Add(seperatefilename, obj.ObjectId);
-            //                if (newCadFile_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + newCadFile_RES.getErrorString()));
-            //                }
-            //                newDrawingId = newCadFile_RES.getProperty("id");
-            //            }
-            //            #endregion CreateManualVersion
-
-            //            #region NoManualVersion
-            //            else
-            //            {
-            //                cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                cadDocument_QRY.setProperty("id", obj.ObjectId);
-            //                cadDocument_RES = cadDocument_QRY.apply();
-            //                if (cadDocument_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + cadDocument_RES.getErrorString()));
-            //                }
-            //                string prevFileId = cadDocument_RES.getItemByIndex(0).getProperty("native_file");
-
-            //                Item fileItem = myInnovator.newItem("File", "add");
-            //                fileItem.setAttribute("where", "id='" + prevFileId + "'");
-            //                string seperatefilename = Path.GetFileName(obj.FilePath);
-            //                fileItem.setProperty("filename", seperatefilename);
-            //                fileItem.setID(myInnovator.getNewID());
-            //                fileItem.attachPhysicalFile(obj.FilePath);
-            //                Item checkin_result = fileItem.apply();
-            //                string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
-            //                if (checkin_result.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject NoManualVersion' method.\n Error string is :" + checkin_result.getErrorString()));
-            //                }
-            //                Item newCadFile = myInnovator.newItem(obj.ItemType, "edit");
-            //                newCadFile.setAttribute("where", "id='" + cadDocument_RES.getProperty("id").ToString() + "'");
-            //                newCadFile.setProperty("native_file", newFileId);
-            //                if (obj.ObjectDescription.ToString().Length > 1)
-            //                    newCadFile.setProperty("description", obj.ObjectDescription);
-            //                Item newCadFile_RES = newCadFile.apply();
-            //                newCadFile_RES.unlockItem();
-            //                if (newCadFile_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject NoManualVersion' method.\n Error string is :" + newCadFile_RES.getErrorString()));
-            //                }
-            //                newDrawingId = newCadFile_RES.getProperty("id");
-            //            }
-            //            #endregion NoManualVersion
-            //        }
-
-            //        #endregion "If Drawing is in ARASInnovator"
-
-            //        #region "If Drawing is not in ARASInnovator"
-            //        else
-            //        {
-            //            obj.IsManualVersion = true;
-            //            Item fileItem = myInnovator.newItem("File", "add");
-            //            string seperatefilename = Path.GetFileName(obj.FilePath);
-            //            fileItem.setProperty("filename", seperatefilename);
-            //            fileItem.setID(myInnovator.getNewID());
-            //            fileItem.attachPhysicalFile(obj.FilePath);
-            //            Item checkin_result = fileItem.apply();
-            //            string newFileId = checkin_result.getItemByIndex(0).getProperty("id");
-            //            if (checkin_result.isError())
-            //            {
-            //                throw (new Exceptions.ConnectionException("Exception occured in 'SaveObject' method.\n Error string is :" + checkin_result.getErrorString()));
-            //            }
-            //            cadDocument_QRY = myInnovator.newItem(obj.ItemType, "add");
-            //            cadDocument_QRY.setProperty("name", obj.ObjectName);
-            //            cadDocument_QRY.setProperty("item_number", obj.ObjectNumber);
-            //            if (obj.ObjectProjectId.ToString().Length > 1)
-            //            {
-            //                cadDocument_QRY.setProperty("sg_project_name", obj.ObjectProjectId);
-            //            }
-            //            if (obj.ObjectDescription.ToString().Length > 1)
-            //                cadDocument_QRY.setProperty("description", obj.ObjectDescription);
-            //            cadDocument_QRY.setProperty("authoring_tool", obj.AuthoringTool);
-            //            if (obj.Classification != "Non" && obj.Classification != null && obj.Classification != "")
-            //                cadDocument_QRY.setProperty("classification", obj.Classification);
-            //            cadDocument_QRY.setProperty("native_file", newFileId);
-            //            cadDocument_RES = cadDocument_QRY.apply();
-            //            newDrawingId = cadDocument_RES.getProperty("id");
-            //            SavedData.Add(seperatefilename, cadDocument_RES.getProperty("id"));
-
-            //            #region AddtoPart
-            //            if (obj.ObjectRealtyId.ToString().Length > 1)
-            //            {
-            //                Item sg_Part = myInnovator.applyAML("<AML><Item type='Part' action='get'><item_number>" + obj.ObjectRealtyId + "</item_number></Item></AML>");
-
-            //                Item PartCADItem = myInnovator.newItem("Part CAD", "add");
-            //                PartCADItem.setProperty("source_id", sg_Part.getProperty("id"));
-            //                PartCADItem.setProperty("related_id", cadDocument_RES.getProperty("id"));
-            //                Item PartCADItem_RES = PartCADItem.apply();
-            //                if (PartCADItem_RES.isError())
-            //                {
-            //                    throw (new Exceptions.ConnectionException("Exception occured in 'Realty Entity SaveObject' method.\n Error string is :" + PartCADItem_RES.getErrorString()));
-            //                }
-            //            }
-            //            #endregion AddtoPart
-
-            //        }
-            //        #endregion
-
-            //        #region "Manage Layout"
-            //        Item sg_CAD = myInnovator.getItemById("CAD", newDrawingId);
-
-            //        String query = "select distinct(keyed_name) from innovator.[CAD] where id in (select related_id from innovator.[sg_RelatedCADLayout] where source_id in (select id from innovator.[CAD] where item_number='" + sg_CAD.getProperty("item_number", "") + "'))";
-            //        Item DwgLayout = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
-
-            //        Hashtable Layout_Old = new Hashtable();
-
-            //        for (int l = 0; l < DwgLayout.getItemCount(); l++)
-            //        {
-            //            Item Old_Layout = myInnovator.getItemByKeyedName("CAD", DwgLayout.getItemByIndex(l).getProperty("keyed_name"));
-            //            if (Old_Layout == null) continue;
-            //            if (Layout_Old.Contains(Old_Layout.getItemByIndex(0).getProperty("name"))) continue;
-            //            Layout_Old.Add(Old_Layout.getItemByIndex(0).getProperty("name"), Old_Layout.getItemByIndex(0).getProperty("id"));
-            //        }
-
-            //        foreach (string layout in Layouts)
-            //        {
-            //            if (Layout_Old.Contains(layout))
-            //            {
-            //                if (obj.IsManualVersion)
-            //                {
-            //                    Item CAD = myInnovator.getItemById("CAD", Layout_Old[layout].ToString());
-            //                    String sg_LayoutState = CAD.getProperty("state").ToString();
-            //                    if ((sg_LayoutState != "Preliminary"))
-            //                    {
-            //                        MessageBox.Show("The Layout \"" + layout + "\" is in \"" + CAD.getProperty("state").ToString() + "\" LifeCycle State. So we are unable to create new generation of it. To Create new generation of Layout \"" + layout + "\" create new REVISION of Layout using Change Process.", "Warning");
-            //                        //myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedCADLayout] where related_id='" + CAD.getProperty("id").ToString() + "' and source_id='" + newDrawingId + "'</query>");
-            //                    }
-            //                    else
-            //                    {
-            //                        CAD = myInnovator.newItem("CAD", "edit");
-            //                        CAD.setAttribute("where", "id='" + Layout_Old[layout] + "'");
-            //                        CAD.setProperty("description", obj.ObjectDescription.ToString());
-            //                        Item CADRes = CAD.apply("version");
-            //                        CADRes.unlockItem();
-            //                        query = "select * from innovator.[sg_RelatedCADLayout] where related_id='" + CADRes.getProperty("id").ToString() + "' and source_id='" + newDrawingId + "'";
-            //                        Item LayoutCurr = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
-
-            //                        if (LayoutCurr.getItemCount() < 1)//If Layout is not in Relationship "sg_RelatedCADLayout"
-            //                        {
-            //                            Item Layout = myInnovator.newItem("sg_RelatedCADLayout", "add");
-            //                            Layout.setProperty("source_id", newDrawingId);
-            //                            Layout.setProperty("related_id", CADRes.getProperty("id").ToString());
-            //                            Layout = Layout.apply();
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (layout.Length > 0)
-            //                {
-            //                    Item sg_Layout = myInnovator.newItem("CAD", "add");
-            //                    sg_Layout.setProperty("name", layout);
-            //                    sg_Layout.setProperty("item_number", myInnovator.getNextSequence("sg_CADLayoutSequence") + "_" + sg_CAD.getProperty("item_number"));
-            //                    sg_Layout.setProperty("classification", "Layout");
-            //                    sg_Layout.setProperty("description", obj.ObjectDescription.ToString());
-            //                    sg_Layout.setProperty("sg_project_name", sg_CAD.getProperty("sg_project_name"));
-            //                    Item sg_LayoutRes = sg_Layout.apply();
-
-            //                    Item sg_CADItem = myInnovator.newItem("CAD", "edit");
-            //                    sg_CADItem.setAttribute("where", "id='" + newDrawingId + "'");
-            //                    Item CADLayoutItem = myInnovator.newItem("sg_RelatedCADLayout", "add");
-            //                    CADLayoutItem.setRelatedItem(sg_LayoutRes);
-            //                    sg_CADItem.addRelationship(CADLayoutItem);
-            //                    Item sg_CADItemRES = sg_CADItem.apply();
-            //                }
-            //            }
-            //        }
-
-            //        //If Layout is deleted or Renamed then treat as deletion of Relationship
-            //        foreach (DictionaryEntry layout_old in Layout_Old)
-            //        {
-            //            Boolean flag = true;
-            //            foreach (string layout in Layouts)
-            //            {
-            //                if (layout == layout_old.Key.ToString())
-            //                {
-            //                    flag = false;
-            //                    break;
-            //                }
-            //            }
-            //            if (flag)
-            //            {
-            //                Item delRelItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedCADLayout] where source_id='" + newDrawingId + "' and related_id='" + layout_old.Value.ToString() + "'</query>");
-            //                // delRelItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[sg_RelatedEntityLayout] where related_id='" + layout_old.Value.ToString() + "'</query>");
-            //            }
-            //        }
-
-            //        //Update Realty Entity After File Checkin To Maintain Relationship "sg_RelatedEntityLayout" according to related "CAD" Items
-            //        query = "select distinct(config_id) from innovator.[Part] where id in (select source_id from innovator.[Part_CAD] where related_id ='" + newDrawingId + "')";
-            //        Item sg_Realty = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
-
-            //        for (int i = 0; i < sg_Realty.getItemCount(); i++)
-            //        {
-            //            Item sg_Part = myInnovator.newItem("Part", "edit");
-            //            sg_Part.setAttribute("where", "config_id='" + sg_Realty.getItemByIndex(i).getProperty("config_id") + "'");
-            //            sg_Part = sg_Part.apply();
-            //        }
-
-            //        #endregion "Manage Layout"
-
-            //        #region "Add Drawings under Root Drawing"
-            //        /*
-            //           if (obj.IsManualVersion && !obj.IsNew)
-            //          {
-            //              if (obj.IsRoot)
-            //                  sourceid = cadDocument_RES.getProperty("id");
-            //              else
-            //                  newDrawingId = cadDocument_RES.getProperty("id");
-
-            //              if (!obj.IsRoot)
-            //              {
-            //                  Item relationship_RES;
-            //                  cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                  cadDocument_QRY.setProperty("id", sourceid);
-            //                  relationship_RES = cadDocument_QRY.apply();
-
-            //                  cadDocument_QRY = myInnovator.newItem(obj.ItemType, "get");
-            //                  cadDocument_QRY.setProperty("config_id", relationship_RES.getProperty("config_id"));
-            //                  cadDocument_QRY.setProperty("is_current", "1");
-            //                  relationship_RES = cadDocument_QRY.apply();
-            //                  Item selItm = myInnovator.applyMethod("sg_run_sql_query", "<query>select * from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");
-            //                  if (selItm.getItemCount() > 0)
-            //                  {
-            //                      Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>Delete from innovator.[CAD_Structure] where source_id='" + relationship_RES.getProperty("id") + "' and related_id in (select id from innovator.[CAD] where item_number='" + cadDocument_RES.getProperty("item_number") + "')</query>");
-            //                  }
-            //                    cadDocument_QRY = myInnovator.newItem("CAD Structure", "add");
-            //                    cadDocument_QRY.setProperty("source_id", relationship_RES.getProperty("id"));
-            //                    if (relationship_RES.getProperty("project_name") != null || relationship_RES.getProperty("project_name") != "")
-            //                    {
-            //                        Item NewCAD = myInnovator.getItemById("CAD", newDrawingId);
-            //                        if (NewCAD.getItemByIndex(0).getProperty("project_name") == null || NewCAD.getItemByIndex(0).getProperty("project_name") == "")
-            //                        {
-            //                           Item updateItm = myInnovator.applyMethod("sg_run_sql_query", "<query>update innovator.[CAD] set project_name='" + relationship_RES.getProperty("project_name") + "' where id='" + newDrawingId + "'</query>");
-            //                        }
-            //                    }
-            //                    cadDocument_QRY.setProperty("related_id", newDrawingId);
-            //                    relationship_RES = cadDocument_QRY.apply();
-            //                  }
-            //          }*/
-            //        #endregion "Add Drawings under Root Drawing"
-
-            //        #region "Update PLMObject information"
-            //        obj.ObjectId = cadDocument_RES.getProperty("id");
-            //        obj.Classification = cadDocument_RES.getProperty("classification");
-            //        obj.ObjectGeneration = cadDocument_RES.getProperty("generation");
-            //        obj.ObjectNumber = cadDocument_RES.getProperty("item_number");
-            //        obj.ObjectRevision = cadDocument_RES.getProperty("major_rev");
-            //        obj.ObjectState = cadDocument_RES.getProperty("state");
-            //        obj.ObjectName = cadDocument_RES.getProperty("name");
-            //        obj.ObjectProjectId = cadDocument_RES.getProperty("sg_project_name");
-            //        //obj.ObjectProjectId = cadDocument_RES.getProperty("project_id");
-            //        obj.LockStatus = cadDocument_RES.fetchLockStatus().ToString();
-            //        #endregion
-            //    }//end For
-            //    #endregion "Save PLMObjects"
-
-            //    #region ManageCADStructureRel
-            //    foreach (PLMObject obj in plmobjs)
-            //    {
-            //        String seperatefilename = Path.GetFileName(obj.FilePath);
-            //        String MyDrawingId = "";
-            //        foreach (DictionaryEntry de in SavedData)
-            //        {
-            //            if (de.Key.ToString() == seperatefilename)
-            //            {
-            //                MyDrawingId = de.Value.ToString();
-            //            }
-            //        }
-            //        #region "If Drawing is in ARASInnovator"
-            //        if (!obj.IsNew)
-            //        {
-            //            #region "Manage RelatedData: if Source updated"
-
-            //            String query = "select distinct related_id from innovator.[CAD_STRUCTURE] where source_id='" + MyDrawingId + "'";
-            //            Item PrevRel = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
-
-            //            for (int related = 0; related < PrevRel.getItemCount(); related++)
-            //            {
-            //                Item Child = myInnovator.getItemById("CAD", PrevRel.getItemByIndex(related).getProperty("related_id").ToString());
-            //                Item LatestChild = myInnovator.getItemByKeyedName("CAD", Child.getProperty("keyed_name").ToString());
-
-            //                query = "delete from innovator.[CAD_STRUCTURE] where source_id='" + obj.ObjectId + "' and related_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'";
-            //                Item delRes = myInnovator.applyMethod("sg_run_sql_query", "<query>" + query + "</query>");
-
-            //                Item NewCADStr = myInnovator.newItem("CAD Structure", "add");
-            //                NewCADStr.setProperty("source_id", obj.ObjectId);
-            //                NewCADStr.setProperty("related_id", LatestChild.getItemByIndex(0).getProperty("id").ToString());
-            //                Item NewCADStrRes = NewCADStr.apply();
-            //            }
-            //            #endregion "Manage RelatedData: if Source updated"
-
-            //            #region "Manage SourceData: if RelatedItem updated"
-            //            /*PrevRel = myInnovator.applyMethod("sg_run_sql_query", "<query>select distinct source_id from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "'</query>");
-            //            for (int related = 0; related < PrevRel.getItemCount(); related++)
-            //            {
-            //                Item Child = myInnovator.getItemById("CAD", PrevRel.getItemByIndex(related).getProperty("source_id").ToString());
-            //                Item LatestChild = myInnovator.getItemByKeyedName("CAD", Child.getProperty("keyed_name").ToString());
-            //                Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + obj.ObjectId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
-
-            //                Item NewCADStr = myInnovator.newItem("CAD Structure", "add");
-            //                NewCADStr.setProperty("source_id", LatestChild.getItemByIndex(0).getProperty("id").ToString());
-            //                NewCADStr.setProperty("related_id", obj.ObjectId);
-            //                Item NewCADStrRes = NewCADStr.apply();
-            //                delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + MyDrawingId + "' and source_id='" + LatestChild.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
-
-            //            }*/
-            //            #endregion "Manage SourceData: if RelatedItem updated"
-            //        }
-            //        #endregion "If Drawing is in ARASInnovator"
-
-            //        #region "If Drawing is not in ARASInnovator"
-            //        else
-            //        {
-            //            if ((obj.ObjectProjectId == null || obj.ObjectProjectId == "") && (ProjectName != ""))
-            //            {
-            //                Item updateItm = myInnovator.applyMethod("sg_run_sql_query", "<query>update innovator.[CAD] set sg_project_name='" + ProjectName + "' where id='" + obj.ObjectId + "'</query>");
-            //            }
-            //        }
-            //        #endregion "If Drawing is not in ARASInnovator"
-
-            //        if (!obj.IsRoot)
-            //        {
-            //            String[] SaveID = new String[10];
-            //            ArrayList SourceIds = new ArrayList();
-            //            SaveID = obj.ObjectSourceId.ToString().Split(',');
-            //            for (int ids = 0; ids < SaveID.Length; ids++)
-            //            {
-            //                foreach (DictionaryEntry de in SavedData)
-            //                {
-            //                    if (de.Key.ToString() == SaveID[ids] || de.Key.ToString().Substring(0, de.Key.ToString().Length - 4) == SaveID[ids])
-            //                    {
-            //                        SourceIds.Add(de.Value.ToString());
-            //                    }
-            //                }
-            //            }
-
-            //            for (int rel = 0; rel < SourceIds.Count; rel++)
-            //            {
-            //                Item Latest = myInnovator.getItemById("CAD", SourceIds[rel].ToString());
-            //                Item LatestCAD = myInnovator.getItemByKeyedName("CAD", Latest.getItemByIndex(0).getProperty("keyed_name"));
-            //                Item delItm = myInnovator.applyMethod("sg_run_sql_query", "<query>delete from innovator.[CAD_STRUCTURE] where related_id='" + obj.ObjectId + "' and source_id='" + LatestCAD.getItemByIndex(0).getProperty("id").ToString() + "'</query>");
-
-            //                Item CADStructure = myInnovator.newItem("CAD Structure", "add");
-            //                CADStructure.setProperty("source_id", LatestCAD.getItemByIndex(0).getProperty("id"));
-            //                CADStructure.setProperty("related_id", obj.ObjectId);
-            //                Item CADStructureRes = CADStructure.apply();
-            //            }
-            //            SourceIds.Clear();
-            //        }
-            //    }
-            //    #endregion ManageCADStructureRel
-            //}//end Catch
-            //catch (Exception ex)
-            //{
-            //    throw (new Exceptions.ConnectionException("ArasConnector SaveObject Exception Message : " + ex.Message));
-            //}
-            #endregion
-            return true;
         }
 
-        public bool UpdateFileProperties(string FileID,string Type,string Status,string Project, string FilePath,string PreFix)
+        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project, string FilePath, string PreFix)
         {
             try
             {
                 Type = Type == "-1" ? string.Empty : Type;
                 Status = Status == "-1" ? string.Empty : Status;
                 RestResponse restResponse;
-                //restResponse = (RestResponse)ServiceHelper.PostData(
-                //                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                //                "/AutocadFiles/uploadFileService", DataFormat.Json, null, true
-                //                , new List<KeyValuePair<string, string>> {
-                //                     new KeyValuePair<string, string>("project", Project) ,
+
+
+
+                //restResponse = (RestResponse)ServiceHelper.SaveObject(
+                //   Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                //   "/AutocadFiles/uploadFileService", FilePath,
+                //        true, new List<KeyValuePair<string, string>> {
+                //            new KeyValuePair<string, string>("project", Project) ,
                 //            new KeyValuePair<string, string>("fileStatus", Status),
                 //            new KeyValuePair<string, string>("fileType", Type),
                 //             new KeyValuePair<string, string>("fileId", FileID)
-                //                            });
+                //        }, PreFix, true);
+
+                List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+                KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
 
 
-                restResponse = (RestResponse)ServiceHelper.SaveObject(
-                   Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                   "/AutocadFiles/uploadFileService",  FilePath,
-                        true, new List<KeyValuePair<string, string>> {
-                            new KeyValuePair<string, string>("project", Project) ,
-                            new KeyValuePair<string, string>("fileStatus", Status),
-                            new KeyValuePair<string, string>("fileType", Type),
-                             new KeyValuePair<string, string>("fileId", FileID)
-                        },  PreFix);
+                Keys = new KeyValuePair<string, string>("project", Project);
+                keyValuePairs.Add(Keys);
 
+                Keys = new KeyValuePair<string, string>("fileStatus", Status);
+                keyValuePairs.Add(Keys);
+
+                Keys = new KeyValuePair<string, string>("fileType", Type);
+                keyValuePairs.Add(Keys);
+
+                Keys = new KeyValuePair<string, string>("source", "Computer");
+                keyValuePairs.Add(Keys);
+
+                string IsNew = "";
+                if (FileID.Trim().Length > 0)
+                {
+                    Keys = new KeyValuePair<string, string>("fileId", FileID);
+                    keyValuePairs.Add(Keys);
+                }
+
+
+
+
+
+                Keys = new KeyValuePair<string, string>("isNew", "false");
+                keyValuePairs.Add(Keys);
+                // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
+                restResponse = (RestResponse)ServiceHelper.PostData(
+                                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                "/AutocadFiles/uploadFileServiceProp", DataFormat.Json, null,
+                                     true, keyValuePairs);
 
                 //checking if service call was successful or not.
                 if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                { 
+                {
                     ShowMessage.ErrorMess("Some error occurred while updating file properties.");
                     return false;
                 }
@@ -829,57 +438,106 @@ namespace RedBracketConnector
             }
             return false;
         }
+        public List<clsFolderSearchReasult> SearchFolder(string Project, string Folder)
+        {
+            List<clsFolderSearchReasult> saveResult = null;
+            try
+            {
 
-        public bool UpdateLayoutInfo(string ProjectID, string Fileid, string LayoutID, string StatusID, string TypeID,string LayoutName, string LayoutDesc)
+                RestResponse restResponse;
+                List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+
+                KeyValuePair<string, string> valuePair;
+
+                //if (Convert.ToDecimal(Project) > 0)
+                {
+                    valuePair = new KeyValuePair<string, string>("projectId", Project);
+                    keyValuePairs.Add(valuePair);
+                }
+                if (Convert.ToDecimal(Folder) > 0)
+                {
+                    KeyValuePair<string, string> valuePair1 = new KeyValuePair<string, string>("folderId", Folder);
+                    keyValuePairs.Add(valuePair1);
+                }
+
+
+                restResponse = (RestResponse)ServiceHelper.GetData(
+                   Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                   "/AutocadFiles/getFolderPath",
+                        true, keyValuePairs
+                         );
+
+
+                //checking if service call was successful or not.
+                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    ShowMessage.ErrorMess("Some error occurred while searching for folder.");
+
+                }
+                else if (restResponse.Content.Trim().Length > 0)
+                {
+                    saveResult = JsonConvert.DeserializeObject<List<clsFolderSearchReasult>>(restResponse.Content);
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return saveResult;
+        }
+
+        public bool UpdateLayoutInfo(string ProjectID, string Fileid, string LayoutID, string StatusID, string TypeID, string LayoutName, string LayoutDesc)
         {
             try
             {
 
-                 
-                    
 
-                    SaveFileCommand objSFC = new SaveFileCommand();
-                    RestResponse restResponse;
-                    //service calling 
 
-                    
 
-                        restResponse = (RestResponse)ServiceHelper.PostData(
-                      Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                      "/AutocadFiles/uploadLayoutACFileVersion", DataFormat.Json, null, false
-                         , new List<KeyValuePair<string, string>> {
+                SaveFileCommand objSFC = new SaveFileCommand();
+                RestResponse restResponse;
+                //service calling 
+
+
+
+                restResponse = (RestResponse)ServiceHelper.PostData(
+              Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+              "/AutocadFiles/uploadLayoutACFileVersion", DataFormat.Json, null, false
+                 , new List<KeyValuePair<string, string>> {
                               new KeyValuePair<string, string>("source", "Computer"),
                                          new KeyValuePair<string, string>("fileId", Fileid),
                                              new KeyValuePair<string, string>("layoutId", LayoutID)                                             ,
-                                             new KeyValuePair<string, string>("versiondesc",  LayoutDesc), 
+                                             new KeyValuePair<string, string>("versiondesc",  LayoutDesc),
                                                  new KeyValuePair<string, string>("userName",  Helper.UserName),
                                              new KeyValuePair<string, string>("status",  StatusID),
                                               new KeyValuePair<string, string>("type",  TypeID),
-                                             new KeyValuePair<string, string>("layoutname",  LayoutName), 
-                                               new KeyValuePair<string, string>("project", ProjectID)
-                                                 });
-                    
-
-
-                    //checking if service call was successful or not.
-                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                    {
-                        //ShowMessage.InfoMess(restResponse.Content);
-                        //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
-                        ShowMessage.ErrorMess("Some error occurred while uploading layout info.");
-                        return false;
-                    }
-                    else if (restResponse.Content.Trim().Length > 0)
-                    {
+                                             new KeyValuePair<string, string>("layoutname",  LayoutName),
+                                               new KeyValuePair<string, string>("project", ProjectID),
+                                                    new KeyValuePair<string, string>("isNew", "false")
+                                         });
 
 
 
-                    }
+                //checking if service call was successful or not.
+                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    //ShowMessage.InfoMess(restResponse.Content);
+                    //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
+                    ShowMessage.ErrorMess("Some error occurred while uploading layout info.");
+                    return false;
+                }
+                else if (restResponse.Content.Trim().Length > 0)
+                {
+
+
+
+                }
 
 
 
 
-               
+
 
 
                 return true;
@@ -993,7 +651,7 @@ namespace RedBracketConnector
                                              new KeyValuePair<string, string>("status",  Convert.ToString(dr["StatusID"]).Trim()),
                                               new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
                                               new KeyValuePair<string, string>("source",  "Computer"),
-                                             new KeyValuePair<string, string>("description",  Convert.ToString(dr["Description"]).Trim())  });
+                                             new KeyValuePair<string, string>("description",  Convert.ToString(dr["Description"]).Trim()) });
 
 
 
@@ -1014,7 +672,8 @@ namespace RedBracketConnector
                                              new KeyValuePair<string, string>("status",  Convert.ToString(dr["StatusID"]).Trim()),
                                               new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
                                               new KeyValuePair<string, string>("layoutname",  Convert.ToString(dr["FileLayoutName"]).Trim()),
-                                               new KeyValuePair<string, string>("project", ProjectID)
+                                               new KeyValuePair<string, string>("project", ProjectID),
+                                                    new KeyValuePair<string, string>("isNew", "true")
                                                  });
                     }
 
@@ -1030,9 +689,9 @@ namespace RedBracketConnector
                     else if (restResponse.Content.Trim().Length > 0)
                     {
                         SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
-              
 
-                        var Drawing = JsonConvert.DeserializeObject< DataofData >(saveResult.dataofdata) ;
+
+                        var Drawing = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata);
                         if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                         {
                             dr["ACLayoutID"] = Drawing.id;
@@ -1040,12 +699,12 @@ namespace RedBracketConnector
 
 
 
-                        }
-
-
-
-
                     }
+
+
+
+
+                }
 
 
                 return true;
@@ -1261,7 +920,7 @@ namespace RedBracketConnector
             {
                 dataTableProjectInfo = GetDataFromWS("/ProjectAutocad/fetchUserAutocadProjectsService", "project detail", "GET");
 
-                if(dataTableProjectInfo!=null)
+                if (dataTableProjectInfo != null)
                 {
                     dataTableProjectInfo.Columns.Add("PNAMENO");
 
@@ -1270,7 +929,7 @@ namespace RedBracketConnector
                         dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) + " (" + Convert.ToString(dataTableProjectInfo.Rows[i]["number"]) + ")";
                     }
                 }
-                
+
             }
             catch (Exception E)
             {
