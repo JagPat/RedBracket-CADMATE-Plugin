@@ -593,7 +593,8 @@ namespace AutocadPlugIn
             Btn_Help.ShowImage = true;
             Btn_Help.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
             Btn_Help.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
-            Btn_Help.Size = RibbonItemSize.Standard;
+            Btn_Help.Size = RibbonItemSize.Large;
+            Btn_Help.Orientation = System.Windows.Controls.Orientation.Vertical;
             Btn_Help.CommandHandler = new Help();
 
 
@@ -603,13 +604,14 @@ namespace AutocadPlugIn
             Btn_About.ShowImage = true;
             Btn_About.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.about);
             Btn_About.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.about);
-            Btn_About.Size = RibbonItemSize.Standard;
+            Btn_About.Size = RibbonItemSize.Large;
+            Btn_About.Orientation = System.Windows.Controls.Orientation.Vertical;
             Btn_About.CommandHandler = new About();
 
 
             RibbonRowPanel pan5row1 = new RibbonRowPanel();
             pan5row1.Items.Add(Btn_Help);
-            pan5row1.Items.Add(new RibbonRowBreak());
+            //pan5row1.Items.Add(new RibbonRowBreak());
             pan5row1.Items.Add(Btn_About);
             panel5Panel.Items.Add(pan5row1);
 

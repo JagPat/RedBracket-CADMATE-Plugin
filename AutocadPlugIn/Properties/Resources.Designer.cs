@@ -223,16 +223,6 @@ namespace AutocadPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RedBracket {
-            get {
-                object obj = ResourceManager.GetObject("RedBracket", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap ReferenceImage {
             get {
                 object obj = ResourceManager.GetObject("ReferenceImage", resourceCulture);
