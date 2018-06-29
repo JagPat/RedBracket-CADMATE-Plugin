@@ -528,11 +528,11 @@ namespace AutocadPlugIn
             Btn_Lock.IsEnabled = LockEnable;
 
 
-            Btn_Unlock.Text = "Unlock";
+            Btn_Unlock.Text = "Lock & Unlock";
             Btn_Unlock.ShowText = true;
             Btn_Unlock.ShowImage = true;
-            Btn_Unlock.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Unlock);
-            Btn_Unlock.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Unlock);
+            Btn_Unlock.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
+            Btn_Unlock.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
             Btn_Unlock.Size = RibbonItemSize.Large;
             Btn_Unlock.Orientation = System.Windows.Controls.Orientation.Vertical;
             Btn_Unlock.CommandHandler = new Unlock();
@@ -554,7 +554,7 @@ namespace AutocadPlugIn
             rpsSave.Items.Add(rrpSave);
 
             RibbonRowPanel pan4row1 = new RibbonRowPanel();
-            pan4row1.Items.Add(Btn_Lock);
+            //pan4row1.Items.Add(Btn_Lock);
 
             pan4row1.Items.Add(Btn_Unlock);
             panel4Panel.Items.Add(pan4row1);
@@ -583,7 +583,7 @@ namespace AutocadPlugIn
 
 
             //Help and About
-            panel5Panel.Title = "Help";
+            panel5Panel.Title = "Help & About";
             panel5.Source = panel5Panel;
             Tab.Panels.Add(panel5);
 

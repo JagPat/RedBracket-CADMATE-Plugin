@@ -335,6 +335,7 @@
     <Content Include="Resources\lock.png" />
     <Content Include="Resources\LocknewStrip.png" />
     <None Include="Resources\Login.png" />
+    <None Include="Resources\LockUnlock.png" />
     <Content Include="Resources\Open.png" />
     <None Include="Resources\LoginUserSettings.png" />
     <None Include="Resources\CheckinUserSettings.png" />

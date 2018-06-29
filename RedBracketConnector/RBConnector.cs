@@ -80,31 +80,62 @@ namespace RedBracketConnector
 
                         if (IsFileSave)
                         {
-                            string IsNew = "false";
-                            if (obj.IsNew)
+
+                            if(obj.IsNew)
                             {
-                                IsNew = "false";
+                                http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFile?
+                                //userName =testing@yopmail.com&project=143&source=Computer&fileId=a8b2ec09-12bc-4907-9cf9-280918095b5a
+                                restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                    "/AutocadFiles/uploadFile", obj.FilePath,
+                                    true, new List<KeyValuePair<string, string>>                                            
+                                    {
+                                        new KeyValuePair<string, string>("userName",Helper.UserName),
+                                        new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                                                    new KeyValuePair<string, string>("source","Computer"),
+                                                    new KeyValuePair<string, string>("project",obj.ObjectProjectId),
+                                                    new KeyValuePair<string, string>("folderId", obj.FolderID.Trim())
+                                    }, PreFix, true);
                             }
                             else
                             {
-                                IsNew = "true";
+                                //http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileVersion?
+                                //userName =testing@yopmail.com&fileId=a8b2ec09-12bc-4907-9cf9-280918095b5a&source=Computer
+                                restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                    "/AutocadFiles/uploadFileVersion", obj.FilePath,
+                                    true, new List<KeyValuePair<string, string>>
+                                    {        new KeyValuePair<string, string>("userName",Helper.UserName),
+                                        new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                                                    new KeyValuePair<string, string>("source","Computer")
+                                                    
+                                    }, PreFix, true);
                             }
+                            //string IsNew = "false";
+                            //if (obj.IsNew)
+                            //{
+                            //    IsNew = "false";
+                            //}
+                            //else
+                            //{
+                            //    IsNew = "true";
+                            //}
 
 
-                            if (obj.FolderID.Trim().Length > 0)
-                            {
-                                //Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
-                            }
+                            //if (obj.FolderID.Trim().Length > 0)
+                            //{
+                            //    //Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
+                            //}
 
                             //save =false
-                            restResponse = (RestResponse)ServiceHelper.SaveObject(
-                                            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                            "/AutocadFiles/uploadFileService", obj.FilePath,
-                                            true, new List<KeyValuePair<string, string>>
-                                            {       new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                                                    new KeyValuePair<string, string>("isNew",Convert.ToString(IsNew).ToLower()),
-                                                    new KeyValuePair<string, string>("folderidString", obj.FolderID.Trim())
-                                            }, PreFix, true);
+                            //restResponse = (RestResponse)ServiceHelper.SaveObject(
+                            //                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                            //                "/AutocadFiles/uploadFileService", obj.FilePath,
+                            //                true, new List<KeyValuePair<string, string>>
+                            //                {       new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                            //                        new KeyValuePair<string, string>("isNew",Convert.ToString(IsNew).ToLower()),
+                            //                        new KeyValuePair<string, string>("folderidString", obj.FolderID.Trim())
+                            //                }, PreFix, true);
 
                             if (!obj.IsRoot && obj.IsNew)
                             {
