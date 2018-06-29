@@ -29,6 +29,7 @@ namespace AutocadPlugIn.UI_Forms
         private System.Data.DataTable dtTreeGridData = new System.Data.DataTable();
         RBConnector objRBC = new RBConnector();
         Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
+        List<System.Data.DataTable> lstdtLayoutInfo = new List<System.Data.DataTable>();
         public bool LoadFlag = false;
 
         public frmSave_Active_Drawings()
@@ -482,6 +483,7 @@ namespace AutocadPlugIn.UI_Forms
                 AutoCADManager objMgr = new AutoCADManager();
                 SaveCommand objCmd = new SaveCommand();
 
+                lstdtLayoutInfo = new List<System.Data.DataTable>();
                 htNewDrawings.Clear();
                 drawings.Clear();
                 GenFileInfo();
@@ -554,60 +556,60 @@ namespace AutocadPlugIn.UI_Forms
                         }
                         #endregion
 
-                        //Update Xref name to wihout prefix 
-                        objMgr.UpdateExRefPathInfo1(FilePath);
+                      
 
 
                         progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading file properties."; lblStatus.Refresh();
                         // save properties in RB
-                        Is_Save = objController.ExecuteSave(objCmd, false);
+                        Is_Save = objController.ExecuteSave(objCmd, false,lstdtLayoutInfo);
                         progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading layout properties."; lblStatus.Refresh();
 
                         if (Is_Save)
                         {
+                           
                             //Save layout info
                             #region Save layout info
-                            try
-                            {
-                                System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)currentTreeGrdiNode.Tag;
-                                string MyProjectId = "";
+                            //try
+                            //{
+                            //    System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)currentTreeGrdiNode.Tag;
+                            //    string MyProjectId = "";
 
-                                if (dtLayoutInfo != null)
-                                {
-                                    try
-                                    {
+                            //    if (dtLayoutInfo != null)
+                            //    {
+                            //        try
+                            //        {
 
-                                        MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
-                                    }
-                                    catch
-                                    {
-                                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
+                            //            MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
+                            //        }
+                            //        catch
+                            //        {
+                            //            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
 
-                                        //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
-                                        //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
-                                        MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                    }
+                            //            //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
+                            //            //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
+                            //            MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
+                            //        }
 
-                                    MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? string.Empty : MyProjectId;
+                            //        MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? string.Empty : MyProjectId;
 
-                                    objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]));
+                            //        objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]));
 
-                                    foreach (TreeGridNode Child in currentTreeGrdiNode.Nodes)
-                                    {
-                                        dtLayoutInfo = (System.Data.DataTable)Child.Tag;
+                            //        foreach (TreeGridNode Child in currentTreeGrdiNode.Nodes)
+                            //        {
+                            //            dtLayoutInfo = (System.Data.DataTable)Child.Tag;
 
-                                        objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("DrawingName='" + Convert.ToString(Child.Cells["drawing"].Value) + "'")[0]["DrawingId"]));
+                            //            objRBC.SaveUpdateLayoutInfo(dtLayoutInfo, MyProjectId, Convert.ToString(objController.dtDrawingProperty.Select("DrawingName='" + Convert.ToString(Child.Cells["drawing"].Value) + "'")[0]["DrawingId"]));
 
-                                    }
+                            //        }
 
-                                    //objMgr.SetLayoutOwnerID(dtLayoutInfo, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["filepath"]));
-                                }
+                            //        //objMgr.SetLayoutOwnerID(dtLayoutInfo, Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["filepath"]));
+                            //    }
 
-                            }
-                            catch
-                            {
+                            //}
+                            //catch
+                            //{
 
-                            }
+                            //}
                             #endregion
 
                             #region Update File Properties
@@ -733,8 +735,15 @@ namespace AutocadPlugIn.UI_Forms
                                     objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
                                 }
 
+                                //Update Xref name to wihout prefix 
+                                //objMgr.UpdateExRefPathInfo1(FilePath);
+
                             }
                             #endregion
+
+                            progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Updating file names."; lblStatus.Refresh();
+
+                            objMgr.UpdateExRefPathInfo2(objCmd.FilePath,ref objController.plmObjs);
 
                             progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading file to redbracket."; lblStatus.Refresh();
 
@@ -743,7 +752,7 @@ namespace AutocadPlugIn.UI_Forms
                             #region  Renaming Parent and XRef Files
 
                             //update Xref name to NewXref Name with PreFix
-                            objMgr.UpdateExRefPathInfo2(objCmd.FilePath);
+                          
 
                             #endregion
 
@@ -1178,12 +1187,17 @@ namespace AutocadPlugIn.UI_Forms
                 string FileStatusID = "";
                 string FileType = "";
 
+                System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)selectedTreeNode.Tag;
+
+                if (dtLayoutInfo == null)
+                    dtLayoutInfo = new System.Data.DataTable();
+                lstdtLayoutInfo.Add(dtLayoutInfo);
                 try
                 {
 
                     MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
-                    MyProjectNo = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "id");
+                    MyProjectNo = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "number");
                 }
                 catch
                 {

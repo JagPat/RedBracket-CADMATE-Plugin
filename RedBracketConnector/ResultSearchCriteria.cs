@@ -183,7 +183,7 @@ namespace RedBracketConnector
 
         public string size { set; get; }
 
-        public ResultSearchCriteriaStatus status { set; get; }
+        public SaveResultStatus status { set; get; }
 
         public string createdby { set; get; }
 

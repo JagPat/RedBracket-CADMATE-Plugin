@@ -8,7 +8,7 @@ using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 using CADController;
-
+using AdvancedDataGridView;
 namespace CADController.Controllers
 {
     public class SaveController : BaseController
@@ -22,15 +22,15 @@ namespace CADController.Controllers
         String ModifiedBy = "";
         String CreatedOn = "";
         String CreatedBy = "";
-        List<PLMObject> plmObjs = new List<PLMObject>();
+        public List<PLMObject> plmObjs = new List<PLMObject>();
         public override void Execute(Command command)
         {
         }
-        public bool ExecuteSave(SaveCommand command, bool IsFileSave = false)
+        public bool ExecuteSave(SaveCommand command, bool IsFileSave = false, List<DataTable> lstdtLayoutInfo = null)
         {
             try
             {
-                
+
                 if (!IsFileSave)
                 {
 
@@ -38,7 +38,7 @@ namespace CADController.Controllers
                     dtDrawingProperty = new DataTable();
                     bool IsNewStructure = false;
                     bool IsCreateNewRevision = false;
-                    
+
                     // creating table to store document info
                     dtDrawingProperty.Columns.Add("DrawingId");
                     dtDrawingProperty.Columns.Add("DrawingName");
@@ -69,6 +69,7 @@ namespace CADController.Controllers
                     dtDrawingProperty.Columns.Add("isletest");
                     dtDrawingProperty.Columns.Add("projectno");
                     dtDrawingProperty.Columns.Add("prefix");
+                    dtDrawingProperty.Columns.Add("layoutinfo");
 
 
                     SaveCommand cmd = (SaveCommand)command;
@@ -229,6 +230,28 @@ namespace CADController.Controllers
                                 plmObj.IsRoot = false;
                                 if (plmobjInfo[6] == "1")
                                     plmObj.IsRoot = true;
+
+
+                                bool IsNotFound = true;
+                                foreach (DataTable dt in lstdtLayoutInfo)
+                                {
+                                    if (dt.Rows.Count > 0)
+                                    {
+                                        if (System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(dt.Rows[0]["FileLayoutName"])) == fileName)
+                                        {
+                                            plmObj.dtLayoutInfo = lstdtLayoutInfo[0];
+                                            IsNotFound = false;
+                                            break;
+                                        }
+                                    }
+
+                                }
+                                if (IsNotFound)
+                                {
+                                    plmObj.dtLayoutInfo = new DataTable();
+                                }
+
+
                                 if (plmObj.IsRoot)
                                     plmObjs.Insert(0, plmObj);
                                 else
@@ -247,56 +270,61 @@ namespace CADController.Controllers
 
                 try
                 {
-                    dtDrawingProperty.Rows.Clear();
-                    // updating document info
-                    foreach (PLMObject plmobj in plmObjs)
+                    if (!IsFileSave)
                     {
-                        string PreFix = "";
-
-                        if (plmobj.ObjectRevision.Contains("Ver"))
+                        dtDrawingProperty.Rows.Clear();
+                        // updating document info
+                        foreach (PLMObject plmobj in plmObjs)
                         {
-                            plmobj.ObjectRevision = plmobj.ObjectRevision.Substring(plmobj.ObjectRevision.IndexOf("0"));
+                            string PreFix = "";
+
+                            if (plmobj.ObjectRevision.Contains("Ver"))
+                            {
+                                plmobj.ObjectRevision = plmobj.ObjectRevision.Substring(plmobj.ObjectRevision.IndexOf("0"));
+                            }
+
+                            if (ProjectName != "MyFiles" && ProjectName != "My Files" && ProjectName.Trim().Length > 0)
+                            {
+                                PreFix = plmobj.objectProjectNo + "-";
+                            }
+                            PreFix += Convert.ToString(plmobj.ObjectNumber) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectNumber) + "-";
+
+                            PreFix += Convert.ToString(plmobj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmobj.objectType) + "-";
+
+                            PreFix += Convert.ToString(plmobj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectRevision) + "#";
+
+                            //dtDrawingProperty.Rows.Clear();
+                            dtDrawingProperty.Rows.Add(plmobj.ObjectId,
+                                plmobj.ObjectName,
+                                plmobj.objectType,
+                                plmobj.ObjectNumber,
+                                plmobj.ObjectState,
+                                plmobj.ObjectRevision,
+                                plmobj.ObjectGeneration,
+                                plmobj.ItemType,
+                                plmobj.FilePath,
+                                plmobj.IsRoot,
+                                ProjectName,
+                                ProjectId,
+                                CreatedOn,
+                                CreatedBy,
+                                ModifiedOn,
+                                ModifiedBy, ""
+                                , plmobj.ObjectLayouts
+                                , plmobj.canDelete
+                                , plmobj.isowner
+                                , plmobj.hasViewPermission
+                                , plmobj.isActFileLatest
+                                , plmobj.isEditable
+                                , plmobj.canEditStatus
+                                , plmobj.hasStatusClosed
+                                , plmobj.isletest
+                                , plmobj.objectProjectNo
+                                , PreFix
+                                , plmobj.LayoutInfo);
                         }
-
-                        if (ProjectName != "MyFiles" && ProjectName != "My Files")
-                        {
-                            PreFix = plmobj.objectProjectNo + "-";
-                        }
-                        PreFix = PreFix + Convert.ToString(plmobj.ObjectNumber) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectNumber) + "-";
-
-                        PreFix += Convert.ToString(plmobj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmobj.objectType) + "-";
-
-                        PreFix += Convert.ToString(plmobj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectRevision) + "#";
-
-                        //dtDrawingProperty.Rows.Clear();
-                        dtDrawingProperty.Rows.Add(plmobj.ObjectId,
-                            plmobj.ObjectName,
-                            plmobj.objectType,
-                            plmobj.ObjectNumber,
-                            plmobj.ObjectState,
-                            plmobj.ObjectRevision,
-                            plmobj.ObjectGeneration,
-                            plmobj.ItemType,
-                            plmobj.FilePath,
-                            plmobj.IsRoot,
-                            ProjectName,
-                            ProjectId,
-                            CreatedOn,
-                            CreatedBy,
-                            ModifiedOn,
-                            ModifiedBy, ""
-                            , plmobj.ObjectLayouts
-                            , plmobj.canDelete
-                            , plmobj.isowner
-                            , plmobj.hasViewPermission
-                            , plmobj.isActFileLatest
-                            , plmobj.isEditable
-                            , plmobj.canEditStatus
-                            , plmobj.hasStatusClosed
-                            , plmobj.isletest
-                            , plmobj.objectProjectNo
-                            , PreFix);
                     }
+
                 }
                 catch (System.Exception E)
                 {

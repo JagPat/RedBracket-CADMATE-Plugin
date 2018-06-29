@@ -251,6 +251,9 @@ namespace RedBracketConnector
         public String FolderID { get; set; }
         public String FolderPath { get; set; }
 
+        public String LayoutInfo { get; set; }
+        public System.Data.DataTable dtLayoutInfo { get; set; }
+
         private List<Relationship> fromRelationships = new List<Relationship>();
         private List<Relationship> toRelationships = new List<Relationship>();
 

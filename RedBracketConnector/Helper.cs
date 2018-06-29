@@ -293,7 +293,27 @@ namespace RedBracketConnector
                     DrawingProperty.Add("projectno", dt.Rows[i]["projectno"]);
                     DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
                     DrawingProperty.Add("filetypeid", dt.Rows[i]["Classification"]);
-                    
+                    DrawingProperty.Add("layoutinfo", dt.Rows[i]["layoutinfo"]);
+
+                    string LayoutInfo1 = Convert.ToString(dt.Rows[i]["layoutinfo"]).Trim();
+                    if (LayoutInfo1.Length > 0)
+                    {
+                        List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
+                        int Count = 1;
+                        foreach (LayoutInfo objLI1 in objLI)
+                        {
+                            DrawingProperty.Add("Layout_" + Count + "_Name", objLI1.name);
+                            DrawingProperty.Add("Layout_" + Count + "_Number", objLI1.fileNo);
+                            DrawingProperty.Add("Layout_" + Count + "_Type", objLI1.typename);
+                            DrawingProperty.Add("Layout_" + Count + "_Status", objLI1.statusname);
+                            DrawingProperty.Add("Layout_" + Count + "_VersionNote", objLI1.description);
+                            DrawingProperty.Add("Layout_" + Count + "_CreatedBy", objLI1.createdby);
+                            DrawingProperty.Add("Layout_" + Count + "_UpdatedBy", objLI1.updatedby);
+                            DrawingProperty.Add("Layout_" + Count + "_UpdatedOn", objLI1.updatedon);
+
+                            Count++;
+                        }
+                    }
                 }
                 else
                 {
@@ -345,7 +365,7 @@ namespace RedBracketConnector
                     dtLayoutInfo.Columns.Add("TypeID");
                     dtLayoutInfo.Columns.Add("StatusID");
                     dtLayoutInfo.Columns.Add("ACLayoutID");
-                 
+
                     dtLayoutInfo.Columns.Add("islatest");
                     dtLayoutInfo.Columns.Add("Seq", typeof(decimal));
                     if (fileLayout != null)
@@ -355,7 +375,7 @@ namespace RedBracketConnector
                             DataRow dr = dtLayoutInfo.NewRow();
 
                             dr["LayoutID"] = obj.id;
-                          
+
                             dr["Description"] = obj.description;
                             dr["islatest"] = obj.isletest;
                             dr["FileLayoutName"] = obj.name;
@@ -381,7 +401,7 @@ namespace RedBracketConnector
                 {
                     LayoutInfo objLI = new LayoutInfo();
                     objLI.id = Convert.ToString(dr["LayoutID"]);
-                   
+
                     objLI.description = Convert.ToString(dr["Description"]);
                     objLI.isletest = Convert.ToBoolean(dr["islatest"]);
                     objLI.name = Convert.ToString(dr["FileLayoutName"]);
@@ -401,7 +421,7 @@ namespace RedBracketConnector
                     }
                     if (objLI.statusId.Trim().Length > 0)
                     {
-                        objLI.status = new ResultSearchCriteriaStatus();
+                        objLI.status = new SaveResultStatus();
                         objLI.status.id = Convert.ToInt16(objLI.statusId);
                         objLI.status.statusname = objLI.statusname;
                     }
@@ -447,8 +467,8 @@ namespace RedBracketConnector
                         LayoutInfos += obj.id;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
-                         
-                        
+
+
                         LayoutInfos += @"""description""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
@@ -539,13 +559,13 @@ namespace RedBracketConnector
             string RetVal = "";
             try
             {
-                RetVal= Ver = Ver.Trim();
-                if (Ver.Length>0)
+                RetVal = Ver = Ver.Trim();
+                if (Ver.Length > 0)
                 {
                     int VL = Ver.Length;
                     int RS = 14 - VL;
 
-                    for (int i = 0; i < RS/2; i++)
+                    for (int i = 0; i < RS / 2; i++)
                     {
                         RetVal = " " + RetVal;
                     }
@@ -562,7 +582,7 @@ namespace RedBracketConnector
                 ShowMessage.ErrorMess(E.Message);
             }
             return RetVal;
-          
+
         }
 
 

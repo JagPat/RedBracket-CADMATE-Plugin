@@ -294,6 +294,7 @@ namespace AutocadPlugIn
         }
         public void GetVersion(ref string CurrentVersion, ref string LatestVersion)
         {
+            return;
             Cursor.Current = Cursors.WaitCursor;
 
 

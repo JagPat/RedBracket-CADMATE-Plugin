@@ -24,6 +24,8 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                UnLockTree.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
+                UnLockTree.RowsDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Regular);
                 this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
                 this.imageStrip.TransparentColor = System.Drawing.Color.Magenta;
                 this.imageStrip.ImageSize = new Size(17, 17);

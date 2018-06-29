@@ -134,7 +134,7 @@ namespace AutocadPlugIn
 
                                             string CDrawingName = Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]);
                                             string PreFix = Convert.ToString(dtFileInfo.Rows[j]["prefix"]);
-                                            if (drawingName.Trim().Length >= PreFix.Length)
+                                            if (CDrawingName.Contains(PreFix))
                                             {
                                                 if (drawingName.Substring(0, PreFix.Length) == PreFix)
                                                 {
@@ -577,7 +577,7 @@ namespace AutocadPlugIn
         }
 
         [CommandMethod("OpenActiveDocument", CommandFlags.Session)]
-        public void OpenActiveDocument(String fileName, String openMode, Hashtable properties)
+        public void OpenActiveDocument(String fileName, String openMode, Hashtable properties = null)
         {
             currentDocumentProperties = properties;
             try
@@ -592,8 +592,8 @@ namespace AutocadPlugIn
                 else if (openMode == "View")
                 {
                     acadApp.DocumentManager.Open(fileName, false);
-                    this.SetAttributes(currentDocumentProperties);
-                    UpdateLayoutAttribute(currentDocumentProperties);
+                    //this.SetAttributes(currentDocumentProperties);
+                    //UpdateLayoutAttribute(currentDocumentProperties);
                 }
                 else if (openMode == "Edit")
                 {
@@ -1017,12 +1017,14 @@ namespace AutocadPlugIn
                 RedBracketConnector.ShowMessage.ErrorMess(ex.Message);
             }
         }
-        public void UpdateExRefPathInfo2(string FilePath)
+        public void UpdateExRefPathInfo2(string FilePath, ref List<PLMObject> plmObjs)
         {
             try
             {
                 //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-
+                string ParentNewPath = "";
+                bool IsMove = false;
+                bool IsDeleteChild = false;
                 Database mainDb = new Database(false, true);
                 using (mainDb)
                 {
@@ -1069,13 +1071,13 @@ namespace AutocadPlugIn
 
                             if (xdb != null)
                             {
-                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "", oldPreFix = "";
+                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "", oldPreFix = "", drawingname = "", projectNO = "";
                                 var dbsi = xdb.SummaryInfo.CustomProperties;
                                 while (dbsi.MoveNext())
                                 {
                                     if (Convert.ToString(dbsi.Key) == "projectno")
                                     {
-                                        ProjectName = Convert.ToString(dbsi.Value);
+                                        projectNO = Convert.ToString(dbsi.Value);
                                     }
                                     else if (Convert.ToString(dbsi.Key) == "drawingnumber")
                                     {
@@ -1096,47 +1098,98 @@ namespace AutocadPlugIn
                                     }
                                     else if (Convert.ToString(dbsi.Key) == "prefix")
                                     {
-                                        oldPreFix = Convert.ToString(dbsi.Value);
+                                        PreFix = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "drawingname")
+                                    {
+                                        drawingname = Convert.ToString(dbsi.Value);
+                                    }
+                                    else if (Convert.ToString(dbsi.Key) == "projectname")
+                                    {
+                                        ProjectName = Convert.ToString(dbsi.Value);
                                     }
                                 }
 
-                                if (ProjectName.Trim().Length > 0)
+                                ProjectName = ProjectName.Replace(" (" + projectNO + ")", "");
+                                string FN = Path.GetFileNameWithoutExtension(xgn.Name);
+                                oldPreFix = FN.Replace(Path.GetFileNameWithoutExtension(drawingname), "");
+
+                                //if (ProjectName.Trim().Length > 0)
+                                //{
+                                //    PreFix = ProjectName + "-";
+                                //}
+                                ////PreFix = PreFix + DrawingNO + "-";
+                                //PreFix += Convert.ToString(DrawingNO) == string.Empty ? string.Empty : Convert.ToString(DrawingNO) + "-";
+
+                                //PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
+
+                                //PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
+
+                                string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
+
+
+                                if (ProjectName.Trim().Length == 0)
                                 {
-                                    PreFix = ProjectName + "-";
+                                    ProjectName = "MyFiles";
                                 }
-                                //PreFix = PreFix + DrawingNO + "-";
-                                PreFix += Convert.ToString(DrawingNO) == string.Empty ? string.Empty : Convert.ToString(DrawingNO) + "-";
+                                checkoutPath = Path.Combine(checkoutPath, ProjectName);
+                                if (!Directory.Exists(checkoutPath))
+                                {
+                                    Directory.CreateDirectory(checkoutPath);
+                                }
+                                string path = checkoutPath;
 
-                                PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
-
-                                PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
-
-
-                                string path = Path.GetDirectoryName(FilePath);
                                 path += @"\" + PreFix;
 
+                                foreach (PLMObject obj in plmObjs)
+                                {
+                                    if (obj.FilePath == xgn.Name)
+                                    {
+
+                                    }
+                                }
                                 if (xgn.Name == FilePath)
                                 {
-                                    string PName = Path.GetFileName(FilePath);
-                                    if (PName.Trim().Length > oldPreFix.Length)
-                                    {
-                                        if (PName.Substring(0, oldPreFix.Length) == oldPreFix)
-                                        {
-                                            PName = PName.Substring(oldPreFix.Length);
 
-                                            string NewFilePath = path + PName;
-                                            if (File.Exists(FilePath) && FilePath != NewFilePath)
-                                            {
-                                                File.Delete(NewFilePath);
-                                                File.Move(FilePath, NewFilePath);
-                                                FilePath = NewFilePath;
-                                            }
+                                    string PName = Path.GetFileName(FilePath);
+                                    string NewFilePath = path + PName;
+
+                                    File.Delete(NewFilePath);
+                                    ParentNewPath = NewFilePath;
+                                    if (FilePath.Contains(checkoutPath))
+                                    {
+                                        IsMove = true;
+                                    }
+                                    foreach (PLMObject obj in plmObjs)
+                                    {
+                                        if (obj.FilePath == xgn.Name)
+                                        {
+                                            obj.FilePath = NewFilePath;
+                                            break;
                                         }
                                     }
-                                    else
-                                    {
 
-                                    }
+
+                                    //if (PName.Trim().Length > oldPreFix.Length)
+                                    //if (PName.Trim().Contains(oldPreFix))
+                                    //{
+                                    //    if (PName.Substring(0, oldPreFix.Length) == oldPreFix)
+                                    //    {
+                                    //        PName = PName.Substring(oldPreFix.Length);
+
+                                    //        //string NewFilePath = path + PName;
+                                    //        if (File.Exists(FilePath) && FilePath != NewFilePath)
+                                    //        {
+                                    //            File.Delete(NewFilePath);
+                                    //            File.Move(FilePath, NewFilePath);
+                                    //            FilePath = NewFilePath;
+                                    //        }
+                                    //    }
+                                    //}
+                                    //else
+                                    //{
+
+                                    //}
 
                                     continue;
                                 }
@@ -1155,13 +1208,38 @@ namespace AutocadPlugIn
                                     string childname = Path.GetFileName(originalpath);
                                     newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), childname);
+                                    if (File.Exists(OldChildPath))
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), childname);
+
+                                    }
                                     if (File.Exists(OldChildPath) && OldChildPath != newpath)
                                     {
                                         File.Delete(newpath);
-                                        File.Move(OldChildPath, newpath);
+                                        if (OldChildPath.Contains(checkoutPath))
+                                        {
+                                            File.Move(OldChildPath, newpath);
+                                        }
+                                        else
+                                        {
+                                            File.Copy(OldChildPath, newpath);
+                                        }
+                                    }
+                                    foreach (PLMObject obj in plmObjs)
+                                    {
+                                        if (Path.GetFileNameWithoutExtension(obj.FilePath) == xgn.Name)
+                                        {
+                                            obj.FilePath = newpath;
+                                            break;
+                                        }
                                     }
 
-                                    btr.PathName = newpath;
+                                    string TnewPath = @".\" + Path.GetFileName(newpath);
+                                    btr.PathName = TnewPath;
 
 
                                     //xdb.Filename = "";
@@ -1175,13 +1253,20 @@ namespace AutocadPlugIn
 
                         if (File.Exists(OldChildPath) && OldChildPath != newpath)
                         {
-                            File.Delete(OldChildPath);
+                            //File.Delete(OldChildPath);
                         }
                         //}//Switch Complete
                     }//For Complete          
                     mainDb.SaveAs(FilePath, DwgVersion.Current);
                 }//using db complete
-
+                if (IsMove)
+                {
+                    File.Move(FilePath, ParentNewPath);
+                }
+                else
+                {
+                    File.Copy(FilePath, ParentNewPath);
+                }
             }
             catch (System.Exception ex)
             {
@@ -1520,7 +1605,7 @@ namespace AutocadPlugIn
                                                     Layout layout = tr.GetObject(de.Value, OpenMode.ForRead) as Layout;
                                                     object OwnID = layout.OwnerId;
 
-                                                    
+
                                                     string LayoutUnqID = "";
 
                                                     if (Convert.ToString(OwnID) != Convert.ToString(de.Key))
@@ -1533,7 +1618,7 @@ namespace AutocadPlugIn
                                                     }
 
 
-                                                    LayoutInfo.Add(de.Key, LayoutUnqID); 
+                                                    LayoutInfo.Add(de.Key, LayoutUnqID);
                                                 }
                                                 else
                                                 {
@@ -1569,7 +1654,7 @@ namespace AutocadPlugIn
             catch { }
             return LayoutInfo;
         }
-        public bool SetLayoutOwnerID(System.Data.DataTable dtLayoutInfo,string FilePath)
+        public bool SetLayoutOwnerID(System.Data.DataTable dtLayoutInfo, string FilePath)
         {
             try
             {
@@ -1578,7 +1663,7 @@ namespace AutocadPlugIn
                 mainDb.ResolveXrefs(false, false);
                 Transaction tr = mainDb.TransactionManager.StartTransaction();
 
-               
+
                 using (tr)
                 {
 
@@ -1587,24 +1672,24 @@ namespace AutocadPlugIn
                     {
                         String layoutName = de.Key;
                         if (layoutName != "Model")
-                        {                            
+                        {
                             Layout layout = tr.GetObject(de.Value, OpenMode.ForRead) as Layout;
-                             
+
                             string LayoutUnqID = "";
 
                             for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
                             {
-                                if(Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"])==de.Key)
+                                if (Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"]) == de.Key)
                                 {
-                                    layout.OwnerId = (Autodesk.AutoCAD.DatabaseServices.ObjectId)  dtLayoutInfo.Rows[i]["ACLayoutID"] ;
-                                 
+                                    layout.OwnerId = (Autodesk.AutoCAD.DatabaseServices.ObjectId)dtLayoutInfo.Rows[i]["ACLayoutID"];
+
                                     break;
                                 }
 
                             }
 
 
-                             
+
                         }
                         else
                         {
@@ -1616,9 +1701,9 @@ namespace AutocadPlugIn
                     tr.Commit();
                 }
             }
-            catch(System.Exception E)
+            catch (System.Exception E)
             {
-                ShowMessage.ErrorMess("Error while setting layout owner id." + Environment.NewLine + E.Message);return false;
+                ShowMessage.ErrorMess("Error while setting layout owner id." + Environment.NewLine + E.Message); return false;
             }
             return true;
         }

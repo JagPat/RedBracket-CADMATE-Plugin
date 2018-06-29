@@ -36,7 +36,7 @@ namespace AutocadPlugIn.UI_Forms
 
         public frmSearch_And_Open()
         {
-            InitializeComponent();this.FormBorderStyle = FormBorderStyle.None; 
+            InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
         }
 
         private void Search_And_Open_Load(object sender, EventArgs e)
@@ -45,54 +45,54 @@ namespace AutocadPlugIn.UI_Forms
             try
             {
 
-            
-            RBConnector objRBC = new RBConnector();
-            sg_SearchType.SelectedIndex = 0;
+                treeGridView1.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
+                RBConnector objRBC = new RBConnector();
+                sg_SearchType.SelectedIndex = 0;
 
-            //Read the keys from the user registry and load it to the UI.
-            RestResponse restResponse;
-            
+                //Read the keys from the user registry and load it to the UI.
+                RestResponse restResponse;
 
-             
 
-            #region filetype
-            
 
-            Helper.FIllCMB(CDType, objRBC.GetFIleType(), "name", "name", false);
-            #endregion filetype
 
-            #region filestatus
+                #region filetype
 
-            Helper.FIllCMB(CDState, objRBC.GetFIleStatus(), "statusname", "statusname", false);
 
-            #endregion filestatus
+                Helper.FIllCMB(CDType, objRBC.GetFIleType(), "name", "name", false);
+                #endregion filetype
 
-            #region projectdetails
-            Helper.FIllCMB(CDProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", false );
-            
-            #endregion projectdetails
+                #region filestatus
 
-            restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/getLatestRecords", true, null);
+                Helper.FIllCMB(CDState, objRBC.GetFIleStatus(), "statusname", "statusname", false);
 
-            if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                ShowMessage.ErrorMess("Some error occurred while fetching latest records.");
-                return  ;
-            }
-            else
-            {
+                #endregion filestatus
+
+                #region projectdetails
+                Helper.FIllCMB(CDProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", false);
+
+                #endregion projectdetails
+
+                restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/getLatestRecords", true, null);
+
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    ShowMessage.ErrorMess("Some error occurred while fetching latest records.");
+                    return;
+                }
+                else
+                {
                     try
                     {
                         var res = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
                     }
                     catch { }
-                   
 
-                var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-                BindDataToGrid(resultSearchCriteriaResponseList);
+
+                    var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+                    BindDataToGrid(resultSearchCriteriaResponseList);
+                }
             }
-            }
-            catch(Exception E)
+            catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
@@ -104,10 +104,10 @@ namespace AutocadPlugIn.UI_Forms
             treeGridView1.Nodes.Clear();
             this.Cursor = Cursors.WaitCursor;
 
-            
+
 
             List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
-            
+
 
             if (CDProjectName.SelectedIndex > 0)
             {
@@ -157,7 +157,7 @@ namespace AutocadPlugIn.UI_Forms
                 };
             }
 
-           
+
             RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                "/AutocadFiles/searchAutocadFiles",
@@ -169,7 +169,7 @@ namespace AutocadPlugIn.UI_Forms
             var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
             BindDataToGrid(resultSearchCriteriaResponseList, true);
             this.Cursor = Cursors.Default;
-             
+
 
         }
 
@@ -342,7 +342,7 @@ namespace AutocadPlugIn.UI_Forms
             this.Close();
         }
 
-         
+
 
         private void SetTreeView(TreeGridNode senderNode, TreeGridNode recieverNode)
         {
@@ -478,7 +478,7 @@ namespace AutocadPlugIn.UI_Forms
         List<TreeGridNode> selectedTreeGridNodes = new List<TreeGridNode>();
         private void OpenDrawingButton_Click(object sender, EventArgs e)
         {
-          
+
             List<PLMObject> pLMObjects = new List<PLMObject>();
             RBConnector objRBC = new RBConnector();
             try
@@ -547,7 +547,7 @@ namespace AutocadPlugIn.UI_Forms
                             return;
                         }
                     }
-                   
+
 
                     foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
                     {
@@ -619,7 +619,7 @@ namespace AutocadPlugIn.UI_Forms
             catch (System.Exception ex)
             {
                 ShowMessage.ErrorMess("Exception Occur: " + ex);
-                 
+
                 objRBC.UnlockObject(pLMObjects);
                 this.Cursor = Cursors.Default;
                 return;
@@ -631,7 +631,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-              
+
                 RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
                                                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                                                "/AutocadFiles/downloadAutocadSingleFile",
@@ -640,61 +640,61 @@ namespace AutocadPlugIn.UI_Forms
                                                });
                 if (restResponse.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(restResponse.Content))
                 {
-                    RBConnector objRBC = new RBConnector();
-                    ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(fileId);
-                    Hashtable DrawingProperty = new Hashtable();
-                    List<Hashtable> LayoutProperty = new List<Hashtable>();
+                    //RBConnector objRBC = new RBConnector();
+                    //ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(fileId);
+                    //Hashtable DrawingProperty = new Hashtable();
+                    //List<Hashtable> LayoutProperty = new List<Hashtable>();
 
-                    #region LayoutInfo
-                    String LayoutInfos = "";
-                    LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
-                    #endregion
-                    
-                    DrawingProperty.Add("DrawingId", Drawing.id);
-                    DrawingProperty.Add("DrawingName", Drawing.name);
-                    DrawingProperty.Add("Classification", "");
-                    DrawingProperty.Add("FileTypeID", Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
-                    DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
-                    DrawingProperty.Add("DrawingState", Drawing.status==null?string.Empty: Drawing.status.statusname);
-                    DrawingProperty.Add("Revision", Drawing.versionno.Contains("Ver ")? Drawing.versionno.Substring(4): Drawing.versionno);
-                    DrawingProperty.Add("LockStatus", Drawing.filelock);
-                    DrawingProperty.Add("Generation", "123");
-                    DrawingProperty.Add("Type", Drawing.coreType.id);
-                    //DrawingProperty.Add("ProjectName", Drawing.projectname );
-                    if (Drawing.projectname.Trim().Length == 0)
-                    {
-                        DrawingProperty.Add("ProjectName", "My Files");
-                    }
-                    else
-                    {
-                        DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
-                    }
+                    //#region LayoutInfo
+                    //String LayoutInfos = "";
+                    //LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
+                    //#endregion
 
-                    DrawingProperty.Add("ProjectId", Drawing.projectinfo);
-                    DrawingProperty.Add("CreatedOn", Drawing.updatedon);
-                    DrawingProperty.Add("CreatedBy", Drawing.createdby);
-                    DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
-                    DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
+                    //DrawingProperty.Add("DrawingId", Drawing.id);
+                    //DrawingProperty.Add("DrawingName", Drawing.name);
+                    //DrawingProperty.Add("Classification", "");
+                    //DrawingProperty.Add("FileTypeID", Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
+                    //DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
+                    //DrawingProperty.Add("DrawingState", Drawing.status==null?string.Empty: Drawing.status.statusname);
+                    //DrawingProperty.Add("Revision", Drawing.versionno.Contains("Ver ")? Drawing.versionno.Substring(4): Drawing.versionno);
+                    //DrawingProperty.Add("LockStatus", Drawing.filelock);
+                    //DrawingProperty.Add("Generation", "123");
+                    //DrawingProperty.Add("Type", Drawing.coreType.id);
+                    ////DrawingProperty.Add("ProjectName", Drawing.projectname );
+                    //if (Drawing.projectname.Trim().Length == 0)
+                    //{
+                    //    DrawingProperty.Add("ProjectName", "My Files");
+                    //}
+                    //else
+                    //{
+                    //    DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
+                    //}
 
-                    DrawingProperty.Add("canDelete", Drawing.canDelete);
-                    DrawingProperty.Add("isowner", Drawing.isowner);
-                    DrawingProperty.Add("hasViewPermission", Drawing.hasViewPermission);
-                    DrawingProperty.Add("isActFileLatest", Drawing.isActFileLatest);
+                    //DrawingProperty.Add("ProjectId", Drawing.projectinfo);
+                    //DrawingProperty.Add("CreatedOn", Drawing.updatedon);
+                    //DrawingProperty.Add("CreatedBy", Drawing.createdby);
+                    //DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
+                    //DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
 
-                    DrawingProperty.Add("isEditable", Drawing.isEditable);
-                    DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
-                    DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
-                    DrawingProperty.Add("isletest", Drawing.isletest);
+                    //DrawingProperty.Add("canDelete", Drawing.canDelete);
+                    //DrawingProperty.Add("isowner", Drawing.isowner);
+                    //DrawingProperty.Add("hasViewPermission", Drawing.hasViewPermission);
+                    //DrawingProperty.Add("isActFileLatest", Drawing.isActFileLatest);
 
-                    DrawingProperty.Add("projectno", Drawing.projectNumber);
-                    DrawingProperty.Add("prefix", FilePreFix);
-                    DrawingProperty.Add("LayoutInfo", LayoutInfos);
+                    //DrawingProperty.Add("isEditable", Drawing.isEditable);
+                    //DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
+                    //DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
+                    //DrawingProperty.Add("isletest", Drawing.isletest);
 
-                    //DrawingProperty.Add("isroot", true);
-                    //DrawingProperty.Add("sourceid","");
-                    //DrawingProperty.Add("Layouts","");
+                    //DrawingProperty.Add("projectno", Drawing.projectNumber);
+                    //DrawingProperty.Add("prefix", FilePreFix);
+                    //DrawingProperty.Add("LayoutInfo", LayoutInfos);
 
-                    // string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
+                    ////DrawingProperty.Add("isroot", true);
+                    ////DrawingProperty.Add("sourceid","");
+                    ////DrawingProperty.Add("Layouts","");
+
+                    //// string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
                     if (fileName.Length > FilePreFix.Length)
                     {
                         if (fileName.Substring(0, FilePreFix.Length) == FilePreFix)
@@ -706,7 +706,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     string filePathName = Path.Combine(checkoutPath, fileName);
 
-                    if (isParentFile)
+                    //if (isParentFile)
                     {
                         filePathName = Path.Combine(checkoutPath, FilePreFix + fileName);
                     }
@@ -718,12 +718,13 @@ namespace AutocadPlugIn.UI_Forms
 
                     if (isParentFile)
                     {
-                        if (Helper.IsRenameChild)
-                        {
-                            cadManager.UpdateExRefPathInfo(filePathName);
-                        }
+                        //if (Helper.IsRenameChild)
+                        //{
+                        //    cadManager.UpdateExRefPathInfo(filePathName);
+                        //}
 
-                        cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                        //cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                        cadManager.OpenActiveDocument(filePathName, "View");
                         try
                         {
                             //  cadManager.SaveActiveDrawing(false);
@@ -734,8 +735,8 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                        cadManager.SetAttributesXrefFiles(DrawingProperty, filePathName);
-                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
+                        //cadManager.SetAttributesXrefFiles(DrawingProperty, filePathName);
+                        //cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
                     }
                 }
                 else
@@ -893,23 +894,23 @@ namespace AutocadPlugIn.UI_Forms
         }
 
         private void treeGridView1_NodeCollapsing(object sender, CollapsingEventArgs e)
-        { 
-            TreeGridNode TreeNode1 = (TreeGridNode)e.Node; 
+        {
+            TreeGridNode TreeNode1 = (TreeGridNode)e.Node;
             TreeNode1.Cells[1].Value = "+";
             treeGridView1.Show();
         }
 
         private void treeGridView1_NodeExpanding(object sender, ExpandingEventArgs e)
-        { 
+        {
             TreeGridNode TreeNode1 = (TreeGridNode)e.Node;
 
             TreeNode1.Cells[1].Value = "-";
             treeGridView1.Show();
         }
 
-    
 
-         
+
+
 
         private void sg_SearchType_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -928,27 +929,27 @@ namespace AutocadPlugIn.UI_Forms
             catch
             {
 
-            } 
+            }
         }
 
-         
 
-       
 
-       
 
-        
- 
 
-         
 
-         
+
+
+
+
+
+
+
 
         private void CDProjectName_KeyUp(object sender, KeyEventArgs e)
         {
             comboBoxSearch();
         }
- 
+
         private void comboBoxSearch()
         {
             CDProjectName.DroppedDown = true;

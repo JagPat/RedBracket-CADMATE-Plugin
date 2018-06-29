@@ -69,7 +69,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     lbDrawingNoC.Text = Convert.ToString(dtCurrentData[0]["drawingnumber"]);
                     lbVersionC.Text = Convert.ToString(dtCurrentData[0]["revision"]);
-                    lbProjectNameC.Text = Convert.ToString(dtCurrentData[0]["projectid"]);
+                    lbProjectNameC.Text = Convert.ToString(dtCurrentData[0]["projectname"]);
 
                     DataRow[] drl = dtProjectDetail.Select("PNAMENO='" + lbProjectNameC.Text + "'");
                     if (drl.Length > 0)

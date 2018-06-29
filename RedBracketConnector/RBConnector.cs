@@ -81,6 +81,15 @@ namespace RedBracketConnector
                         if (IsFileSave)
                         {
                             string IsNew = "false";
+                            if (obj.IsNew)
+                            {
+                                IsNew = "false";
+                            }
+                            else
+                            {
+                                IsNew = "true";
+                            }
+
 
                             if (obj.FolderID.Trim().Length > 0)
                             {
@@ -126,15 +135,20 @@ namespace RedBracketConnector
                             List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
                             KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
 
-
-                            Keys = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
-                            keyValuePairs.Add(Keys);
+                            if (obj.ObjectProjectId.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
+                                keyValuePairs.Add(Keys);
+                            }
 
                             Keys = new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus);
                             keyValuePairs.Add(Keys);
 
-                            Keys = new KeyValuePair<string, string>("fileType", obj.Classification);
-                            keyValuePairs.Add(Keys);
+                            if (obj.ObjectProjectId.Trim().Length > 0)
+                            {
+                                Keys = new KeyValuePair<string, string>("fileType", obj.Classification);
+                                keyValuePairs.Add(Keys);
+                            }
 
                             Keys = new KeyValuePair<string, string>("source", "Computer");
                             keyValuePairs.Add(Keys);
@@ -161,11 +175,12 @@ namespace RedBracketConnector
                             }
 
                             Keys = new KeyValuePair<string, string>("isNew", IsNew);
-                            if (obj.FolderID.Trim().Length > 0)
+                            if (obj.FolderID.Trim().Length > 0 && Convert.ToDecimal(obj.FolderID.Trim())>0)
                             {
                                 Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
+                                keyValuePairs.Add(Keys);
                             }
-                            keyValuePairs.Add(Keys);
+                         
                             // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
                             restResponse = (RestResponse)ServiceHelper.SaveObject(
                                             Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
@@ -254,7 +269,7 @@ namespace RedBracketConnector
                                 //var Drawing3 = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata);
                                 try
                                 {
-                                    var Drawing1 = JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
+                                    var Drawing11 = JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
                                 }
                                 catch
                                 {
@@ -278,31 +293,42 @@ namespace RedBracketConnector
                                 else
                                     obj.ObjectId = Drawing.id;
 
-                                obj.ObjectName = Drawing.name;
-                                obj.Classification = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.id);
-                                obj.ObjectState = Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname;
-                                obj.ObjectRevision = Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno;
-                                obj.LockStatus = Convert.ToString(Drawing.filelock);
-                                obj.ObjectGeneration = "123";
-                                obj.ItemType = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
-                                obj.ObjectProjectName = Drawing.projectname == null ? string.Empty : Drawing.projectname;
-                                //obj.ObjectProjectId = "123";
-                                obj.ObjectCreatedById = Drawing.createdby;
-                                obj.ObjectCreatedOn = Drawing.created0n;
-                                obj.ObjectModifiedById = Drawing.updatedby;
-                                obj.ObjectModifiedOn = Drawing.updatedon;
-                                obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
 
-                                obj.canDelete = Drawing.canDelete;
-                                obj.isowner = Drawing.isowner;
-                                obj.hasViewPermission = Drawing.hasViewPermission;
-                                obj.isActFileLatest = Drawing.isActFileLatest;
-                                obj.isEditable = Drawing.isEditable;
-                                obj.canEditStatus = Drawing.canEditStatus;
-                                obj.hasStatusClosed = Drawing.hasStatusClosed;
-                                obj.isletest = Drawing.isletest;
-                                obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
-                                
+                                if (!IsFileSave)
+                                {
+                                    List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId);
+                                    // ResultSearchCriteria Drawing = GetDrawingInformation(obj.ObjectId);
+
+                                    obj.ObjectName = Drawing.name;
+                                    obj.Classification = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.id);
+                                    obj.ObjectState = Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname;
+                                    obj.ObjectRevision = Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno;
+                                    obj.LockStatus = Convert.ToString(Drawing.filelock);
+                                    obj.ObjectGeneration = "123";
+                                    obj.ItemType = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
+                                    obj.ObjectProjectName = Drawing.projectname == null ? string.Empty : Drawing.projectname;
+                                    //obj.ObjectProjectId = "123";
+                                    obj.ObjectCreatedById = Drawing.createdby;
+                                    obj.ObjectCreatedOn = Drawing.updatedon;
+                                    obj.ObjectModifiedById = Drawing.updatedby;
+                                    obj.ObjectModifiedOn = Drawing.updatedon;
+                                    obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
+
+                                    obj.canDelete = Drawing.canDelete;
+                                    obj.isowner = Drawing.isowner;
+                                    obj.hasViewPermission = Drawing.hasViewPermission;
+                                    obj.isActFileLatest = Drawing.isActFileLatest;
+                                    obj.isEditable = Drawing.isEditable;
+                                    obj.canEditStatus = Drawing.canEditStatus;
+                                    obj.hasStatusClosed = Drawing.hasStatusClosed;
+                                    obj.isletest = Drawing.isletest;
+                                    obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
+
+
+                                    obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
+                                }
+
+
 
                             }
 
@@ -342,7 +368,8 @@ namespace RedBracketConnector
 
 
                 }
-                UnlockObject(plmobjs);
+                if (IsFileSave)
+                    UnlockObject(plmobjs);
                 return true;
             }
             catch (Exception E)
@@ -620,10 +647,12 @@ namespace RedBracketConnector
 
         }
 
-        public bool SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid)
+        public List<LayoutInfo> SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid)
         {
+            List<LayoutInfo> LayoutInfolst = new List<LayoutInfo>();
             try
             {
+
 
                 foreach (DataRow dr in dtLayoutInfo.Rows)
                 {
@@ -684,7 +713,7 @@ namespace RedBracketConnector
                         //ShowMessage.InfoMess(restResponse.Content);
                         //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
                         ShowMessage.ErrorMess("Some error occurred while uploading layout info.");
-                        return false;
+
                     }
                     else if (restResponse.Content.Trim().Length > 0)
                     {
@@ -697,24 +726,44 @@ namespace RedBracketConnector
                             dr["ACLayoutID"] = Drawing.id;
                         }
 
+                        LayoutInfo objLI = new LayoutInfo();
+
+                        objLI.id = Drawing.id;
+                        objLI.canDelete = Drawing.canDelete;
+                        objLI.canEditStatus = Drawing.canEditStatus;
 
 
+                        objLI.createdby = Drawing.createdby;
+                        //objLI.description = Drawing.;
+                        objLI.fileNo = Drawing.fileNo;
+                        objLI.hasStatusClosed = Drawing.hasStatusClosed;
+                        objLI.isActFileLatest = Drawing.isActFileLatest;
+                        objLI.isEditable = Drawing.isEditable;
+                        objLI.isletest = Drawing.isletest;
+                        objLI.isowner = Drawing.isowner;
+                        //objLI.layoutId = Drawing.;
+                        objLI.name = Drawing.name;
+                        objLI.status = Drawing.status;
+                        objLI.statusId = Drawing.status == null ? "0" : Convert.ToString(Drawing.status.id);
+                        objLI.statusname = Drawing.status == null ? "" : Convert.ToString(Drawing.status.statusname);
+                        objLI.type = Drawing.type;
+                        objLI.typeId = Drawing.type == null ? "0" : Convert.ToString(Drawing.type.id);
+                        objLI.typename = Drawing.type == null ? "" : Convert.ToString(Drawing.type.name);
+                        objLI.versionno = Drawing.versionno;
+
+                        LayoutInfolst.Add(objLI);
                     }
-
-
-
-
                 }
 
 
-                return true;
+
             }
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
-                return false;
-            }
 
+            }
+            return LayoutInfolst;
 
         }
 
@@ -1044,7 +1093,12 @@ namespace RedBracketConnector
                             "/AutocadFiles/fetchFileInfo", DataFormat.Json,
                             null, true, urlParameters);
 
-                        ResultSearchCriteria ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                        ResultSearchCriteria ObjFileInfo = null;
+                        if (restResponse.Content != null)
+                        {
+                            ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                        }
+
 
 
                         if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
@@ -1053,27 +1107,32 @@ namespace RedBracketConnector
                         }
                         else
                         {
-                            bool FileLock = Convert.ToBoolean(Convert.ToString(ObjFileInfo.filelock));
-                            string UpdatedBy = Convert.ToString(ObjFileInfo.updatedby);
-
-                            if (FileLock)
+                            if (ObjFileInfo != null)
                             {
-                                if (UpdatedBy == Helper.UserFullName)
+                                bool FileLock = Convert.ToBoolean(Convert.ToString(ObjFileInfo.filelock));
+                                string UpdatedBy = Convert.ToString(ObjFileInfo.updatedby);
+
+                                if (FileLock)
                                 {
-                                    rw["lockstatus"] = "1";
-                                    rw["lockby"] = UpdatedBy;
+                                    if (UpdatedBy == Helper.UserFullName)
+                                    {
+                                        rw["lockstatus"] = "1";
+                                        rw["lockby"] = UpdatedBy;
+                                    }
+                                    else
+                                    {
+                                        rw["lockstatus"] = "2";
+                                        rw["lockby"] = UpdatedBy;
+                                    }
                                 }
                                 else
                                 {
-                                    rw["lockstatus"] = "2";
+                                    rw["lockstatus"] = "0";
                                     rw["lockby"] = UpdatedBy;
                                 }
                             }
-                            else
-                            {
-                                rw["lockstatus"] = "0";
-                                rw["lockby"] = UpdatedBy;
-                            }
+
+
                         }
                     }
                 }
