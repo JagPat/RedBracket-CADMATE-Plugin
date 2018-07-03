@@ -329,6 +329,7 @@
     <Content Include="Resources\CheckoutUserSettings.png" />
     <Content Include="Resources\Connect.png" />
     <Content Include="Resources\Disconnect.png" />
+    <None Include="Resources\download.png" />
     <Content Include="Resources\DrawingInfo.png" />
     <None Include="Resources\FolderBrowse.jpg" />
     <Content Include="Resources\Help.png" />

@@ -76,7 +76,7 @@ namespace AutocadPlugIn.UI_Forms
                 dtTreeGridData = lockStatusCon.getLockStatus(lockStatusCmd);
                 if (lockStatusCon.errorString != null)
                 {
-                    MessageBox.Show(lockStatusCon.errorString);
+                    ShowMessage.ErrorMess(lockStatusCon.errorString);
                     this.Close();
                     return;
                 }
@@ -128,6 +128,12 @@ namespace AutocadPlugIn.UI_Forms
                     dtLayoutInfo.Columns.Add("StatusID");
                     dtLayoutInfo.Columns.Add("ACLayoutID");
                     dtLayoutInfo.Columns.Add("LayoutName1");
+
+                    dtLayoutInfo.Columns.Add("LayoutNo");
+                    dtLayoutInfo.Columns.Add("CreatedBy");
+                    dtLayoutInfo.Columns.Add("CreatedOn");
+                    dtLayoutInfo.Columns.Add("UpdatedBy");
+                    dtLayoutInfo.Columns.Add("UpdatedOn");
                     if (objLI != null)
                     {
                         foreach (LayoutInfo obj in objLI)
@@ -146,6 +152,12 @@ namespace AutocadPlugIn.UI_Forms
                             dr["StatusID"] = obj.statusId;
                             dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
                             dr["LayoutName1"] = obj.name;
+
+                            dr["LayoutNo"] = obj.fileNo;
+                            dr["CreatedBy"] = obj.createdby;
+                            dr["CreatedOn"] = obj.createdon;
+                            dr["UpdatedBy"] = obj.updatedby;
+                            dr["UpdatedOn"] = obj.updatedon;
                             dtLayoutInfo.Rows.Add(dr);
                         }
                     }
@@ -473,7 +485,7 @@ namespace AutocadPlugIn.UI_Forms
                 //To check whether any file is selected or not
                 if (selectedTreeGridNodes.Count < 1)
                 {
-                    MessageBox.Show("Please select at least one file to save.");
+                    ShowMessage.ValMess("Please select at least one file to save.");
                     this.Cursor = Cursors.Default;
                     return;
                 }
@@ -507,7 +519,7 @@ namespace AutocadPlugIn.UI_Forms
                 }
 
 
-       
+
                 // to iterate selected file
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
@@ -536,7 +548,7 @@ namespace AutocadPlugIn.UI_Forms
                     progressBar1.Value = progressBar1.Minimum = 0;
                     progressBar1.Maximum = 5;
                     lblStatus.BringToFront();
-                    lblStatus.Text = "Closing files to upload.";lblStatus.Refresh();
+                    lblStatus.Text = "Closing files to upload."; lblStatus.Refresh();
                     progressBar1.Visible = true;
                     if (IsRenameXref)
                     {
@@ -556,17 +568,17 @@ namespace AutocadPlugIn.UI_Forms
                         }
                         #endregion
 
-                      
+
 
 
                         progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading file properties."; lblStatus.Refresh();
                         // save properties in RB
-                        Is_Save = objController.ExecuteSave(objCmd, false,lstdtLayoutInfo);
+                        Is_Save = objController.ExecuteSave(objCmd, false, lstdtLayoutInfo);
                         progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading layout properties."; lblStatus.Refresh();
 
                         if (Is_Save)
                         {
-                           
+
                             //Save layout info
                             #region Save layout info
                             //try
@@ -743,7 +755,7 @@ namespace AutocadPlugIn.UI_Forms
 
                             progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Updating file names."; lblStatus.Refresh();
 
-                            objMgr.UpdateExRefPathInfo2(objCmd.FilePath,ref objController.plmObjs);
+                            objMgr.UpdateExRefPathInfo2(objCmd.FilePath, ref objController.plmObjs);
 
                             progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading file to redbracket."; lblStatus.Refresh();
 
@@ -752,11 +764,11 @@ namespace AutocadPlugIn.UI_Forms
                             #region  Renaming Parent and XRef Files
 
                             //update Xref name to NewXref Name with PreFix
-                          
+
 
                             #endregion
 
-                            
+
 
                         }
 
@@ -768,7 +780,7 @@ namespace AutocadPlugIn.UI_Forms
 
 
 
-                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); 
+                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
 
 
                     // To delete file
@@ -786,7 +798,7 @@ namespace AutocadPlugIn.UI_Forms
                                 File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
                             }
                         }
-                        
+
                     }
                 }
                 this.Cursor = Cursors.Default;
@@ -1154,7 +1166,8 @@ namespace AutocadPlugIn.UI_Forms
 
                     foreach (TreeGridNode tgnChild in tgnParent.Nodes)
                     {
-                        GenFileInfoDT(tgnChild);
+                        if ((bool)tgnChild.Cells[0].Value)
+                            GenFileInfoDT(tgnChild);
                     }
                     GenFileInfoDT(tgnParent);
                 }
@@ -1500,7 +1513,7 @@ namespace AutocadPlugIn.UI_Forms
         private void savetreeGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             try
-            {     
+            {
                 if (e.RowIndex < 0 || e.ColumnIndex < 0 || LoadFlag)
                 {
                     return;
@@ -1509,7 +1522,7 @@ namespace AutocadPlugIn.UI_Forms
                 if (e.ColumnIndex == ProjectName.Index && Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
                 {
                     string MyProjectId = "", FolderID = "", ProjectName = "", FolderPath = "", ProjectNameNo = "";
-               
+
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
                     try
                     {
@@ -1536,7 +1549,7 @@ namespace AutocadPlugIn.UI_Forms
                         Child.Cells["projectname"].Value = ProjectNameNo;
 
                     }
-                    
+
 
                     List<clsFolderSearchReasult> objFolderSearchResult = new List<clsFolderSearchReasult>(); ;
                     clsFolderSearchReasult obj = new clsFolderSearchReasult() { id = "-2", name = ProjectName, childFolderSize = 0, companyId = "0" };

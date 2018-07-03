@@ -28,10 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserSettings));
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.CheckoutDirLabel = new System.Windows.Forms.Label();
-            this.LoginPictureBox = new System.Windows.Forms.PictureBox();
             this.txtSettingUrl = new System.Windows.Forms.TextBox();
             this.UserNameLabel = new System.Windows.Forms.Label();
             this.txtSettingUserNm = new System.Windows.Forms.TextBox();
@@ -53,8 +50,8 @@
             this.pnlRight = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).BeginInit();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.LoginPictureBox = new System.Windows.Forms.PictureBox();
             this.groupBox_Checkout.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBox_Login.SuspendLayout();
@@ -63,21 +60,9 @@
             this.pnlTop.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(10, 10);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.tableLayoutPanel4.SetRowSpan(this.pictureBox1, 3);
-            this.pictureBox1.Size = new System.Drawing.Size(100, 90);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 15;
-            this.pictureBox1.TabStop = false;
             // 
             // CheckoutDirLabel
             // 
@@ -90,21 +75,6 @@
             this.CheckoutDirLabel.TabIndex = 1;
             this.CheckoutDirLabel.Text = "Checkout Directory";
             this.CheckoutDirLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // LoginPictureBox
-            // 
-            this.LoginPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.LoginPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LoginPictureBox.ErrorImage = null;
-            this.LoginPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("LoginPictureBox.Image")));
-            this.LoginPictureBox.Location = new System.Drawing.Point(10, 10);
-            this.LoginPictureBox.Margin = new System.Windows.Forms.Padding(0);
-            this.LoginPictureBox.Name = "LoginPictureBox";
-            this.tableLayoutPanel2.SetRowSpan(this.LoginPictureBox, 4);
-            this.LoginPictureBox.Size = new System.Drawing.Size(100, 80);
-            this.LoginPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.LoginPictureBox.TabIndex = 9;
-            this.LoginPictureBox.TabStop = false;
             // 
             // txtSettingUrl
             // 
@@ -412,6 +382,35 @@
             this.tableLayoutPanel5.Size = new System.Drawing.Size(447, 42);
             this.tableLayoutPanel5.TabIndex = 15;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox1.Image = global::AutocadPlugIn.Properties.Resources.download;
+            this.pictureBox1.Location = new System.Drawing.Point(10, 10);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.tableLayoutPanel4.SetRowSpan(this.pictureBox1, 3);
+            this.pictureBox1.Size = new System.Drawing.Size(100, 90);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 15;
+            this.pictureBox1.TabStop = false;
+            // 
+            // LoginPictureBox
+            // 
+            this.LoginPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.LoginPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LoginPictureBox.ErrorImage = null;
+            this.LoginPictureBox.Image = global::AutocadPlugIn.Properties.Resources.Login;
+            this.LoginPictureBox.Location = new System.Drawing.Point(10, 10);
+            this.LoginPictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.LoginPictureBox.Name = "LoginPictureBox";
+            this.tableLayoutPanel2.SetRowSpan(this.LoginPictureBox, 4);
+            this.LoginPictureBox.Size = new System.Drawing.Size(100, 80);
+            this.LoginPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.LoginPictureBox.TabIndex = 9;
+            this.LoginPictureBox.TabStop = false;
+            // 
             // UserSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -430,8 +429,6 @@
             this.Text = "UserSettings";
             this.TransparencyKey = System.Drawing.Color.WhiteSmoke;
             this.Load += new System.EventHandler(this.UserSettingLoad);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).EndInit();
             this.groupBox_Checkout.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
@@ -443,6 +440,8 @@
             this.pnlTop.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }

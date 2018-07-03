@@ -33,6 +33,12 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.tgvLayouts = new AdvancedDataGridView.TreeGridView();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlTop = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.pnlLeft = new System.Windows.Forms.Panel();
+            this.pnlBottom = new System.Windows.Forms.Panel();
+            this.pnlRight = new System.Windows.Forms.Panel();
             this.ChangeVersion = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.FileLayoutName = new AdvancedDataGridView.TreeGridColumn();
             this.FileID1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -46,12 +52,11 @@
             this.StatusID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ACLayoutID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LayoutName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlLeft = new System.Windows.Forms.Panel();
-            this.pnlBottom = new System.Windows.Forms.Panel();
-            this.pnlRight = new System.Windows.Forms.Panel();
-            this.pnlTop = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.LayoutNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CreatedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdatedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tgvLayouts)).BeginInit();
@@ -135,7 +140,12 @@
             this.TypeID,
             this.StatusID,
             this.ACLayoutID,
-            this.LayoutName1});
+            this.LayoutName1,
+            this.LayoutNo,
+            this.CreatedBy,
+            this.CreatedOn,
+            this.UpdatedBy,
+            this.UpdatedOn});
             this.tgvLayouts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tgvLayouts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.tgvLayouts.ImageList = null;
@@ -148,6 +158,81 @@
             this.tgvLayouts.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.tgvLayouts_CellValueChanged);
             this.tgvLayouts.CurrentCellDirtyStateChanged += new System.EventHandler(this.tgvLayouts_CurrentCellDirtyStateChanged);
             this.tgvLayouts.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.tgvLayouts_DataError);
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel3.Controls.Add(this.pnlTop, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel1, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.pnlLeft, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.pnlBottom, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.pnlRight, 2, 1);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(984, 450);
+            this.tableLayoutPanel3.TabIndex = 1;
+            // 
+            // pnlTop
+            // 
+            this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.tableLayoutPanel3.SetColumnSpan(this.pnlTop, 3);
+            this.pnlTop.Controls.Add(this.label1);
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Size = new System.Drawing.Size(984, 40);
+            this.pnlTop.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(11, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(317, 29);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Layout Version Update";
+            // 
+            // pnlLeft
+            // 
+            this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlLeft.Location = new System.Drawing.Point(0, 40);
+            this.pnlLeft.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlLeft.Name = "pnlLeft";
+            this.pnlLeft.Size = new System.Drawing.Size(10, 400);
+            this.pnlLeft.TabIndex = 0;
+            // 
+            // pnlBottom
+            // 
+            this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.tableLayoutPanel3.SetColumnSpan(this.pnlBottom, 3);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlBottom.Location = new System.Drawing.Point(0, 440);
+            this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Size = new System.Drawing.Size(984, 10);
+            this.pnlBottom.TabIndex = 0;
+            // 
+            // pnlRight
+            // 
+            this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlRight.Location = new System.Drawing.Point(974, 40);
+            this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlRight.Name = "pnlRight";
+            this.pnlRight.Size = new System.Drawing.Size(10, 400);
+            this.pnlRight.TabIndex = 0;
             // 
             // ChangeVersion
             // 
@@ -248,80 +333,40 @@
             this.LayoutName1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.LayoutName1.Visible = false;
             // 
-            // tableLayoutPanel3
+            // LayoutNo
             // 
-            this.tableLayoutPanel3.ColumnCount = 3;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.Controls.Add(this.pnlTop, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel1, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.pnlLeft, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.pnlBottom, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.pnlRight, 2, 1);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(984, 450);
-            this.tableLayoutPanel3.TabIndex = 1;
+            this.LayoutNo.HeaderText = "LayoutNo";
+            this.LayoutNo.Name = "LayoutNo";
+            this.LayoutNo.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.LayoutNo.Visible = false;
             // 
-            // pnlLeft
+            // CreatedBy
             // 
-            this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlLeft.Location = new System.Drawing.Point(0, 40);
-            this.pnlLeft.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(10, 400);
-            this.pnlLeft.TabIndex = 0;
+            this.CreatedBy.HeaderText = "CreatedBy";
+            this.CreatedBy.Name = "CreatedBy";
+            this.CreatedBy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CreatedBy.Visible = false;
             // 
-            // pnlBottom
+            // CreatedOn
             // 
-            this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.tableLayoutPanel3.SetColumnSpan(this.pnlBottom, 3);
-            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 440);
-            this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(984, 10);
-            this.pnlBottom.TabIndex = 0;
+            this.CreatedOn.HeaderText = "CreatedOn";
+            this.CreatedOn.Name = "CreatedOn";
+            this.CreatedOn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CreatedOn.Visible = false;
             // 
-            // pnlRight
+            // UpdatedBy
             // 
-            this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlRight.Location = new System.Drawing.Point(974, 40);
-            this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlRight.Name = "pnlRight";
-            this.pnlRight.Size = new System.Drawing.Size(10, 400);
-            this.pnlRight.TabIndex = 0;
+            this.UpdatedBy.HeaderText = "UpdatedBy";
+            this.UpdatedBy.Name = "UpdatedBy";
+            this.UpdatedBy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.UpdatedBy.Visible = false;
             // 
-            // pnlTop
+            // UpdatedOn
             // 
-            this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.tableLayoutPanel3.SetColumnSpan(this.pnlTop, 3);
-            this.pnlTop.Controls.Add(this.label1);
-            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTop.Location = new System.Drawing.Point(0, 0);
-            this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(984, 40);
-            this.pnlTop.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(11, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(317, 29);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Layout Version Update";
+            this.UpdatedOn.HeaderText = "UpdatedOn";
+            this.UpdatedOn.Name = "UpdatedOn";
+            this.UpdatedOn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.UpdatedOn.Visible = false;
             // 
             // frmLayoutVersionUpdate
             // 
@@ -369,5 +414,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn StatusID;
         private System.Windows.Forms.DataGridViewTextBoxColumn ACLayoutID;
         private System.Windows.Forms.DataGridViewTextBoxColumn LayoutName1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LayoutNo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CreatedBy;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CreatedOn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdatedBy;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdatedOn;
     }
 }

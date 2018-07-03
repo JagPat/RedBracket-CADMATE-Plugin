@@ -28,7 +28,7 @@ namespace AutocadPlugIn.UI_Forms
         public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "",
             string ProjectID = "", string FilePath = "")
         {
-            InitializeComponent();this.FormBorderStyle = FormBorderStyle.None;
+            InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
             this.Fileid = Fileid;
             this.FileName = FileName;
             this.FileType = FileType;
@@ -56,7 +56,7 @@ namespace AutocadPlugIn.UI_Forms
                                    , ""
                                    , FileType
                                    , FileStatus
-                                  
+
                                    , ""
                                     , FileVersion
                                    , "1"
@@ -64,6 +64,12 @@ namespace AutocadPlugIn.UI_Forms
                                    , ""
                                    , ""
                                    , ""
+                                     , ""
+                                   , ""
+                                   , ""
+                                     , ""
+                                   , ""
+
                                    );
                 node.Expand();
                 node.ReadOnly = true;
@@ -106,18 +112,23 @@ namespace AutocadPlugIn.UI_Forms
                         if (IsAvailable)
                         {
                             node = tgvLayouts.Nodes[0].Nodes.Add(Convert.ToBoolean(rw["ChangeVersion"])
-                                       , rw["FileLayoutName"]
-                                        , rw["FileID1"]
-                                   , rw["LayoutID"]
-                                   , rw["LayoutType"]
-                                   , rw["LayoutStatus"]
-                                   
-                                   , rw["Description"], rw["Version"]
-                                   , rw["IsFile"]
-                                   , rw["TypeID"]
-                                   , rw["StatusID"]
-                                   , rw["ACLayoutID"]
-                                   , rw["LayoutName1"]
+                                                        , rw["FileLayoutName"]
+                                                        , rw["FileID1"]
+                                                        , rw["LayoutID"]
+                                                        , rw["LayoutType"]
+                                                        , rw["LayoutStatus"]
+                                                        , rw["Description"]
+                                                        , rw["Version"]
+                                                        , rw["IsFile"]
+                                                        , rw["TypeID"]
+                                                        , rw["StatusID"]
+                                                        , rw["ACLayoutID"]
+                                                        , rw["LayoutName1"]
+                                                        , rw["LayoutNo"]
+                                                        , rw["CreatedBy"]
+                                                        , rw["CreatedOn"]
+                                                        , rw["UpdatedBy"]
+                                                        , rw["UpdatedOn"]
                                    );
                         }
                     }
@@ -160,13 +171,18 @@ namespace AutocadPlugIn.UI_Forms
                                        , ""
                                        , ""
                                        , ""
-                                       
+
                                        , "", "0.0"
                                        , "0"
                                        , ""
                                        , ""
                                        , key.Value.ToString()
                                        , LayoutName
+                                     , ""
+                                   , ""
+                                   , ""
+                                     , ""
+                                   , ""
                                        );
 
                             node.Cells[0].ReadOnly = true;

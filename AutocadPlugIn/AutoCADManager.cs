@@ -133,15 +133,15 @@ namespace AutocadPlugIn
                                         {
 
                                             string CDrawingName = Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]);
-                                            string PreFix = Convert.ToString(dtFileInfo.Rows[j]["prefix"]);
-                                            if (CDrawingName.Contains(PreFix))
+                                            string PreFix = Convert.ToString(dtFileInfo.Rows[j]["oldprefix"]);
+                                            if (drawingName.Contains(PreFix) && PreFix.Length > 0)
                                             {
                                                 if (drawingName.Substring(0, PreFix.Length) == PreFix)
                                                 {
                                                     drawingName = drawingName.Substring(PreFix.Length);
                                                 }
                                             }
-                                            if (Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]) == drawingName)
+                                            if (Path.GetFileNameWithoutExtension(Convert.ToString(dtFileInfo.Rows[j]["DrawingName"])) == Path.GetFileNameWithoutExtension(drawingName))
                                             {
                                                 Hashtable ht = Helper.Table2HashTable(dtFileInfo, j);
                                                 SetAttributesXrefFiles(ht, xgn.Database.Filename);
@@ -574,6 +574,159 @@ namespace AutocadPlugIn
                 Doc.UpgradeDocOpen();
 
 
+        }
+
+        //public void UpdateFileProperties(  string FileType = null, string FileStatus = null, string FileTypeID = null, string FileStatusID = null)
+        public void UpdateFileProperties(string FileID, string FilePath)
+        {
+            try
+            {
+                RBConnector objRBC = new RBConnector();
+                ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(FileID);
+                Hashtable htFileProperties = GetAttributes();
+                System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
+
+
+                System.Data.DataTable dtDrawingProperty = new System.Data.DataTable();
+                dtDrawingProperty.Columns.Add("DrawingId");
+                dtDrawingProperty.Columns.Add("DrawingName");
+                dtDrawingProperty.Columns.Add("Classification");
+                dtDrawingProperty.Columns.Add("DrawingNumber");
+                dtDrawingProperty.Columns.Add("DrawingState");
+                dtDrawingProperty.Columns.Add("Revision");
+                dtDrawingProperty.Columns.Add("Generation");
+                dtDrawingProperty.Columns.Add("Type");
+                dtDrawingProperty.Columns.Add("filepath");
+                dtDrawingProperty.Columns.Add("isroot", typeof(bool));
+                dtDrawingProperty.Columns.Add("ProjectName");
+                dtDrawingProperty.Columns.Add("ProjectId");
+                dtDrawingProperty.Columns.Add("createdon");
+                dtDrawingProperty.Columns.Add("createdby");
+                dtDrawingProperty.Columns.Add("modifiedon");
+                dtDrawingProperty.Columns.Add("modifiedby");
+                dtDrawingProperty.Columns.Add("sourceid");
+                dtDrawingProperty.Columns.Add("Layouts");
+
+                dtDrawingProperty.Columns.Add("canDelete");
+                dtDrawingProperty.Columns.Add("isowner");
+                dtDrawingProperty.Columns.Add("hasViewPermission");
+                dtDrawingProperty.Columns.Add("isActFileLatest");
+                dtDrawingProperty.Columns.Add("isEditable");
+                dtDrawingProperty.Columns.Add("canEditStatus");
+                dtDrawingProperty.Columns.Add("hasStatusClosed");
+                dtDrawingProperty.Columns.Add("isletest");
+                dtDrawingProperty.Columns.Add("projectno");
+                dtDrawingProperty.Columns.Add("prefix");
+                dtDrawingProperty.Columns.Add("layoutinfo");
+                dtDrawingProperty.Columns.Add("oldprefix");
+
+
+
+                string LayoutInfo = Helper.GetLayoutInfo(Drawing.fileLayout);
+
+                if (Drawing.versionno.Contains("Ver"))
+                {
+                    Drawing.versionno = Drawing.versionno.Substring(Drawing.versionno.IndexOf("0"));
+                }
+
+
+
+
+                //dtDrawingProperty.Rows.Clear();
+                dtDrawingProperty.Rows.Add(Drawing.id,
+                    Drawing.name,
+                     Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name),
+                    Drawing.fileNo,
+                    Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname,
+                    Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno,
+                    "123",
+                   Drawing.coreType == null ? string.Empty : Drawing.coreType.name,
+                    FilePath,
+                    "true",
+                    Drawing.projectname,
+                    dtFileProperties.Rows[0]["projectId"],
+                    "",
+                    Drawing.createdby,
+                    Drawing.updatedon,
+                    Drawing.updatedby, ""
+                    , dtFileProperties.Rows[0]["Layouts"]
+                    , Drawing.canDelete
+                    , Drawing.isowner
+                    , Drawing.hasViewPermission
+                    , Drawing.isActFileLatest
+                    , Drawing.isEditable
+                    , Drawing.canEditStatus
+                    , Drawing.hasStatusClosed
+                    , Drawing.isletest
+                    , Drawing.projectNumber
+                    , dtFileProperties.Rows[0]["prefix"]
+                    , LayoutInfo,
+                    dtFileProperties.Rows[0]["oldprefix"]);
+
+               
+                SetAttributes(Helper.Table2HashTable(dtDrawingProperty, 0));
+                //Hashtable htFileProperties = GetAttributes();
+                //System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
+                //bool IsdtChanged = false;
+                //if (FileType != null && FileTypeID != null)
+                //{
+                //    dtFileProperties.Rows[0]["filetypeid"] = FileType;
+                //    dtFileProperties.Rows[0]["classification"] = FileType;
+                //    IsdtChanged = true;
+                //}
+
+                //if (FileStatus != null && FileStatusID != null)
+                //{
+                //    //dtFileProperties.Rows[0][""] = FileStatusID;
+                //    dtFileProperties.Rows[0]["drawingstate"] = FileStatus;
+                //    IsdtChanged = true;
+                //}
+
+                //if(IsdtChanged)
+                //{
+                //    SetAttributes(Helper.Table2HashTable(dtFileProperties,0));
+                //}
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+
+        public void UpdateLayoutProperties(System.Data.DataTable dtLayoutInfoChanged)
+        {
+            try
+            {
+                Hashtable htFileProperties = GetAttributes();
+                System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
+                bool IsdtChanged = false;
+
+
+                foreach (DataRow dr in dtLayoutInfoChanged.Rows)
+                {
+                    string LNS = Convert.ToString(dr["LayoutNo"]);
+                    int LN = Convert.ToInt16(LNS.Contains("_") ? LNS.Substring(0, LNS.IndexOf("_")) : "0");
+
+                    dtFileProperties.Rows[0]["Layout_" + LN + "_Status"] = dr["Status"];
+                    dtFileProperties.Rows[0]["Layout_" + LN + "_Type"] = dr["Type"];
+                    IsdtChanged = true;
+                }
+
+                string LayoutInfo1 = Convert.ToString(dtFileProperties.Rows[0]["layoutinfo"]);
+                List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
+
+
+
+
+                if (IsdtChanged)
+                {
+                    SetAttributes(Helper.Table2HashTable(dtFileProperties, 0));
+                }
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
         }
 
         [CommandMethod("OpenActiveDocument", CommandFlags.Session)]
@@ -1108,11 +1261,15 @@ namespace AutocadPlugIn
                                     {
                                         ProjectName = Convert.ToString(dbsi.Value);
                                     }
+                                    else if (Convert.ToString(dbsi.Key) == "oldprefix")
+                                    {
+                                        oldPreFix = Convert.ToString(dbsi.Value);
+                                    }
                                 }
 
                                 ProjectName = ProjectName.Replace(" (" + projectNO + ")", "");
                                 string FN = Path.GetFileNameWithoutExtension(xgn.Name);
-                                oldPreFix = FN.Replace(Path.GetFileNameWithoutExtension(drawingname), "");
+                                //  oldPreFix = FN.Replace(Path.GetFileNameWithoutExtension(drawingname), "");
 
                                 //if (ProjectName.Trim().Length > 0)
                                 //{
@@ -1141,17 +1298,21 @@ namespace AutocadPlugIn
 
                                 path += @"\" + PreFix;
 
-                                foreach (PLMObject obj in plmObjs)
-                                {
-                                    if (obj.FilePath == xgn.Name)
-                                    {
 
-                                    }
-                                }
                                 if (xgn.Name == FilePath)
                                 {
 
                                     string PName = Path.GetFileName(FilePath);
+                                    if (PName.Contains(oldPreFix))
+                                    {
+                                        if (PName.Substring(0, oldPreFix.Length) == oldPreFix)
+                                        {
+                                            PName = PName.Substring(oldPreFix.Length);
+                                        }
+                                    }
+
+
+
                                     string NewFilePath = path + PName;
 
                                     File.Delete(NewFilePath);
@@ -1206,8 +1367,23 @@ namespace AutocadPlugIn
 
                                     string originalpath = btr.PathName;
                                     string childname = Path.GetFileName(originalpath);
+
+
+
+                                    if (childname.Contains(oldPreFix))
+                                    {
+                                        if (childname.Substring(0, oldPreFix.Length) == oldPreFix)
+                                        {
+                                            childname = childname.Substring(oldPreFix.Length);
+                                        }
+                                    }
+
+
+
+
+
                                     newpath = path + childname;
-                                    OldChildPath = Path.Combine(Path.GetDirectoryName(path), childname);
+                                    OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
                                     if (File.Exists(OldChildPath))
                                     {
 
@@ -1231,7 +1407,18 @@ namespace AutocadPlugIn
                                     }
                                     foreach (PLMObject obj in plmObjs)
                                     {
-                                        if (Path.GetFileNameWithoutExtension(obj.FilePath) == xgn.Name)
+                                        string name = Path.GetFileNameWithoutExtension(obj.FilePath);
+
+
+
+                                        if (name.Contains(oldPreFix))
+                                        {
+                                            if (name.Substring(0, oldPreFix.Length) == oldPreFix)
+                                            {
+                                                name = name.Substring(oldPreFix.Length);
+                                            }
+                                        }
+                                        if (name == Path.GetFileNameWithoutExtension(xgn.Name))
                                         {
                                             obj.FilePath = newpath;
                                             break;

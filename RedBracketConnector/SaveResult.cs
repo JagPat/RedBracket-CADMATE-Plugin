@@ -36,6 +36,8 @@ namespace RedBracketConnector
 
         public string created0n { get; set; }
 
+        public string createdOn { get; set; }
+
         public SaveResultUserDetails updatedBy { get; set; }
 
         public string updatedon { get; set; }
@@ -127,6 +129,9 @@ namespace RedBracketConnector
         public bool isAssociate { get; set; }
 
         public ResultSearchCriteriaType type { set; get; }
+
+        public string description { get; set; }
+        
     }
 
     public class SaveResultOwnPermissions

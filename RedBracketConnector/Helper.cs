@@ -294,24 +294,27 @@ namespace RedBracketConnector
                     DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
                     DrawingProperty.Add("filetypeid", dt.Rows[i]["Classification"]);
                     DrawingProperty.Add("layoutinfo", dt.Rows[i]["layoutinfo"]);
+                    DrawingProperty.Add("oldprefix", dt.Rows[i]["oldprefix"]);
 
                     string LayoutInfo1 = Convert.ToString(dt.Rows[i]["layoutinfo"]).Trim();
                     if (LayoutInfo1.Length > 0)
                     {
                         List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
-                        int Count = 1;
+                        //int Count = 1;
                         foreach (LayoutInfo objLI1 in objLI)
                         {
+                            int Count =Convert.ToInt16( objLI1.fileNo.Contains("_") ? objLI1.fileNo.Substring(0, objLI1.fileNo.IndexOf("_")) : "0"); 
                             DrawingProperty.Add("Layout_" + Count + "_Name", objLI1.name);
                             DrawingProperty.Add("Layout_" + Count + "_Number", objLI1.fileNo);
                             DrawingProperty.Add("Layout_" + Count + "_Type", objLI1.typename);
                             DrawingProperty.Add("Layout_" + Count + "_Status", objLI1.statusname);
                             DrawingProperty.Add("Layout_" + Count + "_VersionNote", objLI1.description);
                             DrawingProperty.Add("Layout_" + Count + "_CreatedBy", objLI1.createdby);
+                            DrawingProperty.Add("Layout_" + Count + "_CreatedOn", objLI1.createdon);
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedBy", objLI1.updatedby);
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedOn", objLI1.updatedon);
 
-                            Count++;
+                           // Count++;
                         }
                     }
                 }
@@ -326,6 +329,91 @@ namespace RedBracketConnector
             }
 
             return DrawingProperty;
+
+        }
+
+
+        public static DataTable HashTable2Table(Hashtable htDrawingProperty)
+        {
+            DataTable dtDrawingProperty = new DataTable();
+
+            try
+            {
+                dtDrawingProperty.Rows.Add();
+                DataColumn dc;
+                foreach (DictionaryEntry pair in htDrawingProperty)
+                {
+                    dc = new DataColumn();
+                    dc.ColumnName = Convert.ToString(pair.Key);
+                    dtDrawingProperty.Columns.Add(dc);
+                    dtDrawingProperty.Rows[0][dc.ColumnName] = pair.Value;
+                }
+                ////if (dt.Rows.Count > i)
+                ////{
+                ////    DrawingProperty.Add("DrawingId", dt.Rows[i]["DrawingId"]);
+                ////    DrawingProperty.Add("DrawingName", dt.Rows[i]["DrawingName"]);
+                ////    DrawingProperty.Add("Classification", dt.Rows[i]["Classification"]);
+                ////    DrawingProperty.Add("DrawingNumber", dt.Rows[i]["DrawingNumber"]);
+                ////    DrawingProperty.Add("DrawingState", dt.Rows[i]["DrawingState"]);
+                ////    DrawingProperty.Add("Revision", dt.Rows[i]["Revision"]);
+                ////    DrawingProperty.Add("Generation", dt.Rows[i]["Generation"]);
+                ////    DrawingProperty.Add("Type", dt.Rows[i]["Type"]);
+                ////    DrawingProperty.Add("filepath", dt.Rows[i]["filepath"]);
+                ////    DrawingProperty.Add("isroot", dt.Rows[i]["isroot"]);
+                ////    DrawingProperty.Add("ProjectName", dt.Rows[i]["ProjectName"]);
+                ////    DrawingProperty.Add("ProjectId", dt.Rows[i]["ProjectId"]);
+                ////    DrawingProperty.Add("CreatedOn", dt.Rows[i]["createdon"]);
+                ////    DrawingProperty.Add("CreatedBy", dt.Rows[i]["createdby"]);
+                ////    DrawingProperty.Add("ModifiedOn", dt.Rows[i]["modifiedon"]);
+                ////    DrawingProperty.Add("ModifiedBy", dt.Rows[i]["modifiedby"]);
+                ////    DrawingProperty.Add("sourceid", dt.Rows[i]["sourceid"]);
+                ////    DrawingProperty.Add("Layouts", dt.Rows[i]["Layouts"]);
+
+                ////    DrawingProperty.Add("canDelete", dt.Rows[i]["canDelete"]);
+                ////    DrawingProperty.Add("isowner", dt.Rows[i]["isowner"]);
+                ////    DrawingProperty.Add("hasViewPermission", dt.Rows[i]["hasViewPermission"]);
+                ////    DrawingProperty.Add("isActFileLatest", dt.Rows[i]["isActFileLatest"]);
+                ////    DrawingProperty.Add("isEditable", dt.Rows[i]["isEditable"]);
+                ////    DrawingProperty.Add("canEditStatus", dt.Rows[i]["canEditStatus"]);
+                ////    DrawingProperty.Add("hasStatusClosed", dt.Rows[i]["hasStatusClosed"]);
+                ////    DrawingProperty.Add("isletest", dt.Rows[i]["isletest"]);
+                ////    DrawingProperty.Add("projectno", dt.Rows[i]["projectno"]);
+                ////    DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
+                ////    DrawingProperty.Add("filetypeid", dt.Rows[i]["Classification"]);
+                ////    DrawingProperty.Add("layoutinfo", dt.Rows[i]["layoutinfo"]);
+                ////    DrawingProperty.Add("oldprefix", dt.Rows[i]["oldprefix"]);
+
+                ////    string LayoutInfo1 = Convert.ToString(dt.Rows[i]["layoutinfo"]).Trim();
+                ////    if (LayoutInfo1.Length > 0)
+                ////    {
+                ////        List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
+                ////        int Count = 1;
+                ////        foreach (LayoutInfo objLI1 in objLI)
+                ////        {
+                ////            DrawingProperty.Add("Layout_" + Count + "_Name", objLI1.name);
+                ////            DrawingProperty.Add("Layout_" + Count + "_Number", objLI1.fileNo);
+                ////            DrawingProperty.Add("Layout_" + Count + "_Type", objLI1.typename);
+                ////            DrawingProperty.Add("Layout_" + Count + "_Status", objLI1.statusname);
+                ////            DrawingProperty.Add("Layout_" + Count + "_VersionNote", objLI1.description);
+                ////            DrawingProperty.Add("Layout_" + Count + "_CreatedBy", objLI1.createdby);
+                ////            DrawingProperty.Add("Layout_" + Count + "_UpdatedBy", objLI1.updatedby);
+                ////            DrawingProperty.Add("Layout_" + Count + "_UpdatedOn", objLI1.updatedon);
+
+                ////            Count++;
+                ////        }
+                ////    }
+                //}
+                //else
+                //{
+                //    ShowMessage.ErrorMess("Specified index not found.");
+                //}
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+            return dtDrawingProperty;
 
         }
 
@@ -368,6 +456,12 @@ namespace RedBracketConnector
 
                     dtLayoutInfo.Columns.Add("islatest");
                     dtLayoutInfo.Columns.Add("Seq", typeof(decimal));
+
+
+                    dtLayoutInfo.Columns.Add("CreatedBy");
+                    dtLayoutInfo.Columns.Add("CreatedOn");
+                    dtLayoutInfo.Columns.Add("UpdatedBy");
+                    dtLayoutInfo.Columns.Add("UpdatedOn");
                     if (fileLayout != null)
                     {
                         foreach (LayoutInfo obj in fileLayout)
@@ -386,7 +480,14 @@ namespace RedBracketConnector
                             dr["Version"] = obj.versionno;
                             dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
                             dr["LayoutType"] = obj.typename == null || obj.typename == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.name) : obj.typename;
-                            dr["Seq"] = obj.fileNo.Substring(0, obj.fileNo.IndexOf("_"));
+                            dr["Seq"] = obj.fileNo.Contains("_") ?obj.fileNo.Substring(0, obj.fileNo.IndexOf("_")): "0";
+
+
+                            dr["CreatedBy"] = obj.createdby;
+                            dr["CreatedOn"] = obj.createdon;
+                            dr["UpdatedBy"] = obj.updatedby;
+                            dr["UpdatedOn"] = obj.updatedon;
+                            dr["FileLayoutName"] = obj.name;
                             dtLayoutInfo.Rows.Add(dr);
                         }
                         dtLayoutInfo = Helper.SortTable(dtLayoutInfo.Copy(), "Seq");
@@ -425,6 +526,14 @@ namespace RedBracketConnector
                         objLI.status.id = Convert.ToInt16(objLI.statusId);
                         objLI.status.statusname = objLI.statusname;
                     }
+
+                    objLI.createdby = Convert.ToString(dr["CreatedBy"]);
+                    objLI.createdon = Convert.ToString(dr["CreatedOn"]);
+                    objLI.updatedby = Convert.ToString(dr["UpdatedBy"]);
+                    objLI.updatedon = Convert.ToString(dr["UpdatedOn"]);
+
+
+
 
                     objFLI.Add(objLI);
                 }
@@ -525,12 +634,43 @@ namespace RedBracketConnector
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
+                        LayoutInfos += @"""createdby""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.createdby;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""createdon""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.createdon;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""updatedby""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.updatedby;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
+                        LayoutInfos += @"""updatedon""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.updatedon;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
+
                         LayoutInfos += @"""layoutId""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
                         LayoutInfos += obj.layoutId;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
+
+
+
 
                         LayoutInfos += @"""typename""";
                         LayoutInfos += @":";

@@ -70,7 +70,7 @@ namespace CADController.Controllers
                     dtDrawingProperty.Columns.Add("projectno");
                     dtDrawingProperty.Columns.Add("prefix");
                     dtDrawingProperty.Columns.Add("layoutinfo");
-
+                    dtDrawingProperty.Columns.Add("oldprefix");
 
                     SaveCommand cmd = (SaveCommand)command;
 
@@ -156,6 +156,25 @@ namespace CADController.Controllers
 
                         }
                         plmObj.ObjectName = fileName;
+
+                        bool IsNotFound = true;
+                        foreach (DataTable dt in lstdtLayoutInfo)
+                        {
+                            if (dt.Rows.Count > 0)
+                            {
+                                if (System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(dt.Rows[0]["FileID1"])) == plmObj.ObjectId)
+                                {
+                                    plmObj.dtLayoutInfo = dt;
+                                    IsNotFound = false;
+                                    break;
+                                }
+                            }
+
+                        }
+                        if (IsNotFound)
+                        {
+                            plmObj.dtLayoutInfo = new DataTable();
+                        }
                     }
                     //if (cmd.Drawings.Count==0)
                     {
@@ -239,7 +258,7 @@ namespace CADController.Controllers
                                     {
                                         if (System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(dt.Rows[0]["FileLayoutName"])) == fileName)
                                         {
-                                            plmObj.dtLayoutInfo = lstdtLayoutInfo[0];
+                                            plmObj.dtLayoutInfo = dt;
                                             IsNotFound = false;
                                             break;
                                         }
@@ -270,7 +289,7 @@ namespace CADController.Controllers
 
                 try
                 {
-                    if (!IsFileSave)
+                    if (!IsFileSave&& RetVal)
                     {
                         dtDrawingProperty.Rows.Clear();
                         // updating document info
@@ -293,6 +312,9 @@ namespace CADController.Controllers
 
                             PreFix += Convert.ToString(plmobj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectRevision) + "#";
 
+                            string OldPrefix = plmobj.PreFix;
+                            plmobj.PreFix = PreFix;
+                            
                             //dtDrawingProperty.Rows.Clear();
                             dtDrawingProperty.Rows.Add(plmobj.ObjectId,
                                 plmobj.ObjectName,
@@ -321,7 +343,8 @@ namespace CADController.Controllers
                                 , plmobj.isletest
                                 , plmobj.objectProjectNo
                                 , PreFix
-                                , plmobj.LayoutInfo);
+                                , plmobj.LayoutInfo,
+                                OldPrefix);
                         }
                     }
 

@@ -177,6 +177,8 @@ namespace RedBracketConnector
 
         public string updatedon { set; get; }
 
+        public string createdon { set; get; }
+
         public ResultSearchCriteriaCoreType coreType { set; get; }
 
         public string updatedby { set; get; }

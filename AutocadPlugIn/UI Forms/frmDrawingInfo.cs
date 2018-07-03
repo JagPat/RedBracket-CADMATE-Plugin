@@ -33,6 +33,7 @@ namespace AutocadPlugIn.UI_Forms
             LoadFlag = true;
             try
             {
+                Cursor.Current = Cursors.WaitCursor;
                 this.Hide();
                 int LocalFileLayoutCount = 0;
                 int FileInfoRowCount = 0;
@@ -43,7 +44,7 @@ namespace AutocadPlugIn.UI_Forms
                 //    return;
                 //}
 
-                Panel pnlSaperator = new Panel() { BackColor = Color.FromArgb(46, 49, 50), Margin = new Padding(3) ,Dock = DockStyle.Fill };
+                Panel pnlSaperator = new Panel() { BackColor = Color.FromArgb(46, 49, 50), Margin = new Padding(3), Dock = DockStyle.Fill };
                 // Get Current File Info from Custum Properties and Display
                 DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=1");
                 if (dtCurrentData.Length > 0)
@@ -62,7 +63,7 @@ namespace AutocadPlugIn.UI_Forms
                     FileID = lbDrawingIDC.Text = DrawingID = Convert.ToString(dtCurrentData[0]["drawingid"]);
                     if (DrawingID.Trim().Length == 0)
                     {
-                        ShowMessage.ValMess("Please save this drawing to RedBracket."); this.Close();
+                        ShowMessage.ValMess("Please save this drawing to RedBracket."); this.Close(); Cursor.Current = Cursors.Default;
                         return;
                     }
                     lbDrawingNameC.Text = Convert.ToString(dtCurrentData[0]["drawingname"]);
@@ -113,8 +114,8 @@ namespace AutocadPlugIn.UI_Forms
                                 lbLayoutNoC1.Tag = objLI1.description;
                                 lbLayoutVersionC1.Text = Convert.ToString(objLI1.versionno);
                                 object o = objLI1.statusId == null || objLI1.statusId == string.Empty ? 0 : Convert.ToInt16(objLI1.statusId);
-                                cmbLayoutStatusC1.Tag = cmbLayoutStatusC1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
-                                cmbLayoutTypeC1.Tag = cmbLayoutTypeC1.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
+                                cmbLayoutStatusC1.Tag = cmbLayoutStatusC1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty || objLI1.statusId == "0" ? -1 : Convert.ToInt16(objLI1.statusId);
+                                cmbLayoutTypeC1.Tag = cmbLayoutTypeC1.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty || objLI1.typeId == "0" ? -1 : Convert.ToInt16(objLI1.typeId);
                             }
                             else if (count == 2)
                             {
@@ -123,8 +124,8 @@ namespace AutocadPlugIn.UI_Forms
                                 lbLayoutNoC2.Text = Convert.ToString(objLI1.fileNo);
                                 lbLayoutNoC2.Tag = objLI1.description;
                                 lbLayoutVersionC2.Text = Convert.ToString(objLI1.versionno);
-                                cmbLayoutStatusC2.Tag = cmbLayoutStatusC2.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
-                                cmbLayoutTypeC2.Tag = cmbLayoutTypeC2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
+                                cmbLayoutStatusC2.Tag = cmbLayoutStatusC2.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty || objLI1.statusId == "0" ? -1 : Convert.ToInt16(objLI1.statusId);
+                                cmbLayoutTypeC2.Tag = cmbLayoutTypeC2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty || objLI1.typeId == "0" ? -1 : Convert.ToInt16(objLI1.typeId);
 
                                 FileInfoRowCount = tlpMain.RowCount;
                             }
@@ -166,7 +167,7 @@ namespace AutocadPlugIn.UI_Forms
                                 if (combo1 != null)
                                 {
                                     Helper.FIllCMB(combo1, objRBC.GetFIleStatus(), "statusname", "id", true);
-                                    combo1.Tag = combo1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty ? -1 : Convert.ToInt16(objLI1.statusId);
+                                    combo1.Tag = combo1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty || objLI1.statusId == "0" ? -1 : Convert.ToInt16(objLI1.statusId);
                                     combo1.SelectedValueChanged += new System.EventHandler(cmbFileTypeC_SelectedValueChanged);
                                 }
 
@@ -175,7 +176,7 @@ namespace AutocadPlugIn.UI_Forms
                                 if (combo2 != null)
                                 {
                                     Helper.FIllCMB(combo2, objRBC.GetFIleType(), "name", "id", true);
-                                    combo2.Tag = combo2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty ? -1 : Convert.ToInt16(objLI1.typeId);
+                                    combo2.Tag = combo2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty || objLI1.typeId == "0" ? -1 : Convert.ToInt16(objLI1.typeId);
                                     combo2.SelectedValueChanged += new System.EventHandler(cmbFileTypeC_SelectedValueChanged);
                                 }
                             }
@@ -191,12 +192,12 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 else
                 {
-                    ShowMessage.ValMess("Please save this drawing to RedBracket."); this.Close();
+                    ShowMessage.ValMess("Please save this drawing to RedBracket."); this.Close(); Cursor.Current = Cursors.Default;
                     return;
                 }
                 // Get Latest FIle Info from RB and Display
 
-                ResultSearchCriteria objRSC = objRBC.GetDrawingInformation(DrawingID);
+                ResultSearchCriteria objRSC = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(lbDrawingNoC.Text));
 
                 if (objRSC != null)
                 {
@@ -216,12 +217,12 @@ namespace AutocadPlugIn.UI_Forms
                     if (Convert.ToBoolean(objRSC.filelock))
                     {
                         lblLockedByL.Text = Convert.ToString(objRSC.updatedby);
-                        if (objRSC.updatedby == Helper.UserFullName && lbVersionC.Text== lbVersionL.Text)
+                        if (objRSC.updatedby == Helper.UserFullName && lbVersionC.Text == lbVersionL.Text)
                         {
                             lblLockedByC.Text = Convert.ToString(objRSC.updatedby);
                         }
                     }
-                     
+
                     List<LayoutInfo> objLI2 = Helper.SortLayoutInfo(objRSC.fileLayout);
                     int count1 = 0;
                     int count2 = 0;
@@ -291,6 +292,7 @@ namespace AutocadPlugIn.UI_Forms
 
                             int CRC = FileInfoRowCount + (6 * (count1 - 3));
                             Font font = label14.Font;
+                            Font font1 = lbLayoutNameC1.Font;
                             if (count1 > LocalFileLayoutCount)
                             {
                                 Panel pnl = pnlSaperator;
@@ -316,11 +318,11 @@ namespace AutocadPlugIn.UI_Forms
                                 CRC -= 6;
                             }
 
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutStatusL" + count1 }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutTypeL" + count1 }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutStatusL" + count1 }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutTypeL" + count1 }, 2, CRC++);
 
 
                             //tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutStatusC" + count1, Dock = DockStyle.Fill }, 2, CRC++);
@@ -424,6 +426,7 @@ namespace AutocadPlugIn.UI_Forms
             }
             LoadFlag = false;
             this.Show();
+            Cursor.Current = Cursors.Default;
         }
 
         private void tlpMain_Paint(object sender, PaintEventArgs e)
@@ -435,18 +438,20 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                bool IsDrawingPropertiesChanged = false;
                 Cursor.Current = Cursors.WaitCursor;
                 if (IsFilePropertiesChanged)
                 {
 
-                    if (objRBC.UpdateFileProperties(FileID, Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue), ProjectID, FilePath, PreFix))
+                    if (objRBC.UpdateFileProperties(FileID, Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue), ProjectID))
                     {
+                        //cadManager.UpdateFileProperties( Convert.ToString(cmbFileTypeC.Text), Convert.ToString(cmbFileStatusC.Text), Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue));
                         cmbFileTypeC.Tag = cmbFileTypeC.SelectedValue;
                         cmbFileStatusC.Tag = cmbFileStatusC.SelectedValue;
 
                         lbFileTypeL.Text = Convert.ToString(cmbFileTypeC.SelectedValue) == "-1" ? string.Empty : cmbFileTypeC.Text;
                         lbFileStatusL.Text = Convert.ToString(cmbFileStatusC.SelectedValue) == "-1" ? string.Empty : cmbFileStatusC.Text;
-
+                        IsDrawingPropertiesChanged = true;
                         ShowMessage.InfoMess("File properties updated successfully.");
 
                     }
@@ -456,6 +461,13 @@ namespace AutocadPlugIn.UI_Forms
                     bool IsControlNull = false;
 
                     int count = 1;
+                    //DataTable dtLayoutInfo = new DataTable();
+                    //dtLayoutInfo.Columns.Add("LayoutNo");
+                    //dtLayoutInfo.Columns.Add("Status");
+                    //dtLayoutInfo.Columns.Add("Type");
+                    //dtLayoutInfo.Columns.Add("StatusID");
+                    //dtLayoutInfo.Columns.Add("Type");
+                    bool IsSave = false;
                     while (!IsControlNull)
                     {
                         bool IsValueChanged = false;
@@ -482,6 +494,7 @@ namespace AutocadPlugIn.UI_Forms
                                 IsValueChanged = true;
                             }
 
+
                             if (IsValueChanged)
                             {
                                 string TypeID = "", StatusID = "", LayoutID = "";
@@ -494,12 +507,22 @@ namespace AutocadPlugIn.UI_Forms
                                 StatusID = StatusID == "-1" ? string.Empty : StatusID;
                                 if (objRBC.UpdateLayoutInfo(ProjectID, FileID, LayoutID, StatusID, TypeID, LayoutName, LayoutDesc))
                                 {
+                                    //DataRow dr = dtLayoutInfo.NewRow();
+                                    //dr["Type"] = Convert.ToString(cmbtype.SelectedValue) == "-1" ? string.Empty : cmbtype.Text;
+                                    //dr["Status"] = Convert.ToString(cmbstatus.SelectedValue) == "-1" ? string.Empty : cmbstatus.Text;
+                                    //dr["LayoutNo"] = lblLNumber.Text;
+                                    //dtLayoutInfo.Rows.Add(dr);
                                     cmbstatus.Tag = cmbstatus.SelectedValue;
                                     cmbtype.Tag = cmbtype.SelectedValue;
 
                                     lblType.Text = Convert.ToString(cmbtype.SelectedValue) == "-1" ? string.Empty : cmbtype.Text;
                                     lblStatus.Text = Convert.ToString(cmbstatus.SelectedValue) == "-1" ? string.Empty : cmbstatus.Text;
-                                    ShowMessage.InfoMess("Layout properties updated successfully.");
+                                    IsSave = true;
+                                    IsDrawingPropertiesChanged = true;
+                                }
+                                else
+                                {
+                                    IsSave = false;
                                 }
                             }
 
@@ -508,9 +531,18 @@ namespace AutocadPlugIn.UI_Forms
                         }
 
                     }
-
+                    if (IsSave)
+                    {
+                        //cadManager.UpdateLayoutProperties(dtLayoutInfo);
+                        ShowMessage.InfoMess("Layout properties updated successfully.");
+                    }
 
                 }
+                if (IsDrawingPropertiesChanged)
+                {
+                    cadManager.UpdateFileProperties(DrawingID, FilePath);
+                }
+                   
                 cmbFileTypeC_SelectedValueChanged(null, null);
             }
             catch (Exception E)

@@ -57,219 +57,173 @@ namespace RedBracketConnector
                     RestResponse restResponse;
                     //service calling to upload document.
                     String PreFix = obj.PreFix;
-                    // if (obj.IsRoot)
+
+                    if (!File.Exists(obj.FilePath))
                     {
-                        if (!File.Exists(obj.FilePath))
-                        {
-                            ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
-                            return false;
-                        }
-
-                        //     restResponse = (RestResponse)ServiceHelper.SaveObject(
-                        //Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                        //"/AutocadFiles/uploadFileService", obj.FilePath,
-                        //     true, new List<KeyValuePair<string, string>> {
-                        //          new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
-                        //          new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                        //          new KeyValuePair<string, string>("fileType", obj.Classification),
-                        //           new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                        //           new KeyValuePair<string, string>("isNew","true")
-                        //     }, obj.PreFix, true);
+                        ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
+                        return false;
+                    }
 
 
 
-                        if (IsFileSave)
-                        {
-
-                            if(obj.IsNew)
-                            {
-                                http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFile?
-                                //userName =testing@yopmail.com&project=143&source=Computer&fileId=a8b2ec09-12bc-4907-9cf9-280918095b5a
-                                restResponse = (RestResponse)ServiceHelper.SaveObject(
-                                    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                    "/AutocadFiles/uploadFile", obj.FilePath,
-                                    true, new List<KeyValuePair<string, string>>                                            
-                                    {
-                                        new KeyValuePair<string, string>("userName",Helper.UserName),
-                                        new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                                                    new KeyValuePair<string, string>("source","Computer"),
-                                                    new KeyValuePair<string, string>("project",obj.ObjectProjectId),
-                                                    new KeyValuePair<string, string>("folderId", obj.FolderID.Trim())
-                                    }, PreFix, true);
-                            }
-                            else
-                            {
-                                //http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileVersion?
-                                //userName =testing@yopmail.com&fileId=a8b2ec09-12bc-4907-9cf9-280918095b5a&source=Computer
-                                restResponse = (RestResponse)ServiceHelper.SaveObject(
-                                    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                    "/AutocadFiles/uploadFileVersion", obj.FilePath,
-                                    true, new List<KeyValuePair<string, string>>
-                                    {        new KeyValuePair<string, string>("userName",Helper.UserName),
-                                        new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                                                    new KeyValuePair<string, string>("source","Computer")
-                                                    
-                                    }, PreFix, true);
-                            }
-                            //string IsNew = "false";
-                            //if (obj.IsNew)
-                            //{
-                            //    IsNew = "false";
-                            //}
-                            //else
-                            //{
-                            //    IsNew = "true";
-                            //}
 
 
-                            //if (obj.FolderID.Trim().Length > 0)
-                            //{
-                            //    //Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
-                            //}
+                    if (IsFileSave)
+                    {
 
-                            //save =false
-                            //restResponse = (RestResponse)ServiceHelper.SaveObject(
-                            //                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                            //                "/AutocadFiles/uploadFileService", obj.FilePath,
-                            //                true, new List<KeyValuePair<string, string>>
-                            //                {       new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                            //                        new KeyValuePair<string, string>("isNew",Convert.ToString(IsNew).ToLower()),
-                            //                        new KeyValuePair<string, string>("folderidString", obj.FolderID.Trim())
-                            //                }, PreFix, true);
-
-                            if (!obj.IsRoot && obj.IsNew)
-                            {
-                                List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
-                                KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
-
-
-                                Keys = new KeyValuePair<string, string>("parentFileId", ParentFileID);
-                                keyValuePairs.Add(Keys);
-
-                                Keys = new KeyValuePair<string, string>("childFileId", obj.ObjectId);
-                                keyValuePairs.Add(Keys);
-
-
-                                // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
-                                restResponse = (RestResponse)ServiceHelper.PostData(
-                                                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                                "/AutocadFiles/uploadXRef", DataFormat.Json, null,
-                                                     true, keyValuePairs);
-                            }
-                            else
-                            {
-                                ParentFileID = obj.ObjectId;
-                            }
-                        }
-                        else
+                        if (obj.IsNew)
                         {
                             List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
                             KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
 
-                            if (obj.ObjectProjectId.Trim().Length > 0)
-                            {
-                                Keys = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
-                                keyValuePairs.Add(Keys);
-                            }
 
-                            Keys = new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus);
+                            //Keys = new KeyValuePair<string, string>("userName", Helper.UserName);
+                            //keyValuePairs.Add(Keys);
+
+                            Keys = new KeyValuePair<string, string>("fileId", obj.ObjectId);
                             keyValuePairs.Add(Keys);
 
-                            if (obj.ObjectProjectId.Trim().Length > 0)
-                            {
-                                Keys = new KeyValuePair<string, string>("fileType", obj.Classification);
-                                keyValuePairs.Add(Keys);
-                            }
 
                             Keys = new KeyValuePair<string, string>("source", "Computer");
                             keyValuePairs.Add(Keys);
-                            string s = Path.GetExtension(obj.FilePath);
-                            Keys = new KeyValuePair<string, string>("fileName", obj.ObjectName + s);
+                            Keys = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
                             keyValuePairs.Add(Keys);
 
-                            string IsNew = "";
-                            if (obj.ObjectId.Trim().Length > 0)
-                            {
-                                Keys = new KeyValuePair<string, string>("fileId", obj.ObjectId);
-                                keyValuePairs.Add(Keys);
-                            }
-
-
-
-                            if (obj.ObjectId == string.Empty)
-                            {
-                                IsNew = "false";
-                            }
-                            else
-                            {
-                                IsNew = "true";
-                            }
-
-                            Keys = new KeyValuePair<string, string>("isNew", IsNew);
-                            if (obj.FolderID.Trim().Length > 0 && Convert.ToDecimal(obj.FolderID.Trim())>0)
+                            if (obj.FolderID.Trim().Length > 0 && Convert.ToDecimal(obj.FolderID.Trim()) > 0)
                             {
                                 Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
                                 keyValuePairs.Add(Keys);
                             }
-                         
-                            // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
+
+
+                            //http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFile?
+                            //userName =testing@yopmail.com&project=143&source=Computer&fileId=a8b2ec09-12bc-4907-9cf9-280918095b5a
                             restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                "/AutocadFiles/uploadFile", obj.FilePath,
+                                true, keyValuePairs, PreFix, true);
+                        }
+                        else
+                        {
+                            //http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileVersion?
+                            //userName =testing@yopmail.com&fileId=a8b2ec09-12bc-4907-9cf9-280918095b5a&source=Computer
+                            restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                "/AutocadFiles/uploadFileVersion", obj.FilePath,
+                                true, new List<KeyValuePair<string, string>>
+                                {
+                                        new KeyValuePair<string, string>("fileId", obj.ObjectId),
+                                                    new KeyValuePair<string, string>("source","Computer")
+
+                                }, PreFix, true);
+                        }
+
+
+                        if (!obj.IsRoot && obj.IsNew)
+                        //if (!obj.IsRoot)
+                        {
+                            List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+                            KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
+
+
+                            Keys = new KeyValuePair<string, string>("parentFileId", ParentFileID);
+                            keyValuePairs.Add(Keys);
+
+                            Keys = new KeyValuePair<string, string>("childFileId", obj.ObjectId);
+                            keyValuePairs.Add(Keys);
+
+
+                            // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
+                            RestResponse restResponse1 = (RestResponse)ServiceHelper.PostData(
                                             Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                            "/AutocadFiles/uploadFileServiceProp", obj.FilePath,
-                                                 true, keyValuePairs, obj.PreFix, false);
+                                            "/AutocadFiles/uploadXRef", DataFormat.Json, null,
+                                                 true, keyValuePairs);
+
+                            if (restResponse1.StatusCode != System.Net.HttpStatusCode.OK)
+                            {
+                                //ShowMessage.InfoMess(restResponse.Content);
+                                //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
+                                ShowMessage.ErrorMess("Some error occurred while defining file relationship.");
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            ParentFileID = obj.ObjectId;
+                        }
+                    }
+                    else
+                    {
+                        List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+                        KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
+
+                        if (obj.ObjectProjectId.Trim().Length > 0)
+                        {
+                            Keys = new KeyValuePair<string, string>("project", obj.ObjectProjectId);
+                            keyValuePairs.Add(Keys);
+                        }
+
+                        Keys = new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus);
+                        keyValuePairs.Add(Keys);
+
+                        if (obj.Classification.Trim().Length > 0)
+                        {
+                            Keys = new KeyValuePair<string, string>("fileType", obj.Classification);
+                            keyValuePairs.Add(Keys);
+                        }
+
+                        Keys = new KeyValuePair<string, string>("source", "Computer");
+                        keyValuePairs.Add(Keys);
+                        string s = Path.GetExtension(obj.FilePath);
+                        Keys = new KeyValuePair<string, string>("fileName", Path.GetFileNameWithoutExtension(obj.ObjectName) + s);
+                        keyValuePairs.Add(Keys);
+
+                        string IsNew = "";
+                        if (obj.ObjectId.Trim().Length > 0)
+                        {
+                            Keys = new KeyValuePair<string, string>("fileId", obj.ObjectId);
+                            keyValuePairs.Add(Keys);
                         }
 
 
 
+                        if (obj.ObjectId == string.Empty)
+                        {
+                            IsNew = "false";
+                        }
+                        else
+                        {
+                            IsNew = "true";
+                        }
 
+                        Keys = new KeyValuePair<string, string>("isNew", IsNew);
+                        keyValuePairs.Add(Keys);
 
+                        Keys = new KeyValuePair<string, string>("versiondesc", obj.ObjectDescription);
+                        keyValuePairs.Add(Keys);
+
+                        if (obj.FolderID.Trim().Length > 0 && Convert.ToDecimal(obj.FolderID.Trim()) > 0)
+                        {
+                            Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
+                            keyValuePairs.Add(Keys);
+                        }
+
+                        // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
+                        restResponse = (RestResponse)ServiceHelper.SaveObject(
+                                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                        "/AutocadFiles/uploadFileServiceProp", obj.FilePath,
+                                             true, keyValuePairs, obj.PreFix, false);
                     }
-                    //else
-                    //{
-                    //    if (!File.Exists(obj.FilePath))
-                    //    {
-                    //        ShowMessage.InfoMess(obj.FilePath + Environment.NewLine + "File not found.");
-                    //        continue;
-                    //    }
 
 
 
-                    //    //for save
-                    //    if (obj.ObjectId.Trim().Length == 0)
-                    //    {
-                    //        restResponse = (RestResponse)ServiceHelper.SaveObject(
-                    //                    Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                    //                    "/AutocadFiles/uploadXRefFiles", obj.FilePath,
-                    //                      false, new List<KeyValuePair<string, string>> {
-                    //                             new KeyValuePair<string, string>("source", "Computer") ,
-                    //                              new KeyValuePair<string, string>("userName", Helper.UserName) ,
-                    //                        new KeyValuePair<string, string>("parentFileId", ParentFileID) ,
-                    //                        new KeyValuePair<string, string>("project", obj.ObjectProjectId)  ,
-                    //                        new KeyValuePair<string, string>("xrefFileId", obj.ObjectId.Trim()),
-                    //                        new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                    //                        new KeyValuePair<string, string>("fileType", obj.Classification),
-                    //                        new KeyValuePair<string, string>("isNew", "false") }, obj.PreFix);
-                    //    }
-                    //    else
-                    //    {
-                    //        restResponse = (RestResponse)ServiceHelper.SaveObject(
-                    //                        Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                    //                        "/AutocadFiles/uploadFileService", obj.FilePath,
-                    //                             true, new List<KeyValuePair<string, string>> {
-                    //                                                    new KeyValuePair<string, string>("project", obj.ObjectProjectId) ,
-                    //                                                    new KeyValuePair<string, string>("fileStatus", obj.ObjectStatus),
-                    //                                                    new KeyValuePair<string, string>("fileType", obj.Classification),
-                    //                                                     new KeyValuePair<string, string>("fileId", obj.ObjectId)
-                    //                             }, obj.PreFix);
-                    //    }
 
 
 
-                    //}
 
 
                     //checking if service call was successful or not.
-                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK && restResponse.StatusCode != System.Net.HttpStatusCode.NotAcceptable)
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
                         //ShowMessage.InfoMess(restResponse.Content);
                         //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
@@ -282,118 +236,80 @@ namespace RedBracketConnector
                         {
                         }
                         else
-                        //  if (Convert.ToString(obj.ObjectId).Trim().Length > 0)
+
                         {
 
 
                             SaveResult saveResult = new JavaScriptSerializer().Deserialize<SaveResult>(restResponse.Content);
-                            //var saveObjectResponseValueObject = JsonConvert.DeserializeObject< DataofData>(saveResult.dataofdata.Replace("[", "").Replace("]", ""));
-
-                            //var saveObjectResponseValueObject1 = JsonConvert.DeserializeObject<List< DataofData>>(saveResult.dataofdata );
-                            //var saveObjectResponseValueObject = saveObjectResponseValueObject1[0];
-                            //var Drawing = saveObjectResponseValueObject;
 
 
-                            bool isError = false;
-                            try
-                            {
-                                //var Drawing3 = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata);
-                                try
-                                {
-                                    var Drawing11 = JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
-                                }
-                                catch
-                                {
-                                    isError = true;
-                                    var Drawing2 = JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata);
-                                }
 
-                            }
-                            catch (Exception E)
+
+
+                            //var Drawing123 =  isError ? JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata) : JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata) ;
+                            var Drawing123 = JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata);
+                            foreach (DataofData Drawing in Drawing123)
                             {
 
-                            }
-
-
-                            var Drawing = isError ? JsonConvert.DeserializeObject<DataofData>(saveResult.dataofdata) : JsonConvert.DeserializeObject<List<DataofData>>(saveResult.dataofdata)[0];
-
-                            if (Drawing != null)
-                            {
-                                if (obj.IsRoot)
-                                    obj.ObjectId = ParentFileID = Drawing.id;
-                                else
-                                    obj.ObjectId = Drawing.id;
-
-
-                                if (!IsFileSave)
+                                if (Drawing != null)
                                 {
-                                    List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId);
-                                    // ResultSearchCriteria Drawing = GetDrawingInformation(obj.ObjectId);
 
-                                    obj.ObjectName = Drawing.name;
-                                    obj.Classification = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.id);
-                                    obj.ObjectState = Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname;
-                                    obj.ObjectRevision = Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno;
-                                    obj.LockStatus = Convert.ToString(Drawing.filelock);
-                                    obj.ObjectGeneration = "123";
-                                    obj.ItemType = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
-                                    obj.ObjectProjectName = Drawing.projectname == null ? string.Empty : Drawing.projectname;
-                                    //obj.ObjectProjectId = "123";
-                                    obj.ObjectCreatedById = Drawing.createdby;
-                                    obj.ObjectCreatedOn = Drawing.updatedon;
-                                    obj.ObjectModifiedById = Drawing.updatedby;
-                                    obj.ObjectModifiedOn = Drawing.updatedon;
-                                    obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
-
-                                    obj.canDelete = Drawing.canDelete;
-                                    obj.isowner = Drawing.isowner;
-                                    obj.hasViewPermission = Drawing.hasViewPermission;
-                                    obj.isActFileLatest = Drawing.isActFileLatest;
-                                    obj.isEditable = Drawing.isEditable;
-                                    obj.canEditStatus = Drawing.canEditStatus;
-                                    obj.hasStatusClosed = Drawing.hasStatusClosed;
-                                    obj.isletest = Drawing.isletest;
-                                    obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
+                                    if (obj.IsRoot)
+                                        obj.ObjectId = ParentFileID = Drawing.id;
+                                    else
+                                        obj.ObjectId = Drawing.id;
 
 
-                                    obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
+                                    if (!IsFileSave)
+                                    {
+                                        List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId);
+                                        // ResultSearchCriteria Drawing = GetDrawingInformation(obj.ObjectId);
+
+                                        obj.ObjectName = Drawing.name;
+                                        obj.Classification = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.id);
+                                        obj.ObjectState = Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname;
+                                        obj.ObjectRevision = Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno;
+                                        obj.LockStatus = Convert.ToString(Drawing.filelock);
+                                        obj.ObjectGeneration = "123";
+                                        obj.ItemType = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
+                                        obj.ObjectProjectName = Drawing.projectname == null ? string.Empty : Drawing.projectname;
+                                        //obj.ObjectProjectId = "123";
+                                        obj.ObjectCreatedById = Drawing.createdby;
+                                        obj.ObjectCreatedOn = Drawing.updatedon;
+                                        obj.ObjectModifiedById = Drawing.updatedby;
+                                        obj.ObjectModifiedOn = Drawing.updatedon;
+                                        obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
+
+                                        obj.canDelete = Drawing.canDelete;
+                                        obj.isowner = Drawing.isowner;
+                                        obj.hasViewPermission = Drawing.hasViewPermission;
+                                        obj.isActFileLatest = Drawing.isActFileLatest;
+                                        obj.isEditable = Drawing.isEditable;
+                                        obj.canEditStatus = Drawing.canEditStatus;
+                                        obj.hasStatusClosed = Drawing.hasStatusClosed;
+                                        obj.isletest = Drawing.isletest;
+                                        obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
+
+
+                                        obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
+                                    }
+
+
+
+
+
+
+
                                 }
-
-
 
                             }
 
 
                         }
-                        //else
-                        //{
-                        //    try
-                        //    {
-                        //        var Drawing1 = JsonConvert.DeserializeObject<SaveResult>(restResponse.Content);
-                        //    }
-                        //    catch (Exception E)
-                        //    {
 
-                        //    }
-                        //  var Drawing = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
-
-                        //    obj.ObjectId = ParentFileID = Drawing.id;
-                        //    obj.ObjectName = Drawing.name;
-                        //    obj.Classification = Drawing.coreType.name;
-                        //    obj.ObjectState = Drawing.status.statusname;
-                        //    obj.ObjectRevision = Drawing.versionno;
-                        //    obj.LockStatus = Convert.ToString(Drawing.filelock);
-                        //    obj.ObjectGeneration = "123";
-                        //    obj.ItemType = Drawing.coreType.name;
-                        //    obj.ObjectProjectName = Drawing.projectname;
-                        //    obj.ObjectProjectId = "123";
-                        //    obj.ObjectCreatedById = Drawing.createdby;
-                        //    obj.ObjectCreatedOn = Drawing.updatedon;
-                        //    obj.ObjectModifiedById = Drawing.updatedby;
-                        //    obj.ObjectModifiedOn = Drawing.updatedon;
-                        //    obj.ObjectNumber = Drawing.fileNo;
-                        //}
                     }
+
+
 
 
 
@@ -408,10 +324,11 @@ namespace RedBracketConnector
                 ShowMessage.ErrorMess(E.Message);
                 return false;
             }
+            return false;
 
         }
 
-        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project, string FilePath, string PreFix)
+        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project )
         {
             try
             {
@@ -687,8 +604,42 @@ namespace RedBracketConnector
 
                 foreach (DataRow dr in dtLayoutInfo.Rows)
                 {
-                    if (/*Convert.ToString(dr["IsFile"]) == "1" ||*/ (Convert.ToString(dr["ChangeVersion"]) == "False"))
+                    if (Convert.ToString(dr["IsFile"]) == "1")
                     {
+                        continue;
+                    }
+                    else if ((Convert.ToString(dr["ChangeVersion"]) == "False"))
+                    {
+
+
+                        LayoutInfo objLI = new LayoutInfo();
+
+                        objLI.id = Convert.ToString(dr["LayoutID"]).Trim();
+                        objLI.canDelete = false;
+                        objLI.canEditStatus = false;
+
+                        objLI.updatedby = Convert.ToString(dr["UpdatedBy"]).Trim();
+                        objLI.updatedon = Convert.ToString(dr["UpdatedOn"]).Trim();
+                        objLI.createdby = Convert.ToString(dr["CreatedBy"]).Trim();
+                        objLI.createdon = Convert.ToString(dr["CreatedOn"]).Trim();
+                        objLI.description = Convert.ToString(dr["Description"]).Trim();
+                        objLI.fileNo = Convert.ToString(dr["LayoutNo"]).Trim();;
+                        objLI.hasStatusClosed = false;
+                        objLI.isActFileLatest = false;
+                        objLI.isEditable = false;
+                        objLI.isletest = true;
+                        objLI.isowner = false;
+                        //objLI.layoutId = Drawing.;
+                        objLI.name = Convert.ToString(dr["LayoutName1"]).Trim();
+
+                        objLI.statusId = Convert.ToString(dr["StatusID"]).Trim();
+                        objLI.statusname = Convert.ToString(dr["LayoutStatus"]).Trim();
+
+                        objLI.typeId = Convert.ToString(dr["TypeID"]).Trim();
+                        objLI.typename = Convert.ToString(dr["LayoutType"]).Trim();
+                        objLI.versionno = Convert.ToString(dr["Version"]).Trim();
+
+                        LayoutInfolst.Add(objLI);
                         continue;
                     }
 
@@ -763,9 +714,11 @@ namespace RedBracketConnector
                         objLI.canDelete = Drawing.canDelete;
                         objLI.canEditStatus = Drawing.canEditStatus;
 
-
+                        objLI.updatedby = Drawing.updatedby;
+                        objLI.updatedon = Drawing.updatedon;
                         objLI.createdby = Drawing.createdby;
-                        //objLI.description = Drawing.;
+                        objLI.createdon = Drawing.createdOn == null ? string.Empty : Drawing.createdOn;
+                        objLI.description = Drawing.description;
                         objLI.fileNo = Drawing.fileNo;
                         objLI.hasStatusClosed = Drawing.hasStatusClosed;
                         objLI.isActFileLatest = Drawing.isActFileLatest;
@@ -1040,7 +993,7 @@ namespace RedBracketConnector
                     restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), ServiceName, true);
                 if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    MessageBox.Show("Some error occurred while retrieving the " + MessageText + ".");
+                    ShowMessage.ErrorMess("Some error occurred while retrieving the " + MessageText + ".");
                 }
                 else
                 {
@@ -1125,19 +1078,18 @@ namespace RedBracketConnector
                             null, true, urlParameters);
 
                         ResultSearchCriteria ObjFileInfo = null;
-                        if (restResponse.Content != null)
+
+
+
+
+                        if (restResponse.Content == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                         {
-                            ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
-                        }
-
-
-
-                        if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                        {
-                            MessageBox.Show("Some error occurred while fetching file status.");
+                            ShowMessage.ErrorMess("Some error occurred while fetching file status.");
+                            return;
                         }
                         else
                         {
+                            ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
                             if (ObjFileInfo != null)
                             {
                                 bool FileLock = Convert.ToBoolean(Convert.ToString(ObjFileInfo.filelock));
@@ -1539,7 +1491,38 @@ namespace RedBracketConnector
             }
             return Drawing;
         }
+        public byte[] GetSingleFileInfo(string fileID )
+        {
+             
+            try
+            {
 
+                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
+                         Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                         "/AutocadFiles/downloadAutocadSingleFile",
+                         false,
+                         new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId",fileID ) ,
+                                    new KeyValuePair<string, string>("userName", Helper.UserName)
+
+                         });
+                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                { 
+                    return restResponse.RawBytes;
+                }
+                else
+                {
+                    ShowMessage.ErrorMess("Some error while retrieving file.");
+                    return null;
+                    
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return null;
+            }
+           
+        }
 
 
         /// <summary>

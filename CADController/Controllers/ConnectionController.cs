@@ -38,8 +38,18 @@ namespace CADController.Controllers
                 }, false);
 
                 //isConnect = ArasConnector.ArasConnector.Isconnected;
-
-                loggedUserDetails = JsonConvert.DeserializeObject<UserDetails>(restResponse.Content);
+                if(restResponse.StatusCode==System.Net.HttpStatusCode.OK)
+                {
+                    loggedUserDetails = JsonConvert.DeserializeObject<UserDetails>(restResponse.Content);
+                }
+                else if(restResponse.StatusCode==System.Net.HttpStatusCode.Unauthorized)
+                {
+                    errorString = "Unauthorize access.";
+                }
+                else
+                {
+                    errorString = restResponse.Content;
+                }
                 isConnect = restResponse.StatusCode == System.Net.HttpStatusCode.OK;
 
                 //DataTable dtUserDetail = new DataTable();

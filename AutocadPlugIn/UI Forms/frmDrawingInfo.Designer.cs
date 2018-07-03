@@ -92,11 +92,12 @@
             this.cmbLayoutTypeC2 = new System.Windows.Forms.ComboBox();
             this.cmbLayoutStatusC2 = new System.Windows.Forms.ComboBox();
             this.lbLayoutTypeL2 = new System.Windows.Forms.Label();
-            this.btnSave = new System.Windows.Forms.Button();
             this.label23 = new System.Windows.Forms.Label();
             this.lblLockedByC = new System.Windows.Forms.Label();
             this.lblLockedByL = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -105,7 +106,6 @@
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.tlpMain.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -218,7 +218,7 @@
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tlpMain.Size = new System.Drawing.Size(670, 620);
+            this.tlpMain.Size = new System.Drawing.Size(708, 620);
             this.tlpMain.TabIndex = 0;
             this.tlpMain.Paint += new System.Windows.Forms.PaintEventHandler(this.tlpMain_Paint);
             // 
@@ -240,7 +240,7 @@
             this.label2.Font = new System.Drawing.Font("Verdana", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(134, 1);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(262, 23);
+            this.label2.Size = new System.Drawing.Size(281, 23);
             this.label2.TabIndex = 0;
             this.label2.Text = "Current File";
             // 
@@ -249,9 +249,9 @@
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label3.Font = new System.Drawing.Font("Verdana", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(403, 1);
+            this.label3.Location = new System.Drawing.Point(422, 1);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(263, 23);
+            this.label3.Size = new System.Drawing.Size(282, 23);
             this.label3.TabIndex = 0;
             this.label3.Text = "Latest File on RB";
             // 
@@ -478,7 +478,7 @@
             this.lbDrawingNameC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbDrawingNameC.Location = new System.Drawing.Point(134, 25);
             this.lbDrawingNameC.Name = "lbDrawingNameC";
-            this.lbDrawingNameC.Size = new System.Drawing.Size(262, 23);
+            this.lbDrawingNameC.Size = new System.Drawing.Size(281, 23);
             this.lbDrawingNameC.TabIndex = 2;
             this.lbDrawingNameC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -489,7 +489,7 @@
             this.lbDrawingNoC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbDrawingNoC.Location = new System.Drawing.Point(134, 49);
             this.lbDrawingNoC.Name = "lbDrawingNoC";
-            this.lbDrawingNoC.Size = new System.Drawing.Size(262, 23);
+            this.lbDrawingNoC.Size = new System.Drawing.Size(281, 23);
             this.lbDrawingNoC.TabIndex = 2;
             this.lbDrawingNoC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -500,7 +500,7 @@
             this.lbVersionC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbVersionC.Location = new System.Drawing.Point(134, 73);
             this.lbVersionC.Name = "lbVersionC";
-            this.lbVersionC.Size = new System.Drawing.Size(262, 23);
+            this.lbVersionC.Size = new System.Drawing.Size(281, 23);
             this.lbVersionC.TabIndex = 2;
             this.lbVersionC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -511,7 +511,7 @@
             this.lbProjectNameC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbProjectNameC.Location = new System.Drawing.Point(134, 97);
             this.lbProjectNameC.Name = "lbProjectNameC";
-            this.lbProjectNameC.Size = new System.Drawing.Size(262, 23);
+            this.lbProjectNameC.Size = new System.Drawing.Size(281, 23);
             this.lbProjectNameC.TabIndex = 2;
             this.lbProjectNameC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -522,7 +522,7 @@
             this.lbProjectNoC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbProjectNoC.Location = new System.Drawing.Point(134, 121);
             this.lbProjectNoC.Name = "lbProjectNoC";
-            this.lbProjectNoC.Size = new System.Drawing.Size(262, 23);
+            this.lbProjectNoC.Size = new System.Drawing.Size(281, 23);
             this.lbProjectNoC.TabIndex = 2;
             this.lbProjectNoC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -530,21 +530,22 @@
             // 
             this.lbDrawingIDC.AutoSize = true;
             this.lbDrawingIDC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbDrawingIDC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbDrawingIDC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbDrawingIDC.Location = new System.Drawing.Point(134, 193);
             this.lbDrawingIDC.Name = "lbDrawingIDC";
-            this.lbDrawingIDC.Size = new System.Drawing.Size(262, 23);
+            this.lbDrawingIDC.Size = new System.Drawing.Size(281, 23);
             this.lbDrawingIDC.TabIndex = 2;
+            this.lbDrawingIDC.Text = "f4c1476e-c873-4459-a44a-a40971534f34";
             this.lbDrawingIDC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lbModifiedByC
             // 
             this.lbModifiedByC.AutoSize = true;
             this.lbModifiedByC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbModifiedByC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbModifiedByC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbModifiedByC.Location = new System.Drawing.Point(134, 241);
             this.lbModifiedByC.Name = "lbModifiedByC";
-            this.lbModifiedByC.Size = new System.Drawing.Size(262, 23);
+            this.lbModifiedByC.Size = new System.Drawing.Size(281, 23);
             this.lbModifiedByC.TabIndex = 2;
             this.lbModifiedByC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -552,10 +553,10 @@
             // 
             this.lbCreatedByC.AutoSize = true;
             this.lbCreatedByC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbCreatedByC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbCreatedByC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbCreatedByC.Location = new System.Drawing.Point(134, 217);
             this.lbCreatedByC.Name = "lbCreatedByC";
-            this.lbCreatedByC.Size = new System.Drawing.Size(262, 23);
+            this.lbCreatedByC.Size = new System.Drawing.Size(281, 23);
             this.lbCreatedByC.TabIndex = 2;
             this.lbCreatedByC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -563,10 +564,10 @@
             // 
             this.lbLayoutNameC1.AutoSize = true;
             this.lbLayoutNameC1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNameC1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNameC1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLayoutNameC1.Location = new System.Drawing.Point(134, 304);
             this.lbLayoutNameC1.Name = "lbLayoutNameC1";
-            this.lbLayoutNameC1.Size = new System.Drawing.Size(262, 23);
+            this.lbLayoutNameC1.Size = new System.Drawing.Size(281, 23);
             this.lbLayoutNameC1.TabIndex = 2;
             this.lbLayoutNameC1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -574,10 +575,10 @@
             // 
             this.lbLayoutNoC1.AutoSize = true;
             this.lbLayoutNoC1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNoC1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNoC1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLayoutNoC1.Location = new System.Drawing.Point(134, 328);
             this.lbLayoutNoC1.Name = "lbLayoutNoC1";
-            this.lbLayoutNoC1.Size = new System.Drawing.Size(262, 23);
+            this.lbLayoutNoC1.Size = new System.Drawing.Size(281, 23);
             this.lbLayoutNoC1.TabIndex = 2;
             this.lbLayoutNoC1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -585,10 +586,10 @@
             // 
             this.lbLayoutVersionC1.AutoSize = true;
             this.lbLayoutVersionC1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutVersionC1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutVersionC1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLayoutVersionC1.Location = new System.Drawing.Point(134, 352);
             this.lbLayoutVersionC1.Name = "lbLayoutVersionC1";
-            this.lbLayoutVersionC1.Size = new System.Drawing.Size(262, 23);
+            this.lbLayoutVersionC1.Size = new System.Drawing.Size(281, 23);
             this.lbLayoutVersionC1.TabIndex = 2;
             this.lbLayoutVersionC1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -596,10 +597,10 @@
             // 
             this.lbLayoutNameC2.AutoSize = true;
             this.lbLayoutNameC2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNameC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNameC2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLayoutNameC2.Location = new System.Drawing.Point(134, 439);
             this.lbLayoutNameC2.Name = "lbLayoutNameC2";
-            this.lbLayoutNameC2.Size = new System.Drawing.Size(262, 23);
+            this.lbLayoutNameC2.Size = new System.Drawing.Size(281, 23);
             this.lbLayoutNameC2.TabIndex = 2;
             this.lbLayoutNameC2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -607,10 +608,10 @@
             // 
             this.lbLayoutNoC2.AutoSize = true;
             this.lbLayoutNoC2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNoC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNoC2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLayoutNoC2.Location = new System.Drawing.Point(134, 463);
             this.lbLayoutNoC2.Name = "lbLayoutNoC2";
-            this.lbLayoutNoC2.Size = new System.Drawing.Size(262, 23);
+            this.lbLayoutNoC2.Size = new System.Drawing.Size(281, 23);
             this.lbLayoutNoC2.TabIndex = 2;
             this.lbLayoutNoC2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -618,10 +619,10 @@
             // 
             this.lbLayoutVersionC2.AutoSize = true;
             this.lbLayoutVersionC2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutVersionC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutVersionC2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLayoutVersionC2.Location = new System.Drawing.Point(134, 487);
             this.lbLayoutVersionC2.Name = "lbLayoutVersionC2";
-            this.lbLayoutVersionC2.Size = new System.Drawing.Size(262, 23);
+            this.lbLayoutVersionC2.Size = new System.Drawing.Size(281, 23);
             this.lbLayoutVersionC2.TabIndex = 2;
             this.lbLayoutVersionC2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -630,9 +631,9 @@
             this.lbDrawingNameL.AutoSize = true;
             this.lbDrawingNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbDrawingNameL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbDrawingNameL.Location = new System.Drawing.Point(403, 25);
+            this.lbDrawingNameL.Location = new System.Drawing.Point(422, 25);
             this.lbDrawingNameL.Name = "lbDrawingNameL";
-            this.lbDrawingNameL.Size = new System.Drawing.Size(263, 23);
+            this.lbDrawingNameL.Size = new System.Drawing.Size(282, 23);
             this.lbDrawingNameL.TabIndex = 2;
             this.lbDrawingNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -641,9 +642,9 @@
             this.lbVersionL.AutoSize = true;
             this.lbVersionL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbVersionL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbVersionL.Location = new System.Drawing.Point(403, 73);
+            this.lbVersionL.Location = new System.Drawing.Point(422, 73);
             this.lbVersionL.Name = "lbVersionL";
-            this.lbVersionL.Size = new System.Drawing.Size(263, 23);
+            this.lbVersionL.Size = new System.Drawing.Size(282, 23);
             this.lbVersionL.TabIndex = 2;
             this.lbVersionL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -652,9 +653,9 @@
             this.lbDrawingNoL.AutoSize = true;
             this.lbDrawingNoL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbDrawingNoL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbDrawingNoL.Location = new System.Drawing.Point(403, 49);
+            this.lbDrawingNoL.Location = new System.Drawing.Point(422, 49);
             this.lbDrawingNoL.Name = "lbDrawingNoL";
-            this.lbDrawingNoL.Size = new System.Drawing.Size(263, 23);
+            this.lbDrawingNoL.Size = new System.Drawing.Size(282, 23);
             this.lbDrawingNoL.TabIndex = 2;
             this.lbDrawingNoL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -663,9 +664,9 @@
             this.lbProjectNameL.AutoSize = true;
             this.lbProjectNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbProjectNameL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbProjectNameL.Location = new System.Drawing.Point(403, 97);
+            this.lbProjectNameL.Location = new System.Drawing.Point(422, 97);
             this.lbProjectNameL.Name = "lbProjectNameL";
-            this.lbProjectNameL.Size = new System.Drawing.Size(263, 23);
+            this.lbProjectNameL.Size = new System.Drawing.Size(282, 23);
             this.lbProjectNameL.TabIndex = 2;
             this.lbProjectNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -674,9 +675,9 @@
             this.lbProjectNoL.AutoSize = true;
             this.lbProjectNoL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbProjectNoL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbProjectNoL.Location = new System.Drawing.Point(403, 121);
+            this.lbProjectNoL.Location = new System.Drawing.Point(422, 121);
             this.lbProjectNoL.Name = "lbProjectNoL";
-            this.lbProjectNoL.Size = new System.Drawing.Size(263, 23);
+            this.lbProjectNoL.Size = new System.Drawing.Size(282, 23);
             this.lbProjectNoL.TabIndex = 2;
             this.lbProjectNoL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -684,10 +685,10 @@
             // 
             this.lbFileTypeL.AutoSize = true;
             this.lbFileTypeL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbFileTypeL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbFileTypeL.Location = new System.Drawing.Point(403, 145);
+            this.lbFileTypeL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbFileTypeL.Location = new System.Drawing.Point(422, 145);
             this.lbFileTypeL.Name = "lbFileTypeL";
-            this.lbFileTypeL.Size = new System.Drawing.Size(263, 23);
+            this.lbFileTypeL.Size = new System.Drawing.Size(282, 23);
             this.lbFileTypeL.TabIndex = 2;
             this.lbFileTypeL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -695,10 +696,10 @@
             // 
             this.lbFileStatusL.AutoSize = true;
             this.lbFileStatusL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbFileStatusL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbFileStatusL.Location = new System.Drawing.Point(403, 169);
+            this.lbFileStatusL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbFileStatusL.Location = new System.Drawing.Point(422, 169);
             this.lbFileStatusL.Name = "lbFileStatusL";
-            this.lbFileStatusL.Size = new System.Drawing.Size(263, 23);
+            this.lbFileStatusL.Size = new System.Drawing.Size(282, 23);
             this.lbFileStatusL.TabIndex = 2;
             this.lbFileStatusL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -706,21 +707,22 @@
             // 
             this.lbDrawingIDL.AutoSize = true;
             this.lbDrawingIDL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbDrawingIDL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbDrawingIDL.Location = new System.Drawing.Point(403, 193);
+            this.lbDrawingIDL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbDrawingIDL.Location = new System.Drawing.Point(422, 193);
             this.lbDrawingIDL.Name = "lbDrawingIDL";
-            this.lbDrawingIDL.Size = new System.Drawing.Size(263, 23);
+            this.lbDrawingIDL.Size = new System.Drawing.Size(282, 23);
             this.lbDrawingIDL.TabIndex = 2;
+            this.lbDrawingIDL.Text = "f4c1476e-c873-4459-a44a-a40971534f34";
             this.lbDrawingIDL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lbCreatedByL
             // 
             this.lbCreatedByL.AutoSize = true;
             this.lbCreatedByL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbCreatedByL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbCreatedByL.Location = new System.Drawing.Point(403, 217);
+            this.lbCreatedByL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbCreatedByL.Location = new System.Drawing.Point(422, 217);
             this.lbCreatedByL.Name = "lbCreatedByL";
-            this.lbCreatedByL.Size = new System.Drawing.Size(263, 23);
+            this.lbCreatedByL.Size = new System.Drawing.Size(282, 23);
             this.lbCreatedByL.TabIndex = 2;
             this.lbCreatedByL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -728,10 +730,10 @@
             // 
             this.lbModifiedByL.AutoSize = true;
             this.lbModifiedByL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbModifiedByL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbModifiedByL.Location = new System.Drawing.Point(403, 241);
+            this.lbModifiedByL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbModifiedByL.Location = new System.Drawing.Point(422, 241);
             this.lbModifiedByL.Name = "lbModifiedByL";
-            this.lbModifiedByL.Size = new System.Drawing.Size(263, 23);
+            this.lbModifiedByL.Size = new System.Drawing.Size(282, 23);
             this.lbModifiedByL.TabIndex = 2;
             this.lbModifiedByL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -739,10 +741,10 @@
             // 
             this.lbLayoutNameL1.AutoSize = true;
             this.lbLayoutNameL1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNameL1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutNameL1.Location = new System.Drawing.Point(403, 304);
+            this.lbLayoutNameL1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNameL1.Location = new System.Drawing.Point(422, 304);
             this.lbLayoutNameL1.Name = "lbLayoutNameL1";
-            this.lbLayoutNameL1.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutNameL1.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutNameL1.TabIndex = 2;
             this.lbLayoutNameL1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -750,10 +752,10 @@
             // 
             this.lbLayoutNoL1.AutoSize = true;
             this.lbLayoutNoL1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNoL1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutNoL1.Location = new System.Drawing.Point(403, 328);
+            this.lbLayoutNoL1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNoL1.Location = new System.Drawing.Point(422, 328);
             this.lbLayoutNoL1.Name = "lbLayoutNoL1";
-            this.lbLayoutNoL1.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutNoL1.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutNoL1.TabIndex = 2;
             this.lbLayoutNoL1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -761,10 +763,10 @@
             // 
             this.lbLayoutVersionL1.AutoSize = true;
             this.lbLayoutVersionL1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutVersionL1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutVersionL1.Location = new System.Drawing.Point(403, 352);
+            this.lbLayoutVersionL1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutVersionL1.Location = new System.Drawing.Point(422, 352);
             this.lbLayoutVersionL1.Name = "lbLayoutVersionL1";
-            this.lbLayoutVersionL1.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutVersionL1.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutVersionL1.TabIndex = 2;
             this.lbLayoutVersionL1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -772,10 +774,10 @@
             // 
             this.lbLayoutNameL2.AutoSize = true;
             this.lbLayoutNameL2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNameL2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutNameL2.Location = new System.Drawing.Point(403, 439);
+            this.lbLayoutNameL2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNameL2.Location = new System.Drawing.Point(422, 439);
             this.lbLayoutNameL2.Name = "lbLayoutNameL2";
-            this.lbLayoutNameL2.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutNameL2.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutNameL2.TabIndex = 2;
             this.lbLayoutNameL2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -783,10 +785,10 @@
             // 
             this.lbLayoutNoL2.AutoSize = true;
             this.lbLayoutNoL2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutNoL2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutNoL2.Location = new System.Drawing.Point(403, 463);
+            this.lbLayoutNoL2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutNoL2.Location = new System.Drawing.Point(422, 463);
             this.lbLayoutNoL2.Name = "lbLayoutNoL2";
-            this.lbLayoutNoL2.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutNoL2.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutNoL2.TabIndex = 2;
             this.lbLayoutNoL2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -794,10 +796,10 @@
             // 
             this.lbLayoutVersionL2.AutoSize = true;
             this.lbLayoutVersionL2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutVersionL2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutVersionL2.Location = new System.Drawing.Point(403, 487);
+            this.lbLayoutVersionL2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutVersionL2.Location = new System.Drawing.Point(422, 487);
             this.lbLayoutVersionL2.Name = "lbLayoutVersionL2";
-            this.lbLayoutVersionL2.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutVersionL2.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutVersionL2.TabIndex = 2;
             this.lbLayoutVersionL2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -805,10 +807,10 @@
             // 
             this.lbLayoutStatusL2.AutoSize = true;
             this.lbLayoutStatusL2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutStatusL2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutStatusL2.Location = new System.Drawing.Point(403, 511);
+            this.lbLayoutStatusL2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutStatusL2.Location = new System.Drawing.Point(422, 511);
             this.lbLayoutStatusL2.Name = "lbLayoutStatusL2";
-            this.lbLayoutStatusL2.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutStatusL2.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutStatusL2.TabIndex = 2;
             this.lbLayoutStatusL2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -820,7 +822,7 @@
             this.cmbLayoutStatusC1.Location = new System.Drawing.Point(131, 376);
             this.cmbLayoutStatusC1.Margin = new System.Windows.Forms.Padding(0);
             this.cmbLayoutStatusC1.Name = "cmbLayoutStatusC1";
-            this.cmbLayoutStatusC1.Size = new System.Drawing.Size(268, 23);
+            this.cmbLayoutStatusC1.Size = new System.Drawing.Size(287, 23);
             this.cmbLayoutStatusC1.TabIndex = 3;
             this.cmbLayoutStatusC1.SelectedValueChanged += new System.EventHandler(this.cmbFileTypeC_SelectedValueChanged);
             // 
@@ -844,7 +846,7 @@
             this.cmbLayoutTypeC1.Location = new System.Drawing.Point(131, 400);
             this.cmbLayoutTypeC1.Margin = new System.Windows.Forms.Padding(0);
             this.cmbLayoutTypeC1.Name = "cmbLayoutTypeC1";
-            this.cmbLayoutTypeC1.Size = new System.Drawing.Size(268, 23);
+            this.cmbLayoutTypeC1.Size = new System.Drawing.Size(287, 23);
             this.cmbLayoutTypeC1.TabIndex = 3;
             this.cmbLayoutTypeC1.SelectedValueChanged += new System.EventHandler(this.cmbFileTypeC_SelectedValueChanged);
             // 
@@ -852,10 +854,10 @@
             // 
             this.lbLayoutStatusL1.AutoSize = true;
             this.lbLayoutStatusL1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutStatusL1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutStatusL1.Location = new System.Drawing.Point(403, 376);
+            this.lbLayoutStatusL1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutStatusL1.Location = new System.Drawing.Point(422, 376);
             this.lbLayoutStatusL1.Name = "lbLayoutStatusL1";
-            this.lbLayoutStatusL1.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutStatusL1.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutStatusL1.TabIndex = 2;
             this.lbLayoutStatusL1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -863,10 +865,10 @@
             // 
             this.lbLayoutTypeL1.AutoSize = true;
             this.lbLayoutTypeL1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutTypeL1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutTypeL1.Location = new System.Drawing.Point(403, 400);
+            this.lbLayoutTypeL1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutTypeL1.Location = new System.Drawing.Point(422, 400);
             this.lbLayoutTypeL1.Name = "lbLayoutTypeL1";
-            this.lbLayoutTypeL1.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutTypeL1.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutTypeL1.TabIndex = 2;
             this.lbLayoutTypeL1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -878,7 +880,7 @@
             this.cmbFileTypeC.Location = new System.Drawing.Point(131, 145);
             this.cmbFileTypeC.Margin = new System.Windows.Forms.Padding(0);
             this.cmbFileTypeC.Name = "cmbFileTypeC";
-            this.cmbFileTypeC.Size = new System.Drawing.Size(268, 23);
+            this.cmbFileTypeC.Size = new System.Drawing.Size(287, 23);
             this.cmbFileTypeC.TabIndex = 3;
             this.cmbFileTypeC.SelectedValueChanged += new System.EventHandler(this.cmbFileTypeC_SelectedValueChanged);
             // 
@@ -890,7 +892,7 @@
             this.cmbFileStatusC.Location = new System.Drawing.Point(131, 169);
             this.cmbFileStatusC.Margin = new System.Windows.Forms.Padding(0);
             this.cmbFileStatusC.Name = "cmbFileStatusC";
-            this.cmbFileStatusC.Size = new System.Drawing.Size(268, 23);
+            this.cmbFileStatusC.Size = new System.Drawing.Size(287, 23);
             this.cmbFileStatusC.TabIndex = 3;
             this.cmbFileStatusC.SelectedValueChanged += new System.EventHandler(this.cmbFileTypeC_SelectedValueChanged);
             // 
@@ -914,7 +916,7 @@
             this.cmbLayoutTypeC2.Location = new System.Drawing.Point(131, 535);
             this.cmbLayoutTypeC2.Margin = new System.Windows.Forms.Padding(0);
             this.cmbLayoutTypeC2.Name = "cmbLayoutTypeC2";
-            this.cmbLayoutTypeC2.Size = new System.Drawing.Size(268, 23);
+            this.cmbLayoutTypeC2.Size = new System.Drawing.Size(287, 23);
             this.cmbLayoutTypeC2.TabIndex = 3;
             this.cmbLayoutTypeC2.SelectedValueChanged += new System.EventHandler(this.cmbFileTypeC_SelectedValueChanged);
             // 
@@ -926,7 +928,7 @@
             this.cmbLayoutStatusC2.Location = new System.Drawing.Point(131, 511);
             this.cmbLayoutStatusC2.Margin = new System.Windows.Forms.Padding(0);
             this.cmbLayoutStatusC2.Name = "cmbLayoutStatusC2";
-            this.cmbLayoutStatusC2.Size = new System.Drawing.Size(268, 23);
+            this.cmbLayoutStatusC2.Size = new System.Drawing.Size(287, 23);
             this.cmbLayoutStatusC2.TabIndex = 3;
             this.cmbLayoutStatusC2.SelectedValueChanged += new System.EventHandler(this.cmbFileTypeC_SelectedValueChanged);
             // 
@@ -934,23 +936,12 @@
             // 
             this.lbLayoutTypeL2.AutoSize = true;
             this.lbLayoutTypeL2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbLayoutTypeL2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLayoutTypeL2.Location = new System.Drawing.Point(403, 535);
+            this.lbLayoutTypeL2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLayoutTypeL2.Location = new System.Drawing.Point(422, 535);
             this.lbLayoutTypeL2.Name = "lbLayoutTypeL2";
-            this.lbLayoutTypeL2.Size = new System.Drawing.Size(263, 23);
+            this.lbLayoutTypeL2.Size = new System.Drawing.Size(282, 23);
             this.lbLayoutTypeL2.TabIndex = 2;
             this.lbLayoutTypeL2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(110, -3);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(87, 11);
-            this.btnSave.TabIndex = 4;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Visible = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // label23
             // 
@@ -968,10 +959,10 @@
             // 
             this.lblLockedByC.AutoSize = true;
             this.lblLockedByC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblLockedByC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLockedByC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblLockedByC.Location = new System.Drawing.Point(134, 265);
             this.lblLockedByC.Name = "lblLockedByC";
-            this.lblLockedByC.Size = new System.Drawing.Size(262, 23);
+            this.lblLockedByC.Size = new System.Drawing.Size(281, 23);
             this.lblLockedByC.TabIndex = 2;
             this.lblLockedByC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -979,10 +970,10 @@
             // 
             this.lblLockedByL.AutoSize = true;
             this.lblLockedByL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblLockedByL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLockedByL.Location = new System.Drawing.Point(403, 265);
+            this.lblLockedByL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLockedByL.Location = new System.Drawing.Point(422, 265);
             this.lblLockedByL.Name = "lblLockedByL";
-            this.lblLockedByL.Size = new System.Drawing.Size(263, 23);
+            this.lblLockedByL.Size = new System.Drawing.Size(282, 23);
             this.lblLockedByL.TabIndex = 2;
             this.lblLockedByL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -995,8 +986,30 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(4, 292);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(662, 8);
+            this.panel1.Size = new System.Drawing.Size(700, 8);
             this.panel1.TabIndex = 5;
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.Location = new System.Drawing.Point(216, -3);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(87, 11);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Visible = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(110, -3);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(87, 11);
+            this.btnSave.TabIndex = 4;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Visible = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // panel2
             // 
@@ -1005,7 +1018,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(4, 427);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(662, 8);
+            this.panel2.Size = new System.Drawing.Size(700, 8);
             this.panel2.TabIndex = 5;
             // 
             // panel3
@@ -1015,7 +1028,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(4, 562);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(662, 54);
+            this.panel3.Size = new System.Drawing.Size(700, 54);
             this.panel3.TabIndex = 5;
             // 
             // tableLayoutPanel1
@@ -1036,7 +1049,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(696, 676);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(734, 676);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // pnlTop
@@ -1048,7 +1061,7 @@
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(696, 40);
+            this.pnlTop.Size = new System.Drawing.Size(734, 40);
             this.pnlTop.TabIndex = 0;
             // 
             // label24
@@ -1080,35 +1093,24 @@
             this.pnlBottom.Location = new System.Drawing.Point(0, 666);
             this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
             this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(696, 10);
+            this.pnlBottom.Size = new System.Drawing.Size(734, 10);
             this.pnlBottom.TabIndex = 0;
             // 
             // pnlRight
             // 
             this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlRight.Location = new System.Drawing.Point(686, 40);
+            this.pnlRight.Location = new System.Drawing.Point(724, 40);
             this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
             this.pnlRight.Name = "pnlRight";
             this.pnlRight.Size = new System.Drawing.Size(10, 626);
             this.pnlRight.TabIndex = 0;
             // 
-            // btnCancel
-            // 
-            this.btnCancel.Location = new System.Drawing.Point(216, -3);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(87, 11);
-            this.btnCancel.TabIndex = 4;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Visible = false;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
             // frmDrawingInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(696, 676);
+            this.ClientSize = new System.Drawing.Size(734, 676);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "frmDrawingInfo";
