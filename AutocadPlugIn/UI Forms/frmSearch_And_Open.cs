@@ -234,8 +234,8 @@ namespace AutocadPlugIn.UI_Forms
                     null,
                     null,
                      resultSearchCriteriaRecord.name,
-
                      resultSearchCriteriaRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
+                    //resultSearchCriteriaRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
                     resultSearchCriteriaRecord.fileNo,
                     (bool)resultSearchCriteriaRecord.filelock,
                     resultSearchCriteriaRecord.type == null ? null : resultSearchCriteriaRecord.type.name,
@@ -287,7 +287,8 @@ namespace AutocadPlugIn.UI_Forms
                                                     null,
                                                     null,
                                                     resultSearchCriteriaChildRecord.name,
-                                                      resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
+                                                      //resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
+                                                      resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? Resources.ReferenceImage : new Bitmap(1, 1) ,
 
                                                     resultSearchCriteriaChildRecord.fileNo,
                                                     (bool)resultSearchCriteriaChildRecord.filelock,

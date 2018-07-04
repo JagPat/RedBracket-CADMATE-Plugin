@@ -518,9 +518,9 @@ namespace AutocadPlugIn
             pan4row1.Items.Add(Btn_Unlock);
             //panel4Panel.Items.Add(pan4row1);
 
-
-            panel2Panel.Items.Add(pan4row1);
             panel2Panel.Items.Add(rrpSave);
+            panel2Panel.Items.Add(pan4row1);
+            
 
             //Drawing Info
             //panel7Panel.Title = "Drawing Info";

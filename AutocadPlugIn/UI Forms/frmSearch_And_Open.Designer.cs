@@ -401,6 +401,7 @@ namespace AutocadPlugIn.UI_Forms
             this.CDProjectName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.CDProjectName.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.CDProjectName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CDProjectName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CDProjectName.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CDProjectName.FormattingEnabled = true;
             this.CDProjectName.Location = new System.Drawing.Point(754, 13);
