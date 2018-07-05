@@ -9,7 +9,7 @@ using System.Data;
 using System.Collections;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using RestSharp; 
+using RestSharp;
 
 
 namespace AutocadPlugIn
@@ -69,6 +69,7 @@ namespace AutocadPlugIn
 
                     if (IsFileSave)
                     {
+                        Helper.IncrementProgressBar(1, "Uploading file to redbracket."+Path.GetFileNameWithoutExtension(obj.FilePath));
 
                         if (obj.IsNew)
                         {
@@ -153,6 +154,7 @@ namespace AutocadPlugIn
                     }
                     else
                     {
+                        Helper.IncrementProgressBar(1, "Uploading file properties." + Path.GetFileNameWithoutExtension(obj.FilePath));
                         List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
                         KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
 
@@ -261,6 +263,7 @@ namespace AutocadPlugIn
 
                                     if (!IsFileSave)
                                     {
+                                        Helper.IncrementProgressBar(1, "Uploading layout properties." + Path.GetFileNameWithoutExtension(obj.FilePath));
                                         List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId);
                                         // ResultSearchCriteria Drawing = GetDrawingInformation(obj.ObjectId);
 
@@ -327,7 +330,7 @@ namespace AutocadPlugIn
 
         }
 
-        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project )
+        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project)
         {
             try
             {
@@ -622,7 +625,7 @@ namespace AutocadPlugIn
                         objLI.createdby = Convert.ToString(dr["CreatedBy"]).Trim();
                         objLI.createdon = Convert.ToString(dr["CreatedOn"]).Trim();
                         objLI.description = Convert.ToString(dr["Description"]).Trim();
-                        objLI.fileNo = Convert.ToString(dr["LayoutNo"]).Trim();;
+                        objLI.fileNo = Convert.ToString(dr["LayoutNo"]).Trim(); ;
                         objLI.hasStatusClosed = false;
                         objLI.isActFileLatest = false;
                         objLI.isEditable = false;
@@ -1267,7 +1270,7 @@ namespace AutocadPlugIn
                     "/AutocadFiles/fetchFileInfo", DataFormat.Json,
                     null, true, urlParameters);
 
-                 
+
 
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
@@ -1276,13 +1279,13 @@ namespace AutocadPlugIn
                 }
                 else
                 {
-                    ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content); 
+                    ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
                 }
 
             }
             catch (Exception ex)
             {
-                ShowMessage.ErrorMess(ex.Message); 
+                ShowMessage.ErrorMess(ex.Message);
             }
             return ObjFileInfo;
         }
@@ -1460,9 +1463,9 @@ namespace AutocadPlugIn
             }
             return Drawing;
         }
-        public byte[] GetSingleFileInfo(string fileID )
+        public byte[] GetSingleFileInfo(string fileID)
         {
-             
+
             try
             {
 
@@ -1475,14 +1478,14 @@ namespace AutocadPlugIn
 
                          });
                 if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
-                { 
+                {
                     return restResponse.RawBytes;
                 }
                 else
                 {
                     ShowMessage.ErrorMess("Some error while retrieving file.");
                     return null;
-                    
+
                 }
             }
             catch (Exception E)
@@ -1490,7 +1493,7 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
                 return null;
             }
-           
+
         }
 
 
@@ -1506,15 +1509,9 @@ namespace AutocadPlugIn
 
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.fileNo = OldFileNo;
-                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
-                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-               "/AutocadFiles/searchAutocadFiles",
-               DataFormat.Json,
-               searchCriteria,
-               true,
-               null);
+          
 
-                var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+                var resultSearchCriteriaResponseList = SearchFiles(searchCriteria );
 
                 return resultSearchCriteriaResponseList == null ? string.Empty : resultSearchCriteriaResponseList.Count > 0 ? resultSearchCriteriaResponseList[0].id : string.Empty;
             }
@@ -1522,6 +1519,65 @@ namespace AutocadPlugIn
             {
                 ShowMessage.ErrorMess(E.Message);
                 return string.Empty;
+            }
+        }
+
+        public List<ResultSearchCriteria> SearchFiles(SearchCriteria searchCriteria, List<KeyValuePair<string, string>> urlParameters=null)
+        {
+            try
+            {
+
+
+                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
+                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+               "/AutocadFiles/searchAutocadFiles",
+               DataFormat.Json,
+               searchCriteria,
+               true,
+               urlParameters);
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    ShowMessage.ErrorMess("Some error while searching file.");
+                    return null;
+                }
+                else
+                {
+                    var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+
+                    return resultSearchCriteriaResponseList;
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+
+            }
+            return null;
+        }
+
+        public List<ResultSearchCriteria> SearchLatest5File()
+        {
+            try
+            {
+                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/getLatestRecords", true, null);
+
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    ShowMessage.ErrorMess("Some error occurred while fetching latest records.");
+                    return null;
+                }
+                else
+                {
+
+                    return JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return null;
             }
         }
     }

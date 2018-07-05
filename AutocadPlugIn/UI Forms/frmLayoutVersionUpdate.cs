@@ -36,12 +36,14 @@ namespace AutocadPlugIn.UI_Forms
             this.FileVersion = FileVersion;
             this.ProjectID = ProjectID;
             this.FilePath = FilePath;
+            pnlTop.BackColor = pnlRight.BackColor = pnlLeft.BackColor = pnlBottom.BackColor = Helper.clrChildPopupBorderColor;
         }
 
         private void frmLayoutVersionUpdate_Load(object sender, EventArgs e)
         {
             try
             {
+                Location = new Point(Location.X, Location.Y+10);
                 tgvLayouts.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 tgvLayouts.RowsDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Regular);
                 Cursor.Current = Cursors.WaitCursor;

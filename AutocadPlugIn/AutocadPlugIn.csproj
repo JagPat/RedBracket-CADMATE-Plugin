@@ -215,6 +215,12 @@
     <Compile Include="UI Forms\frmLockUnLock.Designer.cs">
       <DependentUpon>frmLockUnLock.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI Forms\frmProgressBar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI Forms\frmProgressBar.Designer.cs">
+      <DependentUpon>frmProgressBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI Forms\frmRefresh.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -315,6 +321,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmLockUnLock.resx">
       <DependentUpon>frmLockUnLock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI Forms\frmProgressBar.resx">
+      <DependentUpon>frmProgressBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmRefresh.resx">
       <DependentUpon>frmRefresh.cs</DependentUpon>

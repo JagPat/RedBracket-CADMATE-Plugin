@@ -1,5 +1,5 @@
 ﻿using System;
- 
+
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,10 +8,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
- 
+
 using AdvancedDataGridView;
 using System.IO;
- 
+
 using RedBracketConnector;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -305,7 +305,7 @@ namespace AutocadPlugIn.UI_Forms
                 this.Cursor = Cursors.WaitCursor;
                 bool Is_Delete = false;
                 bool Is_Save = false;
-
+                int PBValue = 7;
                 #region Commented Code
                 //String FilePath = db.OriginalFileName;
 
@@ -337,6 +337,7 @@ namespace AutocadPlugIn.UI_Forms
                     if ((bool)treeGridNode.Cells[0].FormattedValue)
                     {
                         selectedTreeGridNodes.Add(treeGridNode);
+                        PBValue++; PBValue++;
                     }
                 }
 
@@ -513,6 +514,7 @@ namespace AutocadPlugIn.UI_Forms
                 // to ask user want to delete file after save or not.
                 if (ShowMessage.InfoYNMess("Would you like to delete local file/files" + Environment.NewLine + " after saving it to RedBracket ?") == DialogResult.Yes)
                 {
+                    PBValue++;
                     Is_Delete = true;
                 }
 
@@ -526,8 +528,6 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
                         {
-                            progressBar1.Visible = false;
-                            progressBar1.Value = progressBar1.Minimum = 0;
                             ShowMessage.InfoMess("You dont have edit permission for this file.");
                             this.Cursor = Cursors.Default;
                             return;
@@ -543,11 +543,8 @@ namespace AutocadPlugIn.UI_Forms
 
 
                     bool IsRenameXref = true;
-                    progressBar1.Value = progressBar1.Minimum = 0;
-                    progressBar1.Maximum = 5;
-                    lblStatus.BringToFront();
-                    lblStatus.Text = "Closing files to upload."; lblStatus.Refresh();
-                    progressBar1.Visible = true;
+                    Helper.GetProgressBar(PBValue, "File Save in Progress...", "Closing files to upload.");
+
                     if (IsRenameXref)
                     {
                         #region Close Files
@@ -568,11 +565,12 @@ namespace AutocadPlugIn.UI_Forms
 
 
 
+                        Helper.IncrementProgressBar(1, "Uploading file properties.");
 
-                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading file properties."; lblStatus.Refresh();
                         // save properties in RB
                         Is_Save = objController.ExecuteSave(objCmd, false, lstdtLayoutInfo);
-                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading layout properties."; lblStatus.Refresh();
+
+
 
                         if (Is_Save)
                         {
@@ -624,7 +622,8 @@ namespace AutocadPlugIn.UI_Forms
 
                             #region Update File Properties 
 
-                            progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Updating new properties to local file."; lblStatus.Refresh();
+                            Helper.IncrementProgressBar(1, "Updating new properties to local file.");
+
                             // Update document info into document for future referance 
                             if (objController.dtDrawingProperty.Rows.Count > 0)
                             {
@@ -636,12 +635,13 @@ namespace AutocadPlugIn.UI_Forms
 
 
                             #endregion
+                            Helper.IncrementProgressBar(1, "Updating file names.");
 
-                            progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Updating file names."; lblStatus.Refresh();
 
                             objMgr.UpdateExRefPathInfo2(objCmd.FilePath, ref objController.plmObjs);
 
-                            progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Uploading file to redbracket."; lblStatus.Refresh();
+                            Helper.IncrementProgressBar(1, "Uploading file to redbracket.");
+
 
                             // save File in RB
                             Is_Save = objController.ExecuteSave(objCmd, true);
@@ -659,18 +659,11 @@ namespace AutocadPlugIn.UI_Forms
 
                     }
 
-
-
-
-
-
-                    progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
-
-
                     // To delete file
                     if (Is_Delete && File.Exists(objCmd.FilePath) && Is_Save)
                     {
-                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Deleting local files."; lblStatus.Refresh();
+                        Helper.IncrementProgressBar(1, "Deleting local files.");
+
                         // Save and close the file before deleting. Otherwise system will not allow you to Delete the file.
                         //objMgr.SaveActiveDrawing(); // Saves the current active drawing.
                         //objMgr.CloseActiveDocument(objCmd.FilePath);    // Close the active document. Specify the file name, other files may be opened.
@@ -685,18 +678,18 @@ namespace AutocadPlugIn.UI_Forms
 
                     }
                 }
+                Helper.IncrementProgressBar(PBValue, "");
                 this.Cursor = Cursors.Default;
                 if (Is_Save)
                 {
-                    progressBar1.Value = progressBar1.Maximum; progressBar1.Refresh(); this.Refresh(); lblStatus.Text = ""; progressBar1.Visible = false;
+                    Helper.CloseProgressBar();
                     ShowMessage.InfoMess("Save operation successfully completed.");
                     this.Close();
                     return;
                 }
                 else
                 {
-                    progressBar1.Value = progressBar1.Maximum; progressBar1.Refresh(); this.Refresh();
-                    progressBar1.Visible = false; lblStatus.Text = "";
+                    Helper.CloseProgressBar();
                     ShowMessage.ErrorMess("Save operation unsuccessfully completed.");
                     return;
                 }
@@ -704,7 +697,7 @@ namespace AutocadPlugIn.UI_Forms
             }
             catch (Exception ex)
             {
-                progressBar1.Visible = false; lblStatus.Text = "";
+                Helper.CloseProgressBar();
                 ShowMessage.ErrorMess(ex.Message);
                 this.Cursor = Cursors.Default;
             }
@@ -712,7 +705,7 @@ namespace AutocadPlugIn.UI_Forms
         }
 
 
-         
+
         private void cancel_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -830,7 +823,7 @@ namespace AutocadPlugIn.UI_Forms
             }
             if (e.ColumnIndex == BtnBrowseFolder.Index)
             {
-                if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
+                if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "true")
                 {
                     string MyProjectId = "", FolderID = "", ProjectName = "", FolderPath = "";
 
@@ -904,8 +897,8 @@ namespace AutocadPlugIn.UI_Forms
 
                     foreach (TreeGridNode tgnChild in tgnParent.Nodes)
                     {
-                        //if ((bool)tgnChild.Cells[0].Value)
-                        GenFileInfoDT(tgnChild);
+                        if ((bool)tgnChild.Cells[0].Value)
+                            GenFileInfoDT(tgnChild);
                     }
                     GenFileInfoDT(tgnParent);
                 }
@@ -1257,7 +1250,7 @@ namespace AutocadPlugIn.UI_Forms
                     return;
                 }
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                if (e.ColumnIndex == ProjectName.Index && Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
+                if (e.ColumnIndex == ProjectName.Index && Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "true")
                 {
                     string MyProjectId = "", FolderID = "", ProjectName = "", FolderPath = "", ProjectNameNo = "";
 
@@ -1304,15 +1297,9 @@ namespace AutocadPlugIn.UI_Forms
             }
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
 
-        }
 
-        private void progressBar1_VisibleChanged(object sender, EventArgs e)
-        {
-            lblStatus.Visible = progressBar1.Visible;
-        }
+
 
         /*  private void ExpandNodeForCheck(TreeGridNode CurrentNode)
           {

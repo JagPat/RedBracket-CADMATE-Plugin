@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
- 
 using AdvancedDataGridView;
- 
- 
-using Microsoft.Win32;
-using RestSharp;
-using RedBracketConnector;
-using Newtonsoft.Json;
-using System.IO;
-using Microsoft.CSharp;
+
 using AutocadPlugIn.Properties;
 
 namespace AutocadPlugIn.UI_Forms
@@ -32,7 +22,7 @@ namespace AutocadPlugIn.UI_Forms
         string CheckoutExpandAllEnabled = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutExpandAllEnabled"));
         string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
         ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
-
+        RBConnector objRBC = new RBConnector();
         public frmSearch_And_Open()
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
@@ -45,11 +35,11 @@ namespace AutocadPlugIn.UI_Forms
             {
 
                 treeGridView1.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
-                RBConnector objRBC = new RBConnector();
+
                 sg_SearchType.SelectedIndex = 0;
 
                 //Read the keys from the user registry and load it to the UI.
-                RestResponse restResponse;
+
 
 
 
@@ -71,25 +61,9 @@ namespace AutocadPlugIn.UI_Forms
 
                 #endregion projectdetails
 
-                restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/getLatestRecords", true, null);
-
-                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                {
-                    ShowMessage.ErrorMess("Some error occurred while fetching latest records.");
-                    return;
-                }
-                else
-                {
-                    try
-                    {
-                        var res = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-                    }
-                    catch { }
-
-
-                    var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+                List<ResultSearchCriteria> resultSearchCriteriaResponseList = objRBC.SearchLatest5File();
+                if (resultSearchCriteriaResponseList != null)
                     BindDataToGrid(resultSearchCriteriaResponseList);
-                }
             }
             catch (Exception E)
             {
@@ -157,15 +131,9 @@ namespace AutocadPlugIn.UI_Forms
             }
 
 
-            RestResponse restResponse = (RestResponse)ServiceHelper.PostData(
-                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-               "/AutocadFiles/searchAutocadFiles",
-               DataFormat.Json,
-               searchCriteria,
-               true,
-               urlParameters);
 
-            var resultSearchCriteriaResponseList = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
+
+            var resultSearchCriteriaResponseList = objRBC.SearchFiles(searchCriteria, urlParameters);
             BindDataToGrid(resultSearchCriteriaResponseList, true);
             this.Cursor = Cursors.Default;
 
@@ -265,50 +233,39 @@ namespace AutocadPlugIn.UI_Forms
 
         private void AddChildNode(ResultSearchCriteria resultSearchCriteriaRecord, ref TreeGridNode parentTreeGridNode)
         {
-            RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
-                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                "/AutocadFiles/getAssoFile",
-                false,
-                new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", resultSearchCriteriaRecord.id),
-                new KeyValuePair<string, string>("userName", Helper.UserName)});
-            if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+
+            var childRecords = objRBC.GetXrefFIleInfo(resultSearchCriteriaRecord.id);
+
+            if (childRecords == null || childRecords.Count <= 0)
             {
-                var childRecords = JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-
-                if (childRecords == null || childRecords.Count <= 0)
-                {
-                    return;
-                }
-
-                foreach (ResultSearchCriteria resultSearchCriteriaChildRecord in childRecords)
-                {
-                    TreeGridNode treeGridNode = parentTreeGridNode.Nodes.Add(
-                                                    null,
-                                                    null,
-                                                    resultSearchCriteriaChildRecord.name,
-                                                      //resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
-                                                      resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? Resources.ReferenceImage : new Bitmap(1, 1) ,
-
-                                                    resultSearchCriteriaChildRecord.fileNo,
-                                                    (bool)resultSearchCriteriaChildRecord.filelock,
-                                                    resultSearchCriteriaChildRecord.type.name,
-                                                    resultSearchCriteriaChildRecord.status.statusname,
-                                                    resultSearchCriteriaChildRecord.versionno,
-                                                    resultSearchCriteriaChildRecord.projectname,
-                                                    resultSearchCriteriaChildRecord.projectinfo,
-                                                    resultSearchCriteriaChildRecord.size,
-                                                    resultSearchCriteriaChildRecord.id,
-                                                    null,
-                                                    null,
-                                                    null);
-
-                    //AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
-                }
+                return;
             }
-            else
+
+            foreach (ResultSearchCriteria resultSearchCriteriaChildRecord in childRecords)
             {
-                ShowMessage.ErrorMess("Something went wrong while retreiving associated file. ");
+                TreeGridNode treeGridNode = parentTreeGridNode.Nodes.Add(
+                                                null,
+                                                null,
+                                                resultSearchCriteriaChildRecord.name,
+                                                  //resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
+                                                  resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? Resources.ReferenceImage : new Bitmap(1, 1),
+
+                                                resultSearchCriteriaChildRecord.fileNo,
+                                                (bool)resultSearchCriteriaChildRecord.filelock,
+                                                resultSearchCriteriaChildRecord.type.name,
+                                                resultSearchCriteriaChildRecord.status.statusname,
+                                                resultSearchCriteriaChildRecord.versionno,
+                                                resultSearchCriteriaChildRecord.projectname,
+                                                resultSearchCriteriaChildRecord.projectinfo,
+                                                resultSearchCriteriaChildRecord.size,
+                                                resultSearchCriteriaChildRecord.id,
+                                                null,
+                                                null,
+                                                null);
+
+                //AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
             }
+
 
         }
 
@@ -481,6 +438,7 @@ namespace AutocadPlugIn.UI_Forms
 
             List<PLMObject> pLMObjects = new List<PLMObject>();
             RBConnector objRBC = new RBConnector();
+            int PBValue = 3;
             try
             {
                 this.Cursor = Cursors.WaitCursor;
@@ -490,6 +448,7 @@ namespace AutocadPlugIn.UI_Forms
                     if ((bool)treeGridNode.Cells[0].FormattedValue)
                     {
                         selectedTreeGridNodes.Add(treeGridNode);
+                        PBValue++;
                     }
                 }
 
@@ -506,103 +465,32 @@ namespace AutocadPlugIn.UI_Forms
                     ShowMessage.ValMess("Please set checkout path under settings, before opening any file.");
                     return;
                 }
-
+                Helper.GetProgressBar(PBValue, "File Download in Progress...");
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
-
-                    string ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["ProjectId"].FormattedValue);
-                    if (ProjectName.Trim().Length == 0)
-                    {
-                        ProjectName = "MyFiles";
-                    }
-
-                    checkoutPath = Path.Combine(checkoutPath, ProjectName);
-                    if (!Directory.Exists(checkoutPath))
-                    {
-                        Directory.CreateDirectory(checkoutPath);
-                    }
-
-                    string PreFix = Helper.GetPreFix(currentTreeGrdiNode.Cells["Generation"].Value, currentTreeGrdiNode.Cells["ProjectName"].Value, currentTreeGrdiNode.Cells["DrawingNumber"].Value, currentTreeGrdiNode.Cells["CADType"].Value);
-                    string PreFix1 = "";
-                    //if (ProjectName != "MyFiles")
-                    //{
-                    //    PreFix = Convert.ToString(currentTreeGrdiNode.Cells["ProjectName"].Value) + "-";
-                    //}
-                    //PreFix = PreFix + Convert.ToString(currentTreeGrdiNode.Cells["DrawingNumber"].Value) + "-";
-
-                    //PreFix += Convert.ToString(currentTreeGrdiNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(currentTreeGrdiNode.Cells["CADType"].Value) + "-";
-
-                    //PreFix += Convert.ToString(currentTreeGrdiNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(currentTreeGrdiNode.Cells["Generation"].Value) + "#";
-
-                    PreFix1 = PreFix;
-                    string filePathName = Path.Combine(checkoutPath, PreFix + Convert.ToString(currentTreeGrdiNode.Cells["DrawingName"].Value));
-
-                    if (File.Exists(filePathName))
-                    {
-                        if (cadManager.CheckForCurruntlyOpenDoc(filePathName))
-                        {
-                            this.Cursor = Cursors.Default;
-                            ShowMessage.ValMess("This file is already open.");
-                            this.Close();
-                            return;
-                        }
-                    }
-
-
                     foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
                     {
                         if ((bool)childNode.Cells[0].FormattedValue)
                         {
-                            PreFix = Helper.GetPreFix(childNode.Cells["Generation"].Value, childNode.Cells["ProjectName"].Value, childNode.Cells["DrawingNumber"].Value,childNode.Cells["CADType"].Value);
-                            //if (ProjectName != "MyFiles")
-                            //{
-                            //    PreFix = Convert.ToString(childNode.Cells["ProjectName"].Value) + "-";
-                            //}
-                            //PreFix = PreFix + Convert.ToString(childNode.Cells["DrawingNumber"].Value) + "-";
+                            Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(childNode.Cells["DrawingName"].FormattedValue)));
+                            Helper.DownloadFile(Convert.ToString(childNode.Cells["DrawingID"].FormattedValue));
 
-                            //PreFix += Convert.ToString(childNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["CADType"].Value) + "-";
-
-                            //PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
-
-                            //if (!Helper.IsRenameChild)
-                            //{
-                            //    PreFix = "";
-                            //}
-
-                            DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", false, null, PreFix);
-
-
-                            pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
+                           // pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
                         }
                     }
+                    Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(currentTreeGrdiNode.Cells["DrawingName"].FormattedValue)));
                     string FileID = currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString();
-                    DownloadOpenDocument(currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString(), currentTreeGrdiNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", true, currentTreeGrdiNode, PreFix1);
+                    Helper.DownloadFile(FileID, "true");
                     PLMObject objplmo = new PLMObject();
+                    objplmo.ObjectId = FileID;
+                    pLMObjects.Add(objplmo);
 
-                    try
-                    {
 
-                        objplmo.ObjectId = FileID;
-                    }
-                    catch { }
-                    try
-                    {
-                        pLMObjects.Add(objplmo);
-                        cadManager.SaveActiveDrawing(false);
-                    }
-                    catch { }
-                    //foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
-                    //{
-                    //    string oldFileName = Path.Combine(checkoutPath, Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
-                    //    string newFileName = Path.Combine(checkoutPath, Helper.FileNamePrefix + Convert.ToString(childNode.Cells["DrawingName"].FormattedValue));
-                    //    if (File.Exists(oldFileName))
-                    //    {
-                    //        File.Delete(newFileName); // Delete the existing file if exists
-                    //        File.Move(oldFileName, newFileName); // Rename the oldFileName into newFileName
-                    //    }
-                    //}
                 }
+                Helper.IncrementProgressBar(1, "Locking files.");
                 objRBC.LockObject(pLMObjects);
+
+                Helper.IncrementProgressBar(PBValue, "");
                 CADRibbon ribbon = new CADRibbon();
                 ribbon.browseDEnable = true;
                 ribbon.createDEnable = true;
@@ -613,13 +501,14 @@ namespace AutocadPlugIn.UI_Forms
                 ribbon.UnlockEnable = true;
                 ribbon.DrawingInfoEnable = true;
                 ribbon.MyRibbon();
+                Helper.CloseProgressBar();
                 this.Cursor = Cursors.Default;
                 this.Close();
             }
             catch (System.Exception ex)
             {
                 ShowMessage.ErrorMess("Exception Occur: " + ex);
-
+                Helper.CloseProgressBar();
                 objRBC.UnlockObject(pLMObjects);
                 this.Cursor = Cursors.Default;
                 return;
@@ -627,61 +516,6 @@ namespace AutocadPlugIn.UI_Forms
             this.Cursor = Cursors.Default;
         }
 
-        private void DownloadOpenDocument(string fileId, string fileName, string checkoutPath, string fileMode, bool isParentFile = false, TreeGridNode tgnParent = null, string FilePreFix = null)
-        {
-            try
-            {
-
-                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(
-                                               Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                               "/AutocadFiles/downloadAutocadSingleFile",
-                                               true,
-                                               new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("fileId", fileId )
-                                               });
-                if (restResponse.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(restResponse.Content))
-                {
-                    
-
-                    fileName = Helper.RemovePreFixFromFileName(fileName, FilePreFix);
-                    string filePathName = Path.Combine(checkoutPath, FilePreFix + fileName);
-                    Hashtable DrawingProperty = Helper.FillhtDrawingProperty(fileId,isParentFile?"1":"0" );
-                
-
-                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Delete)))
-                    {
-                        binaryWriter.Write(restResponse.RawBytes);
-                    }
-
-                    if (isParentFile)
-                    {
-                        
-
-                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
-                        //cadManager.OpenActiveDocument(filePathName, "View");
-                        try
-                        {
-                            //  cadManager.SaveActiveDrawing(false);
-                        }
-                        catch { }
-
-
-                    }
-                    else
-                    {
-                        cadManager.SetAttributesXrefFiles(DrawingProperty, filePathName);
-                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
-                    }
-                }
-                else
-                {
-                    ShowMessage.ErrorMess("Some error occures while retrieving file.\nThis may be because of you may not have the proper access to the file.");
-                }
-            }
-            catch (Exception E)
-            {
-                ShowMessage.ErrorMess(E.Message);
-            }
-        }
         private void FormCancelButton_Click(object sender, EventArgs e)
         {
             this.Close();

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Reflection;
-
+using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
@@ -32,6 +32,58 @@ namespace AutocadPlugIn
         public static bool IsRenameChild = true;
         public static RBConnector objRBC = new RBConnector();
         public static AutoCADManager cadManager = new AutoCADManager();
+        public static Color clrChildPopupBorderColor = Color.FromArgb(130, 130, 156);
+        public static Color clrParentPopupBorderColor = Color.FromArgb(46, 49, 150);
+
+        public static frmProgressBar objfrmPB = new frmProgressBar();
+        public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
+        {
+            try
+            {
+
+                objfrmPB = new frmProgressBar();
+                objfrmPB.lblTitle.Text = Title;
+                objfrmPB.lblStatus.Text = Status;
+                objfrmPB.pbProcess.Minimum = objfrmPB.pbProcess.Value = 0;
+                objfrmPB.pbProcess.Maximum = MaxValue;
+                objfrmPB.TopMost = true;
+                objfrmPB.Show();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+        public static void IncrementProgressBar(int IntcrementValue = 1, string Status = null)
+        {
+            try
+            {
+                objfrmPB.TopMost = true;
+                objfrmPB.pbProcess.Increment(IntcrementValue);
+                objfrmPB.lblStatus.Text = Status;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+        public static void CloseProgressBar()
+        {
+            try
+            {
+                objfrmPB.TopMost = true;
+                objfrmPB.pbProcess.Value = objfrmPB.pbProcess.Maximum;
+                objfrmPB.lblStatus.Text = string.Empty;
+                objfrmPB.Close();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
         public static object GetValueRegistry(string subKeyName, string keyName)
         {
             // Read the keys from the user registry and load it to the UI.
@@ -266,38 +318,43 @@ namespace AutocadPlugIn
             {
                 if (dt.Rows.Count > i)
                 {
-                    DrawingProperty.Add("DrawingId", dt.Rows[i]["DrawingId"]);
-                    DrawingProperty.Add("DrawingName", dt.Rows[i]["DrawingName"]);
-                    DrawingProperty.Add("Classification", dt.Rows[i]["Classification"]);
-                    DrawingProperty.Add("DrawingNumber", dt.Rows[i]["DrawingNumber"]);
-                    DrawingProperty.Add("DrawingState", dt.Rows[i]["DrawingState"]);
-                    DrawingProperty.Add("Revision", dt.Rows[i]["Revision"]);
-                    DrawingProperty.Add("Generation", dt.Rows[i]["Generation"]);
-                    DrawingProperty.Add("Type", dt.Rows[i]["Type"]);
-                    DrawingProperty.Add("filepath", dt.Rows[i]["filepath"]);
-                    DrawingProperty.Add("isroot", dt.Rows[i]["isroot"]);
-                    DrawingProperty.Add("ProjectName", dt.Rows[i]["ProjectName"]);
-                    DrawingProperty.Add("ProjectId", dt.Rows[i]["ProjectId"]);
-                    DrawingProperty.Add("CreatedOn", dt.Rows[i]["createdon"]);
-                    DrawingProperty.Add("CreatedBy", dt.Rows[i]["createdby"]);
-                    DrawingProperty.Add("ModifiedOn", dt.Rows[i]["modifiedon"]);
-                    DrawingProperty.Add("ModifiedBy", dt.Rows[i]["modifiedby"]);
-                    DrawingProperty.Add("sourceid", dt.Rows[i]["sourceid"]);
-                    DrawingProperty.Add("Layouts", dt.Rows[i]["Layouts"]);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    { 
+                        DrawingProperty.Add(dt.Columns[j].ColumnName, Convert.ToString(dt.Rows[i][j]));
+                    }
 
-                    DrawingProperty.Add("canDelete", dt.Rows[i]["canDelete"]);
-                    DrawingProperty.Add("isowner", dt.Rows[i]["isowner"]);
-                    DrawingProperty.Add("hasViewPermission", dt.Rows[i]["hasViewPermission"]);
-                    DrawingProperty.Add("isActFileLatest", dt.Rows[i]["isActFileLatest"]);
-                    DrawingProperty.Add("isEditable", dt.Rows[i]["isEditable"]);
-                    DrawingProperty.Add("canEditStatus", dt.Rows[i]["canEditStatus"]);
-                    DrawingProperty.Add("hasStatusClosed", dt.Rows[i]["hasStatusClosed"]);
-                    DrawingProperty.Add("isletest", dt.Rows[i]["isletest"]);
-                    DrawingProperty.Add("projectno", dt.Rows[i]["projectno"]);
-                    DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
-                    DrawingProperty.Add("filetypeid", dt.Rows[i]["Classification"]);
-                    DrawingProperty.Add("layoutinfo", dt.Rows[i]["layoutinfo"]);
-                    DrawingProperty.Add("oldprefix", dt.Rows[i]["oldprefix"]);
+                    //DrawingProperty.Add("DrawingId", dt.Rows[i]["DrawingId"]);
+                    //DrawingProperty.Add("DrawingName", dt.Rows[i]["DrawingName"]);
+                    //DrawingProperty.Add("Classification", dt.Rows[i]["Classification"]);
+                    //DrawingProperty.Add("DrawingNumber", dt.Rows[i]["DrawingNumber"]);
+                    //DrawingProperty.Add("DrawingState", dt.Rows[i]["DrawingState"]);
+                    //DrawingProperty.Add("Revision", dt.Rows[i]["Revision"]);
+                    //DrawingProperty.Add("Generation", dt.Rows[i]["Generation"]);
+                    //DrawingProperty.Add("Type", dt.Rows[i]["Type"]);
+                    //DrawingProperty.Add("filepath", dt.Rows[i]["filepath"]);
+                    //DrawingProperty.Add("isroot", dt.Rows[i]["isroot"]);
+                    //DrawingProperty.Add("ProjectName", dt.Rows[i]["ProjectName"]);
+                    //DrawingProperty.Add("ProjectId", dt.Rows[i]["ProjectId"]);
+                    //DrawingProperty.Add("CreatedOn", dt.Rows[i]["createdon"]);
+                    //DrawingProperty.Add("CreatedBy", dt.Rows[i]["createdby"]);
+                    //DrawingProperty.Add("ModifiedOn", dt.Rows[i]["modifiedon"]);
+                    //DrawingProperty.Add("ModifiedBy", dt.Rows[i]["modifiedby"]);
+                    //DrawingProperty.Add("sourceid", dt.Rows[i]["sourceid"]);
+                    //DrawingProperty.Add("Layouts", dt.Rows[i]["Layouts"]);
+
+                    //DrawingProperty.Add("canDelete", dt.Rows[i]["canDelete"]);
+                    //DrawingProperty.Add("isowner", dt.Rows[i]["isowner"]);
+                    //DrawingProperty.Add("hasViewPermission", dt.Rows[i]["hasViewPermission"]);
+                    //DrawingProperty.Add("isActFileLatest", dt.Rows[i]["isActFileLatest"]);
+                    //DrawingProperty.Add("isEditable", dt.Rows[i]["isEditable"]);
+                    //DrawingProperty.Add("canEditStatus", dt.Rows[i]["canEditStatus"]);
+                    //DrawingProperty.Add("hasStatusClosed", dt.Rows[i]["hasStatusClosed"]);
+                    //DrawingProperty.Add("isletest", dt.Rows[i]["isletest"]);
+                    //DrawingProperty.Add("projectno", dt.Rows[i]["projectno"]);
+                    //DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
+                    //DrawingProperty.Add("filetypeid", dt.Rows[i]["Classification"]);
+                    //DrawingProperty.Add("layoutinfo", dt.Rows[i]["layoutinfo"]);
+                    //DrawingProperty.Add("oldprefix", dt.Rows[i]["oldprefix"]);
 
                     string LayoutInfo1 = Convert.ToString(dt.Rows[i]["layoutinfo"]).Trim();
                     if (LayoutInfo1.Length > 0)
@@ -351,65 +408,7 @@ namespace AutocadPlugIn
                     dtDrawingProperty.Columns.Add(dc);
                     dtDrawingProperty.Rows[0][dc.ColumnName] = pair.Value;
                 }
-                ////if (dt.Rows.Count > i)
-                ////{
-                ////    DrawingProperty.Add("DrawingId", dt.Rows[i]["DrawingId"]);
-                ////    DrawingProperty.Add("DrawingName", dt.Rows[i]["DrawingName"]);
-                ////    DrawingProperty.Add("Classification", dt.Rows[i]["Classification"]);
-                ////    DrawingProperty.Add("DrawingNumber", dt.Rows[i]["DrawingNumber"]);
-                ////    DrawingProperty.Add("DrawingState", dt.Rows[i]["DrawingState"]);
-                ////    DrawingProperty.Add("Revision", dt.Rows[i]["Revision"]);
-                ////    DrawingProperty.Add("Generation", dt.Rows[i]["Generation"]);
-                ////    DrawingProperty.Add("Type", dt.Rows[i]["Type"]);
-                ////    DrawingProperty.Add("filepath", dt.Rows[i]["filepath"]);
-                ////    DrawingProperty.Add("isroot", dt.Rows[i]["isroot"]);
-                ////    DrawingProperty.Add("ProjectName", dt.Rows[i]["ProjectName"]);
-                ////    DrawingProperty.Add("ProjectId", dt.Rows[i]["ProjectId"]);
-                ////    DrawingProperty.Add("CreatedOn", dt.Rows[i]["createdon"]);
-                ////    DrawingProperty.Add("CreatedBy", dt.Rows[i]["createdby"]);
-                ////    DrawingProperty.Add("ModifiedOn", dt.Rows[i]["modifiedon"]);
-                ////    DrawingProperty.Add("ModifiedBy", dt.Rows[i]["modifiedby"]);
-                ////    DrawingProperty.Add("sourceid", dt.Rows[i]["sourceid"]);
-                ////    DrawingProperty.Add("Layouts", dt.Rows[i]["Layouts"]);
 
-                ////    DrawingProperty.Add("canDelete", dt.Rows[i]["canDelete"]);
-                ////    DrawingProperty.Add("isowner", dt.Rows[i]["isowner"]);
-                ////    DrawingProperty.Add("hasViewPermission", dt.Rows[i]["hasViewPermission"]);
-                ////    DrawingProperty.Add("isActFileLatest", dt.Rows[i]["isActFileLatest"]);
-                ////    DrawingProperty.Add("isEditable", dt.Rows[i]["isEditable"]);
-                ////    DrawingProperty.Add("canEditStatus", dt.Rows[i]["canEditStatus"]);
-                ////    DrawingProperty.Add("hasStatusClosed", dt.Rows[i]["hasStatusClosed"]);
-                ////    DrawingProperty.Add("isletest", dt.Rows[i]["isletest"]);
-                ////    DrawingProperty.Add("projectno", dt.Rows[i]["projectno"]);
-                ////    DrawingProperty.Add("prefix", dt.Rows[i]["prefix"]);
-                ////    DrawingProperty.Add("filetypeid", dt.Rows[i]["Classification"]);
-                ////    DrawingProperty.Add("layoutinfo", dt.Rows[i]["layoutinfo"]);
-                ////    DrawingProperty.Add("oldprefix", dt.Rows[i]["oldprefix"]);
-
-                ////    string LayoutInfo1 = Convert.ToString(dt.Rows[i]["layoutinfo"]).Trim();
-                ////    if (LayoutInfo1.Length > 0)
-                ////    {
-                ////        List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
-                ////        int Count = 1;
-                ////        foreach (LayoutInfo objLI1 in objLI)
-                ////        {
-                ////            DrawingProperty.Add("Layout_" + Count + "_Name", objLI1.name);
-                ////            DrawingProperty.Add("Layout_" + Count + "_Number", objLI1.fileNo);
-                ////            DrawingProperty.Add("Layout_" + Count + "_Type", objLI1.typename);
-                ////            DrawingProperty.Add("Layout_" + Count + "_Status", objLI1.statusname);
-                ////            DrawingProperty.Add("Layout_" + Count + "_VersionNote", objLI1.description);
-                ////            DrawingProperty.Add("Layout_" + Count + "_CreatedBy", objLI1.createdby);
-                ////            DrawingProperty.Add("Layout_" + Count + "_UpdatedBy", objLI1.updatedby);
-                ////            DrawingProperty.Add("Layout_" + Count + "_UpdatedOn", objLI1.updatedon);
-
-                ////            Count++;
-                ////        }
-                ////    }
-                //}
-                //else
-                //{
-                //    ShowMessage.ErrorMess("Specified index not found.");
-                //}
             }
             catch (Exception E)
             {
@@ -770,6 +769,7 @@ namespace AutocadPlugIn
 
 
 
+
             }
             catch (Exception E)
             {
@@ -832,14 +832,11 @@ namespace AutocadPlugIn
             return FileName;
         }
 
-        public static Hashtable FillhtDrawingProperty(string FileID, string IsRoot)
+        public static Hashtable DownloadFile(string FileID, string IsRoot = "false")
         {
 
             Hashtable DrawingProperty = new Hashtable();
-            DataTable dtDrawing = Helper.GetDrawingPropertiesTableStructure();
 
-
-            DataRow dr = dtDrawing.NewRow();
             try
             {
                 ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(FileID);
@@ -862,7 +859,44 @@ namespace AutocadPlugIn
                         return null;
                     }
                 }
+                DataTable dtDrawing = FillDrawingPropertiesTable(Drawing, FilePath, IsRoot, PreFix);
 
+
+
+                if (dtDrawing.Rows.Count > 0)
+                    DrawingProperty = Helper.Table2HashTable(dtDrawing, 0);
+
+                using (var binaryWriter = new BinaryWriter(File.Open(FilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Delete)))
+                {
+                    binaryWriter.Write(objRBC.GetSingleFileInfo(FileID));
+                }
+
+                if (IsRoot == "true")
+                {
+                    cadManager.OpenActiveDocument(FilePath, "View", DrawingProperty);
+                }
+                else
+                {
+                    cadManager.SetAttributesXrefFiles(DrawingProperty, FilePath);
+                    cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return DrawingProperty;
+        }
+        public static DataTable FillDrawingPropertiesTable(ResultSearchCriteria Drawing, string FilePath, string IsRoot, String PreFix)
+        {
+
+            DataTable dtDrawing = Helper.GetDrawingPropertiesTableStructure();
+
+
+
+            try
+            {
+                DataRow dr = dtDrawing.NewRow();
                 List<Hashtable> LayoutProperty = new List<Hashtable>();
                 #region LayoutInfo
                 String LayoutInfos = "";
@@ -907,26 +941,13 @@ namespace AutocadPlugIn
 
                 dtDrawing.Rows.Add(dr);
 
-                if (dtDrawing.Rows.Count > 0)
-                    DrawingProperty = Helper.Table2HashTable(dtDrawing, 0);
-
-
-                if (IsRoot == "1")
-                {
-
-                }
-                else
-                {
-
-                }
             }
             catch (Exception E)
             {
-                ShowMessage.ErrorMess(E.Message);
-            }
-            return DrawingProperty;
-        }
 
+            }
+            return dtDrawing;
+        }
         public static DataTable AddRowDrawingPropertiesTable(DataTable dtDrawingProperties, Hashtable htDrawingProperties)
         {
             try

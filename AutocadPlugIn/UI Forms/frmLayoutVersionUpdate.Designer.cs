@@ -76,7 +76,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 86.66666F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.33333F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(958, 394);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(931, 323);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -90,20 +90,20 @@
             this.tableLayoutPanel2.Controls.Add(this.btnCancel, 4, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnSave, 3, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 344);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 282);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(952, 47);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(925, 38);
             this.tableLayoutPanel2.TabIndex = 12;
             // 
             // btnCancel
             // 
             this.btnCancel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCancel.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCancel.Location = new System.Drawing.Point(805, 3);
+            this.btnCancel.Location = new System.Drawing.Point(778, 3);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(144, 41);
+            this.btnCancel.Size = new System.Drawing.Size(144, 32);
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -113,9 +113,9 @@
             // 
             this.btnSave.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnSave.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSave.Location = new System.Drawing.Point(655, 3);
+            this.btnSave.Location = new System.Drawing.Point(628, 3);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(144, 41);
+            this.btnSave.Size = new System.Drawing.Size(144, 32);
             this.btnSave.TabIndex = 4;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -153,7 +153,7 @@
             this.tgvLayouts.Name = "tgvLayouts";
             this.tgvLayouts.RowHeadersVisible = false;
             this.tgvLayouts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.tgvLayouts.Size = new System.Drawing.Size(952, 335);
+            this.tgvLayouts.Size = new System.Drawing.Size(925, 273);
             this.tgvLayouts.TabIndex = 8;
             this.tgvLayouts.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.tgvLayouts_CellValueChanged);
             this.tgvLayouts.CurrentCellDirtyStateChanged += new System.EventHandler(this.tgvLayouts_CurrentCellDirtyStateChanged);
@@ -177,7 +177,7 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(984, 450);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(957, 379);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // pnlTop
@@ -189,7 +189,7 @@
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(984, 40);
+            this.pnlTop.Size = new System.Drawing.Size(957, 40);
             this.pnlTop.TabIndex = 0;
             // 
             // label1
@@ -210,7 +210,7 @@
             this.pnlLeft.Location = new System.Drawing.Point(0, 40);
             this.pnlLeft.Margin = new System.Windows.Forms.Padding(0);
             this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(10, 400);
+            this.pnlLeft.Size = new System.Drawing.Size(10, 329);
             this.pnlLeft.TabIndex = 0;
             // 
             // pnlBottom
@@ -218,20 +218,20 @@
             this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
             this.tableLayoutPanel3.SetColumnSpan(this.pnlBottom, 3);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 440);
+            this.pnlBottom.Location = new System.Drawing.Point(0, 369);
             this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
             this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(984, 10);
+            this.pnlBottom.Size = new System.Drawing.Size(957, 10);
             this.pnlBottom.TabIndex = 0;
             // 
             // pnlRight
             // 
             this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlRight.Location = new System.Drawing.Point(974, 40);
+            this.pnlRight.Location = new System.Drawing.Point(947, 40);
             this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
             this.pnlRight.Name = "pnlRight";
-            this.pnlRight.Size = new System.Drawing.Size(10, 400);
+            this.pnlRight.Size = new System.Drawing.Size(10, 329);
             this.pnlRight.TabIndex = 0;
             // 
             // ChangeVersion
@@ -270,7 +270,7 @@
             this.LayoutType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.LayoutType.HeaderText = "Type";
             this.LayoutType.Name = "LayoutType";
-            this.LayoutType.Width = 140;
+            this.LayoutType.Width = 130;
             // 
             // LayoutStatus
             // 
@@ -278,7 +278,7 @@
             this.LayoutStatus.HeaderText = "Status";
             this.LayoutStatus.Name = "LayoutStatus";
             this.LayoutStatus.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.LayoutStatus.Width = 140;
+            this.LayoutStatus.Width = 130;
             // 
             // Description
             // 
@@ -371,7 +371,7 @@
             // frmLayoutVersionUpdate
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(984, 450);
+            this.ClientSize = new System.Drawing.Size(957, 379);
             this.Controls.Add(this.tableLayoutPanel3);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "frmLayoutVersionUpdate";

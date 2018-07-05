@@ -46,7 +46,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 Panel pnlSaperator = new Panel() { BackColor = Color.FromArgb(46, 49, 50), Margin = new Padding(3), Dock = DockStyle.Fill };
                 // Get Current File Info from Custum Properties and Display
-                DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=1");
+                DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=true");
                 if (dtCurrentData.Length > 0)
                 {
                     FilePath = Convert.ToString(dtCurrentData[0]["filepath"]);
@@ -371,13 +371,13 @@ namespace AutocadPlugIn.UI_Forms
                 tlpSave.Controls.Add(btnSave, 1, 0);
                 btnSave.Visible = true;
                 btnSave.Dock = DockStyle.Fill;
-                btnSave.Font = label2.Font;
+                btnSave.Font =new Font( label2.Font.FontFamily, label2.Font.Size, FontStyle.Bold);
                 btnSave.Margin = new Padding(5);
 
                 tlpSave.Controls.Add(btnCancel, 1, 0);
                 btnCancel.Visible = true;
                 btnCancel.Dock = DockStyle.Fill;
-                btnCancel.Font = label2.Font;
+                btnCancel.Font =  new Font(label2.Font.FontFamily, label2.Font.Size, FontStyle.Bold);
                 btnCancel.Margin = new Padding(5);
 
                 tlpSave.Margin = new Padding(0);
@@ -507,11 +507,7 @@ namespace AutocadPlugIn.UI_Forms
                                 StatusID = StatusID == "-1" ? string.Empty : StatusID;
                                 if (objRBC.UpdateLayoutInfo(ProjectID, FileID, LayoutID, StatusID, TypeID, LayoutName, LayoutDesc))
                                 {
-                                    //DataRow dr = dtLayoutInfo.NewRow();
-                                    //dr["Type"] = Convert.ToString(cmbtype.SelectedValue) == "-1" ? string.Empty : cmbtype.Text;
-                                    //dr["Status"] = Convert.ToString(cmbstatus.SelectedValue) == "-1" ? string.Empty : cmbstatus.Text;
-                                    //dr["LayoutNo"] = lblLNumber.Text;
-                                    //dtLayoutInfo.Rows.Add(dr);
+                                  
                                     cmbstatus.Tag = cmbstatus.SelectedValue;
                                     cmbtype.Tag = cmbtype.SelectedValue;
 
@@ -532,8 +528,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     }
                     if (IsSave)
-                    {
-                        //cadManager.UpdateLayoutProperties(dtLayoutInfo);
+                    { 
                         ShowMessage.InfoMess("Layout properties updated successfully.");
                     }
 

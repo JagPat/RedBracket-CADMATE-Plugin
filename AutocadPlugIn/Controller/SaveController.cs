@@ -39,14 +39,7 @@ namespace AutocadPlugIn
                     SaveCommand cmd = (SaveCommand)command;
 
                     // gethering document info
-                    foreach (String str in cmd.NewDrawings)
-                    {
-                        String[] plmobjInfo = new String[18];
-                        plmobjInfo = str.Split(';');
-                        if (plmobjInfo[5] == "")
-                            IsNewStructure = true;
-                        break;
-                    }
+                     
                     foreach (String str in cmd.Drawings)
                     {
                         PLMObject plmObj = new PLMObject();
@@ -64,17 +57,12 @@ namespace AutocadPlugIn
                         plmObj.Classification = plmobjInfo[16];
                         plmObj.ItemType = plmobjInfo[1];
                         plmObj.FilePath = plmobjInfo[2];
-                        plmObj.IsManualVersion = false;
-                        if (plmobjInfo[5].ToString() == "True")
-                            plmObj.IsManualVersion = true;
-                        if (plmobjInfo[4] == "Next")
-                            IsCreateNewRevision = true;
-                        plmObj.IsCreateNewRevision = IsCreateNewRevision;
+                        
                         plmObj.IsNew = false;
                         plmObj.IsRoot = false;
-                        if (plmobjInfo[3] == "1")
+                        if (plmobjInfo[3] == "true")
                             plmObj.IsRoot = true;
-                        plmObj.IsNewStructure = IsNewStructure;
+                        
                         if (plmObj.IsRoot)
                             plmObjs.Insert(0, plmObj);
                         else
@@ -93,32 +81,8 @@ namespace AutocadPlugIn
                         plmObj.objectType = plmobjInfo[20];
                         plmObj.FolderID = plmobjInfo[22];
                         plmObj.FolderPath = plmobjInfo[23];
-                        try
-                        {
-                            string PreFix = plmobjInfo[21];
-                            plmObj.PreFix = PreFix;
-                            //if (ProjectName != "MyFiles")
-                            //{
-                            //    PreFix = plmObj.objectProjectNo + "-";
-                            //}
-                            //PreFix = PreFix + Convert.ToString(plmObj.ObjectNumber) + "-";
-
-                            //PreFix += Convert.ToString(plmObj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmObj.objectType) + "-";
-
-                            //PreFix += Convert.ToString(plmObj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmObj.ObjectRevision) + "#";
-                            if (PreFix.Length <= fileName.Trim().Length)
-                            {
-                                if (fileName.Substring(0, PreFix.Length) == PreFix)
-                                {
-                                    fileName = fileName.Substring(PreFix.Length);
-                                }
-                            }
-
-                        }
-                        catch
-                        {
-
-                        }
+                        plmObj.PreFix = plmobjInfo[21];
+                        fileName = Helper.RemovePreFixFromFileName(fileName, plmObj.PreFix);
                         plmObj.ObjectName = fileName;
 
                         bool IsNotFound = true;
@@ -126,7 +90,7 @@ namespace AutocadPlugIn
                         {
                             if (dt.Rows.Count > 0)
                             {
-                                if (System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(dt.Rows[0]["FileID1"])) == plmObj.ObjectId)
+                                if ( Convert.ToString(dt.Rows[0]["FileID1"]) == plmObj.ObjectId)
                                 {
                                     plmObj.dtLayoutInfo = dt;
                                     IsNotFound = false;
@@ -158,11 +122,11 @@ namespace AutocadPlugIn
                                 plmObj.ObjectId = "";
                                 plmObj.ItemType = plmobjInfo[5];
                                 plmObj.ObjectProjectId = ProjectId = plmobjInfo[12];
-                                plmObj.ObjectRealtyId = plmobjInfo[8];
+                         
                                 plmObj.ObjectDescription = plmobjInfo[9];
                                 plmObj.ObjectSourceId = plmobjInfo[10];
                                 plmObj.AuthoringTool = "AutoCAD";
-                                plmObj.IsCreateNewRevision = false;
+                           
                                 plmObj.IsNew = true;
                                 plmObj.ObjectStatus = plmobjInfo[18];
                                 plmObj.Classification = plmobjInfo[19];
@@ -181,37 +145,12 @@ namespace AutocadPlugIn
                                 plmObj.FolderID = plmobjInfo[25];
                                 plmObj.FolderPath = plmobjInfo[26];
                                 string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
-                                try
-                                {
-                                    string PreFix = plmobjInfo[24];
-                                    plmObj.PreFix = PreFix;
-                                    //if (ProjectName != "MyFiles")
-                                    //{
-                                    //    PreFix = plmObj.objectProjectNo + "-";
-                                    //}
-                                    //PreFix = PreFix + Convert.ToString(plmObj.ObjectNumber) + "-";
-
-                                    //PreFix += Convert.ToString(plmObj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmObj.objectType) + "-";
-
-                                    //PreFix += Convert.ToString(plmObj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmObj.ObjectRevision) + "#";
-
-
-                                    if (PreFix.Length <= fileName.Trim().Length)
-                                    {
-                                        if (fileName.Substring(0, PreFix.Length) == PreFix)
-                                        {
-                                            fileName = fileName.Substring(PreFix.Length);
-                                        }
-                                    }
-                                }
-                                catch (System.Exception E)
-                                {
-
-                                }
+                                plmObj.PreFix = plmobjInfo[24];
+                                fileName = Helper.RemovePreFixFromFileName(fileName, plmObj.PreFix);
                                 plmObj.ObjectName = fileName;
 
                                 plmObj.IsRoot = false;
-                                if (plmobjInfo[6] == "1")
+                                if (plmobjInfo[6] == "true")
                                     plmObj.IsRoot = true;
 
 
@@ -261,25 +200,12 @@ namespace AutocadPlugIn
                         {
                             string PreFix = Helper.GetPreFix(plmobj.ObjectRevision, plmobj.objectProjectNo, plmobj.ObjectNumber, plmobj.objectType);
 
-                            //if (plmobj.ObjectRevision.Contains("Ver"))
-                            //{
-                            //    plmobj.ObjectRevision = plmobj.ObjectRevision.Substring(plmobj.ObjectRevision.IndexOf("0"));
-                            //}
-
-                            //if (ProjectName != "MyFiles" && ProjectName != "My Files" && ProjectName.Trim().Length > 0)
-                            //{
-                            //    PreFix = plmobj.objectProjectNo + "-";
-                            //}
-                            //PreFix += Convert.ToString(plmobj.ObjectNumber) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectNumber) + "-";
-
-                            //PreFix += Convert.ToString(plmobj.objectType) == string.Empty ? string.Empty : Convert.ToString(plmobj.objectType) + "-";
-
-                            //PreFix += Convert.ToString(plmobj.ObjectRevision) == string.Empty ? string.Empty : Convert.ToString(plmobj.ObjectRevision) + "#";
+                       
 
                             string OldPrefix = plmobj.PreFix;
                             plmobj.PreFix = PreFix;
                             
-                            //dtDrawingProperty.Rows.Clear();
+                             //dtDrawingProperty.Rows.Clear();
                             dtDrawingProperty.Rows.Add(plmobj.ObjectId,
                                 plmobj.ObjectName,
                                 plmobj.objectType,
@@ -290,13 +216,16 @@ namespace AutocadPlugIn
                                 plmobj.ItemType,
                                 plmobj.FilePath,
                                 plmobj.IsRoot,
+                                plmobj.ObjectProjectName,
                                 ProjectName,
+
                                 ProjectId,
                                 plmobj.ObjectCreatedOn,
                                 plmobj.ObjectCreatedById,
                                 plmobj.ObjectModifiedOn,
                                 plmobj.ObjectModifiedById, ""
-                                , plmobj.ObjectLayouts
+                                , plmobj.ObjectLayouts,
+                                "",""
                                 , plmobj.canDelete
                                 , plmobj.isowner
                                 , plmobj.hasViewPermission

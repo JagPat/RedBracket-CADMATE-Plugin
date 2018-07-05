@@ -132,13 +132,8 @@ namespace AutocadPlugIn
 
                                             string CDrawingName = Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]);
                                             string PreFix = Convert.ToString(dtFileInfo.Rows[j]["oldprefix"]);
-                                            if (drawingName.Contains(PreFix) && PreFix.Length > 0)
-                                            {
-                                                if (drawingName.Substring(0, PreFix.Length) == PreFix)
-                                                {
-                                                    drawingName = drawingName.Substring(PreFix.Length);
-                                                }
-                                            }
+                                            drawingName = Helper.RemovePreFixFromFileName(drawingName, PreFix);
+                                            
                                             if (Path.GetFileNameWithoutExtension(Convert.ToString(dtFileInfo.Rows[j]["DrawingName"])) == Path.GetFileNameWithoutExtension(drawingName))
                                             {
                                                 Hashtable ht = Helper.Table2HashTable(dtFileInfo, j);
@@ -585,105 +580,15 @@ namespace AutocadPlugIn
                 System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
 
 
-                System.Data.DataTable dtDrawingProperty = new System.Data.DataTable();
-                dtDrawingProperty.Columns.Add("DrawingId");
-                dtDrawingProperty.Columns.Add("DrawingName");
-                dtDrawingProperty.Columns.Add("Classification");
-                dtDrawingProperty.Columns.Add("DrawingNumber");
-                dtDrawingProperty.Columns.Add("DrawingState");
-                dtDrawingProperty.Columns.Add("Revision");
-                dtDrawingProperty.Columns.Add("Generation");
-                dtDrawingProperty.Columns.Add("Type");
-                dtDrawingProperty.Columns.Add("filepath");
-                dtDrawingProperty.Columns.Add("isroot", typeof(bool));
-                dtDrawingProperty.Columns.Add("ProjectName");
-                dtDrawingProperty.Columns.Add("ProjectId");
-                dtDrawingProperty.Columns.Add("createdon");
-                dtDrawingProperty.Columns.Add("createdby");
-                dtDrawingProperty.Columns.Add("modifiedon");
-                dtDrawingProperty.Columns.Add("modifiedby");
-                dtDrawingProperty.Columns.Add("sourceid");
-                dtDrawingProperty.Columns.Add("Layouts");
+           
 
-                dtDrawingProperty.Columns.Add("canDelete");
-                dtDrawingProperty.Columns.Add("isowner");
-                dtDrawingProperty.Columns.Add("hasViewPermission");
-                dtDrawingProperty.Columns.Add("isActFileLatest");
-                dtDrawingProperty.Columns.Add("isEditable");
-                dtDrawingProperty.Columns.Add("canEditStatus");
-                dtDrawingProperty.Columns.Add("hasStatusClosed");
-                dtDrawingProperty.Columns.Add("isletest");
-                dtDrawingProperty.Columns.Add("projectno");
-                dtDrawingProperty.Columns.Add("prefix");
-                dtDrawingProperty.Columns.Add("layoutinfo");
-                dtDrawingProperty.Columns.Add("oldprefix");
+                System.Data.DataTable dtDrawingProperty = Helper.FillDrawingPropertiesTable(Drawing, FilePath, "1",Convert.ToString( dtFileProperties.Rows[0]["prefix"]));
 
-
-
-                string LayoutInfo = Helper.GetLayoutInfo(Drawing.fileLayout);
-
-                if (Drawing.versionno.Contains("Ver"))
-                {
-                    Drawing.versionno = Drawing.versionno.Substring(Drawing.versionno.IndexOf("0"));
-                }
-
-
-
-
-                //dtDrawingProperty.Rows.Clear();
-                dtDrawingProperty.Rows.Add(Drawing.id,
-                    Drawing.name,
-                     Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name),
-                    Drawing.fileNo,
-                    Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname,
-                    Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno,
-                    "123",
-                   Drawing.coreType == null ? string.Empty : Drawing.coreType.name,
-                    FilePath,
-                    "true",
-                    Drawing.projectname,
-                    dtFileProperties.Rows[0]["projectId"],
-                    "",
-                    Drawing.createdby,
-                    Drawing.updatedon,
-                    Drawing.updatedby, ""
-                    , dtFileProperties.Rows[0]["Layouts"]
-                    , Drawing.canDelete
-                    , Drawing.isowner
-                    , Drawing.hasViewPermission
-                    , Drawing.isActFileLatest
-                    , Drawing.isEditable
-                    , Drawing.canEditStatus
-                    , Drawing.hasStatusClosed
-                    , Drawing.isletest
-                    , Drawing.projectNumber
-                    , dtFileProperties.Rows[0]["prefix"]
-                    , LayoutInfo,
-                    dtFileProperties.Rows[0]["oldprefix"]);
+ 
 
                
                 SetAttributes(Helper.Table2HashTable(dtDrawingProperty, 0));
-                //Hashtable htFileProperties = GetAttributes();
-                //System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
-                //bool IsdtChanged = false;
-                //if (FileType != null && FileTypeID != null)
-                //{
-                //    dtFileProperties.Rows[0]["filetypeid"] = FileType;
-                //    dtFileProperties.Rows[0]["classification"] = FileType;
-                //    IsdtChanged = true;
-                //}
-
-                //if (FileStatus != null && FileStatusID != null)
-                //{
-                //    //dtFileProperties.Rows[0][""] = FileStatusID;
-                //    dtFileProperties.Rows[0]["drawingstate"] = FileStatus;
-                //    IsdtChanged = true;
-                //}
-
-                //if(IsdtChanged)
-                //{
-                //    SetAttributes(Helper.Table2HashTable(dtFileProperties,0));
-                //}
+             
             }
             catch (System.Exception E)
             {
@@ -816,372 +721,20 @@ namespace AutocadPlugIn
             }
         }
 
-        public void UpdateExRefPathInfo(string FilePath)
-        {
-            try
-            {
-                //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-
-                Database mainDb = new Database(false, true);
-                using (mainDb)
-                {
-                    //Database db = doc.Database;
-                    //Editor ed = doc.Editor;
-                    string rootid = "";
-                    mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-                    mainDb.ResolveXrefs(false, false);
-                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
-                    for (int i = 0; i < xg.NumNodes; i++)
-                    {
-                        XrefGraphNode xgn = xg.GetXrefNode(i);
-                        GraphNode root = xg.RootNode;
-                        string OldChildPath = "";
-                        string newpath = "";
-                        //if (xgn.Name == FilePath)
-                        //{
-
-                        //    continue;
-                        //}
-                        //switch (xgn.XrefStatus)
-                        //{
-                        if (XrefStatus.Unresolved == xgn.XrefStatus)
-                        {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                            ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Unloaded == xgn.XrefStatus)
-                        {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                            ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Unreferenced == xgn.XrefStatus)
-                        {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                            ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Resolved == xgn.XrefStatus)
-                        {
-
-
-                            Database xdb = xgn.Database;
-
-
-                            if (xdb != null)
-                            {
-                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "", oldPreFix = "";
-                                var dbsi = xdb.SummaryInfo.CustomProperties;
-                                while (dbsi.MoveNext())
-                                {
-                                    if (Convert.ToString(dbsi.Key) == "projectno")
-                                    {
-                                        ProjectName = Convert.ToString(dbsi.Value);
-                                    }
-                                    else if (Convert.ToString(dbsi.Key) == "drawingnumber")
-                                    {
-                                        DrawingNO = Convert.ToString(dbsi.Value);
-                                    }
-                                    else if (Convert.ToString(dbsi.Key) == "filetypeid")
-                                    {
-                                        FileType = Convert.ToString(dbsi.Value);
-                                    }
-                                    else if (Convert.ToString(dbsi.Key) == "revision")
-                                    {
-                                        Rev = Convert.ToString(dbsi.Value);
-                                        if (Rev.Contains("Ver"))
-                                        {
-
-                                            Rev = Rev.Substring(Rev.IndexOf("0"));
-                                        }
-                                    }
-                                    else if (Convert.ToString(dbsi.Key) == "prefix")
-                                    {
-                                        oldPreFix = Convert.ToString(dbsi.Value);
-                                    }
-                                }
-
-                                if (ProjectName.Trim().Length > 0)
-                                {
-                                    PreFix = ProjectName + "-";
-                                }
-                                //PreFix = PreFix + DrawingNO + "-";
-                                PreFix += Convert.ToString(DrawingNO) == string.Empty ? string.Empty : Convert.ToString(DrawingNO) + "-";
-
-                                PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
-
-                                PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
-
-
-                                string path = Path.GetDirectoryName(FilePath);
-                                path += @"\" + PreFix;
-
-                                if (xgn.Name == FilePath)
-                                {
-                                    string PName = Path.GetFileName(FilePath);
-                                    if (PName.Trim().Length > oldPreFix.Length)
-                                    {
-                                        if (PName.Substring(0, oldPreFix.Length) == oldPreFix)
-                                        {
-                                            PName = PName.Substring(oldPreFix.Length);
-
-                                            string NewFilePath = path + PName;
-                                            if (File.Exists(FilePath) && FilePath != NewFilePath)
-                                            {
-                                                File.Delete(NewFilePath);
-                                                File.Move(FilePath, NewFilePath);
-                                                FilePath = NewFilePath;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-
-                                    }
-
-                                    continue;
-                                }
-
-
-                                Transaction tr = xdb.TransactionManager.StartTransaction();
-                                String drawingName;
-                                String[] str = new String[14];
-                                using (tr)
-                                {
-                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
-                                    mainDb.XrefEditEnabled = true;
-
-
-                                    string originalpath = btr.PathName;
-                                    string childname = Path.GetFileName(originalpath);
-                                    newpath = path + childname;
-                                    OldChildPath = Path.Combine(Path.GetDirectoryName(path), childname);
-                                    if (File.Exists(OldChildPath) && OldChildPath != newpath)
-                                    {
-                                        File.Delete(newpath);
-                                        File.Move(OldChildPath, newpath);
-                                    }
-
-                                    btr.PathName = newpath;
-
-
-                                    //xdb.Filename = "";
-                                    tr.Commit();
-                                }
-                            }
-                        }
-                        else if (XrefStatus.FileNotFound == xgn.XrefStatus)
-                        {
-                        }
-
-                        if (File.Exists(OldChildPath) && OldChildPath != newpath)
-                        {
-                            File.Delete(OldChildPath);
-                        }
-                        //}//Switch Complete
-                    }//For Complete          
-                    mainDb.SaveAs(FilePath, DwgVersion.Current);
-                }//using db complete
-
-            }
-            catch (System.Exception ex)
-            {
-                 ShowMessage.ErrorMess(ex.Message);
-            }
-        }
-        public void UpdateExRefPathInfo1(string FilePath)
-        {
-            try
-            {
-                //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-
-                Database mainDb = new Database(false, true);
-
-                using (mainDb)
-                {
-                    //Database db = doc.Database;
-                    //Editor ed = doc.Editor;
-                    string rootid = "";
-                    mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-                    mainDb.ResolveXrefs(false, false);
-                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
-                    for (int i = 0; i < xg.NumNodes; i++)
-                    {
-                        XrefGraphNode xgn = xg.GetXrefNode(i);
-                        GraphNode root = xg.RootNode;
-                        if (xgn.Name == FilePath)
-                        {
-
-                            continue;
-                        }
-                        //switch (xgn.XrefStatus)
-                        //{
-                        if (XrefStatus.Unresolved == xgn.XrefStatus)
-                        {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                            ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Unloaded == xgn.XrefStatus)
-                        {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                            ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Unreferenced == xgn.XrefStatus)
-                        {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                            ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Resolved == xgn.XrefStatus)
-                        {
-
-
-                            Database xdb = xgn.Database;
-
-
-                            if (xdb != null)
-                            {
-                                string ProjectName = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
-                                var dbsi = xdb.SummaryInfo.CustomProperties;
-
-                                while (dbsi.MoveNext())
-                                {
-                                    if (Convert.ToString(dbsi.Key) == "projectno")
-                                    {
-                                        ProjectName = Convert.ToString(dbsi.Value);
-                                    }
-                                    else if (Convert.ToString(dbsi.Key) == "drawingnumber")
-                                    {
-                                        DrawingNO = Convert.ToString(dbsi.Value);
-                                    }
-                                    else if (Convert.ToString(dbsi.Key) == "filetypeid")
-                                    {
-                                        FileType = Convert.ToString(dbsi.Value);
-                                    }
-                                    else if (Convert.ToString(dbsi.Key) == "revision")
-                                    {
-                                        Rev = Convert.ToString(dbsi.Value);
-                                    }
-                                }
-
-                                if (ProjectName.Trim().Length > 0)
-                                {
-                                    PreFix = ProjectName + "-";
-                                }
-                                //PreFix = PreFix + DrawingNO + "-";
-                                PreFix += Convert.ToString(DrawingNO) == string.Empty ? string.Empty : Convert.ToString(DrawingNO) + "-";
-
-                                PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
-
-                                PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
-
-
-
-
-
-
-
-
-                                Transaction tr = xdb.TransactionManager.StartTransaction();
-                                String drawingName;
-                                String[] str = new String[14];
-                                using (tr)
-                                {
-                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
-                                    mainDb.XrefEditEnabled = true;
-
-                                    string originalpath = btr.PathName;
-                                    string childname = Path.GetFileName(originalpath);
-                                    string dir = Path.GetDirectoryName(FilePath);
-                                    string FN = Path.GetFileName(btr.PathName);
-                                    string ChildFilePath = Path.Combine(dir, FN);
-
-                                    if (childname.Trim().Length > PreFix.Length)
-                                    {
-                                        if (childname.Substring(0, PreFix.Length) == PreFix)
-                                        {
-                                            childname = childname.Substring(PreFix.Length);
-                                        }
-                                    }
-
-                                    try
-                                    {
-                                        if (Directory.Exists(Path.GetDirectoryName(originalpath)))
-                                        {
-                                            string newPath = Path.Combine(Path.GetDirectoryName(originalpath), childname);
-                                            if (File.Exists(originalpath) && originalpath != newPath)
-                                            {
-                                                File.Copy(originalpath, newPath);
-                                            }
-                                        }
-
-                                    }
-                                    catch
-                                    {
-
-                                    }
-
-                                    string newpath = @"\" + childname;
-
-                                    btr.PathName = newpath;
-                                    //xdb.Filename = "";
-                                    tr.Commit();
-                                    try
-                                    {
-                                        //xdb.SaveAs(ChildFilePath, DwgVersion.Current);
-                                    }
-                                    catch { }
-                                }
-                            }
-                        }
-                        else if (XrefStatus.FileNotFound == xgn.XrefStatus)
-                        {
-
-
-                            //Database xdb = xgn.Database;
-                            //if (xdb != null)
-                            //{
-                            //    Transaction tr = xdb.TransactionManager.StartTransaction();
-                            //    String drawingName;
-                            //    String[] str = new String[14];
-                            //    using (tr)
-                            //    {
-                            //        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
-                            //        mainDb.XrefEditEnabled = true;
-
-                            //        string originalpath = btr.PathName;
-                            //        string childname = Path.GetFileName(originalpath);
-                            //        string newpath = path + childname;
-
-                            //        btr.PathName = newpath;
-                            //        //xdb.Filename = "";
-                            //        tr.Commit();
-                            //    }
-                            //}
-                        }
-                        //}//Switch Complete
-                    }//For Complete          
-                    mainDb.SaveAs(FilePath, DwgVersion.Current);
-
-                }//using db complete
-
-            }
-            catch (System.Exception ex)
-            {
-                 ShowMessage.ErrorMess(ex.Message);
-            }
-        }
+     
+        
         public void UpdateExRefPathInfo2(string FilePath, ref List<PLMObject> plmObjs)
         {
             try
             {
-                //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+             
                 string ParentNewPath = "";
                 bool IsMove = false;
-                bool IsDeleteChild = false;
+                
                 Database mainDb = new Database(false, true);
                 using (mainDb)
                 {
-                    //Database db = doc.Database;
-                    //Editor ed = doc.Editor;
-                    string rootid = "";
+                    
                     mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                     mainDb.ResolveXrefs(false, false);
                     XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
@@ -1191,26 +744,20 @@ namespace AutocadPlugIn
                         GraphNode root = xg.RootNode;
                         string OldChildPath = "";
                         string newpath = "";
-                        //if (xgn.Name == FilePath)
-                        //{
-
-                        //    continue;
-                        //}
-                        //switch (xgn.XrefStatus)
-                        //{
+                  
                         if (XrefStatus.Unresolved == xgn.XrefStatus)
                         {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            
                             ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unloaded == xgn.XrefStatus)
                         {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            
                             ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unreferenced == xgn.XrefStatus)
                         {
-                            //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                            
                             ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Resolved == xgn.XrefStatus)
@@ -1267,25 +814,14 @@ namespace AutocadPlugIn
 
                                 ProjectName = ProjectName.Replace(" (" + projectNO + ")", "");
                                 string FN = Path.GetFileNameWithoutExtension(xgn.Name);
-                                //  oldPreFix = FN.Replace(Path.GetFileNameWithoutExtension(drawingname), "");
-
-                                //if (ProjectName.Trim().Length > 0)
-                                //{
-                                //    PreFix = ProjectName + "-";
-                                //}
-                                ////PreFix = PreFix + DrawingNO + "-";
-                                //PreFix += Convert.ToString(DrawingNO) == string.Empty ? string.Empty : Convert.ToString(DrawingNO) + "-";
-
-                                //PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
-
-                                //PreFix += Convert.ToString(Rev) == string.Empty ? string.Empty : Convert.ToString(Rev) + "#";
+                               
 
                                 string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
 
 
                                 if (ProjectName.Trim().Length == 0)
                                 {
-                                    ProjectName = "MyFiles";
+                                    ProjectName = "My Files";
                                 }
                                 checkoutPath = Path.Combine(checkoutPath, ProjectName);
                                 if (!Directory.Exists(checkoutPath))
@@ -1327,36 +863,14 @@ namespace AutocadPlugIn
                                             break;
                                         }
                                     }
-
-
-                                    //if (PName.Trim().Length > oldPreFix.Length)
-                                    //if (PName.Trim().Contains(oldPreFix))
-                                    //{
-                                    //    if (PName.Substring(0, oldPreFix.Length) == oldPreFix)
-                                    //    {
-                                    //        PName = PName.Substring(oldPreFix.Length);
-
-                                    //        //string NewFilePath = path + PName;
-                                    //        if (File.Exists(FilePath) && FilePath != NewFilePath)
-                                    //        {
-                                    //            File.Delete(NewFilePath);
-                                    //            File.Move(FilePath, NewFilePath);
-                                    //            FilePath = NewFilePath;
-                                    //        }
-                                    //    }
-                                    //}
-                                    //else
-                                    //{
-
-                                    //}
-
+                                     
                                     continue;
                                 }
 
 
                                 Transaction tr = xdb.TransactionManager.StartTransaction();
-                                String drawingName;
-                                String[] str = new String[14];
+                              
+                                
                                 using (tr)
                                 {
                                     BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
@@ -1375,11 +889,7 @@ namespace AutocadPlugIn
                                             childname = childname.Substring(oldPreFix.Length);
                                         }
                                     }
-
-
-
-
-
+                                     
                                     newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
                                     if (File.Exists(OldChildPath))
@@ -1427,7 +937,7 @@ namespace AutocadPlugIn
                                     btr.PathName = TnewPath;
 
 
-                                    //xdb.Filename = "";
+                              
                                     tr.Commit();
                                 }
                             }
@@ -1463,40 +973,7 @@ namespace AutocadPlugIn
             System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
             dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
 
-            //dtTreeGrid.Columns.Add("drawingname", typeof(String));
-            //dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
-            //dtTreeGrid.Columns.Add("classification", typeof(String));
-            //dtTreeGrid.Columns.Add("FileTypeID", typeof(String));
-            //dtTreeGrid.Columns.Add("revision", typeof(String));
-            //dtTreeGrid.Columns.Add("drawingid", typeof(String));
-            //dtTreeGrid.Columns.Add("filepath", typeof(String));
-            //dtTreeGrid.Columns.Add("drawingstate", typeof(String));
-            //dtTreeGrid.Columns.Add("generation", typeof(String));
-            //dtTreeGrid.Columns.Add("type", typeof(String));
-            //dtTreeGrid.Columns.Add("sourceid", typeof(String));
-            //dtTreeGrid.Columns.Add("isroot", typeof(String));
-            //dtTreeGrid.Columns.Add("projectname", typeof(String));
-            //dtTreeGrid.Columns.Add("projectid", typeof(String));
-            //dtTreeGrid.Columns.Add("Layouts", typeof(String));
-            //dtTreeGrid.Columns.Add("lockstatus", typeof(String));
-            //dtTreeGrid.Columns.Add("lockby", typeof(String));
-            //dtTreeGrid.Columns.Add("Error", typeof(String));
-
-            //dtTreeGrid.Columns.Add("candelete", typeof(String));
-            //dtTreeGrid.Columns.Add("isowner", typeof(String));
-            //dtTreeGrid.Columns.Add("hasviewpermission", typeof(String));
-            //dtTreeGrid.Columns.Add("isactfilelatest", typeof(String));
-            //dtTreeGrid.Columns.Add("iseditable", typeof(String));
-            //dtTreeGrid.Columns.Add("caneditstatus", typeof(String));
-            //dtTreeGrid.Columns.Add("hasstatusclosed", typeof(String));
-            //dtTreeGrid.Columns.Add("isletest", typeof(String));
-            //dtTreeGrid.Columns.Add("projectno", typeof(String));
-            //dtTreeGrid.Columns.Add("prefix", typeof(String));
-
-            //dtTreeGrid.Columns.Add("createdby", typeof(String));
-            //dtTreeGrid.Columns.Add("modifiedby", typeof(String));
-            //dtTreeGrid.Columns.Add("layoutinfo", typeof(String));
-
+             
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
@@ -1592,53 +1069,11 @@ namespace AutocadPlugIn
                                                     try
                                                     {
                                                         rootid = rootdrawingAttrs["drawingid"].ToString();
-                                                        //dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"].ToString(), 
-                                                        //    rootdrawingAttrs["drawingnumber"].ToString(), 
-                                                        //    rootdrawingAttrs["classification"].ToString(), 
-                                                        //    rootdrawingAttrs["revision"].ToString(), 
-                                                        //    rootdrawingAttrs["drawingid"].ToString(),
-                                                        //    xgn.Database.Filename.ToString(),
-                                                        //    rootdrawingAttrs["drawingstate"].ToString(),
-                                                        //    rootdrawingAttrs["generation"].ToString(),
-                                                        //    rootdrawingAttrs["type"].ToString(), 
-                                                        //    childrens, "1", rootdrawingAttrs["projectname"].ToString(),
-                                                        //    rootdrawingAttrs["projectid"].ToString(), Layouts.ToString());
+                                                       
 
                                                         dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
 
-
-
-                                                        //dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"] == null ? string.Empty : rootdrawingAttrs["drawingname"],
-                                                        //  rootdrawingAttrs["drawingnumber"] == null ? string.Empty : rootdrawingAttrs["drawingnumber"],
-                                                        //  rootdrawingAttrs["classification"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
-                                                        //  rootdrawingAttrs["filetypeid"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
-                                                        //  rootdrawingAttrs["revision"] == null ? string.Empty : rootdrawingAttrs["revision"],
-                                                        //  rootdrawingAttrs["drawingid"] == null ? string.Empty : rootdrawingAttrs["drawingid"],
-                                                        //  xgn.Database.Filename == null ? string.Empty : xgn.Database.Filename,
-                                                        //  rootdrawingAttrs["drawingstate"] == null ? string.Empty : rootdrawingAttrs["drawingstate"],
-                                                        //  rootdrawingAttrs["generation"] == null ? string.Empty : rootdrawingAttrs["generation"],
-                                                        //  rootdrawingAttrs["type"] == null ? string.Empty : rootdrawingAttrs["type"],
-                                                        //  childrens, "1", rootdrawingAttrs["projectname"] == null ? string.Empty : rootdrawingAttrs["projectname"],
-                                                        //  rootdrawingAttrs["projectid"] == null ? string.Empty : rootdrawingAttrs["projectid"],
-                                                        //  Layouts == null ? string.Empty : Layouts, "", "", "",
-
-                                                        //rootdrawingAttrs["candelete"] == null ? string.Empty : rootdrawingAttrs["candelete"],
-                                                        //rootdrawingAttrs["isowner"] == null ? string.Empty : rootdrawingAttrs["isowner"],
-                                                        //rootdrawingAttrs["hasviewpermission"] == null ? string.Empty : rootdrawingAttrs["hasviewpermission"],
-                                                        //rootdrawingAttrs["isactfilelatest"] == null ? string.Empty : rootdrawingAttrs["isactfilelatest"],
-                                                        //rootdrawingAttrs["iseditable"] == null ? string.Empty : rootdrawingAttrs["iseditable"],
-                                                        //rootdrawingAttrs["caneditstatus"] == null ? string.Empty : rootdrawingAttrs["caneditstatus"],
-                                                        //rootdrawingAttrs["hasstatusclosed"] == null ? string.Empty : rootdrawingAttrs["hasstatusclosed"],
-                                                        //rootdrawingAttrs["isletest"] == null ? string.Empty : rootdrawingAttrs["isletest"],
-                                                        //rootdrawingAttrs["projectno"] == null ? string.Empty : rootdrawingAttrs["projectno"],
-                                                        //rootdrawingAttrs["prefix"] == null ? string.Empty : rootdrawingAttrs["prefix"],
-                                                        //rootdrawingAttrs["createdby"] == null ? string.Empty : rootdrawingAttrs["createdby"],
-                                                        //rootdrawingAttrs["modifiedby"] == null ? string.Empty : rootdrawingAttrs["modifiedby"]
-                                                        //,
-                                                        //rootdrawingAttrs["layoutinfo"] == null ? string.Empty : rootdrawingAttrs["layoutinfo"]);
-
-
-
+                                                         
                                                     }
                                                     catch (System.Exception E)
                                                     {
@@ -1652,11 +1087,10 @@ namespace AutocadPlugIn
                                                     dr["DrawingName"] = drawingName;
                                                     dr["filepath"] = xgn.Database.Filename.ToString();
                                                     dr["sourceid"] = childrens;
-                                                    dr["isroot"] = "1";
+                                                    dr["isroot"] = "true";
                                                     dr["Layouts"] = Layouts.ToString();
                                                     dtTreeGrid.Rows.Add(dr);
-                                                    //dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
-                                                    //    childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+                                                   
                                                 }
                                             }
                                             else
@@ -1686,45 +1120,8 @@ namespace AutocadPlugIn
                                                     drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
                                                 }
                                                 if (drawingAttrs.Count != 0)
-                                                {
-
-                                                    dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
-                                                    //dtTreeGrid.Rows.Add(
-
-                                                    //  drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]),
-                                                    //  drawingAttrs["drawingnumber"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingnumber"]),
-                                                    //    drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
-                                                    //    drawingAttrs["filetypeid"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
-
-                                                    //    drawingAttrs["revision"] == null ? string.Empty : Convert.ToString(drawingAttrs["revision"]),
-                                                    //drawingAttrs["drawingid"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingid"]),
-                                                    //  xgn.Database.Filename.ToString(),
-                                                    //    drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]),
-                                                    //drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]),
-
-                                                    //  drawingAttrs["type"] == null ? string.Empty : Convert.ToString(drawingAttrs["type"]),
-
-                                                    //    childrens,
-                                                    //    "0",
-                                                    //     drawingAttrs["projectname"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectname"]),
-                                                    //      drawingAttrs["projectid"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectid"]),
-                                                    //    Layouts, "", "", "",
-                                                    //    drawingAttrs["candelete"] == null ? string.Empty : drawingAttrs["candelete"],
-                                                    //    drawingAttrs["isowner"] == null ? string.Empty : drawingAttrs["isowner"],
-                                                    //    drawingAttrs["hasviewpermission"] == null ? string.Empty : drawingAttrs["hasviewpermission"],
-                                                    //    drawingAttrs["isactfilelatest"] == null ? string.Empty : drawingAttrs["isactfilelatest"],
-                                                    //    drawingAttrs["iseditable"] == null ? string.Empty : drawingAttrs["iseditable"],
-                                                    //    drawingAttrs["caneditstatus"] == null ? string.Empty : drawingAttrs["caneditstatus"],
-                                                    //    drawingAttrs["hasstatusclosed"] == null ? string.Empty : drawingAttrs["hasstatusclosed"],
-                                                    //    drawingAttrs["isletest"] == null ? string.Empty : drawingAttrs["isletest"],
-                                                    //    drawingAttrs["projectno"] == null ? string.Empty : drawingAttrs["projectno"],
-                                                    //    drawingAttrs["prefix"] == null ? string.Empty : drawingAttrs["prefix"],
-                                                    //    drawingAttrs["createdby"] == null ? string.Empty : drawingAttrs["createdby"],
-                                                    //    drawingAttrs["modifiedby"] == null ? string.Empty : drawingAttrs["modifiedby"],
-                                                    //    drawingAttrs["layoutinfo"] == null ? string.Empty : drawingAttrs["layoutinfo"]
-                                                    //    );
-
-
+                                                { 
+                                                    dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs); 
                                                 }
 
                                                 else
@@ -1733,12 +1130,10 @@ namespace AutocadPlugIn
                                                     dr["DrawingName"] = xgn.Name;
                                                     dr["filepath"] = xgn.Database.Filename.ToString();
                                                     dr["sourceid"] = childrens;
-                                                    dr["isroot"] = "0";
+                                                    dr["isroot"] = "false";
                                                     dr["Layouts"] = Layouts.ToString();
                                                     dtTreeGrid.Rows.Add(dr);
-
-                                                    //dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
-                                                    //   childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+ 
                                                 }
                                                    
                                             }
@@ -2177,32 +1572,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                //System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
-                //dtTreeGrid.Columns.Add("drawingname", typeof(String));
-                //dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
-                //dtTreeGrid.Columns.Add("classification", typeof(String));
-                //dtTreeGrid.Columns.Add("revision", typeof(String));
-                //dtTreeGrid.Columns.Add("drawingid", typeof(String));
-                //dtTreeGrid.Columns.Add("filepath", typeof(String));
-                //dtTreeGrid.Columns.Add("drawingstate", typeof(String));
-                //dtTreeGrid.Columns.Add("generation", typeof(String));
-                //dtTreeGrid.Columns.Add("type", typeof(String));
-                //dtTreeGrid.Columns.Add("sourceid", typeof(String));
-                //dtTreeGrid.Columns.Add("isroot", typeof(String));
-                //dtTreeGrid.Columns.Add("projectname", typeof(String));
-                //dtTreeGrid.Columns.Add("projectid", typeof(String));
-                //dtTreeGrid.Columns.Add("createdon", typeof(String));
-                //dtTreeGrid.Columns.Add("createdby", typeof(String));
-                //dtTreeGrid.Columns.Add("modifiedon", typeof(String));
-                //dtTreeGrid.Columns.Add("modifiedBy", typeof(String));
-                //dtTreeGrid.Columns.Add("lockstatus", typeof(String));
-                //dtTreeGrid.Columns.Add("lockby", typeof(String));
-                //dtTreeGrid.Columns.Add("Error", typeof(String));
-                //if (!(ArasConnector.ArasConnector.Isconnected))
-                //{
-                //    MessageBox.Show("Please login into Avrut Innova for this functionality...!!");
-                //    return;
-                //}
+                 
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
                 Database db = doc.Database;

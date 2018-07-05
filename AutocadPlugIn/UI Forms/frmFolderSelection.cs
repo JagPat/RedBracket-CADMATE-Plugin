@@ -36,6 +36,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 this.StackFolderSearchReasult = StackFolderSearchReasult;
             }
+            pnlTop.BackColor = pnlRight.BackColor = pnlLeft.BackColor = pnlBottom.BackColor = Helper.clrChildPopupBorderColor;
         }
 
         private void frmFolderSelection_Load(object sender, EventArgs e)
@@ -43,6 +44,9 @@ namespace AutocadPlugIn.UI_Forms
             LoadFlag = true;
             try
             {
+                Location = new Point(Location.X, Location.Y + 25);
+                dgvFolderSelection.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold); 
+                btnSelect.Enabled = false;
                 List<clsFolderSearchReasult> objFolderSearchResult = StackFolderSearchReasult.Pop();
                 StackFolderSearchReasult.Push(objFolderSearchResult);
 
@@ -76,7 +80,7 @@ namespace AutocadPlugIn.UI_Forms
 
                             if (FolderPath.Length > 0)
                             {
-                                if (obj.id==FolderID)
+                                if (obj.id == FolderID)
                                     dgvFolderSelection.Rows[dgvFolderSelection.Rows.Count - 1].Selected = true;
                             }
 
@@ -185,7 +189,7 @@ namespace AutocadPlugIn.UI_Forms
                         else
                         {
                             lblParentFolder.Text = lblParentFolder.Text.Substring(0, lblParentFolder.Text.LastIndexOf('/'));
-                            lblParentFolder.Text = lblParentFolder.Text.Substring(0, lblParentFolder.Text.LastIndexOf('/')>0? lblParentFolder.Text.LastIndexOf('/') + 1: 0);
+                            lblParentFolder.Text = lblParentFolder.Text.Substring(0, lblParentFolder.Text.LastIndexOf('/') > 0 ? lblParentFolder.Text.LastIndexOf('/') + 1 : 0);
                         }
                         dgvFolderSelection.Rows.Clear();
                         //if (Convert.ToDecimal(FolderID) > 0)
@@ -254,7 +258,7 @@ namespace AutocadPlugIn.UI_Forms
                 if (LoadFlag)
                     return;
 
-                if ((dgvFolderSelection.CurrentRow.Index > 0 && dgvFolderSelection.Rows.Count > 1)||(dgvFolderSelection.CurrentRow.Index> -1 && dgvFolderSelection.Rows.Count == 1))
+                if ((dgvFolderSelection.CurrentRow.Index > 0 && dgvFolderSelection.Rows.Count > 1) || (dgvFolderSelection.CurrentRow.Index > -1 && dgvFolderSelection.Rows.Count == 1))
                 {
                     lblSelectedPath.Text = lblParentFolder.Text + Convert.ToString(dgvFolderSelection.CurrentRow.Cells["FolderName"].Value);
                     lblSelectedPath.Tag = Convert.ToString(dgvFolderSelection.CurrentRow.Cells["FolderID1"].Value);
@@ -266,6 +270,25 @@ namespace AutocadPlugIn.UI_Forms
                 }
             }
 
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+
+        private void lblSelectedPath_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if(lblSelectedPath.Text.Trim().Length==0)
+                {
+                    btnSelect.Enabled = false;
+                }
+                else
+                {
+                    btnSelect.Enabled = true;
+                }
+            }
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);

@@ -70,7 +70,7 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(800, 450);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(800, 416);
             this.tableLayoutPanel3.TabIndex = 12;
             // 
             // pnlTop
@@ -103,7 +103,7 @@
             this.pnlLeft.Location = new System.Drawing.Point(0, 40);
             this.pnlLeft.Margin = new System.Windows.Forms.Padding(0);
             this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(10, 400);
+            this.pnlLeft.Size = new System.Drawing.Size(10, 366);
             this.pnlLeft.TabIndex = 0;
             // 
             // pnlBottom
@@ -111,7 +111,7 @@
             this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
             this.tableLayoutPanel3.SetColumnSpan(this.pnlBottom, 3);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 440);
+            this.pnlBottom.Location = new System.Drawing.Point(0, 406);
             this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(800, 10);
@@ -124,7 +124,7 @@
             this.pnlRight.Location = new System.Drawing.Point(790, 40);
             this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
             this.pnlRight.Name = "pnlRight";
-            this.pnlRight.Size = new System.Drawing.Size(10, 400);
+            this.pnlRight.Size = new System.Drawing.Size(10, 366);
             this.pnlRight.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -141,7 +141,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(774, 394);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(774, 360);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // tableLayoutPanel2
@@ -156,7 +156,7 @@
             this.tableLayoutPanel2.Controls.Add(this.lblSelectedPath, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnSelect, 3, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 347);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 313);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -188,6 +188,7 @@
             this.lblSelectedPath.Size = new System.Drawing.Size(451, 38);
             this.lblSelectedPath.TabIndex = 9;
             this.lblSelectedPath.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblSelectedPath.TextChanged += new System.EventHandler(this.lblSelectedPath_TextChanged);
             // 
             // btnSelect
             // 
@@ -232,7 +233,7 @@
             this.dgvFolderSelection.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgvFolderSelection.RowTemplate.Height = 35;
             this.dgvFolderSelection.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvFolderSelection.Size = new System.Drawing.Size(768, 303);
+            this.dgvFolderSelection.Size = new System.Drawing.Size(768, 269);
             this.dgvFolderSelection.TabIndex = 13;
             this.dgvFolderSelection.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvFolderSelection_CellMouseDoubleClick);
             this.dgvFolderSelection.SelectionChanged += new System.EventHandler(this.dgvFolderSelection_SelectionChanged);
@@ -261,7 +262,7 @@
             // frmFolderSelection
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 416);
             this.Controls.Add(this.tableLayoutPanel3);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "frmFolderSelection";

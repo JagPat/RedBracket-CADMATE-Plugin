@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.submit = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.savetreeGrid = new AdvancedDataGridView.TreeGridView();
@@ -66,22 +66,17 @@
             this.Comments = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlTop = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.lblStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.savetreeGrid)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.pnlTop.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // submit
@@ -149,8 +144,8 @@
             this.savetreeGrid.Location = new System.Drawing.Point(3, 3);
             this.savetreeGrid.Name = "savetreeGrid";
             this.savetreeGrid.RowHeadersVisible = false;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.savetreeGrid.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.savetreeGrid.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.savetreeGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.savetreeGrid.Size = new System.Drawing.Size(971, 342);
             this.savetreeGrid.TabIndex = 7;
@@ -392,7 +387,7 @@
             this.CADDescription.Location = new System.Drawing.Point(110, 3);
             this.CADDescription.Multiline = true;
             this.CADDescription.Name = "CADDescription";
-            this.CADDescription.Size = new System.Drawing.Size(246, 32);
+            this.CADDescription.Size = new System.Drawing.Size(418, 32);
             this.CADDescription.TabIndex = 8;
             // 
             // Comments
@@ -428,7 +423,7 @@
             // 
             this.tableLayoutPanel2.ColumnCount = 5;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 107F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 252F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 424F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
@@ -436,7 +431,6 @@
             this.tableLayoutPanel2.Controls.Add(this.submit, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.CADDescription, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.Comments, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.panel1, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 351);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -444,17 +438,6 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(971, 38);
             this.tableLayoutPanel2.TabIndex = 11;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.BackColor = System.Drawing.Color.Azure;
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.progressBar1.Location = new System.Drawing.Point(0, 0);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(312, 38);
-            this.progressBar1.TabIndex = 10;
-            this.progressBar1.Visible = false;
-            this.progressBar1.VisibleChanged += new System.EventHandler(this.progressBar1_VisibleChanged);
             // 
             // tableLayoutPanel3
             // 
@@ -531,32 +514,6 @@
             this.pnlRight.Size = new System.Drawing.Size(10, 398);
             this.pnlRight.TabIndex = 0;
             // 
-            // timer1
-            // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.lblStatus);
-            this.panel1.Controls.Add(this.progressBar1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(359, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(312, 38);
-            this.panel1.TabIndex = 10;
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(3, 13);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(45, 14);
-            this.lblStatus.TabIndex = 11;
-            this.lblStatus.Text = "label2";
-            this.lblStatus.Visible = false;
-            // 
             // frmSave_Active_Drawings
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -576,8 +533,6 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -590,7 +545,6 @@
         private System.Windows.Forms.Label Comments;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Panel pnlTop;
         private System.Windows.Forms.Label label1;
@@ -625,8 +579,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FolderPath;
         private System.Windows.Forms.DataGridViewTextBoxColumn FolderID;
         private System.Windows.Forms.DataGridViewImageColumn BtnBrowseFolder;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label lblStatus;
     }
 }
