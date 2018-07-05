@@ -81,8 +81,8 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     return;
                 }
-                RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
-                RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(drawingid);
+                 RBConnector objRBC = new  RBConnector();
+                ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(drawingid);
 
                 //if (Drawing == null)
                 //{
@@ -91,9 +91,9 @@ namespace AutocadPlugIn.UI_Forms
                 //}
                 if (Convert.ToDateTime(Drawing.updatedon) > Convert.ToDateTime(updatedon))
                 {
-                    if (RedBracketConnector.ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?.") == DialogResult.Yes)
+                    if ( ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?.") == DialogResult.Yes)
                     {
-                        string checkoutPath =RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString(); 
+                        string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString(); 
                         string ProjectName = projectname;
                         if (ProjectName.Trim().Length == 0)
                         {
@@ -116,7 +116,7 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 else
                 {
-                    RedBracketConnector.ShowMessage.InfoMess("This file is latest file.");
+                     ShowMessage.InfoMess("This file is latest file.");
                 }
 
                 //Geting file info from redbracket

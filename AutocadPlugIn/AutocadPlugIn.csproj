@@ -73,6 +73,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Binaries\ExpandableGridView.dll</HintPath>
     </Reference>
+    <Reference Include="IOM">
+      <HintPath>..\Binaries\IOM.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualBasic.Compatibility" />
@@ -93,6 +96,7 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <HintPath>..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Xaml.dll</HintPath>
@@ -104,9 +108,59 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoCADManager.cs" />
     <Compile Include="CADFactory.cs" />
     <Compile Include="CADRibbon.cs" />
+    <Compile Include="Classes\AutoCADManager.cs" />
+    <Compile Include="Classes\clsFolderSearchReasult.cs" />
+    <Compile Include="Classes\Helper.cs" />
+    <Compile Include="Classes\ICADManager.cs" />
+    <Compile Include="Classes\LockUnLockUpdater.cs" />
+    <Compile Include="Classes\PLMObject.cs" />
+    <Compile Include="Classes\RBConnector.cs" />
+    <Compile Include="Classes\Relationship.cs" />
+    <Compile Include="Classes\ResultSearchCriteria.cs" />
+    <Compile Include="Classes\ResultStatusData.cs" />
+    <Compile Include="Classes\ResultStatusDataCoreType.cs" />
+    <Compile Include="Classes\SaveResult.cs" />
+    <Compile Include="Classes\SearchCriteria.cs" />
+    <Compile Include="Classes\ServiceHelper.cs" />
+    <Compile Include="Classes\ShowMessage.cs" />
+    <Compile Include="Classes\UIData.cs" />
+    <Compile Include="Classes\UserLoginDetails.cs" />
+    <Compile Include="Commands\AddCommand.cs" />
+    <Compile Include="Commands\BackGroundCheckInCommand.cs" />
+    <Compile Include="Commands\CADIntegrationConfiguration.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\ConnectionCommand.cs" />
+    <Compile Include="Commands\DisconnectCommand.cs" />
+    <Compile Include="Commands\DocumentInformationDisplayCommand.cs" />
+    <Compile Include="Commands\ExpandAllCommand.cs" />
+    <Compile Include="Commands\ExpandObjectCommand.cs" />
+    <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Commands\LockCommand.cs" />
+    <Compile Include="Commands\OpenCommand.cs" />
+    <Compile Include="Commands\SaveCommand.cs" />
+    <Compile Include="Commands\SearchCommand.cs" />
+    <Compile Include="Commands\SelectAllCommand.cs" />
+    <Compile Include="Commands\UnlockCommand.cs" />
+    <Compile Include="Commands\ViewDocumentCommand.cs" />
+    <Compile Include="Controller\AddController.cs" />
+    <Compile Include="Controller\BackGroundCheckInControllers.cs" />
+    <Compile Include="Controller\BaseController.cs" />
+    <Compile Include="Controller\ConnectionController.cs" />
+    <Compile Include="Controller\DisconnectController.cs" />
+    <Compile Include="Controller\DocumentInformationDisplayController.cs" />
+    <Compile Include="Controller\ExpandAllController.cs" />
+    <Compile Include="Controller\ExpandObjectController.cs" />
+    <Compile Include="Controller\HelpController.cs" />
+    <Compile Include="Controller\LockController.cs" />
+    <Compile Include="Controller\MessageController.cs" />
+    <Compile Include="Controller\OpenController.cs" />
+    <Compile Include="Controller\SaveController.cs" />
+    <Compile Include="Controller\SearchController.cs" />
+    <Compile Include="Controller\SelectAllController.cs" />
+    <Compile Include="Controller\UnlockController.cs" />
+    <Compile Include="Controller\ViewDocumentController.cs" />
     <Compile Include="UI Forms\About.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -347,20 +401,6 @@
     <Content Include="Resources\save.png" />
     <Content Include="Resources\Setting.png" />
     <Content Include="Resources\unlock.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ArasConnector\ArasConnector.csproj">
-      <Project>{C1920DF1-CE81-4B76-90AD-866794176E35}</Project>
-      <Name>ArasConnector</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CADController\CADController.csproj">
-      <Project>{8460E831-CF6D-40D9-84B8-4225C4B9186F}</Project>
-      <Name>CADController</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RedBracketConnector\RedBracketConnector.csproj">
-      <Project>{D97862EE-3E7A-417C-91F5-9E9EFD82B9C5}</Project>
-      <Name>RedBracketConnector</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

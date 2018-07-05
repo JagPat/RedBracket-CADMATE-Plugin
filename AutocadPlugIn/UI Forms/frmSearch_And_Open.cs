@@ -7,11 +7,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using CADController.Commands;
+ 
 using AdvancedDataGridView;
-using CADController.Controllers;
-using CADController;
-using CADController.Configuration;
+ 
+ 
 using Microsoft.Win32;
 using RestSharp;
 using RedBracketConnector;
@@ -523,17 +522,17 @@ namespace AutocadPlugIn.UI_Forms
                         Directory.CreateDirectory(checkoutPath);
                     }
 
-                    string PreFix = "";
+                    string PreFix = Helper.GetPreFix(currentTreeGrdiNode.Cells["Generation"].Value, currentTreeGrdiNode.Cells["ProjectName"].Value, currentTreeGrdiNode.Cells["DrawingNumber"].Value, currentTreeGrdiNode.Cells["CADType"].Value);
                     string PreFix1 = "";
-                    if (ProjectName != "MyFiles")
-                    {
-                        PreFix = Convert.ToString(currentTreeGrdiNode.Cells["ProjectName"].Value) + "-";
-                    }
-                    PreFix = PreFix + Convert.ToString(currentTreeGrdiNode.Cells["DrawingNumber"].Value) + "-";
+                    //if (ProjectName != "MyFiles")
+                    //{
+                    //    PreFix = Convert.ToString(currentTreeGrdiNode.Cells["ProjectName"].Value) + "-";
+                    //}
+                    //PreFix = PreFix + Convert.ToString(currentTreeGrdiNode.Cells["DrawingNumber"].Value) + "-";
 
-                    PreFix += Convert.ToString(currentTreeGrdiNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(currentTreeGrdiNode.Cells["CADType"].Value) + "-";
+                    //PreFix += Convert.ToString(currentTreeGrdiNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(currentTreeGrdiNode.Cells["CADType"].Value) + "-";
 
-                    PreFix += Convert.ToString(currentTreeGrdiNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(currentTreeGrdiNode.Cells["Generation"].Value) + "#";
+                    //PreFix += Convert.ToString(currentTreeGrdiNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(currentTreeGrdiNode.Cells["Generation"].Value) + "#";
 
                     PreFix1 = PreFix;
                     string filePathName = Path.Combine(checkoutPath, PreFix + Convert.ToString(currentTreeGrdiNode.Cells["DrawingName"].Value));
@@ -554,21 +553,21 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         if ((bool)childNode.Cells[0].FormattedValue)
                         {
-                            PreFix = "";
-                            if (ProjectName != "MyFiles")
-                            {
-                                PreFix = Convert.ToString(childNode.Cells["ProjectName"].Value) + "-";
-                            }
-                            PreFix = PreFix + Convert.ToString(childNode.Cells["DrawingNumber"].Value) + "-";
+                            PreFix = Helper.GetPreFix(childNode.Cells["Generation"].Value, childNode.Cells["ProjectName"].Value, childNode.Cells["DrawingNumber"].Value,childNode.Cells["CADType"].Value);
+                            //if (ProjectName != "MyFiles")
+                            //{
+                            //    PreFix = Convert.ToString(childNode.Cells["ProjectName"].Value) + "-";
+                            //}
+                            //PreFix = PreFix + Convert.ToString(childNode.Cells["DrawingNumber"].Value) + "-";
 
-                            PreFix += Convert.ToString(childNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["CADType"].Value) + "-";
+                            //PreFix += Convert.ToString(childNode.Cells["CADType"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["CADType"].Value) + "-";
 
-                            PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
+                            //PreFix += Convert.ToString(childNode.Cells["Generation"].Value) == string.Empty ? string.Empty : Convert.ToString(childNode.Cells["Generation"].Value) + "#";
 
-                            if (!Helper.IsRenameChild)
-                            {
-                                PreFix = "";
-                            }
+                            //if (!Helper.IsRenameChild)
+                            //{
+                            //    PreFix = "";
+                            //}
 
                             DownloadOpenDocument(childNode.Cells["DrawingID"].FormattedValue.ToString(), childNode.Cells["DrawingName"].FormattedValue.ToString(), checkoutPath, "Checkout", false, null, PreFix);
 
@@ -641,76 +640,12 @@ namespace AutocadPlugIn.UI_Forms
                                                });
                 if (restResponse.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(restResponse.Content))
                 {
-                    //RBConnector objRBC = new RBConnector();
-                    //ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(fileId);
-                    //Hashtable DrawingProperty = new Hashtable();
-                    //List<Hashtable> LayoutProperty = new List<Hashtable>();
+                    
 
-                    //#region LayoutInfo
-                    //String LayoutInfos = "";
-                    //LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
-                    //#endregion
-
-                    //DrawingProperty.Add("DrawingId", Drawing.id);
-                    //DrawingProperty.Add("DrawingName", Drawing.name);
-                    //DrawingProperty.Add("Classification", "");
-                    //DrawingProperty.Add("FileTypeID", Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
-                    //DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
-                    //DrawingProperty.Add("DrawingState", Drawing.status == null ? string.Empty : Drawing.status.statusname);
-                    //DrawingProperty.Add("Revision", Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno);
-                    //DrawingProperty.Add("LockStatus", Drawing.filelock);
-                    //DrawingProperty.Add("Generation", "123");
-                    //DrawingProperty.Add("Type", Drawing.coreType.id);
-                    ////DrawingProperty.Add("ProjectName", Drawing.projectname );
-                    //if (Drawing.projectname.Trim().Length == 0)
-                    //{
-                    //    DrawingProperty.Add("ProjectName", "My Files");
-                    //}
-                    //else
-                    //{
-                    //    DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
-                    //}
-
-                    //DrawingProperty.Add("ProjectId", Drawing.projectinfo);
-                    //DrawingProperty.Add("CreatedOn", Drawing.updatedon);
-                    //DrawingProperty.Add("CreatedBy", Drawing.createdby);
-                    //DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
-                    //DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
-
-                    //DrawingProperty.Add("canDelete", Drawing.canDelete);
-                    //DrawingProperty.Add("isowner", Drawing.isowner);
-                    //DrawingProperty.Add("hasViewPermission", Drawing.hasViewPermission);
-                    //DrawingProperty.Add("isActFileLatest", Drawing.isActFileLatest);
-
-                    //DrawingProperty.Add("isEditable", Drawing.isEditable);
-                    //DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
-                    //DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
-                    //DrawingProperty.Add("isletest", Drawing.isletest);
-
-                    //DrawingProperty.Add("projectno", Drawing.projectNumber);
-                    //DrawingProperty.Add("prefix", FilePreFix);
-                    //DrawingProperty.Add("LayoutInfo", LayoutInfos);
-
-                    ////DrawingProperty.Add("isroot", true);
-                    ////DrawingProperty.Add("sourceid","");
-                    ////DrawingProperty.Add("Layouts","");
-
-                    //// string filePathName = Path.Combine(checkoutPath, Helper.FileNamePrefix + "Drawing1.dwg");
-                    if (fileName.Length > FilePreFix.Length)
-                    {
-                        if (fileName.Substring(0, FilePreFix.Length) == FilePreFix)
-                        {
-                            fileName = fileName.Substring(FilePreFix.Length);
-                        }
-                    }
-
-
-                    string filePathName = Path.Combine(checkoutPath, fileName);
-
-                    //if (isParentFile)
-                    {
-                        filePathName = Path.Combine(checkoutPath, FilePreFix + fileName);
-                    }
+                    fileName = Helper.RemovePreFixFromFileName(fileName, FilePreFix);
+                    string filePathName = Path.Combine(checkoutPath, FilePreFix + fileName);
+                    Hashtable DrawingProperty = Helper.FillhtDrawingProperty(fileId,isParentFile?"1":"0" );
+                
 
                     using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Delete)))
                     {
@@ -719,13 +654,10 @@ namespace AutocadPlugIn.UI_Forms
 
                     if (isParentFile)
                     {
-                        //if (Helper.IsRenameChild)
-                        //{
-                        //    cadManager.UpdateExRefPathInfo(filePathName);
-                        //}
+                        
 
-                        //cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
-                        cadManager.OpenActiveDocument(filePathName, "View");
+                         cadManager.OpenActiveDocument(filePathName, "View", DrawingProperty);
+                        //cadManager.OpenActiveDocument(filePathName, "View");
                         try
                         {
                             //  cadManager.SaveActiveDrawing(false);
@@ -736,8 +668,8 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                        //cadManager.SetAttributesXrefFiles(DrawingProperty, filePathName);
-                        //cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
+                        cadManager.SetAttributesXrefFiles(DrawingProperty, filePathName);
+                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
                     }
                 }
                 else

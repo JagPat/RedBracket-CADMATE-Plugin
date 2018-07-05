@@ -10,7 +10,9 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
-namespace RedBracketConnector
+using AutocadPlugIn;
+using RedBracketConnector;
+namespace AutocadPlugIn
 {
     public static class Helper
     {
@@ -29,6 +31,8 @@ namespace RedBracketConnector
         public static string LatestVersion = "";
 
         public static bool IsRenameChild = true;
+        public static RBConnector objRBC = new RBConnector();
+        public static AutocadPlugIn.a
         public static object GetValueRegistry(string subKeyName, string keyName)
         {
             // Read the keys from the user registry and load it to the UI.
@@ -303,7 +307,7 @@ namespace RedBracketConnector
                         //int Count = 1;
                         foreach (LayoutInfo objLI1 in objLI)
                         {
-                            int Count =Convert.ToInt16( objLI1.fileNo.Contains("_") ? objLI1.fileNo.Substring(0, objLI1.fileNo.IndexOf("_")) : "0"); 
+                            int Count = Convert.ToInt16(objLI1.fileNo.Contains("_") ? objLI1.fileNo.Substring(0, objLI1.fileNo.IndexOf("_")) : "0");
                             DrawingProperty.Add("Layout_" + Count + "_Name", objLI1.name);
                             DrawingProperty.Add("Layout_" + Count + "_Number", objLI1.fileNo);
                             DrawingProperty.Add("Layout_" + Count + "_Type", objLI1.typename);
@@ -314,7 +318,7 @@ namespace RedBracketConnector
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedBy", objLI1.updatedby);
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedOn", objLI1.updatedon);
 
-                           // Count++;
+                            // Count++;
                         }
                     }
                 }
@@ -480,7 +484,7 @@ namespace RedBracketConnector
                             dr["Version"] = obj.versionno;
                             dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
                             dr["LayoutType"] = obj.typename == null || obj.typename == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.name) : obj.typename;
-                            dr["Seq"] = obj.fileNo.Contains("_") ?obj.fileNo.Substring(0, obj.fileNo.IndexOf("_")): "0";
+                            dr["Seq"] = obj.fileNo.Contains("_") ? obj.fileNo.Substring(0, obj.fileNo.IndexOf("_")) : "0";
 
 
                             dr["CreatedBy"] = obj.createdby;
@@ -725,6 +729,243 @@ namespace RedBracketConnector
 
         }
 
+        public static DataTable GetDrawingPropertiesTableStructure()
+        {
+            DataTable dtDrawingProperty = new DataTable();
+            try
+            {
+                dtDrawingProperty.Columns.Add("DrawingId");
+                dtDrawingProperty.Columns.Add("DrawingName");
+                dtDrawingProperty.Columns.Add("Classification");
+                dtDrawingProperty.Columns.Add("DrawingNumber");
+                dtDrawingProperty.Columns.Add("DrawingState");
+                dtDrawingProperty.Columns.Add("Revision");
+                dtDrawingProperty.Columns.Add("Generation");
+                dtDrawingProperty.Columns.Add("Type");
+                dtDrawingProperty.Columns.Add("filepath");
+                dtDrawingProperty.Columns.Add("isroot");
+                dtDrawingProperty.Columns.Add("ProjectName");
+                dtDrawingProperty.Columns.Add("ProjectNameNo");
+                dtDrawingProperty.Columns.Add("ProjectId");
+                dtDrawingProperty.Columns.Add("createdon");
+                dtDrawingProperty.Columns.Add("createdby");
+                dtDrawingProperty.Columns.Add("modifiedon");
+                dtDrawingProperty.Columns.Add("modifiedby");
+                dtDrawingProperty.Columns.Add("sourceid");
+                dtDrawingProperty.Columns.Add("Layouts");
+                dtDrawingProperty.Columns.Add("lockstatus");
+                dtDrawingProperty.Columns.Add("lockby");
+                dtDrawingProperty.Columns.Add("canDelete");
+                dtDrawingProperty.Columns.Add("isowner");
+                dtDrawingProperty.Columns.Add("hasViewPermission");
+                dtDrawingProperty.Columns.Add("isActFileLatest");
+                dtDrawingProperty.Columns.Add("isEditable");
+                dtDrawingProperty.Columns.Add("canEditStatus");
+                dtDrawingProperty.Columns.Add("hasStatusClosed");
+                dtDrawingProperty.Columns.Add("isletest");
+                dtDrawingProperty.Columns.Add("projectno");
+                dtDrawingProperty.Columns.Add("prefix");
+                dtDrawingProperty.Columns.Add("layoutinfo");
+                dtDrawingProperty.Columns.Add("oldprefix");
 
+
+
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return null;
+            }
+
+            return dtDrawingProperty;
+        }
+
+        public static string GetPreFix(object Revision1, object ProjectNo1, object FileNo1, object FileType1)
+        {
+            string PreFix = "";
+            try
+            {
+                string Revision = Convert.ToString(Revision1);
+                string ProjectNo = Convert.ToString(ProjectNo1);
+                string FileNo = Convert.ToString(FileNo1);
+                string FileType = Convert.ToString(FileType1);
+                Revision = Revision.Contains("Ver") ? Revision.Substring(Revision.IndexOf("0")) : Revision;
+
+
+
+                PreFix = ProjectNo.Trim().Length > 0 ? ProjectNo + "-" : string.Empty;
+
+                PreFix += FileNo.Trim() == string.Empty ? string.Empty : FileNo + "-";
+
+                PreFix += FileType == string.Empty ? string.Empty : FileType + "-";
+
+                PreFix += Revision == string.Empty ? string.Empty : Revision + "#";
+
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return PreFix;
+            }
+
+            return PreFix;
+        }
+
+        public static string RemovePreFixFromFileName(string FileName, string PreFix)
+        {
+            try
+            {
+                if (FileName.Contains(PreFix))
+                {
+                    if (FileName.Substring(0, PreFix.Length) == PreFix)
+                    {
+                        FileName = FileName.Substring(PreFix.Length);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+
+            }
+            return FileName;
+        }
+
+        public static Hashtable FillhtDrawingProperty(string FileID,   string IsRoot)
+        {
+
+            Hashtable DrawingProperty = new Hashtable();
+            DataTable dtDrawing = Helper.GetDrawingPropertiesTableStructure();
+
+
+            DataRow dr = dtDrawing.NewRow();
+            try
+            {
+                ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(FileID);
+ 
+
+                string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), Drawing.projectname == null || Drawing.projectname == string.Empty ? "My Files" : Drawing.projectname);
+                DirectoryInfo di = new DirectoryInfo(checkoutPath);
+                di=Directory.Exists(checkoutPath)? di : Directory.CreateDirectory(checkoutPath);
+                string PreFix = Helper.GetPreFix(Drawing.versionno, Drawing.projectNumber, Drawing.fileNo, Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
+
+                string FilePath = Path.Combine(checkoutPath, PreFix + Drawing.name);
+
+                if (File.Exists(FilePath))
+                {
+                    if (cadManager.CheckForCurruntlyOpenDoc(FilePath))
+                    {
+                        
+                        ShowMessage.ValMess("This file is already open.");
+                       
+                        return;
+                    }
+                }
+
+                List<Hashtable> LayoutProperty = new List<Hashtable>();
+                #region LayoutInfo
+                String LayoutInfos = "";
+                LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
+                #endregion
+
+                dr["DrawingId"] = Drawing.id;
+
+                dr["DrawingName"] = Drawing.name;
+                dr["Classification"] = Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name;
+                dr["DrawingNumber"] = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
+                dr["DrawingState"] = Drawing.status == null ? string.Empty : Drawing.status.statusname;
+                dr["Revision"] = Drawing.versionno == null ? string.Empty : Drawing.versionno;
+                dr["Generation"] = Drawing.versionno == null ? string.Empty : Drawing.versionno;
+                dr["Type"] = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
+                dr["filepath"] = FilePath;
+                dr["isroot"] = IsRoot;
+                dr["ProjectName"] = Drawing.projectname == null || Drawing.projectname == string.Empty ? "My Files" : Drawing.projectname;
+                dr["ProjectNameNo"] = Drawing.projectname == null || Drawing.projectname == string.Empty ? "" : Drawing.projectname + " (" + Drawing.projectNumber + ")";
+                dr["ProjectId"] = Drawing.projectinfo;
+                dr["createdon"] = Drawing.created0n;
+                dr["createdby"] = Drawing.createdby;
+                dr["modifiedon"] = Drawing.updatedon;
+                dr["modifiedby"] = Drawing.updatedby;
+                dr["sourceid"] = "";
+                dr["Layouts"] = "";
+                dr["lockstatus"] = Drawing.filelock;
+                dr["lockby"] = Drawing.updatedby;
+                dr["canDelete"] = Drawing.canDelete;
+                dr["isowner"] = Drawing.isowner;
+                dr["hasViewPermission"] = Drawing.hasViewPermission;
+                dr["isActFileLatest"] = Drawing.isActFileLatest;
+                dr["isEditable"] = Drawing.isEditable;
+                dr["canEditStatus"] = Drawing.canEditStatus;
+                dr["hasStatusClosed"] = Drawing.hasStatusClosed;
+                dr["isletest"] = Drawing.isletest;
+                dr["projectno"] = Drawing.projectNumber;
+                dr["prefix"] = PreFix; ;
+                dr["layoutinfo"] = LayoutInfos;
+                dr["oldprefix"] = PreFix;
+
+
+                dtDrawing.Rows.Add(dr);
+
+                if (dtDrawing.Rows.Count > 0)
+                    DrawingProperty = Helper.Table2HashTable(dtDrawing, 0);
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return DrawingProperty;
+        }
+
+        public static DataTable AddRowDrawingPropertiesTable(DataTable dtDrawingProperties, Hashtable htDrawingProperties)
+        {
+            try
+            {
+                bool IsAnyValueMatch = false;
+                DataRow dr = dtDrawingProperties.NewRow();
+                if (htDrawingProperties.Count > 0)
+                {
+                    foreach (DictionaryEntry de in htDrawingProperties)
+                    {
+                        for (int i = 0; i < dtDrawingProperties.Columns.Count; i++)
+                        {
+                            if (Convert.ToString(de.Key).ToLower() == dtDrawingProperties.Columns[i].ColumnName.ToLower())
+                            {
+                                IsAnyValueMatch = true;
+                                dr[dtDrawingProperties.Columns[i].ColumnName] = de.Value == null ? string.Empty : Convert.ToString(de.Value);
+                                break;
+                            }
+                        }
+                    }
+                    if (IsAnyValueMatch)
+                    {
+                        dtDrawingProperties.Rows.Add(dr);
+                    }
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return dtDrawingProperties;
+        }
+
+        public static void DownloadOpenDoc(string FileID)
+        {
+            try
+            {
+                byte[] RawBytes = null;
+                ResultSearchCriteria Drawing = objRBC.GetSingleFileInfo(FileID, ref RawBytes);
+
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
     }
 }

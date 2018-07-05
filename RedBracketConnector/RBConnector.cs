@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Web.Script.Serialization;
-
+using ;
 
 namespace RedBracketConnector
 {
@@ -275,7 +275,7 @@ namespace RedBracketConnector
                                         obj.ObjectProjectName = Drawing.projectname == null ? string.Empty : Drawing.projectname;
                                         //obj.ObjectProjectId = "123";
                                         obj.ObjectCreatedById = Drawing.createdby;
-                                        obj.ObjectCreatedOn = Drawing.updatedon;
+                                        obj.ObjectCreatedOn = Drawing.created0n;
                                         obj.ObjectModifiedById = Drawing.updatedby;
                                         obj.ObjectModifiedOn = Drawing.updatedon;
                                         obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
@@ -1268,9 +1268,7 @@ namespace RedBracketConnector
                     "/AutocadFiles/fetchFileInfo", DataFormat.Json,
                     null, true, urlParameters);
 
-
-
-
+                 
 
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
@@ -1279,41 +1277,13 @@ namespace RedBracketConnector
                 }
                 else
                 {
-                    ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
-                    string Response = restResponse.Content;
-                    #region Commented Code
-                    //DataTable dataTableFileInfo = (DataTable)JsonConvert.DeserializeObject(restResponse.Content, (typeof(DataTable)));
-                    //if(dataTableFileInfo.Rows.Count>0)
-                    //{
-                    //    bool FileLock = Convert.ToBoolean(Convert.ToString(dataTableFileInfo.Rows[0]["filelock"]));
-                    //    string UpdatedBy = Convert.ToString(dataTableFileInfo.Rows[0]["updatedBy"]);
-
-                    //    if(FileLock)
-                    //    {
-                    //        if(UpdatedBy== Helper.UserName)
-                    //        {
-                    //            rw["lockstatus"] = "1";
-                    //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
-                    //        }
-                    //        else
-                    //        {
-                    //            rw["lockstatus"] = "2";
-                    //            rw["lockby"] = dataTableFileInfo.Rows[0]["updatedBy"];
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-
-                    //    }
-                    //}
-                    #endregion
+                    ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content); 
                 }
 
             }
             catch (Exception ex)
             {
-                ShowMessage.ErrorMess(ex.Message);
-                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
+                ShowMessage.ErrorMess(ex.Message); 
             }
             return ObjFileInfo;
         }

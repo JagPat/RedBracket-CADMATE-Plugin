@@ -155,7 +155,6 @@
     <Compile Include="Controllers\UnlockController.cs" />
     <Compile Include="Controllers\ViewDocumentController.cs" />
     <Compile Include="Exception\CADManagerException.cs" />
-    <Compile Include="ICADManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

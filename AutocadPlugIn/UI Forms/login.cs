@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Windows.Forms;
-using CADController.Controllers;
-using CADController.Commands;
+ 
 using Microsoft.Win32;
 using RedBracketConnector;
 using System.IO;

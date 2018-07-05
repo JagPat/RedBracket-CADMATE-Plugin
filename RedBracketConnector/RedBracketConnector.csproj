@@ -56,21 +56,24 @@
   <ItemGroup>
     <Compile Include="clsFolderSearchReasult.cs" />
     <Compile Include="Exceptions\ConnectionException.cs" />
-    <Compile Include="Helper.cs" />
     <Compile Include="LockUnLockUpdater.cs" />
     <Compile Include="PLMObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RBConnector.cs" />
     <Compile Include="Relationship.cs" />
     <Compile Include="ResultSearchCriteria.cs" />
     <Compile Include="ResultStatusData.cs" />
     <Compile Include="ResultStatusDataCoreType.cs" />
     <Compile Include="SaveResult.cs" />
     <Compile Include="SearchCriteria.cs" />
-    <Compile Include="ServiceHelper.cs" />
     <Compile Include="ShowMessage.cs" />
     <Compile Include="UIData.cs" />
     <Compile Include="UserLoginDetails.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{6a2ab88a-c8e7-4f83-939a-fc9c9d1c6c25}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

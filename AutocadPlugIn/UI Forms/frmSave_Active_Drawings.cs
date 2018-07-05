@@ -1,5 +1,5 @@
 ﻿using System;
-using System;
+ 
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,12 +8,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using CADController.Commands;
+ 
 using AdvancedDataGridView;
 using System.IO;
-using CADController.Controllers;
-using CADController;
-using CADController.Configuration;
+ 
 using RedBracketConnector;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -624,133 +622,19 @@ namespace AutocadPlugIn.UI_Forms
                             //}
                             #endregion
 
-                            #region Update File Properties
-                            bool IsdownloadNewFile = false;
+                            #region Update File Properties 
 
-                            if (IsdownloadNewFile)
+                            progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Updating new properties to local file."; lblStatus.Refresh();
+                            // Update document info into document for future referance 
+                            if (objController.dtDrawingProperty.Rows.Count > 0)
                             {
-                                progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Downloading new files."; lblStatus.Refresh();
-                                #region Download and open updated file from RB
-                                try
-                                {
-                                    if (!Is_Delete)
-                                    {
-                                        string MyProjectId = "", MyProjectNo = ""; string ProjectName = "";
-                                        try
-                                        {
-
-                                            MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
-                                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-                                            MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "id");
-                                            ProjectName = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].FormattedValue);
-                                        }
-                                        catch
-                                        {
-                                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-
-                                            MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                            MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                            ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                                        }
-                                        string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-
-                                        if (ProjectName.Trim().Length == 0)
-                                        {
-                                            ProjectName = "MyFiles";
-                                        }
-                                        checkoutPath = Path.Combine(checkoutPath, ProjectName);
-                                        if (!Directory.Exists(checkoutPath))
-                                        {
-                                            Directory.CreateDirectory(checkoutPath);
-                                        }
-
-
-                                        if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Length > 0)
-                                        {
-                                            DownloadOpenDocument(Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value), checkoutPath);
-                                            File.Delete(objCmd.FilePath);
-                                            foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                                            {
-                                                if ((bool)ChildNode.Cells[0].FormattedValue)
-                                                {
-                                                    File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            DownloadOpenDocument(Convert.ToString(objController.dtDrawingProperty.Select("isroot=True")[0]["DrawingId"]), checkoutPath);
-                                        }
-                                        try
-                                        {
-                                            objMgr.SaveActiveDrawing(false);
-                                        }
-                                        catch { }
-                                        progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh();
-                                    }
-                                }
-                                catch (Exception E)
-                                {
-                                    ShowMessage.ErrorMess(E.Message);
-                                    this.Cursor = Cursors.Default;
-                                    return;
-                                }
-                                #endregion
-
-                                #region Deleting XrefFile with Old Name
-                                try
-                                {
-                                    foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                                    {
-                                        if ((bool)ChildNode.Cells[0].FormattedValue)
-                                        {
-                                            string Dir = Path.GetDirectoryName(Convert.ToString(ChildNode.Cells["filepath"].Value));
-
-                                            string MyProjectNo = ""; string ProjectName = "";
-                                            try
-                                            {
-                                                string MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
-                                                DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-                                                MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(ChildNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(ChildNode.Cells["projectname"].Value), "id");
-                                                ProjectName = Convert.ToString(ChildNode.Cells["projectname"].FormattedValue);
-                                            }
-                                            catch
-                                            {
-                                                DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-
-                                                MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
-                                                ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
-                                            }
-                                            string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-
-                                            if (ProjectName.Trim().Length == 0)
-                                            {
-                                                ProjectName = "MyFiles";
-                                            }
-                                            checkoutPath = Path.Combine(checkoutPath, ProjectName);
-
-
-                                            if (Dir == checkoutPath)
-                                                File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
-                                        }
-                                    }
-                                }
-                                catch { }
-                                #endregion
+                                objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
                             }
-                            else
-                            {
-                                progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Updating new properties to local file."; lblStatus.Refresh();
-                                // Update document info into document for future referance 
-                                if (objController.dtDrawingProperty.Rows.Count > 0)
-                                {
-                                    objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
-                                }
 
-                                //Update Xref name to wihout prefix 
-                                //objMgr.UpdateExRefPathInfo1(FilePath);
+                            //Update Xref name to wihout prefix 
+                            //objMgr.UpdateExRefPathInfo1(FilePath);
 
-                            }
+
                             #endregion
 
                             progressBar1.Increment(1); progressBar1.Refresh(); this.Refresh(); lblStatus.Text = "Updating file names."; lblStatus.Refresh();
@@ -826,155 +710,9 @@ namespace AutocadPlugIn.UI_Forms
             }
             this.Cursor = Cursors.Default;
         }
-        public void DownloadOpenDocument1(string fileId, string checkoutPath, bool IsParent = false)
-        {
-            try
-            {
-                RBConnector objRBC = new RBConnector();
-                Hashtable DrawingProperty = new Hashtable();
-
-                byte[] RawBytes = null;
-                ResultSearchCriteria Drawing = objRBC.GetSingleFileInfo(fileId, ref RawBytes);
-
-                if (Drawing != null)
-                {
-                    DrawingProperty.Add("DrawingId", Drawing.id);
-                    DrawingProperty.Add("DrawingName", Drawing.name);
-                    DrawingProperty.Add("Classification", "");
-                    DrawingProperty.Add("FileTypeID", Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
-                    DrawingProperty.Add("DrawingNumber", Drawing.fileNo);
-
-                    DrawingProperty.Add("DrawingState", Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname);
-                    DrawingProperty.Add("Revision", Drawing.versionno);
-                    DrawingProperty.Add("LockStatus", Drawing.filelock);
-                    DrawingProperty.Add("Generation", "123");
-                    DrawingProperty.Add("Type", Drawing.coreType.id);
-                    #region LayoutInfo
-                    String LayoutInfos = "";
-                    LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
-                    #endregion
-                    //DrawingProperty.Add("ProjectName", Drawing.projectname );
-                    if (Drawing.projectname != null)
-                    {
-                        if (Drawing.projectname.Trim().Length == 0)
-                        {
-                            DrawingProperty.Add("ProjectName", "My Files");
-                        }
-                        else
-                        {
-                            DrawingProperty.Add("ProjectName", Drawing.projectname + " (" + Drawing.projectNumber + ")");
-                        }
-                    }
-                    else
-                    {
-                        DrawingProperty.Add("ProjectName", "My Files");
-                    }
-                    DrawingProperty.Add("ProjectId", Drawing.projectinfo);
-                    DrawingProperty.Add("CreatedOn", Drawing.updatedon);
-                    DrawingProperty.Add("CreatedBy", Drawing.createdby);
-                    DrawingProperty.Add("ModifiedOn", Drawing.updatedon);
-                    DrawingProperty.Add("ModifiedBy", Drawing.updatedby);
-
-                    DrawingProperty.Add("canDelete", Drawing.canDelete);
-                    DrawingProperty.Add("isowner", Drawing.isowner);
-                    DrawingProperty.Add("hasViewPermission", Drawing.hasViewPermission);
-                    DrawingProperty.Add("isActFileLatest", Drawing.isActFileLatest);
-
-                    DrawingProperty.Add("isEditable", Drawing.isEditable);
-                    DrawingProperty.Add("canEditStatus", Drawing.canEditStatus);
-                    DrawingProperty.Add("hasStatusClosed", Drawing.hasStatusClosed);
-                    DrawingProperty.Add("isletest", Drawing.isletest);
-                    DrawingProperty.Add("LayoutInfo", LayoutInfos);
-                    DrawingProperty.Add("projectno", Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber);
-
-                    string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;
 
 
-                    string FileType = Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name;
-
-
-
-
-
-
-
-
-
-                    string PreFix = "";
-                    if (ProjectNo.Trim().Length > 0)
-                    {
-                        PreFix = ProjectNo + "-";
-                    }
-                    PreFix = PreFix + Drawing.fileNo + "-";
-
-
-                    PreFix += Convert.ToString(FileType) == string.Empty ? string.Empty : Convert.ToString(FileType) + "-";
-
-                    PreFix += Convert.ToString(Drawing.versionno) == string.Empty ? string.Empty : Convert.ToString(Drawing.versionno) + "#";
-
-
-                    DrawingProperty.Add("prefix", PreFix);
-                    //DrawingProperty.Add("isroot", true);
-                    //DrawingProperty.Add("sourceid","");
-                    //DrawingProperty.Add("Layouts","");
-
-                    string filePathName = Path.Combine(checkoutPath, Drawing.name);
-                    if (IsParent)
-                    {
-                        filePathName = Path.Combine(checkoutPath, PreFix + Drawing.name);
-                    }
-
-                    using (var binaryWriter = new BinaryWriter(File.Open(filePathName, FileMode.OpenOrCreate)))
-                    {
-                        binaryWriter.Write(RawBytes);
-                    }
-                    AutoCADManager objMgr = new AutoCADManager();
-                    if (IsParent)
-                    {
-
-                        objMgr.UpdateExRefPathInfo(filePathName);
-                        objMgr.OpenActiveDocument(filePathName, "View", DrawingProperty);
-                    }
-                    else
-                    {
-                        objMgr.SetAttributesXrefFiles(DrawingProperty, filePathName);
-                        objMgr.UpdateLayoutAttributeArefFile(DrawingProperty, filePathName);
-                    }
-
-                }
-                else
-                {
-                    ShowMessage.ErrorMess("Some error occures while retrieving file.");
-                }
-            }
-            catch (System.Exception E)
-            {
-                ShowMessage.ErrorMess(E.Message);
-            }
-
-        }
-
-        public void DownloadOpenDocument(string fileId, string checkoutPath)
-        {
-            try
-            {
-                RBConnector objRBC = new RBConnector();
-                var XrefFIle = objRBC.GetXrefFIleInfo(fileId);
-
-                foreach (ResultSearchCriteria obj in XrefFIle)
-                {
-                    DownloadOpenDocument1(obj.id, checkoutPath, false);
-                }
-
-                DownloadOpenDocument1(fileId, checkoutPath, true);
-
-            }
-            catch (System.Exception E)
-            {
-                ShowMessage.ErrorMess(E.Message);
-            }
-
-        }
+         
         private void cancel_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -1166,8 +904,8 @@ namespace AutocadPlugIn.UI_Forms
 
                     foreach (TreeGridNode tgnChild in tgnParent.Nodes)
                     {
-                        if ((bool)tgnChild.Cells[0].Value)
-                            GenFileInfoDT(tgnChild);
+                        //if ((bool)tgnChild.Cells[0].Value)
+                        GenFileInfoDT(tgnChild);
                     }
                     GenFileInfoDT(tgnParent);
                 }

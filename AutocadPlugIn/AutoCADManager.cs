@@ -745,8 +745,8 @@ namespace AutocadPlugIn
                 else if (openMode == "View")
                 {
                     acadApp.DocumentManager.Open(fileName, false);
-                    //this.SetAttributes(currentDocumentProperties);
-                    //UpdateLayoutAttribute(currentDocumentProperties);
+                    this.SetAttributes(currentDocumentProperties);
+                    UpdateLayoutAttribute(currentDocumentProperties);
                 }
                 else if (openMode == "Edit")
                 {
@@ -1463,39 +1463,41 @@ namespace AutocadPlugIn
         public System.Data.DataTable GetExternalRefreces()
         {
             System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
-            dtTreeGrid.Columns.Add("drawingname", typeof(String));
-            dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
-            dtTreeGrid.Columns.Add("classification", typeof(String));
-            dtTreeGrid.Columns.Add("FileTypeID", typeof(String));
-            dtTreeGrid.Columns.Add("revision", typeof(String));
-            dtTreeGrid.Columns.Add("drawingid", typeof(String));
-            dtTreeGrid.Columns.Add("filepath", typeof(String));
-            dtTreeGrid.Columns.Add("drawingstate", typeof(String));
-            dtTreeGrid.Columns.Add("generation", typeof(String));
-            dtTreeGrid.Columns.Add("type", typeof(String));
-            dtTreeGrid.Columns.Add("sourceid", typeof(String));
-            dtTreeGrid.Columns.Add("isroot", typeof(String));
-            dtTreeGrid.Columns.Add("projectname", typeof(String));
-            dtTreeGrid.Columns.Add("projectid", typeof(String));
-            dtTreeGrid.Columns.Add("Layouts", typeof(String));
-            dtTreeGrid.Columns.Add("lockstatus", typeof(String));
-            dtTreeGrid.Columns.Add("lockby", typeof(String));
-            dtTreeGrid.Columns.Add("Error", typeof(String));
+            dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
 
-            dtTreeGrid.Columns.Add("candelete", typeof(String));
-            dtTreeGrid.Columns.Add("isowner", typeof(String));
-            dtTreeGrid.Columns.Add("hasviewpermission", typeof(String));
-            dtTreeGrid.Columns.Add("isactfilelatest", typeof(String));
-            dtTreeGrid.Columns.Add("iseditable", typeof(String));
-            dtTreeGrid.Columns.Add("caneditstatus", typeof(String));
-            dtTreeGrid.Columns.Add("hasstatusclosed", typeof(String));
-            dtTreeGrid.Columns.Add("isletest", typeof(String));
-            dtTreeGrid.Columns.Add("projectno", typeof(String));
-            dtTreeGrid.Columns.Add("prefix", typeof(String));
+            //dtTreeGrid.Columns.Add("drawingname", typeof(String));
+            //dtTreeGrid.Columns.Add("drawingnumber", typeof(String));
+            //dtTreeGrid.Columns.Add("classification", typeof(String));
+            //dtTreeGrid.Columns.Add("FileTypeID", typeof(String));
+            //dtTreeGrid.Columns.Add("revision", typeof(String));
+            //dtTreeGrid.Columns.Add("drawingid", typeof(String));
+            //dtTreeGrid.Columns.Add("filepath", typeof(String));
+            //dtTreeGrid.Columns.Add("drawingstate", typeof(String));
+            //dtTreeGrid.Columns.Add("generation", typeof(String));
+            //dtTreeGrid.Columns.Add("type", typeof(String));
+            //dtTreeGrid.Columns.Add("sourceid", typeof(String));
+            //dtTreeGrid.Columns.Add("isroot", typeof(String));
+            //dtTreeGrid.Columns.Add("projectname", typeof(String));
+            //dtTreeGrid.Columns.Add("projectid", typeof(String));
+            //dtTreeGrid.Columns.Add("Layouts", typeof(String));
+            //dtTreeGrid.Columns.Add("lockstatus", typeof(String));
+            //dtTreeGrid.Columns.Add("lockby", typeof(String));
+            //dtTreeGrid.Columns.Add("Error", typeof(String));
 
-            dtTreeGrid.Columns.Add("createdby", typeof(String));
-            dtTreeGrid.Columns.Add("modifiedby", typeof(String));
-            dtTreeGrid.Columns.Add("layoutinfo", typeof(String));
+            //dtTreeGrid.Columns.Add("candelete", typeof(String));
+            //dtTreeGrid.Columns.Add("isowner", typeof(String));
+            //dtTreeGrid.Columns.Add("hasviewpermission", typeof(String));
+            //dtTreeGrid.Columns.Add("isactfilelatest", typeof(String));
+            //dtTreeGrid.Columns.Add("iseditable", typeof(String));
+            //dtTreeGrid.Columns.Add("caneditstatus", typeof(String));
+            //dtTreeGrid.Columns.Add("hasstatusclosed", typeof(String));
+            //dtTreeGrid.Columns.Add("isletest", typeof(String));
+            //dtTreeGrid.Columns.Add("projectno", typeof(String));
+            //dtTreeGrid.Columns.Add("prefix", typeof(String));
+
+            //dtTreeGrid.Columns.Add("createdby", typeof(String));
+            //dtTreeGrid.Columns.Add("modifiedby", typeof(String));
+            //dtTreeGrid.Columns.Add("layoutinfo", typeof(String));
 
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -1604,34 +1606,38 @@ namespace AutocadPlugIn
                                                         //    childrens, "1", rootdrawingAttrs["projectname"].ToString(),
                                                         //    rootdrawingAttrs["projectid"].ToString(), Layouts.ToString());
 
-                                                        dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"] == null ? string.Empty : rootdrawingAttrs["drawingname"],
-                                                          rootdrawingAttrs["drawingnumber"] == null ? string.Empty : rootdrawingAttrs["drawingnumber"],
-                                                          rootdrawingAttrs["classification"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
-                                                          rootdrawingAttrs["filetypeid"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
-                                                          rootdrawingAttrs["revision"] == null ? string.Empty : rootdrawingAttrs["revision"],
-                                                          rootdrawingAttrs["drawingid"] == null ? string.Empty : rootdrawingAttrs["drawingid"],
-                                                          xgn.Database.Filename == null ? string.Empty : xgn.Database.Filename,
-                                                          rootdrawingAttrs["drawingstate"] == null ? string.Empty : rootdrawingAttrs["drawingstate"],
-                                                          rootdrawingAttrs["generation"] == null ? string.Empty : rootdrawingAttrs["generation"],
-                                                          rootdrawingAttrs["type"] == null ? string.Empty : rootdrawingAttrs["type"],
-                                                          childrens, "1", rootdrawingAttrs["projectname"] == null ? string.Empty : rootdrawingAttrs["projectname"],
-                                                          rootdrawingAttrs["projectid"] == null ? string.Empty : rootdrawingAttrs["projectid"],
-                                                          Layouts == null ? string.Empty : Layouts, "", "", "",
+                                                        dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
 
-                                                        rootdrawingAttrs["candelete"] == null ? string.Empty : rootdrawingAttrs["candelete"],
-                                                        rootdrawingAttrs["isowner"] == null ? string.Empty : rootdrawingAttrs["isowner"],
-                                                        rootdrawingAttrs["hasviewpermission"] == null ? string.Empty : rootdrawingAttrs["hasviewpermission"],
-                                                        rootdrawingAttrs["isactfilelatest"] == null ? string.Empty : rootdrawingAttrs["isactfilelatest"],
-                                                        rootdrawingAttrs["iseditable"] == null ? string.Empty : rootdrawingAttrs["iseditable"],
-                                                        rootdrawingAttrs["caneditstatus"] == null ? string.Empty : rootdrawingAttrs["caneditstatus"],
-                                                        rootdrawingAttrs["hasstatusclosed"] == null ? string.Empty : rootdrawingAttrs["hasstatusclosed"],
-                                                        rootdrawingAttrs["isletest"] == null ? string.Empty : rootdrawingAttrs["isletest"],
-                                                        rootdrawingAttrs["projectno"] == null ? string.Empty : rootdrawingAttrs["projectno"],
-                                                        rootdrawingAttrs["prefix"] == null ? string.Empty : rootdrawingAttrs["prefix"],
-                                                        rootdrawingAttrs["createdby"] == null ? string.Empty : rootdrawingAttrs["createdby"],
-                                                        rootdrawingAttrs["modifiedby"] == null ? string.Empty : rootdrawingAttrs["modifiedby"]
-                                                        ,
-                                                        rootdrawingAttrs["layoutinfo"] == null ? string.Empty : rootdrawingAttrs["layoutinfo"]);
+
+
+                                                        //dtTreeGrid.Rows.Add(rootdrawingAttrs["drawingname"] == null ? string.Empty : rootdrawingAttrs["drawingname"],
+                                                        //  rootdrawingAttrs["drawingnumber"] == null ? string.Empty : rootdrawingAttrs["drawingnumber"],
+                                                        //  rootdrawingAttrs["classification"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
+                                                        //  rootdrawingAttrs["filetypeid"] == null ? string.Empty : rootdrawingAttrs["filetypeid"],
+                                                        //  rootdrawingAttrs["revision"] == null ? string.Empty : rootdrawingAttrs["revision"],
+                                                        //  rootdrawingAttrs["drawingid"] == null ? string.Empty : rootdrawingAttrs["drawingid"],
+                                                        //  xgn.Database.Filename == null ? string.Empty : xgn.Database.Filename,
+                                                        //  rootdrawingAttrs["drawingstate"] == null ? string.Empty : rootdrawingAttrs["drawingstate"],
+                                                        //  rootdrawingAttrs["generation"] == null ? string.Empty : rootdrawingAttrs["generation"],
+                                                        //  rootdrawingAttrs["type"] == null ? string.Empty : rootdrawingAttrs["type"],
+                                                        //  childrens, "1", rootdrawingAttrs["projectname"] == null ? string.Empty : rootdrawingAttrs["projectname"],
+                                                        //  rootdrawingAttrs["projectid"] == null ? string.Empty : rootdrawingAttrs["projectid"],
+                                                        //  Layouts == null ? string.Empty : Layouts, "", "", "",
+
+                                                        //rootdrawingAttrs["candelete"] == null ? string.Empty : rootdrawingAttrs["candelete"],
+                                                        //rootdrawingAttrs["isowner"] == null ? string.Empty : rootdrawingAttrs["isowner"],
+                                                        //rootdrawingAttrs["hasviewpermission"] == null ? string.Empty : rootdrawingAttrs["hasviewpermission"],
+                                                        //rootdrawingAttrs["isactfilelatest"] == null ? string.Empty : rootdrawingAttrs["isactfilelatest"],
+                                                        //rootdrawingAttrs["iseditable"] == null ? string.Empty : rootdrawingAttrs["iseditable"],
+                                                        //rootdrawingAttrs["caneditstatus"] == null ? string.Empty : rootdrawingAttrs["caneditstatus"],
+                                                        //rootdrawingAttrs["hasstatusclosed"] == null ? string.Empty : rootdrawingAttrs["hasstatusclosed"],
+                                                        //rootdrawingAttrs["isletest"] == null ? string.Empty : rootdrawingAttrs["isletest"],
+                                                        //rootdrawingAttrs["projectno"] == null ? string.Empty : rootdrawingAttrs["projectno"],
+                                                        //rootdrawingAttrs["prefix"] == null ? string.Empty : rootdrawingAttrs["prefix"],
+                                                        //rootdrawingAttrs["createdby"] == null ? string.Empty : rootdrawingAttrs["createdby"],
+                                                        //rootdrawingAttrs["modifiedby"] == null ? string.Empty : rootdrawingAttrs["modifiedby"]
+                                                        //,
+                                                        //rootdrawingAttrs["layoutinfo"] == null ? string.Empty : rootdrawingAttrs["layoutinfo"]);
 
 
 
@@ -1643,8 +1649,16 @@ namespace AutocadPlugIn
                                                 }
                                                 else
                                                 {
-                                                    dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
-                                                        childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+
+                                                    DataRow dr = dtTreeGrid.NewRow();
+                                                    dr["DrawingName"] = drawingName;
+                                                    dr["filepath"] = xgn.Database.Filename.ToString();
+                                                    dr["sourceid"] = childrens;
+                                                    dr["isroot"] = "1";
+                                                    dr["Layouts"] = Layouts.ToString();
+                                                    dtTreeGrid.Rows.Add(dr);
+                                                    //dtTreeGrid.Rows.Add(drawingName, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
+                                                    //    childrens, "1", "", "", Layouts.ToString(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
                                                 }
                                             }
                                             else
@@ -1676,48 +1690,59 @@ namespace AutocadPlugIn
                                                 if (drawingAttrs.Count != 0)
                                                 {
 
+                                                    dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
+                                                    //dtTreeGrid.Rows.Add(
 
-                                                    dtTreeGrid.Rows.Add(
+                                                    //  drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]),
+                                                    //  drawingAttrs["drawingnumber"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingnumber"]),
+                                                    //    drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
+                                                    //    drawingAttrs["filetypeid"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
 
-                                                      drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]),
-                                                      drawingAttrs["drawingnumber"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingnumber"]),
-                                                        drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
-                                                        drawingAttrs["filetypeid"] == null ? string.Empty : Convert.ToString(drawingAttrs["filetypeid"]),
+                                                    //    drawingAttrs["revision"] == null ? string.Empty : Convert.ToString(drawingAttrs["revision"]),
+                                                    //drawingAttrs["drawingid"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingid"]),
+                                                    //  xgn.Database.Filename.ToString(),
+                                                    //    drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]),
+                                                    //drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]),
 
-                                                        drawingAttrs["revision"] == null ? string.Empty : Convert.ToString(drawingAttrs["revision"]),
-                                                    drawingAttrs["drawingid"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingid"]),
-                                                      xgn.Database.Filename.ToString(),
-                                                        drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]),
-                                                    drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]),
+                                                    //  drawingAttrs["type"] == null ? string.Empty : Convert.ToString(drawingAttrs["type"]),
 
-                                                      drawingAttrs["type"] == null ? string.Empty : Convert.ToString(drawingAttrs["type"]),
-
-                                                        childrens,
-                                                        "0",
-                                                         drawingAttrs["projectname"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectname"]),
-                                                          drawingAttrs["projectid"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectid"]),
-                                                        Layouts, "", "", "",
-                                                        drawingAttrs["candelete"] == null ? string.Empty : drawingAttrs["candelete"],
-                                                        drawingAttrs["isowner"] == null ? string.Empty : drawingAttrs["isowner"],
-                                                        drawingAttrs["hasviewpermission"] == null ? string.Empty : drawingAttrs["hasviewpermission"],
-                                                        drawingAttrs["isactfilelatest"] == null ? string.Empty : drawingAttrs["isactfilelatest"],
-                                                        drawingAttrs["iseditable"] == null ? string.Empty : drawingAttrs["iseditable"],
-                                                        drawingAttrs["caneditstatus"] == null ? string.Empty : drawingAttrs["caneditstatus"],
-                                                        drawingAttrs["hasstatusclosed"] == null ? string.Empty : drawingAttrs["hasstatusclosed"],
-                                                        drawingAttrs["isletest"] == null ? string.Empty : drawingAttrs["isletest"],
-                                                        drawingAttrs["projectno"] == null ? string.Empty : drawingAttrs["projectno"],
-                                                        drawingAttrs["prefix"] == null ? string.Empty : drawingAttrs["prefix"],
-                                                        drawingAttrs["createdby"] == null ? string.Empty : drawingAttrs["createdby"],
-                                                        drawingAttrs["modifiedby"] == null ? string.Empty : drawingAttrs["modifiedby"],
-                                                        drawingAttrs["layoutinfo"] == null ? string.Empty : drawingAttrs["layoutinfo"]
-                                                        );
+                                                    //    childrens,
+                                                    //    "0",
+                                                    //     drawingAttrs["projectname"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectname"]),
+                                                    //      drawingAttrs["projectid"] == null ? string.Empty : Convert.ToString(drawingAttrs["projectid"]),
+                                                    //    Layouts, "", "", "",
+                                                    //    drawingAttrs["candelete"] == null ? string.Empty : drawingAttrs["candelete"],
+                                                    //    drawingAttrs["isowner"] == null ? string.Empty : drawingAttrs["isowner"],
+                                                    //    drawingAttrs["hasviewpermission"] == null ? string.Empty : drawingAttrs["hasviewpermission"],
+                                                    //    drawingAttrs["isactfilelatest"] == null ? string.Empty : drawingAttrs["isactfilelatest"],
+                                                    //    drawingAttrs["iseditable"] == null ? string.Empty : drawingAttrs["iseditable"],
+                                                    //    drawingAttrs["caneditstatus"] == null ? string.Empty : drawingAttrs["caneditstatus"],
+                                                    //    drawingAttrs["hasstatusclosed"] == null ? string.Empty : drawingAttrs["hasstatusclosed"],
+                                                    //    drawingAttrs["isletest"] == null ? string.Empty : drawingAttrs["isletest"],
+                                                    //    drawingAttrs["projectno"] == null ? string.Empty : drawingAttrs["projectno"],
+                                                    //    drawingAttrs["prefix"] == null ? string.Empty : drawingAttrs["prefix"],
+                                                    //    drawingAttrs["createdby"] == null ? string.Empty : drawingAttrs["createdby"],
+                                                    //    drawingAttrs["modifiedby"] == null ? string.Empty : drawingAttrs["modifiedby"],
+                                                    //    drawingAttrs["layoutinfo"] == null ? string.Empty : drawingAttrs["layoutinfo"]
+                                                    //    );
 
 
                                                 }
 
                                                 else
-                                                    dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
-                                                        childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+                                                {
+                                                    DataRow dr = dtTreeGrid.NewRow();
+                                                    dr["DrawingName"] = xgn.Name;
+                                                    dr["filepath"] = xgn.Database.Filename.ToString();
+                                                    dr["sourceid"] = childrens;
+                                                    dr["isroot"] = "0";
+                                                    dr["Layouts"] = Layouts.ToString();
+                                                    dtTreeGrid.Rows.Add(dr);
+
+                                                    //dtTreeGrid.Rows.Add(xgn.Name, "", "", "", "", "", xgn.Database.Filename.ToString(), "", "", "",
+                                                    //   childrens, "0", "", "", Layouts, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+                                                }
+                                                   
                                             }
                                             tr.Commit();
                                         }

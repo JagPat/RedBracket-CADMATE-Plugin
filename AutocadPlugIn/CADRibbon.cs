@@ -3,9 +3,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
-using Autodesk.Windows;
-using CADController.Commands;
-using CADController.Controllers;
+using Autodesk.Windows; 
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -340,9 +338,9 @@ namespace AutocadPlugIn
             // find version of file in RB and assign 
 
             //Checking if file is in redbracket or not;
-            RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
+             RBConnector objRBC = new  RBConnector();
 
-            RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
+             ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
             //        public RibbonLabel lblCurrentFileVersion = new RibbonLabel();
             //public RibbonLabel lblCurrentFileVersionRB = new RibbonLabel();
             //public RibbonLabel txtCurrentFileVersion = new RibbonLabel();
@@ -377,7 +375,7 @@ namespace AutocadPlugIn
                 timerVersion.Tick += new System.EventHandler(timerVersion_Tick);
                 timerVersion.Interval = 1000;
                 timerVersion.Start();
-                RedBracketConnector.Helper.IsEventAssign = true;
+                AutocadPlugIn.Helper.IsEventAssign = true;
             }
             //if (CurrentVersion != null && LatestVersion != null)
             //{
@@ -408,7 +406,7 @@ namespace AutocadPlugIn
             Btn_Connection.Size = RibbonItemSize.Large;
 
             //if (ArasConnector.ArasConnector.Isconnected == false)
-            CADController.Controllers.ConnectionController connController = new CADController.Controllers.ConnectionController();
+             ConnectionController connController = new  ConnectionController();
             if (!connect)
             {
                 Btn_Connection.Text = "Log-in";
@@ -992,8 +990,8 @@ namespace AutocadPlugIn
         {
             try
             {
-                CADController.Commands.HelpCommand objcmd = new CADController.Commands.HelpCommand();
-                CADController.Controllers.BaseController controller = new CADController.Controllers.HelpController();
+                HelpCommand objcmd = new   HelpCommand();
+                 BaseController controller = new   HelpController();
 
                 String Dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
                 //MessageBox.Show("directory path=" + Dir);
@@ -1338,9 +1336,9 @@ namespace AutocadPlugIn
 
 
                 //Checking if file is in redbracket or not;
-                RedBracketConnector.RBConnector objRBC = new RedBracketConnector.RBConnector();
+                RBConnector objRBC = new  RBConnector();
 
-                RedBracketConnector.ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
+              ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
 
                 //if (Drawing == null)
                 //{
@@ -1349,9 +1347,9 @@ namespace AutocadPlugIn
                 //}
                 if (Convert.ToDateTime(Drawing.updatedon) != Convert.ToDateTime(updatedon))
                 {
-                    if (RedBracketConnector.ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes will be lost.") == DialogResult.Yes)
+                    if ( ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes will be lost.") == DialogResult.Yes)
                     {
-                        string checkoutPath = RedBracketConnector.Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+                        string checkoutPath =  Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
                         string ProjectName = projectnameOnly;
                         if (ProjectName.Trim().Length == 0)
                         {
@@ -1382,7 +1380,7 @@ namespace AutocadPlugIn
                     }
                     Cursor.Current = Cursors.Default;
                     if (parameter != null)
-                        RedBracketConnector.ShowMessage.InfoMess("This file is latest file.");
+                         ShowMessage.InfoMess("This file is latest file.");
                 }
 
             }
@@ -1454,6 +1452,8 @@ namespace AutocadPlugIn
                     //DrawingProperty.Add("isletest", Drawing.isletest);
                     //DrawingProperty.Add("LayoutInfo", LayoutInfos);
                     //DrawingProperty.Add("projectno", Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber);
+
+
 
                     string ProjectNo = Drawing.projectNumber == null ? string.Empty : Drawing.projectNumber;
 

@@ -83,15 +83,15 @@ namespace AutocadPlugIn.UI_Forms
                     }
 
                     lbProjectNoC.Text = Convert.ToString(dtCurrentData[0]["projectno"]);
-                    string T = Convert.ToString(dtCurrentData[0]["FileTypeID"]) == string.Empty ? "---Select---" : Convert.ToString(dtCurrentData[0]["FileTypeID"]);
+                    string T = Convert.ToString(dtCurrentData[0]["Classification"]) == string.Empty ? "---Select---" : Convert.ToString(dtCurrentData[0]["Classification"]);
                     cmbFileTypeC.Tag = cmbFileTypeC.Text = T;
                     cmbFileStatusC.Tag = cmbFileStatusC.Text = Convert.ToString(dtCurrentData[0]["drawingstate"]) == string.Empty ? "---Select---" : Convert.ToString(dtCurrentData[0]["drawingstate"]);
                     lbDrawingIDC.Text = DrawingID = Convert.ToString(dtCurrentData[0]["drawingid"]);
 
-                    lbCreatedByC.Text = Convert.ToString(dtCurrentData[0]["createdby"]);
-                    lbModifiedByC.Text = Convert.ToString(dtCurrentData[0]["modifiedby"]);
+                    lbCreatedByC.Text = Convert.ToString(dtCurrentData[0]["createdby"]) + " (" + Convert.ToString(dtCurrentData[0]["createdon"]) + ")";
+                    lbModifiedByC.Text = Convert.ToString(dtCurrentData[0]["modifiedby"]) + " (" + Convert.ToString(dtCurrentData[0]["modifiedon"]) + ")";
 
-                    lbModifiedByC.Text = Convert.ToString(dtCurrentData[0]["modifiedby"]);
+                
 
                     string LayoutInfo1 = Convert.ToString(dtCurrentData[0]["layoutinfo"]);
                     if (LayoutInfo1.Trim().Length > 0)
@@ -212,8 +212,8 @@ namespace AutocadPlugIn.UI_Forms
                     lbFileStatusL.Text = Convert.ToString(objRSC.status == null ? string.Empty : objRSC.status.statusname == null ? string.Empty : objRSC.status.statusname);
                     lbDrawingIDL.Text = DrawingID = Convert.ToString(objRSC.id);
 
-                    lbCreatedByL.Text = Convert.ToString(objRSC.createdby);
-                    lbModifiedByL.Text = Convert.ToString(objRSC.updatedby);
+                    lbCreatedByL.Text = Convert.ToString(objRSC.createdby) + " (" + objRSC.updatedon + ")";
+                    lbModifiedByL.Text = Convert.ToString(objRSC.updatedby) + " (" + objRSC.updatedon + ")";
                     if (Convert.ToBoolean(objRSC.filelock))
                     {
                         lblLockedByL.Text = Convert.ToString(objRSC.updatedby);
@@ -542,7 +542,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     cadManager.UpdateFileProperties(DrawingID, FilePath);
                 }
-                   
+
                 cmbFileTypeC_SelectedValueChanged(null, null);
             }
             catch (Exception E)
