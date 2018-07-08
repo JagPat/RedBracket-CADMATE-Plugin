@@ -63,7 +63,7 @@ namespace AutocadPlugIn.UI_Forms
                     }
 
                     if (FolderPath.Length > 0)
-                        lblParentFolder.Text = Path.GetDirectoryName(FolderPath);
+                        lblParentFolder.Text = Path.GetDirectoryName(FolderPath)+@"\";
 
                     lblSelectedPath.Text = FolderPath;
 
@@ -158,11 +158,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 if (Convert.ToDecimal(FolderID) > 0 || Convert.ToDecimal(FolderID) == -2)
                 {
-                    objFolderSearchResult = objRBC.SearchFolder(ProjectID, FolderID);
-
-
-
-
+                    objFolderSearchResult = objRBC.SearchFolder(ProjectID, FolderID); 
                 }
                 else
                 {
@@ -184,12 +180,12 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         if (Convert.ToDecimal(FolderID) > 0 || Convert.ToDecimal(FolderID) == -2)
                         {
-                            lblParentFolder.Text = lblParentFolder.Text + Convert.ToString(dgvFolderSelection.Rows[e.RowIndex].Cells["FolderName"].Value) + "/";
+                            lblParentFolder.Text = lblParentFolder.Text + Convert.ToString(dgvFolderSelection.Rows[e.RowIndex].Cells["FolderName"].Value) + @"\";
                         }
                         else
                         {
-                            lblParentFolder.Text = lblParentFolder.Text.Substring(0, lblParentFolder.Text.LastIndexOf('/'));
-                            lblParentFolder.Text = lblParentFolder.Text.Substring(0, lblParentFolder.Text.LastIndexOf('/') > 0 ? lblParentFolder.Text.LastIndexOf('/') + 1 : 0);
+                            lblParentFolder.Text = lblParentFolder.Text.Substring(0, lblParentFolder.Text.LastIndexOf(@"\"));
+                            lblParentFolder.Text = lblParentFolder.Text.Substring(0, lblParentFolder.Text.LastIndexOf(@"\") > 0 ? lblParentFolder.Text.LastIndexOf(@"\") + 1 : 0);
                         }
                         dgvFolderSelection.Rows.Clear();
                         //if (Convert.ToDecimal(FolderID) > 0)

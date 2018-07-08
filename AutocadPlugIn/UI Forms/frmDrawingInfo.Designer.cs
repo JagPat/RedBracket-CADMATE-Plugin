@@ -32,16 +32,16 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
+            this.DrawingName = new System.Windows.Forms.Label();
+            this.DrawingNo = new System.Windows.Forms.Label();
+            this.Version = new System.Windows.Forms.Label();
+            this.ProjectName = new System.Windows.Forms.Label();
+            this.FileType = new System.Windows.Forms.Label();
+            this.ProjectNo = new System.Windows.Forms.Label();
+            this.FileStatus = new System.Windows.Forms.Label();
+            this.DrawingID = new System.Windows.Forms.Label();
+            this.CreatedBy = new System.Windows.Forms.Label();
+            this.ModifiedBy = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
@@ -92,9 +92,9 @@
             this.cmbLayoutTypeC2 = new System.Windows.Forms.ComboBox();
             this.cmbLayoutStatusC2 = new System.Windows.Forms.ComboBox();
             this.lbLayoutTypeL2 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.lblLockedByC = new System.Windows.Forms.Label();
-            this.lblLockedByL = new System.Windows.Forms.Label();
+            this.LockedBy = new System.Windows.Forms.Label();
+            this.lbLockedByC = new System.Windows.Forms.Label();
+            this.lbLockedByL = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
@@ -123,16 +123,16 @@
             this.tlpMain.Controls.Add(this.label1, 0, 0);
             this.tlpMain.Controls.Add(this.label2, 1, 0);
             this.tlpMain.Controls.Add(this.label3, 2, 0);
-            this.tlpMain.Controls.Add(this.label4, 0, 1);
-            this.tlpMain.Controls.Add(this.label5, 0, 2);
-            this.tlpMain.Controls.Add(this.label6, 0, 3);
-            this.tlpMain.Controls.Add(this.label7, 0, 4);
-            this.tlpMain.Controls.Add(this.label8, 0, 6);
-            this.tlpMain.Controls.Add(this.label9, 0, 5);
-            this.tlpMain.Controls.Add(this.label10, 0, 7);
-            this.tlpMain.Controls.Add(this.label11, 0, 8);
-            this.tlpMain.Controls.Add(this.label12, 0, 9);
-            this.tlpMain.Controls.Add(this.label13, 0, 10);
+            this.tlpMain.Controls.Add(this.DrawingName, 0, 1);
+            this.tlpMain.Controls.Add(this.DrawingNo, 0, 2);
+            this.tlpMain.Controls.Add(this.Version, 0, 3);
+            this.tlpMain.Controls.Add(this.ProjectName, 0, 4);
+            this.tlpMain.Controls.Add(this.FileType, 0, 6);
+            this.tlpMain.Controls.Add(this.ProjectNo, 0, 5);
+            this.tlpMain.Controls.Add(this.FileStatus, 0, 7);
+            this.tlpMain.Controls.Add(this.DrawingID, 0, 8);
+            this.tlpMain.Controls.Add(this.CreatedBy, 0, 9);
+            this.tlpMain.Controls.Add(this.ModifiedBy, 0, 10);
             this.tlpMain.Controls.Add(this.label14, 0, 13);
             this.tlpMain.Controls.Add(this.label15, 0, 14);
             this.tlpMain.Controls.Add(this.label16, 0, 15);
@@ -183,9 +183,9 @@
             this.tlpMain.Controls.Add(this.cmbLayoutTypeC2, 1, 23);
             this.tlpMain.Controls.Add(this.cmbLayoutStatusC2, 1, 22);
             this.tlpMain.Controls.Add(this.lbLayoutTypeL2, 2, 23);
-            this.tlpMain.Controls.Add(this.label23, 0, 11);
-            this.tlpMain.Controls.Add(this.lblLockedByC, 1, 11);
-            this.tlpMain.Controls.Add(this.lblLockedByL, 2, 11);
+            this.tlpMain.Controls.Add(this.LockedBy, 0, 11);
+            this.tlpMain.Controls.Add(this.lbLockedByC, 1, 11);
+            this.tlpMain.Controls.Add(this.lbLockedByL, 2, 11);
             this.tlpMain.Controls.Add(this.panel1, 0, 12);
             this.tlpMain.Controls.Add(this.panel2, 0, 18);
             this.tlpMain.Controls.Add(this.panel3, 0, 24);
@@ -255,125 +255,125 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "Latest File on RB";
             // 
-            // label4
+            // DrawingName
             // 
-            this.label4.AutoSize = true;
-            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label4.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(4, 25);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(123, 23);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Drawing Name";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.DrawingName.AutoSize = true;
+            this.DrawingName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DrawingName.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DrawingName.Location = new System.Drawing.Point(4, 25);
+            this.DrawingName.Name = "DrawingName";
+            this.DrawingName.Size = new System.Drawing.Size(123, 23);
+            this.DrawingName.TabIndex = 1;
+            this.DrawingName.Text = "Drawing Name";
+            this.DrawingName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label5
+            // DrawingNo
             // 
-            this.label5.AutoSize = true;
-            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label5.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(4, 49);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(123, 23);
-            this.label5.TabIndex = 1;
-            this.label5.Text = "Drawing No";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.DrawingNo.AutoSize = true;
+            this.DrawingNo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DrawingNo.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DrawingNo.Location = new System.Drawing.Point(4, 49);
+            this.DrawingNo.Name = "DrawingNo";
+            this.DrawingNo.Size = new System.Drawing.Size(123, 23);
+            this.DrawingNo.TabIndex = 1;
+            this.DrawingNo.Text = "Drawing No";
+            this.DrawingNo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label6
+            // Version
             // 
-            this.label6.AutoSize = true;
-            this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label6.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(4, 73);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(123, 23);
-            this.label6.TabIndex = 1;
-            this.label6.Text = "Version";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.Version.AutoSize = true;
+            this.Version.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Version.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Version.Location = new System.Drawing.Point(4, 73);
+            this.Version.Name = "Version";
+            this.Version.Size = new System.Drawing.Size(123, 23);
+            this.Version.TabIndex = 1;
+            this.Version.Text = "Version";
+            this.Version.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label7
+            // ProjectName
             // 
-            this.label7.AutoSize = true;
-            this.label7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label7.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(4, 97);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(123, 23);
-            this.label7.TabIndex = 1;
-            this.label7.Text = "Project Name";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ProjectName.AutoSize = true;
+            this.ProjectName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProjectName.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProjectName.Location = new System.Drawing.Point(4, 97);
+            this.ProjectName.Name = "ProjectName";
+            this.ProjectName.Size = new System.Drawing.Size(123, 23);
+            this.ProjectName.TabIndex = 1;
+            this.ProjectName.Text = "Project Name";
+            this.ProjectName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label8
+            // FileType
             // 
-            this.label8.AutoSize = true;
-            this.label8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label8.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(4, 145);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(123, 23);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "Type";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.FileType.AutoSize = true;
+            this.FileType.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FileType.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FileType.Location = new System.Drawing.Point(4, 145);
+            this.FileType.Name = "FileType";
+            this.FileType.Size = new System.Drawing.Size(123, 23);
+            this.FileType.TabIndex = 1;
+            this.FileType.Text = "Type";
+            this.FileType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label9
+            // ProjectNo
             // 
-            this.label9.AutoSize = true;
-            this.label9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label9.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(4, 121);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(123, 23);
-            this.label9.TabIndex = 1;
-            this.label9.Text = "Project No";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ProjectNo.AutoSize = true;
+            this.ProjectNo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProjectNo.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProjectNo.Location = new System.Drawing.Point(4, 121);
+            this.ProjectNo.Name = "ProjectNo";
+            this.ProjectNo.Size = new System.Drawing.Size(123, 23);
+            this.ProjectNo.TabIndex = 1;
+            this.ProjectNo.Text = "Project No";
+            this.ProjectNo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label10
+            // FileStatus
             // 
-            this.label10.AutoSize = true;
-            this.label10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label10.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(4, 169);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(123, 23);
-            this.label10.TabIndex = 1;
-            this.label10.Text = "Status";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.FileStatus.AutoSize = true;
+            this.FileStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FileStatus.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FileStatus.Location = new System.Drawing.Point(4, 169);
+            this.FileStatus.Name = "FileStatus";
+            this.FileStatus.Size = new System.Drawing.Size(123, 23);
+            this.FileStatus.TabIndex = 1;
+            this.FileStatus.Text = "Status";
+            this.FileStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label11
+            // DrawingID
             // 
-            this.label11.AutoSize = true;
-            this.label11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label11.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(4, 193);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(123, 23);
-            this.label11.TabIndex = 1;
-            this.label11.Text = "Drawing ID";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.DrawingID.AutoSize = true;
+            this.DrawingID.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DrawingID.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DrawingID.Location = new System.Drawing.Point(4, 193);
+            this.DrawingID.Name = "DrawingID";
+            this.DrawingID.Size = new System.Drawing.Size(123, 23);
+            this.DrawingID.TabIndex = 1;
+            this.DrawingID.Text = "Drawing ID";
+            this.DrawingID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label12
+            // CreatedBy
             // 
-            this.label12.AutoSize = true;
-            this.label12.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label12.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(4, 217);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(123, 23);
-            this.label12.TabIndex = 1;
-            this.label12.Text = "Created By";
-            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.CreatedBy.AutoSize = true;
+            this.CreatedBy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CreatedBy.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CreatedBy.Location = new System.Drawing.Point(4, 217);
+            this.CreatedBy.Name = "CreatedBy";
+            this.CreatedBy.Size = new System.Drawing.Size(123, 23);
+            this.CreatedBy.TabIndex = 1;
+            this.CreatedBy.Text = "Created By";
+            this.CreatedBy.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label13
+            // ModifiedBy
             // 
-            this.label13.AutoSize = true;
-            this.label13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label13.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(4, 241);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(123, 23);
-            this.label13.TabIndex = 1;
-            this.label13.Text = "Modified By";
-            this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ModifiedBy.AutoSize = true;
+            this.ModifiedBy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ModifiedBy.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ModifiedBy.Location = new System.Drawing.Point(4, 241);
+            this.ModifiedBy.Name = "ModifiedBy";
+            this.ModifiedBy.Size = new System.Drawing.Size(123, 23);
+            this.ModifiedBy.TabIndex = 1;
+            this.ModifiedBy.Text = "Modified By";
+            this.ModifiedBy.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label14
             // 
@@ -943,39 +943,39 @@
             this.lbLayoutTypeL2.TabIndex = 2;
             this.lbLayoutTypeL2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label23
+            // LockedBy
             // 
-            this.label23.AutoSize = true;
-            this.label23.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label23.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label23.Location = new System.Drawing.Point(4, 265);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(123, 23);
-            this.label23.TabIndex = 1;
-            this.label23.Text = "Locked By";
-            this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LockedBy.AutoSize = true;
+            this.LockedBy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LockedBy.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LockedBy.Location = new System.Drawing.Point(4, 265);
+            this.LockedBy.Name = "LockedBy";
+            this.LockedBy.Size = new System.Drawing.Size(123, 23);
+            this.LockedBy.TabIndex = 1;
+            this.LockedBy.Text = "Locked By";
+            this.LockedBy.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblLockedByC
+            // lbLockedByC
             // 
-            this.lblLockedByC.AutoSize = true;
-            this.lblLockedByC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblLockedByC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLockedByC.Location = new System.Drawing.Point(134, 265);
-            this.lblLockedByC.Name = "lblLockedByC";
-            this.lblLockedByC.Size = new System.Drawing.Size(281, 23);
-            this.lblLockedByC.TabIndex = 2;
-            this.lblLockedByC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbLockedByC.AutoSize = true;
+            this.lbLockedByC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbLockedByC.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLockedByC.Location = new System.Drawing.Point(134, 265);
+            this.lbLockedByC.Name = "lbLockedByC";
+            this.lbLockedByC.Size = new System.Drawing.Size(281, 23);
+            this.lbLockedByC.TabIndex = 2;
+            this.lbLockedByC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblLockedByL
+            // lbLockedByL
             // 
-            this.lblLockedByL.AutoSize = true;
-            this.lblLockedByL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblLockedByL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLockedByL.Location = new System.Drawing.Point(422, 265);
-            this.lblLockedByL.Name = "lblLockedByL";
-            this.lblLockedByL.Size = new System.Drawing.Size(282, 23);
-            this.lblLockedByL.TabIndex = 2;
-            this.lblLockedByL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbLockedByL.AutoSize = true;
+            this.lbLockedByL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbLockedByL.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLockedByL.Location = new System.Drawing.Point(422, 265);
+            this.lbLockedByL.Name = "lbLockedByL";
+            this.lbLockedByL.Size = new System.Drawing.Size(282, 23);
+            this.lbLockedByL.TabIndex = 2;
+            this.lbLockedByL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // panel1
             // 
@@ -1132,16 +1132,16 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label DrawingName;
+        private System.Windows.Forms.Label DrawingNo;
+        private System.Windows.Forms.Label Version;
+        private System.Windows.Forms.Label ProjectName;
+        private System.Windows.Forms.Label FileType;
+        private System.Windows.Forms.Label ProjectNo;
+        private System.Windows.Forms.Label FileStatus;
+        private System.Windows.Forms.Label DrawingID;
+        private System.Windows.Forms.Label CreatedBy;
+        private System.Windows.Forms.Label ModifiedBy;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
@@ -1193,9 +1193,9 @@
         private System.Windows.Forms.ComboBox cmbLayoutStatusC2;
         private System.Windows.Forms.Label lbLayoutTypeL2;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.Label lblLockedByC;
-        private System.Windows.Forms.Label lblLockedByL;
+        private System.Windows.Forms.Label LockedBy;
+        private System.Windows.Forms.Label lbLockedByC;
+        private System.Windows.Forms.Label lbLockedByL;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;

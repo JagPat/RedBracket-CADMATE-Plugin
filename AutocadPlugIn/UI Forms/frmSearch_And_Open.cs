@@ -490,7 +490,7 @@ namespace AutocadPlugIn.UI_Forms
                 Helper.IncrementProgressBar(1, "Locking files.");
                 objRBC.LockObject(pLMObjects);
 
-                Helper.IncrementProgressBar(PBValue, "");
+                Helper.IncrementProgressBar(PBValue, "Finishing Download.");
                 CADRibbon ribbon = new CADRibbon();
                 ribbon.browseDEnable = true;
                 ribbon.createDEnable = true;

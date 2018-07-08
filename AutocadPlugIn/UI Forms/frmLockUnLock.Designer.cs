@@ -30,21 +30,9 @@ namespace AutocadPlugIn.UI_Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.CancelBtn = new System.Windows.Forms.Button();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.UnLockTree = new AdvancedDataGridView.TreeGridView();
-            this.Expand = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlTop = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.pnlLeft = new System.Windows.Forms.Panel();
-            this.pnlBottom = new System.Windows.Forms.Panel();
-            this.pnlRight = new System.Windows.Forms.Panel();
             this.Check = new System.Windows.Forms.DataGridViewButtonColumn();
             this.DrawingName = new AdvancedDataGridView.TreeGridColumn();
             this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -55,23 +43,23 @@ namespace AutocadPlugIn.UI_Forms
             this.DrawingID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LockStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LockedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Expand = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlTop = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.pnlLeft = new System.Windows.Forms.Panel();
+            this.pnlBottom = new System.Windows.Forms.Panel();
+            this.pnlRight = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.CancelBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.UnLockTree)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.pnlTop.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // CancelBtn
-            // 
-            this.CancelBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CancelBtn.Location = new System.Drawing.Point(798, 3);
-            this.CancelBtn.Name = "CancelBtn";
-            this.CancelBtn.Size = new System.Drawing.Size(170, 33);
-            this.CancelBtn.TabIndex = 2;
-            this.CancelBtn.Text = "Cancel";
-            this.CancelBtn.UseVisualStyleBackColor = true;
-            this.CancelBtn.Click += new System.EventHandler(this.CancelBtn_Click);
             // 
             // UnLockTree
             // 
@@ -81,14 +69,6 @@ namespace AutocadPlugIn.UI_Forms
             this.UnLockTree.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.UnLockTree.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.UnLockTree.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.UnLockTree.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.UnLockTree.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Check,
             this.DrawingName,
@@ -106,12 +86,113 @@ namespace AutocadPlugIn.UI_Forms
             this.UnLockTree.Location = new System.Drawing.Point(3, 3);
             this.UnLockTree.Name = "UnLockTree";
             this.UnLockTree.RowHeadersVisible = false;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.UnLockTree.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.UnLockTree.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.UnLockTree.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.UnLockTree.Size = new System.Drawing.Size(971, 351);
             this.UnLockTree.TabIndex = 3;
             this.UnLockTree.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.UnLockTree_CellContentClick);
+            // 
+            // Check
+            // 
+            this.Check.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Check.FillWeight = 51.53443F;
+            this.Check.HeaderText = "";
+            this.Check.MinimumWidth = 25;
+            this.Check.Name = "Check";
+            this.Check.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // DrawingName
+            // 
+            this.DrawingName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle1;
+            this.DrawingName.DefaultNodeImage = null;
+            this.DrawingName.FillWeight = 186.9562F;
+            this.DrawingName.HeaderText = "Drawing";
+            this.DrawingName.Name = "DrawingName";
+            this.DrawingName.ReadOnly = true;
+            this.DrawingName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DrawingName.Width = 200;
+            // 
+            // DrawingNumber
+            // 
+            this.DrawingNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.DrawingNumber.HeaderText = "Drawing Number";
+            this.DrawingNumber.Name = "DrawingNumber";
+            this.DrawingNumber.ReadOnly = true;
+            this.DrawingNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DrawingNumber.Width = 110;
+            // 
+            // CADType
+            // 
+            this.CADType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.CADType.FillWeight = 150F;
+            this.CADType.HeaderText = "Type";
+            this.CADType.Name = "CADType";
+            this.CADType.ReadOnly = true;
+            this.CADType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CADType.Width = 120;
+            // 
+            // State
+            // 
+            this.State.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.State.HeaderText = "State";
+            this.State.Name = "State";
+            this.State.ReadOnly = true;
+            this.State.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.State.Width = 120;
+            // 
+            // Revision
+            // 
+            this.Revision.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Revision.FillWeight = 50F;
+            this.Revision.HeaderText = "Revision";
+            this.Revision.Name = "Revision";
+            this.Revision.ReadOnly = true;
+            this.Revision.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Revision.Width = 61;
+            // 
+            // ProjectName
+            // 
+            this.ProjectName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.ProjectName.HeaderText = "Project Name";
+            this.ProjectName.Name = "ProjectName";
+            this.ProjectName.ReadOnly = true;
+            this.ProjectName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.ProjectName.Width = 150;
+            // 
+            // DrawingID
+            // 
+            this.DrawingID.FillWeight = 50F;
+            this.DrawingID.HeaderText = "DrawingID";
+            this.DrawingID.Name = "DrawingID";
+            this.DrawingID.ReadOnly = true;
+            this.DrawingID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DrawingID.Visible = false;
+            // 
+            // LockStatus
+            // 
+            this.LockStatus.FillWeight = 50F;
+            this.LockStatus.HeaderText = "LockStatus";
+            this.LockStatus.Name = "LockStatus";
+            this.LockStatus.ReadOnly = true;
+            this.LockStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.LockStatus.Visible = false;
+            // 
+            // LockedBy
+            // 
+            this.LockedBy.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.LockedBy.HeaderText = "Locked By";
+            this.LockedBy.Name = "LockedBy";
+            this.LockedBy.ReadOnly = true;
+            this.LockedBy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Expand
             // 
@@ -139,22 +220,6 @@ namespace AutocadPlugIn.UI_Forms
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.13537F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(977, 402);
             this.tableLayoutPanel1.TabIndex = 4;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 4;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
-            this.tableLayoutPanel2.Controls.Add(this.CancelBtn, 3, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 360);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(971, 39);
-            this.tableLayoutPanel2.TabIndex = 4;
             // 
             // tableLayoutPanel3
             // 
@@ -232,106 +297,32 @@ namespace AutocadPlugIn.UI_Forms
             this.pnlRight.Size = new System.Drawing.Size(10, 408);
             this.pnlRight.TabIndex = 0;
             // 
-            // Check
+            // tableLayoutPanel2
             // 
-            this.Check.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Check.FillWeight = 51.53443F;
-            this.Check.HeaderText = "";
-            this.Check.MinimumWidth = 25;
-            this.Check.Name = "Check";
-            this.Check.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 176F));
+            this.tableLayoutPanel2.Controls.Add(this.CancelBtn, 3, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 360);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(971, 39);
+            this.tableLayoutPanel2.TabIndex = 4;
             // 
-            // DrawingName
+            // CancelBtn
             // 
-            this.DrawingName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle2;
-            this.DrawingName.DefaultNodeImage = null;
-            this.DrawingName.FillWeight = 186.9562F;
-            this.DrawingName.HeaderText = "Drawing";
-            this.DrawingName.Name = "DrawingName";
-            this.DrawingName.ReadOnly = true;
-            this.DrawingName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DrawingName.Width = 200;
-            // 
-            // DrawingNumber
-            // 
-            this.DrawingNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.DrawingNumber.HeaderText = "Drawing Number";
-            this.DrawingNumber.Name = "DrawingNumber";
-            this.DrawingNumber.ReadOnly = true;
-            this.DrawingNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DrawingNumber.Width = 110;
-            // 
-            // CADType
-            // 
-            this.CADType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.CADType.FillWeight = 150F;
-            this.CADType.HeaderText = "Type";
-            this.CADType.Name = "CADType";
-            this.CADType.ReadOnly = true;
-            this.CADType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.CADType.Width = 120;
-            // 
-            // State
-            // 
-            this.State.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.State.HeaderText = "State";
-            this.State.Name = "State";
-            this.State.ReadOnly = true;
-            this.State.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.State.Width = 120;
-            // 
-            // Revision
-            // 
-            this.Revision.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Revision.FillWeight = 50F;
-            this.Revision.HeaderText = "Revision";
-            this.Revision.Name = "Revision";
-            this.Revision.ReadOnly = true;
-            this.Revision.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Revision.Width = 69;
-            // 
-            // ProjectName
-            // 
-            this.ProjectName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.ProjectName.HeaderText = "Project Name";
-            this.ProjectName.Name = "ProjectName";
-            this.ProjectName.ReadOnly = true;
-            this.ProjectName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ProjectName.Width = 150;
-            // 
-            // DrawingID
-            // 
-            this.DrawingID.FillWeight = 50F;
-            this.DrawingID.HeaderText = "DrawingID";
-            this.DrawingID.Name = "DrawingID";
-            this.DrawingID.ReadOnly = true;
-            this.DrawingID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DrawingID.Visible = false;
-            // 
-            // LockStatus
-            // 
-            this.LockStatus.FillWeight = 50F;
-            this.LockStatus.HeaderText = "LockStatus";
-            this.LockStatus.Name = "LockStatus";
-            this.LockStatus.ReadOnly = true;
-            this.LockStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.LockStatus.Visible = false;
-            // 
-            // LockedBy
-            // 
-            this.LockedBy.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.LockedBy.HeaderText = "Locked By";
-            this.LockedBy.Name = "LockedBy";
-            this.LockedBy.ReadOnly = true;
-            this.LockedBy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CancelBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CancelBtn.Location = new System.Drawing.Point(798, 3);
+            this.CancelBtn.Name = "CancelBtn";
+            this.CancelBtn.Size = new System.Drawing.Size(170, 33);
+            this.CancelBtn.TabIndex = 2;
+            this.CancelBtn.Text = "Cancel";
+            this.CancelBtn.UseVisualStyleBackColor = true;
+            this.CancelBtn.Click += new System.EventHandler(this.CancelBtn_Click);
             // 
             // frmLockUnLock
             // 
@@ -347,10 +338,10 @@ namespace AutocadPlugIn.UI_Forms
             this.Load += new System.EventHandler(this.UnLock_Load);
             ((System.ComponentModel.ISupportInitialize)(this.UnLockTree)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

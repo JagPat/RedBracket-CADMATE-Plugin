@@ -3,14 +3,14 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
-using Autodesk.Windows; 
+using Autodesk.Windows;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
- 
+
 namespace AutocadPlugIn
 {
     public class CADRibbon
@@ -58,6 +58,7 @@ namespace AutocadPlugIn
         public RibbonButton Btn_Lock = new RibbonButton();
         public RibbonButton Btn_Unlock = new RibbonButton();
         public RibbonButton Btn_Save = new RibbonButton();
+        public RibbonButton Btn_SaveAS = new RibbonButton();
 
         public RibbonPanel panel5 = new RibbonPanel();
         public RibbonPanelSource panel5Panel = new RibbonPanelSource();
@@ -208,14 +209,14 @@ namespace AutocadPlugIn
                 Cursor.Current = Cursors.WaitCursor;
                 e.Document.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
                 CADRibbon objcr = new CADRibbon();
-                
+
                 objcr.MyRibbon();
                 if (Helper.CurrentVersion != Helper.LatestVersion)
                 {
                     Refresh objrfs = new Refresh();
                     objrfs.Execute(null);
                 }
-                
+
                 Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
                 Cursor.Current = Cursors.Default;
             }
@@ -247,7 +248,7 @@ namespace AutocadPlugIn
             try
             {
                 var dbsi = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.SummaryInfo.CustomProperties;
-                string FilePath = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.Filename;
+
                 while (dbsi.MoveNext())
                 {
                     if (Convert.ToString(dbsi.Key) == "drawingid")
@@ -266,36 +267,22 @@ namespace AutocadPlugIn
 
 
                 // objcr.txtCurrentFileVersion.Tag = objcr.txtCurrentFileVersion.Text = Rev;
+
+                if (drawingid.Trim().Length == 0)
+                {
+                    //write code to hide current drawing information panel.
+                    Helper.CurrentVersion = "";
+                    Helper.LatestVersion = "";
+                    return;
+                }
+
+                Helper.CurrentVersion = CurrentVersion = Helper.VerTextAdjustment(Rev);
+                Helper.LatestVersion = LatestVersion = Helper.GetLatestVersion(DrawingNO);
             }
             catch (System.Exception E)
             {
-
+                ShowMessage.ErrorMess(E.Message);
             }
-            if (drawingid.Trim().Length == 0)
-            {
-                //write code to hide current drawing information panel.
-                Helper.CurrentVersion = "";
-                Helper.LatestVersion = "";
-                return;
-            }
-
-
-            // find version of file in RB and assign 
-
-            //Checking if file is in redbracket or not;
-             RBConnector objRBC = new  RBConnector();
-
-             ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO)); 
-
-            if (Drawing != null)
-            {
-
-                Helper.CurrentVersion = CurrentVersion = Helper.VerTextAdjustment(Rev);
-                Helper.LatestVersion = LatestVersion = Drawing.versionno == null ? string.Empty : Helper.VerTextAdjustment(Drawing.versionno);
-
-
-            } 
-
             Cursor.Current = Cursors.Default;
         }
 
@@ -342,7 +329,7 @@ namespace AutocadPlugIn
             Btn_Connection.Size = RibbonItemSize.Large;
 
             //if (ArasConnector.ArasConnector.Isconnected == false)
-             ConnectionController connController = new  ConnectionController();
+            ConnectionController connController = new ConnectionController();
             if (!connect)
             {
                 Btn_Connection.Text = "Log-in";
@@ -433,6 +420,7 @@ namespace AutocadPlugIn
 
 
             Btn_Save.Text = "Save to redbracket";
+            Btn_Save.Name = "Save";
             Btn_Save.ShowText = true;
             Btn_Save.ShowImage = true;
             Btn_Save.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
@@ -442,8 +430,22 @@ namespace AutocadPlugIn
             Btn_Save.CommandHandler = new Save();
             Btn_Save.IsEnabled = SaveEnable;
 
+            Btn_SaveAS.Text = "Save As New";
+            Btn_Save.Name = "SaveAs";
+            Btn_SaveAS.ShowText = true;
+            Btn_SaveAS.ShowImage = true;
+            Btn_SaveAS.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
+            Btn_SaveAS.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
+            Btn_SaveAS.Size = RibbonItemSize.Large;
+            Btn_SaveAS.Orientation = System.Windows.Controls.Orientation.Vertical;
+            Btn_SaveAS.CommandHandler = new Save();
+            Btn_SaveAS.IsEnabled = SaveEnable;
+
             RibbonRowPanel rrpSave = new RibbonRowPanel();
             rrpSave.Items.Add(Btn_Save);
+
+            RibbonRowPanel rrpSaveAS = new RibbonRowPanel();
+            rrpSaveAS.Items.Add(Btn_SaveAS);
             //rpsSave.Items.Add(rrpSave);
 
             RibbonRowPanel pan4row1 = new RibbonRowPanel();
@@ -453,8 +455,9 @@ namespace AutocadPlugIn
             //panel4Panel.Items.Add(pan4row1);
 
             panel2Panel.Items.Add(rrpSave);
+            panel2Panel.Items.Add(rrpSaveAS);
             panel2Panel.Items.Add(pan4row1);
-            
+
 
             //Drawing Info
             //panel7Panel.Title = "Drawing Info";
@@ -647,8 +650,8 @@ namespace AutocadPlugIn
                         txtCurrentFileVersion.Text = Helper.CurrentVersion;
                     }
                     // MyRibbon();
-                    Btn_Save.IsEnabled = false;
-
+                    //Btn_Save.IsEnabled = false;
+                    Btn_Save.IsEnabled = SaveEnable;
                 }
                 else
                 {
@@ -782,14 +785,18 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
+            bool IsSaveAs = false;
+            RibbonButton btn = (RibbonButton)parameter;
+            if (btn.Name == "SaveAs")
+            {
+                IsSaveAs = true;
+            }
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            //PromptStringOptions pso = new PromptStringOptions("\nEnter path to root drawing file: ");
-            //pso.AllowSpaces = true;
-            // PromptResult pr = ed.GetString(pso);
+         
 
             if (!File.Exists(doc.Name))
             {
@@ -798,7 +805,7 @@ namespace AutocadPlugIn
             }
             try
             {
-                AutocadPlugIn.UI_Forms.frmSave_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.frmSave_Active_Drawings();
+                AutocadPlugIn.UI_Forms.frmSave_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.frmSave_Active_Drawings(IsSaveAs);
                 //Save_Active_Drawings objSave = new Save_Active_Drawings();
                 objSave.ShowDialog();
 
@@ -808,55 +815,7 @@ namespace AutocadPlugIn
                 ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
             }
 
-            /* try
-              {
-              Autodesk.AutoCAD.ApplicationServices.Document objActivedoc = acadApp.DocumentManager.MdiActiveDocument;
-              CADController.Commands.SaveCommand cmdSave = new SaveCommand();
 
-                  CADManger objDocMgr = new CADManger();
-                  SaveCommand objcmd = new SaveCommand();
-                  Hashtable htAttributes = new Hashtable();
-                  BaseController controller = new SaveController();
-
-                  string path = objActivedoc.Name;
-
-                  if (!path.Contains("\\"))
-                  {
-                      System.Windows.MessageBox.Show("Please save document first on local computer.");
-                      return;
-                  }
-
-                  CADManger cadManager = new CADManger();
-                  Hashtable drawingAttrs = new Hashtable();
-                  drawingAttrs = (Hashtable)cadManager.GetAttributes();
-
-
-                  //cmdSave.DrawingInformation.ItemType = drawingAttrs["type"].ToString();
-                  //cmdSave.DrawingInformation.ObjectId = drawingAttrs["documentid"].ToString();
-                  //cmdSave.DrawingInformation.FilePath = path;
-                  //controller.Execute(cmdSave);
-
-                 /* if (htAttributes.Contains(PresentationManager.documentProperties.DocumentId.ToString()))
-                      objDocMgr.UpdateAttributes(controller.htDocumentProperty);
-                  else
-                      objDocMgr.SetAttributes(controller.htDocumentProperty);
-                  SetControl_After_Save();
-                  objDocMgr.CloseDocument(objDocMgr.GetActiveDocument(), false, System.Reflection.Missing.Value, System.Reflection.Missing.Value);
-
-                  MessageBox.Show("Document Saved Successfully");
-
-               */
-            /*  if (controller.errorString != null)
-               {
-                   MessageBox.Show(controller.errorString.ToString());
-                   return;
-               }
-               MessageBox.Show("Document Saved Successfully");
-           }
-           catch (System.Exception ex)
-           {
-               MessageBox.Show("Error is ::" + ex.Message);
-           }*/
         }
     }
 
@@ -926,8 +885,8 @@ namespace AutocadPlugIn
         {
             try
             {
-                HelpCommand objcmd = new   HelpCommand();
-                 BaseController controller = new   HelpController();
+                HelpCommand objcmd = new HelpCommand();
+                BaseController controller = new HelpController();
 
                 String Dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
                 //MessageBox.Show("directory path=" + Dir);
@@ -1242,7 +1201,7 @@ namespace AutocadPlugIn
                         }
                     }
 
-                      
+
                 }
                 catch (System.Exception E)
                 {
@@ -1253,12 +1212,12 @@ namespace AutocadPlugIn
                     Cursor.Current = Cursors.Default;
                     return;
                 }
-                 
+
 
                 //Checking if file is in redbracket or not;
-                RBConnector objRBC = new  RBConnector();
+                RBConnector objRBC = new RBConnector();
 
-              ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
+                ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNO));
 
                 //if (Drawing == null)
                 //{
@@ -1267,9 +1226,9 @@ namespace AutocadPlugIn
                 //}
                 if (Convert.ToDateTime(Drawing.updatedon) != Convert.ToDateTime(updatedon))
                 {
-                    if ( ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes will be lost.") == DialogResult.Yes)
+                    if (ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes will be lost.") == DialogResult.Yes)
                     {
-                        string checkoutPath =  Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
+                        string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
                         string ProjectName = projectnameOnly;
                         if (ProjectName.Trim().Length == 0)
                         {
@@ -1300,7 +1259,7 @@ namespace AutocadPlugIn
                     }
                     Cursor.Current = Cursors.Default;
                     if (parameter != null)
-                         ShowMessage.InfoMess("This file is latest file.");
+                        ShowMessage.InfoMess("This file is latest file.");
                 }
 
             }
@@ -1310,7 +1269,7 @@ namespace AutocadPlugIn
             }
             Cursor.Current = Cursors.Default;
         }
-       
+
 
         public void DownloadOpenDocument(string fileId, string checkoutPath)
         {

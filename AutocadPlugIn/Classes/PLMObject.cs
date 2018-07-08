@@ -253,6 +253,7 @@ namespace AutocadPlugIn
 
         public String LayoutInfo { get; set; }
         public System.Data.DataTable dtLayoutInfo { get; set; }
+        public bool IsNewXref { get; set; }
 
         private List<Relationship> fromRelationships = new List<Relationship>();
         private List<Relationship> toRelationships = new List<Relationship>();

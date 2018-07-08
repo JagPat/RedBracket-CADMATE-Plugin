@@ -10,6 +10,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
+using System.Runtime.InteropServices;
+using System.Management;
 
 namespace AutocadPlugIn
 {
@@ -33,7 +35,8 @@ namespace AutocadPlugIn
         public static RBConnector objRBC = new RBConnector();
         public static AutoCADManager cadManager = new AutoCADManager();
         public static Color clrChildPopupBorderColor = Color.FromArgb(130, 130, 156);
-        public static Color clrParentPopupBorderColor = Color.FromArgb(46, 49, 150);
+        public static Color clrParentPopupBorderColor = Color.FromArgb(46, 49, 50);
+        public static Color clrDiffHighlighColor = Color.FromArgb(255, 180, 180);
 
         public static frmProgressBar objfrmPB = new frmProgressBar();
         public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
@@ -319,7 +322,7 @@ namespace AutocadPlugIn
                 if (dt.Rows.Count > i)
                 {
                     for (int j = 0; j < dt.Columns.Count; j++)
-                    { 
+                    {
                         DrawingProperty.Add(dt.Columns[j].ColumnName, Convert.ToString(dt.Rows[i][j]));
                     }
 
@@ -766,8 +769,9 @@ namespace AutocadPlugIn
                 dtDrawingProperty.Columns.Add("layoutinfo");
                 dtDrawingProperty.Columns.Add("oldprefix");
 
-
-
+                dtDrawingProperty.Columns.Add("folderid");
+                dtDrawingProperty.Columns.Add("folderpath");
+                dtDrawingProperty.Columns.Add("IsNewXref");
 
 
             }
@@ -832,22 +836,22 @@ namespace AutocadPlugIn
             return FileName;
         }
 
-        public static Hashtable DownloadFile(string FileID, string IsRoot = "false")
+        public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false)
         {
 
             Hashtable DrawingProperty = new Hashtable();
-
+            string FilePath = "";
             try
             {
                 ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(FileID);
 
 
-                string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), Drawing.projectname == null || Drawing.projectname == string.Empty ? "My Files" : Drawing.projectname);
+                string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), IsTemp ? "Temp" : Drawing.projectname == null || Drawing.projectname == string.Empty ? "My Files" : Drawing.projectname);
                 DirectoryInfo di = new DirectoryInfo(checkoutPath);
                 di = Directory.Exists(checkoutPath) ? di : Directory.CreateDirectory(checkoutPath);
                 string PreFix = Helper.GetPreFix(Drawing.versionno, Drawing.projectNumber, Drawing.fileNo, Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
 
-                string FilePath = Path.Combine(checkoutPath, PreFix + Drawing.name);
+                FilePath = Path.Combine(checkoutPath, PreFix + Drawing.name);
 
                 if (File.Exists(FilePath))
                 {
@@ -858,6 +862,22 @@ namespace AutocadPlugIn
 
                         return null;
                     }
+                    else
+                    {
+                        if (!IsTemp)
+                        {
+                            if (ShowMessage.InfoYNMess("This file is already in working directory,\n Do you want to replace it ?\n" + FilePath) == DialogResult.Yes)
+                            {
+                                File.Delete(FilePath);
+                            }
+                            else
+                            {
+                                FileRename(FilePath);
+                            }
+                        }
+
+                    }
+
                 }
                 DataTable dtDrawing = FillDrawingPropertiesTable(Drawing, FilePath, IsRoot, PreFix);
 
@@ -871,7 +891,7 @@ namespace AutocadPlugIn
                     binaryWriter.Write(objRBC.GetSingleFileInfo(FileID));
                 }
 
-                if (IsRoot == "true")
+                if (IsRoot == "true" && !IsTemp)
                 {
                     cadManager.OpenActiveDocument(FilePath, "View", DrawingProperty);
                 }
@@ -885,7 +905,38 @@ namespace AutocadPlugIn
             {
                 ShowMessage.ErrorMess(E.Message);
             }
-            return DrawingProperty;
+            return FilePath;
+        }
+        public static bool FileRename(string FilePath, int Count = 1)
+        {
+            try
+            {
+                if (File.Exists(FilePath))
+                {
+                    string Path1 = Directory.GetParent(FilePath).ToString();
+                    string FileName = Path.GetFileNameWithoutExtension(FilePath);
+                    string Ext = Path.GetExtension(FilePath);
+
+                    string NewPath = Path.Combine(Path1, FileName + "(" + Count + ")" + Ext);
+                    if (File.Exists(NewPath))
+                    {
+                        return FileRename(FilePath, ++Count);
+                    }
+                    else
+                    {
+                        File.Move(FilePath, NewPath); return true;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
         }
         public static DataTable FillDrawingPropertiesTable(ResultSearchCriteria Drawing, string FilePath, string IsRoot, String PreFix)
         {
@@ -938,13 +989,15 @@ namespace AutocadPlugIn
                 dr["layoutinfo"] = LayoutInfos;
                 dr["oldprefix"] = PreFix;
 
-
+                dr["folderid"] = Drawing.folderid==null?string.Empty: Drawing.folderid;
+                dr["folderpath"] = Drawing.folderpath == null ? string.Empty : Drawing.folderpath;
+                dr["IsNewXref"] = "";//IsNewXref  not to assign value from here, if ever assign assign fasle.
                 dtDrawing.Rows.Add(dr);
 
             }
             catch (Exception E)
             {
-
+                ShowMessage.ErrorMess(E.Message);
             }
             return dtDrawing;
         }
@@ -982,6 +1035,83 @@ namespace AutocadPlugIn
             return dtDrawingProperties;
         }
 
+        public static string CreateTempFile(string FileName, byte[] RawBytes = null)
+        {
+            string TempFilePath = "";
+            try
+            {
+                DeleteTempFolder();
+                if (RawBytes != null)
+                {
+                    string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), "Temp");
+                    DirectoryInfo di = new DirectoryInfo(checkoutPath);
+                    di = Directory.Exists(checkoutPath) ? di : Directory.CreateDirectory(checkoutPath);
+
+                    TempFilePath = Path.Combine(checkoutPath, "Temp" + FileName);
+
+                    using (var binaryWriter = new BinaryWriter(File.Open(TempFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Delete)))
+                    {
+                        binaryWriter.Write(RawBytes);
+                    }
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return "";
+            }
+            return TempFilePath;
+        }
+        public static string CopyTempFile(string FilePath)
+        {
+            string TempFilePath = "";
+            try
+            {
+                string FileName = Path.GetFileName(FilePath);
+
+
+                string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), "Temp");
+                DirectoryInfo di = new DirectoryInfo(checkoutPath);
+                di = Directory.Exists(checkoutPath) ? di : Directory.CreateDirectory(checkoutPath);
+
+                TempFilePath = Path.Combine(checkoutPath, "Temp" + FileName);
+                File.Delete(TempFilePath);
+                File.Copy(FilePath, TempFilePath);
+
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return "";
+            }
+            return TempFilePath;
+        }
+        public static void DeleteTempFolder()
+        {
+            try
+            {
+
+                string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), "Temp");
+                DirectoryInfo di = new DirectoryInfo(checkoutPath);
+
+
+                if (Directory.Exists(checkoutPath))
+                {
+                    Directory.Delete(checkoutPath);
+                }
+
+
+
+
+            }
+            catch (Exception E)
+            {
+                return;
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
         public static void DownloadOpenDoc(string FileID)
         {
             try
@@ -995,6 +1125,140 @@ namespace AutocadPlugIn
             {
                 ShowMessage.ErrorMess(E.Message);
             }
+        }
+
+        public static Stack<List<clsFolderSearchReasult>> CopyStack(Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult)
+        {
+            Stack<List<clsFolderSearchReasult>> TStackFolderSearchReasult1 = new Stack<List<clsFolderSearchReasult>>();
+            Stack<List<clsFolderSearchReasult>> TStackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
+            try
+            {
+                int Count = StackFolderSearchReasult.Count;
+
+                for (int i = 0; i < Count; i++)
+                {
+                    List<clsFolderSearchReasult> objFSRL = StackFolderSearchReasult.Pop();
+                    TStackFolderSearchReasult1.Push(objFSRL);
+                }
+                Count = TStackFolderSearchReasult1.Count;
+                for (int i = 0; i < Count; i++)
+                {
+                    List<clsFolderSearchReasult> objFSRL = TStackFolderSearchReasult1.Pop();
+                    TStackFolderSearchReasult.Push(objFSRL);
+                    StackFolderSearchReasult.Push(objFSRL);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return TStackFolderSearchReasult;
+        }
+
+        public static bool FileCompare(string file1, string file2)
+        {
+            int file1byte;
+            int file2byte;
+            FileStream fs1;
+            FileStream fs2;
+
+            try
+            {
+
+                // Determine if the same file was referenced two times.
+                if (file1 == file2)
+                {
+                    // Return true to indicate that the files are the same.
+                    return true;
+                }
+
+                // Open the two files.
+                fs1 = new FileStream(file1, FileMode.Open);
+                fs2 = new FileStream(file2, FileMode.Open);
+
+                // Check the file sizes. If they are not the same, the files 
+                // are not the same.
+                if (fs1.Length != fs2.Length)
+                {
+                    // Close the file
+                    fs1.Close();
+                    fs2.Close();
+
+                    // Return false to indicate files are different
+                    return false;
+                }
+
+                // Read and compare a byte from each file until either a
+                // non-matching set of bytes is found or until the end of
+                // file1 is reached.
+                do
+                {
+                    // Read one byte from each file.
+                    file1byte = fs1.ReadByte();
+                    file2byte = fs2.ReadByte();
+                }
+                while ((file1byte == file2byte) && (file1byte != -1));
+
+                // Close the files.
+                fs1.Close();
+                fs2.Close();
+
+                // Return the success of the comparison. "file1byte" is 
+                // equal to "file2byte" at this point only if the files are 
+                // the same.
+                return ((file1byte - file2byte) == 0);
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return true;
+            }
+        }
+
+        public static long GetFileSizeOnDisk(string file)
+        {
+            FileInfo info = new FileInfo(file);
+            uint dummy, sectorsPerCluster, bytesPerSector;
+            int result = GetDiskFreeSpaceW(info.Directory.Root.FullName, out sectorsPerCluster, out bytesPerSector, out dummy, out dummy);
+            if (result == 0)
+            {
+                return 0;
+            }
+            uint clusterSize = sectorsPerCluster * bytesPerSector;
+            uint hosize;
+            uint losize = GetCompressedFileSizeW(file, out hosize);
+            long size;
+            size = (long)hosize << 32 | losize;
+            return ((size + clusterSize - 1) / clusterSize) * clusterSize;
+        }
+
+        [DllImport("kernel32.dll")]
+        static extern uint GetCompressedFileSizeW([In, MarshalAs(UnmanagedType.LPWStr)] string lpFileName,
+           [Out, MarshalAs(UnmanagedType.U4)] out uint lpFileSizeHigh);
+
+        [DllImport("kernel32.dll", SetLastError = true, PreserveSig = true)]
+        static extern int GetDiskFreeSpaceW([In, MarshalAs(UnmanagedType.LPWStr)] string lpRootPathName,
+           out uint lpSectorsPerCluster, out uint lpBytesPerSector, out uint lpNumberOfFreeClusters,
+           out uint lpTotalNumberOfClusters);
+
+        public static string GetLatestVersion(string DrawingNo)
+        {
+            string VersionNo = "";
+            try
+            {
+                RBConnector objRBC = new RBConnector();
+
+                ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(objRBC.SearchLatestFile(DrawingNo));
+                if (Drawing != null)
+                {
+                    VersionNo = Drawing.versionno == null ? string.Empty : Helper.VerTextAdjustment(Drawing.versionno);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return VersionNo;
         }
     }
 }

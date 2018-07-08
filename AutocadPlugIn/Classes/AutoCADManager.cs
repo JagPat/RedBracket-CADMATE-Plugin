@@ -18,8 +18,8 @@ using Autodesk.AutoCAD.DatabaseServices;
 //using Autodesk.AutoCAD.Geometry;
 using acadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 using System.ComponentModel;
-using System.Data; 
-using Autodesk.AutoCAD.Runtime; 
+using System.Data;
+using Autodesk.AutoCAD.Runtime;
 
 namespace AutocadPlugIn
 {
@@ -74,7 +74,7 @@ namespace AutocadPlugIn
                             Doc.UpgradeDocOpen();
                     }
                 }
-
+                Db.SaveAs(Db.Filename, DwgVersion.Current);
 
 
             }
@@ -133,7 +133,7 @@ namespace AutocadPlugIn
                                             string CDrawingName = Convert.ToString(dtFileInfo.Rows[j]["DrawingName"]);
                                             string PreFix = Convert.ToString(dtFileInfo.Rows[j]["oldprefix"]);
                                             drawingName = Helper.RemovePreFixFromFileName(drawingName, PreFix);
-                                            
+
                                             if (Path.GetFileNameWithoutExtension(Convert.ToString(dtFileInfo.Rows[j]["DrawingName"])) == Path.GetFileNameWithoutExtension(drawingName))
                                             {
                                                 Hashtable ht = Helper.Table2HashTable(dtFileInfo, j);
@@ -157,7 +157,7 @@ namespace AutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                 ShowMessage.ErrorMess(ex.Message);
+                ShowMessage.ErrorMess(ex.Message);
             }
         }
         public void UpdateLayoutAttributeArefFile(Hashtable documentProperties, string FilePath)
@@ -580,15 +580,15 @@ namespace AutocadPlugIn
                 System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
 
 
-           
 
-                System.Data.DataTable dtDrawingProperty = Helper.FillDrawingPropertiesTable(Drawing, FilePath, "1",Convert.ToString( dtFileProperties.Rows[0]["prefix"]));
 
- 
+                System.Data.DataTable dtDrawingProperty = Helper.FillDrawingPropertiesTable(Drawing, FilePath, "1", Convert.ToString(dtFileProperties.Rows[0]["prefix"]));
 
-               
+
+
+
                 SetAttributes(Helper.Table2HashTable(dtDrawingProperty, 0));
-             
+
             }
             catch (System.Exception E)
             {
@@ -647,9 +647,11 @@ namespace AutocadPlugIn
                 }
                 else if (openMode == "View")
                 {
+                    SetAttributesXrefFiles(currentDocumentProperties, fileName);
+                    UpdateLayoutAttributeArefFile(currentDocumentProperties, fileName);
                     acadApp.DocumentManager.Open(fileName, false);
-                    this.SetAttributes(currentDocumentProperties);
-                    UpdateLayoutAttribute(currentDocumentProperties);
+                    //this.SetAttributes(currentDocumentProperties);
+                    //UpdateLayoutAttribute(currentDocumentProperties);
                 }
                 else if (openMode == "Edit")
                 {
@@ -721,20 +723,20 @@ namespace AutocadPlugIn
             }
         }
 
-     
-        
+
+
         public void UpdateExRefPathInfo2(string FilePath, ref List<PLMObject> plmObjs)
         {
             try
             {
-             
+
                 string ParentNewPath = "";
                 bool IsMove = false;
-                
+
                 Database mainDb = new Database(false, true);
                 using (mainDb)
                 {
-                    
+
                     mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                     mainDb.ResolveXrefs(false, false);
                     XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
@@ -744,20 +746,20 @@ namespace AutocadPlugIn
                         GraphNode root = xg.RootNode;
                         string OldChildPath = "";
                         string newpath = "";
-                  
+
                         if (XrefStatus.Unresolved == xgn.XrefStatus)
                         {
-                            
+
                             ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unloaded == xgn.XrefStatus)
                         {
-                            
+
                             ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unreferenced == xgn.XrefStatus)
                         {
-                            
+
                             ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Resolved == xgn.XrefStatus)
@@ -812,9 +814,9 @@ namespace AutocadPlugIn
                                     }
                                 }
 
-                                ProjectName = ProjectName.Replace(" (" + projectNO + ")", "");
+
                                 string FN = Path.GetFileNameWithoutExtension(xgn.Name);
-                               
+
 
                                 string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
 
@@ -837,13 +839,8 @@ namespace AutocadPlugIn
                                 {
 
                                     string PName = Path.GetFileName(FilePath);
-                                    if (PName.Contains(oldPreFix))
-                                    {
-                                        if (PName.Substring(0, oldPreFix.Length) == oldPreFix)
-                                        {
-                                            PName = PName.Substring(oldPreFix.Length);
-                                        }
-                                    }
+                                    PName = Helper.RemovePreFixFromFileName(PName, oldPreFix);
+
 
 
 
@@ -863,14 +860,14 @@ namespace AutocadPlugIn
                                             break;
                                         }
                                     }
-                                     
+
                                     continue;
                                 }
 
 
                                 Transaction tr = xdb.TransactionManager.StartTransaction();
-                              
-                                
+
+
                                 using (tr)
                                 {
                                     BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
@@ -880,16 +877,10 @@ namespace AutocadPlugIn
                                     string originalpath = btr.PathName;
                                     string childname = Path.GetFileName(originalpath);
 
+                                    childname = Helper.RemovePreFixFromFileName(childname, oldPreFix);
 
 
-                                    if (childname.Contains(oldPreFix))
-                                    {
-                                        if (childname.Substring(0, oldPreFix.Length) == oldPreFix)
-                                        {
-                                            childname = childname.Substring(oldPreFix.Length);
-                                        }
-                                    }
-                                     
+
                                     newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
                                     if (File.Exists(OldChildPath))
@@ -899,6 +890,27 @@ namespace AutocadPlugIn
                                     else
                                     {
                                         OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), childname);
+
+                                    }
+                                    if (File.Exists(OldChildPath))
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        
+                                        if (File.Exists(originalpath))
+                                        {
+                                            FileInfo fi = new FileInfo(originalpath);
+                                            string OP = fi.DirectoryName;
+                                            OldChildPath = Path.Combine( OP, childname);
+                                        }
+                                        else
+                                        {
+                                            ShowMessage.ErrorMess("File not found.\n" + originalpath);
+                                            return;
+                                        }
+                                        
 
                                     }
                                     if (File.Exists(OldChildPath) && OldChildPath != newpath)
@@ -917,16 +929,10 @@ namespace AutocadPlugIn
                                     {
                                         string name = Path.GetFileNameWithoutExtension(obj.FilePath);
 
+                                        name = Helper.RemovePreFixFromFileName(name, oldPreFix);
 
-
-                                        if (name.Contains(oldPreFix))
-                                        {
-                                            if (name.Substring(0, oldPreFix.Length) == oldPreFix)
-                                            {
-                                                name = name.Substring(oldPreFix.Length);
-                                            }
-                                        }
-                                        if (name == Path.GetFileNameWithoutExtension(xgn.Name))
+                                        string XrefName =Path.GetFileNameWithoutExtension(Helper.RemovePreFixFromFileName(xgn.Name, oldPreFix));
+                                        if (name == XrefName)
                                         {
                                             obj.FilePath = newpath;
                                             break;
@@ -937,7 +943,7 @@ namespace AutocadPlugIn
                                     btr.PathName = TnewPath;
 
 
-                              
+
                                     tr.Commit();
                                 }
                             }
@@ -973,7 +979,7 @@ namespace AutocadPlugIn
             System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
             dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
 
-             
+
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
@@ -1069,11 +1075,13 @@ namespace AutocadPlugIn
                                                     try
                                                     {
                                                         rootid = rootdrawingAttrs["drawingid"].ToString();
-                                                       
+
 
                                                         dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
 
-                                                         
+                                                        dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["filepath"] = xgn.Name;
+                                                        dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["isroot"] = "true";
+
                                                     }
                                                     catch (System.Exception E)
                                                     {
@@ -1090,7 +1098,7 @@ namespace AutocadPlugIn
                                                     dr["isroot"] = "true";
                                                     dr["Layouts"] = Layouts.ToString();
                                                     dtTreeGrid.Rows.Add(dr);
-                                                   
+
                                                 }
                                             }
                                             else
@@ -1120,8 +1128,15 @@ namespace AutocadPlugIn
                                                     drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
                                                 }
                                                 if (drawingAttrs.Count != 0)
-                                                { 
-                                                    dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs); 
+                                                {
+                                                    dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
+                                                    dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["filepath"] = xgn.Database.Filename; 
+                                                    
+                                                    if(Convert.ToString(dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["isroot"]).ToLower()=="true")
+                                                    {
+                                                        dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["IsNewXref"] = "true";
+                                                    }
+                                                    dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["isroot"] = "false";
                                                 }
 
                                                 else
@@ -1132,10 +1147,10 @@ namespace AutocadPlugIn
                                                     dr["sourceid"] = childrens;
                                                     dr["isroot"] = "false";
                                                     dr["Layouts"] = Layouts.ToString();
+                                                    dr["IsNewXref"] = "true";
                                                     dtTreeGrid.Rows.Add(dr);
- 
                                                 }
-                                                   
+
                                             }
                                             tr.Commit();
                                         }
@@ -1572,7 +1587,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                 
+
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
                 Database db = doc.Database;
@@ -1926,15 +1941,19 @@ namespace AutocadPlugIn
          */
         #endregion "Plot Layout to PDF"
 
-        public bool CheckForCurruntlyOpenDoc(string FilePath)
+        public bool CheckForCurruntlyOpenDoc(string FilePath, bool MakeActive = true)
         {
             try
             {
                 foreach (Document Doc in acadApp.DocumentManager)
                 {
-                    if (Doc.Database.Filename == FilePath)
+                    if (Doc.Database.Filename.ToLower() == FilePath.ToLower())
                     {
-                        acadApp.DocumentManager.MdiActiveDocument = Doc;
+                        if (MakeActive)
+                        {
+                            acadApp.DocumentManager.MdiActiveDocument = Doc;
+                        }
+
                         return true;
                     }
                 }

@@ -58,6 +58,10 @@ namespace AutocadPlugIn.UI_Forms
 
                 foreach (DataRow rw in dtTreeGridData.Rows)
                 {
+                    if (!Helper.cadManager.CheckForCurruntlyOpenDoc(Convert.ToString(rw["filepath"]),false))
+                    {
+                        continue;
+                    }
 
                     if (counter == 0)
                     {

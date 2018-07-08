@@ -9,6 +9,12 @@ namespace AutocadPlugIn
 {
     public class SaveCommand : Command
     {
+        private List<String> _AllDrawing = new List<String>();
+        public List<String> AllDrawing
+        {
+            get { return this._AllDrawing; }
+            set { this._AllDrawing = value; }
+        }
         private List<String> drawingList = new List<String>();
 
         public List<String> Drawings

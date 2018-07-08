@@ -131,7 +131,9 @@ namespace AutocadPlugIn
         public ResultSearchCriteriaType type { set; get; }
 
         public string description { get; set; }
-        
+
+        public string projectno { get; set; }
+
     }
 
     public class SaveResultOwnPermissions

@@ -48,6 +48,7 @@ namespace AutocadPlugIn
                 //{
                 //  return false;
                 //}
+                bool IsParentNew = false;
                 string ParentFileID = "";
                 foreach (PLMObject obj in plmobjs)
                 {
@@ -91,7 +92,7 @@ namespace AutocadPlugIn
 
                             if (obj.FolderID.Trim().Length > 0 && Convert.ToDecimal(obj.FolderID.Trim()) > 0)
                             {
-                                Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
+                                Keys = new KeyValuePair<string, string>("folderId", obj.FolderID.Trim());
                                 keyValuePairs.Add(Keys);
                             }
 
@@ -117,9 +118,9 @@ namespace AutocadPlugIn
 
                                 }, PreFix, true);
                         }
+                        
 
-
-                        if (!obj.IsRoot && obj.IsNew)
+                        if ((!obj.IsRoot && (obj.IsNew || obj.IsNewXref || IsParentNew))  )
                         //if (!obj.IsRoot)
                         {
                             List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
@@ -150,6 +151,10 @@ namespace AutocadPlugIn
                         else
                         {
                             ParentFileID = obj.ObjectId;
+                            if(obj.IsNew)
+                            {
+                                IsParentNew = true;
+                            }
                         }
                     }
                     else
@@ -205,7 +210,7 @@ namespace AutocadPlugIn
 
                         if (obj.FolderID.Trim().Length > 0 && Convert.ToDecimal(obj.FolderID.Trim()) > 0)
                         {
-                            Keys = new KeyValuePair<string, string>("folderid", obj.FolderID.Trim());
+                            Keys = new KeyValuePair<string, string>("folderidString", obj.FolderID.Trim());
                             keyValuePairs.Add(Keys);
                         }
 
@@ -291,7 +296,7 @@ namespace AutocadPlugIn
                                         obj.hasStatusClosed = Drawing.hasStatusClosed;
                                         obj.isletest = Drawing.isletest;
                                         obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
-
+                                        obj.objectProjectNo = Drawing.projectno == null ? obj.objectProjectNo : Drawing.projectno;
 
                                         obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
                                     }

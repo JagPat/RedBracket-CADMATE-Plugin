@@ -83,6 +83,13 @@ namespace AutocadPlugIn
         public string createdOn { get; set; }
 
         ////public string resource { set; get; }
+
+
+        public string folderid { get; set; }
+
+        public string folderpath { get; set; }
+
+
     }
 
     public class ResultSearchCriteriaStatus
