@@ -93,6 +93,16 @@ namespace AutocadPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BG {
+            get {
+                object obj = ResourceManager.GetObject("BG", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Blocks {
             get {
                 object obj = ResourceManager.GetObject("Blocks", resourceCulture);
@@ -306,6 +316,16 @@ namespace AutocadPlugIn.Properties {
         internal static System.Drawing.Bitmap Unlock {
             get {
                 object obj = ResourceManager.GetObject("Unlock", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Xref1 {
+            get {
+                object obj = ResourceManager.GetObject("Xref1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

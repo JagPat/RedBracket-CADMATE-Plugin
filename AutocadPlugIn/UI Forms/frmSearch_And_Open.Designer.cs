@@ -40,26 +40,9 @@ namespace AutocadPlugIn.UI_Forms
             this.Doc_name = new System.Windows.Forms.Label();
             this.Doc_description = new System.Windows.Forms.Label();
             this.OpenDrawingButton = new System.Windows.Forms.Button();
-            this.FormCancelButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.CDType = new System.Windows.Forms.ComboBox();
             this.treeGridView1 = new AdvancedDataGridView.TreeGridView();
-            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.ExpandButton = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.DrawingName = new AdvancedDataGridView.TreeGridColumn();
-            this.IsXRefFile = new System.Windows.Forms.DataGridViewImageColumn();
-            this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LockStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CADType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.State = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Generation = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ProjectId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ProjectName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Size = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DrawingID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LockBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.OwnerCompany = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Checkout = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.imageStrip = new System.Windows.Forms.ImageList(this.components);
             this.CDProjectName = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -82,6 +65,23 @@ namespace AutocadPlugIn.UI_Forms
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
+            this.FormCancelButton = new System.Windows.Forms.Button();
+            this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ExpandButton = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.DrawingName = new AdvancedDataGridView.TreeGridColumn();
+            this.IsXRefFile = new System.Windows.Forms.DataGridViewImageColumn();
+            this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LockStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CADType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.State = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Generation = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ProjectId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ProjectName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Size = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DrawingID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LockBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OwnerCompany = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Checkout = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.treeGridView1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -157,18 +157,6 @@ namespace AutocadPlugIn.UI_Forms
             this.OpenDrawingButton.UseVisualStyleBackColor = true;
             this.OpenDrawingButton.Click += new System.EventHandler(this.OpenDrawingButton_Click);
             // 
-            // FormCancelButton
-            // 
-            this.FormCancelButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.FormCancelButton.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormCancelButton.Location = new System.Drawing.Point(476, 3);
-            this.FormCancelButton.Name = "FormCancelButton";
-            this.FormCancelButton.Size = new System.Drawing.Size(94, 33);
-            this.FormCancelButton.TabIndex = 60;
-            this.FormCancelButton.Text = "Cancel";
-            this.FormCancelButton.UseVisualStyleBackColor = true;
-            this.FormCancelButton.Click += new System.EventHandler(this.FormCancelButton_Click);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -220,10 +208,12 @@ namespace AutocadPlugIn.UI_Forms
             this.Checkout});
             this.treeGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
+            this.treeGridView1.GridColor = System.Drawing.SystemColors.Control;
             this.treeGridView1.ImageList = null;
             this.treeGridView1.Location = new System.Drawing.Point(3, 138);
             this.treeGridView1.Name = "treeGridView1";
             this.treeGridView1.RowHeadersVisible = false;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.Empty;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.treeGridView1.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.treeGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -234,161 +224,6 @@ namespace AutocadPlugIn.UI_Forms
             this.treeGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.treeGridView1_CellContentClick_1);
             this.treeGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.treeGridView1_CellBeginEdit);
             this.treeGridView1.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.treeGridView1_DataError);
-            // 
-            // Check
-            // 
-            this.Check.FillWeight = 55.92374F;
-            this.Check.HeaderText = "";
-            this.Check.MinimumWidth = 20;
-            this.Check.Name = "Check";
-            this.Check.Width = 61;
-            // 
-            // ExpandButton
-            // 
-            this.ExpandButton.FillWeight = 22.2834F;
-            this.ExpandButton.HeaderText = "";
-            this.ExpandButton.Name = "ExpandButton";
-            this.ExpandButton.ReadOnly = true;
-            this.ExpandButton.Text = "Expand Node";
-            this.ExpandButton.Width = 25;
-            // 
-            // DrawingName
-            // 
-            this.DrawingName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle1;
-            this.DrawingName.DefaultNodeImage = null;
-            this.DrawingName.FillWeight = 202.8797F;
-            this.DrawingName.HeaderText = "Name";
-            this.DrawingName.Name = "DrawingName";
-            this.DrawingName.ReadOnly = true;
-            this.DrawingName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DrawingName.Width = 227;
-            // 
-            // IsXRefFile
-            // 
-            this.IsXRefFile.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.IsXRefFile.DefaultCellStyle = dataGridViewCellStyle2;
-            this.IsXRefFile.FillWeight = 31.94505F;
-            this.IsXRefFile.HeaderText = "XRef";
-            this.IsXRefFile.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
-            this.IsXRefFile.Name = "IsXRefFile";
-            this.IsXRefFile.ReadOnly = true;
-            this.IsXRefFile.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.IsXRefFile.Width = 40;
-            // 
-            // DrawingNumber
-            // 
-            this.DrawingNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.DrawingNumber.FillWeight = 108.5172F;
-            this.DrawingNumber.HeaderText = "Number";
-            this.DrawingNumber.Name = "DrawingNumber";
-            this.DrawingNumber.ReadOnly = true;
-            this.DrawingNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // LockStatus
-            // 
-            this.LockStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.LockStatus.FillWeight = 50F;
-            this.LockStatus.HeaderText = "Lock";
-            this.LockStatus.Name = "LockStatus";
-            this.LockStatus.ReadOnly = true;
-            this.LockStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.LockStatus.Visible = false;
-            // 
-            // CADType
-            // 
-            this.CADType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.CADType.FillWeight = 108.5172F;
-            this.CADType.HeaderText = "Type";
-            this.CADType.Name = "CADType";
-            this.CADType.ReadOnly = true;
-            this.CADType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.CADType.Width = 122;
-            // 
-            // State
-            // 
-            this.State.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.State.FillWeight = 75.96207F;
-            this.State.HeaderText = "Status";
-            this.State.Name = "State";
-            this.State.ReadOnly = true;
-            this.State.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.State.Width = 85;
-            // 
-            // Generation
-            // 
-            this.Generation.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Generation.FillWeight = 32.55518F;
-            this.Generation.HeaderText = "Ver No";
-            this.Generation.Name = "Generation";
-            this.Generation.ReadOnly = true;
-            this.Generation.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Generation.Width = 51;
-            // 
-            // ProjectId
-            // 
-            this.ProjectId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ProjectId.FillWeight = 108.5172F;
-            this.ProjectId.HeaderText = "Project";
-            this.ProjectId.Name = "ProjectId";
-            this.ProjectId.ReadOnly = true;
-            this.ProjectId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // ProjectName
-            // 
-            this.ProjectName.FillWeight = 75.96207F;
-            this.ProjectName.HeaderText = "Project No";
-            this.ProjectName.Name = "ProjectName";
-            this.ProjectName.ReadOnly = true;
-            this.ProjectName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ProjectName.Visible = false;
-            this.ProjectName.Width = 84;
-            // 
-            // Size
-            // 
-            this.Size.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Size.FillWeight = 75.96207F;
-            this.Size.HeaderText = "Size";
-            this.Size.Name = "Size";
-            this.Size.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Size.Width = 37;
-            // 
-            // DrawingID
-            // 
-            this.DrawingID.FillWeight = 50F;
-            this.DrawingID.HeaderText = "DrawingID";
-            this.DrawingID.Name = "DrawingID";
-            this.DrawingID.ReadOnly = true;
-            this.DrawingID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DrawingID.Visible = false;
-            // 
-            // LockBy
-            // 
-            this.LockBy.FillWeight = 50F;
-            this.LockBy.HeaderText = "LockBy";
-            this.LockBy.Name = "LockBy";
-            this.LockBy.ReadOnly = true;
-            this.LockBy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.LockBy.Visible = false;
-            // 
-            // OwnerCompany
-            // 
-            this.OwnerCompany.FillWeight = 150F;
-            this.OwnerCompany.HeaderText = "Owner Company";
-            this.OwnerCompany.Name = "OwnerCompany";
-            this.OwnerCompany.ReadOnly = true;
-            this.OwnerCompany.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.OwnerCompany.Visible = false;
-            // 
-            // Checkout
-            // 
-            this.Checkout.FillWeight = 35F;
-            this.Checkout.HeaderText = "Lock";
-            this.Checkout.Name = "Checkout";
-            this.Checkout.Visible = false;
             // 
             // imageStrip
             // 
@@ -699,6 +534,176 @@ namespace AutocadPlugIn.UI_Forms
             this.pnlRight.Name = "pnlRight";
             this.pnlRight.Size = new System.Drawing.Size(10, 460);
             this.pnlRight.TabIndex = 0;
+            // 
+            // FormCancelButton
+            // 
+            this.FormCancelButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FormCancelButton.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormCancelButton.Location = new System.Drawing.Point(476, 3);
+            this.FormCancelButton.Name = "FormCancelButton";
+            this.FormCancelButton.Size = new System.Drawing.Size(94, 33);
+            this.FormCancelButton.TabIndex = 60;
+            this.FormCancelButton.Text = "Cancel";
+            this.FormCancelButton.UseVisualStyleBackColor = true;
+            this.FormCancelButton.Click += new System.EventHandler(this.FormCancelButton_Click);
+            // 
+            // Check
+            // 
+            this.Check.FillWeight = 55.92374F;
+            this.Check.HeaderText = "";
+            this.Check.MinimumWidth = 20;
+            this.Check.Name = "Check";
+            this.Check.Width = 61;
+            // 
+            // ExpandButton
+            // 
+            this.ExpandButton.FillWeight = 22.2834F;
+            this.ExpandButton.HeaderText = "";
+            this.ExpandButton.Name = "ExpandButton";
+            this.ExpandButton.ReadOnly = true;
+            this.ExpandButton.Text = "Expand Node";
+            this.ExpandButton.Width = 25;
+            // 
+            // DrawingName
+            // 
+            this.DrawingName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle1;
+            this.DrawingName.DefaultNodeImage = null;
+            this.DrawingName.FillWeight = 202.8797F;
+            this.DrawingName.HeaderText = "Name";
+            this.DrawingName.Name = "DrawingName";
+            this.DrawingName.ReadOnly = true;
+            this.DrawingName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DrawingName.Width = 227;
+            // 
+            // IsXRefFile
+            // 
+            this.IsXRefFile.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.IsXRefFile.DefaultCellStyle = dataGridViewCellStyle2;
+            this.IsXRefFile.FillWeight = 31.94505F;
+            this.IsXRefFile.HeaderText = "XRef";
+            this.IsXRefFile.Image = global::AutocadPlugIn.Properties.Resources.BG;
+            this.IsXRefFile.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
+            this.IsXRefFile.Name = "IsXRefFile";
+            this.IsXRefFile.ReadOnly = true;
+            this.IsXRefFile.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.IsXRefFile.Width = 40;
+            // 
+            // DrawingNumber
+            // 
+            this.DrawingNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.DrawingNumber.FillWeight = 108.5172F;
+            this.DrawingNumber.HeaderText = "Number";
+            this.DrawingNumber.Name = "DrawingNumber";
+            this.DrawingNumber.ReadOnly = true;
+            this.DrawingNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // LockStatus
+            // 
+            this.LockStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.LockStatus.FillWeight = 50F;
+            this.LockStatus.HeaderText = "Lock";
+            this.LockStatus.Name = "LockStatus";
+            this.LockStatus.ReadOnly = true;
+            this.LockStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.LockStatus.Visible = false;
+            // 
+            // CADType
+            // 
+            this.CADType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.CADType.FillWeight = 108.5172F;
+            this.CADType.HeaderText = "Type";
+            this.CADType.Name = "CADType";
+            this.CADType.ReadOnly = true;
+            this.CADType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.CADType.Width = 122;
+            // 
+            // State
+            // 
+            this.State.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.State.FillWeight = 75.96207F;
+            this.State.HeaderText = "Status";
+            this.State.Name = "State";
+            this.State.ReadOnly = true;
+            this.State.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.State.Width = 85;
+            // 
+            // Generation
+            // 
+            this.Generation.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Generation.FillWeight = 32.55518F;
+            this.Generation.HeaderText = "Ver No";
+            this.Generation.Name = "Generation";
+            this.Generation.ReadOnly = true;
+            this.Generation.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Generation.Width = 51;
+            // 
+            // ProjectId
+            // 
+            this.ProjectId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ProjectId.FillWeight = 108.5172F;
+            this.ProjectId.HeaderText = "Project";
+            this.ProjectId.Name = "ProjectId";
+            this.ProjectId.ReadOnly = true;
+            this.ProjectId.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ProjectName
+            // 
+            this.ProjectName.FillWeight = 75.96207F;
+            this.ProjectName.HeaderText = "Project No";
+            this.ProjectName.Name = "ProjectName";
+            this.ProjectName.ReadOnly = true;
+            this.ProjectName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.ProjectName.Visible = false;
+            this.ProjectName.Width = 84;
+            // 
+            // Size
+            // 
+            this.Size.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Size.FillWeight = 75.96207F;
+            this.Size.HeaderText = "Size";
+            this.Size.Name = "Size";
+            this.Size.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Size.Width = 37;
+            // 
+            // DrawingID
+            // 
+            this.DrawingID.FillWeight = 50F;
+            this.DrawingID.HeaderText = "DrawingID";
+            this.DrawingID.Name = "DrawingID";
+            this.DrawingID.ReadOnly = true;
+            this.DrawingID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DrawingID.Visible = false;
+            // 
+            // LockBy
+            // 
+            this.LockBy.FillWeight = 50F;
+            this.LockBy.HeaderText = "LockBy";
+            this.LockBy.Name = "LockBy";
+            this.LockBy.ReadOnly = true;
+            this.LockBy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.LockBy.Visible = false;
+            // 
+            // OwnerCompany
+            // 
+            this.OwnerCompany.FillWeight = 150F;
+            this.OwnerCompany.HeaderText = "Owner Company";
+            this.OwnerCompany.Name = "OwnerCompany";
+            this.OwnerCompany.ReadOnly = true;
+            this.OwnerCompany.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.OwnerCompany.Visible = false;
+            // 
+            // Checkout
+            // 
+            this.Checkout.FillWeight = 35F;
+            this.Checkout.HeaderText = "Lock";
+            this.Checkout.Name = "Checkout";
+            this.Checkout.Visible = false;
             // 
             // frmSearch_And_Open
             // 

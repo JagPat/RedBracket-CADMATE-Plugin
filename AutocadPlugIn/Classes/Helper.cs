@@ -989,7 +989,7 @@ namespace AutocadPlugIn
                 dr["layoutinfo"] = LayoutInfos;
                 dr["oldprefix"] = PreFix;
 
-                dr["folderid"] = Drawing.folderid==null?string.Empty: Drawing.folderid;
+                dr["folderid"] = Drawing.folderid == null ? string.Empty : Drawing.folderid;
                 dr["folderpath"] = Drawing.folderpath == null ? string.Empty : Drawing.folderpath;
                 dr["IsNewXref"] = "";//IsNewXref  not to assign value from here, if ever assign assign fasle.
                 dtDrawing.Rows.Add(dr);
@@ -1259,6 +1259,62 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
             return VersionNo;
+        }
+
+        public static string GetFolderPath(clsFolderInfo folderInfo, string ProjectName)
+        {
+            string FolderPath = "";
+            try
+            {
+                if (folderInfo == null)
+                {
+                    return ProjectName + "/";
+                }
+                else
+                {
+                    GetParentFolder(folderInfo, ref FolderPath);
+                    FolderPath = ProjectName + "/" + FolderPath;
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return FolderPath;
+        }
+
+        public static string GetParentFolder(clsFolderInfo folderInfo, ref string FolderPath)
+        {
+
+            try
+            {
+                if (folderInfo == null)
+                {
+                    return null;
+                }
+                else
+                {
+
+                    if (folderInfo.parentFolder == null)
+                    {
+                        return FolderPath += folderInfo.name + @"/";
+                    }
+                    else
+                    {
+                        GetParentFolder(folderInfo.parentFolder, ref FolderPath);
+                        FolderPath = FolderPath + folderInfo.name + "/";
+                        return FolderPath;
+                    }
+
+
+
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return null;
+            }
+
         }
     }
 }

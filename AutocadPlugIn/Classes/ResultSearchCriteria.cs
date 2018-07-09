@@ -89,9 +89,17 @@ namespace AutocadPlugIn
 
         public string folderpath { get; set; }
 
+        public clsFolderInfo folder { get; set; }
 
     }
-
+    public class clsFolderInfo
+    {
+        public string id { set; get; }
+        public string name { set; get; }
+        public string companyId { set; get; }
+        public string childFolderSize { set; get; }
+        public clsFolderInfo parentFolder { set; get; }
+    }
     public class ResultSearchCriteriaStatus
     {
         public int id { set; get; }

@@ -134,6 +134,13 @@ namespace AutocadPlugIn
 
         public string projectno { get; set; }
 
+
+        public string folderid { get; set; }
+
+        public string folderpath { get; set; }
+
+        public clsFolderInfo folder { get; set; }
+
     }
 
     public class SaveResultOwnPermissions

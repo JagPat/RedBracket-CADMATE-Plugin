@@ -787,9 +787,13 @@ namespace AutocadPlugIn
         {
             bool IsSaveAs = false;
             RibbonButton btn = (RibbonButton)parameter;
-            if (btn.Name == "SaveAs")
+            if (btn.Text == "Save As New")
             {
                 IsSaveAs = true;
+            }
+            if (btn.Text != "Save As New"&& btn.Text != "Save to redbracket")
+            {
+                return;
             }
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 

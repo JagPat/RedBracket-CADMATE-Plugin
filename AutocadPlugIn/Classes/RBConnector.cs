@@ -106,6 +106,7 @@ namespace AutocadPlugIn
                         }
                         else
                         {
+
                             //http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileVersion?
                             //userName =testing@yopmail.com&fileId=a8b2ec09-12bc-4907-9cf9-280918095b5a&source=Computer
                             restResponse = (RestResponse)ServiceHelper.SaveObject(
@@ -117,8 +118,17 @@ namespace AutocadPlugIn
                                                     new KeyValuePair<string, string>("source","Computer")
 
                                 }, PreFix, true);
+
+                            if (!obj.IsRoot)
+                            {
+                               // Helper.IncrementProgressBar(1, "Checking for association in redbracket." + Path.GetFileNameWithoutExtension(obj.FilePath));
+                                if (!IsXrefNew(ParentFileID,obj.ObjectId))
+                                {
+                                    obj.IsNewXref = true;
+                                }
+                            }
                         }
-                        
+
 
                         if ((!obj.IsRoot && (obj.IsNew || obj.IsNewXref || IsParentNew))  )
                         //if (!obj.IsRoot)
@@ -297,6 +307,7 @@ namespace AutocadPlugIn
                                         obj.isletest = Drawing.isletest;
                                         obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
                                         obj.objectProjectNo = Drawing.projectno == null ? obj.objectProjectNo : Drawing.projectno;
+                                       
 
                                         obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
                                     }
@@ -334,7 +345,27 @@ namespace AutocadPlugIn
             return false;
 
         }
+        public bool IsXrefNew(string ParentID,string ChildID)
+        {
+            try
+            {
+                var objRSC = GetXrefFIleInfo(ParentID);
 
+                foreach (var item in objRSC)
+                {
+                    if(item.id==ChildID)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            catch(Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);return true;
+            }
+        }
         public bool UpdateFileProperties(string FileID, string Type, string Status, string Project)
         {
             try
@@ -541,7 +572,7 @@ namespace AutocadPlugIn
 
 
 
-
+                ProjectID = ProjectID == string.Empty ? "0" : ProjectID;
                 RestResponse restResponse;
                 //service calling to Check File Existance.
 
@@ -1276,7 +1307,7 @@ namespace AutocadPlugIn
                     null, true, urlParameters);
 
 
-
+                //Helper.CloseProgressBar();
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     ShowMessage.ErrorMess("Some error occurred while fetching file information.");
@@ -1285,7 +1316,14 @@ namespace AutocadPlugIn
                 else
                 {
                     ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
-                }
+                    try
+                    {
+                        ObjFileInfo.folderid = ObjFileInfo.folder == null ? string.Empty : ObjFileInfo.folder.id;
+                        ObjFileInfo.folderpath = Helper.GetFolderPath(ObjFileInfo.folder, ObjFileInfo.projectname.Trim() == string.Empty ? "My Files" : ObjFileInfo.projectname);
+
+                    }
+                    catch { }
+                    }
 
             }
             catch (Exception ex)

@@ -291,7 +291,7 @@ namespace AutocadPlugIn
                                 plmobj.FilePath,
                                 plmobj.IsRoot,
                                 plmobj.ObjectProjectName,
-                                plmobj.objectProjectNo.Trim().Length > 0 ? plmobj.ObjectProjectName + "(" + plmobj.objectProjectNo + ")" : "My Files",
+                                plmobj.objectProjectNo.Trim().Length > 0 ? plmobj.ObjectProjectName + " (" + plmobj.objectProjectNo + ")" : "My Files",
 
                                 ProjectId,
                                 plmobj.ObjectCreatedOn,

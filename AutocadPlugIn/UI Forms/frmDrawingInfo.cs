@@ -218,7 +218,7 @@ namespace AutocadPlugIn.UI_Forms
                     lbFileStatusL.Text = Convert.ToString(objRSC.status == null ? string.Empty : objRSC.status.statusname == null ? string.Empty : objRSC.status.statusname);
                     lbDrawingIDL.Text = DrawingID1 = Convert.ToString(objRSC.id);
 
-                    lbCreatedByL.Text = Convert.ToString(objRSC.createdby) + " (" + objRSC.updatedon + ")";
+                    lbCreatedByL.Text = Convert.ToString(objRSC.createdby) + " (" + objRSC.created0n + ")";
                     lbModifiedByL.Text = Convert.ToString(objRSC.updatedby) + " (" + objRSC.updatedon + ")";
                     if (Convert.ToBoolean(objRSC.filelock))
                     {

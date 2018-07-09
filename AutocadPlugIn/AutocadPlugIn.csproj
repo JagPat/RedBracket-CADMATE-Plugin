@@ -384,10 +384,12 @@
     <None Include="Resources\Small.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Xref1.png" />
     <None Include="Resources\%24this.BackgroundImage.jpg" />
     <Content Include="Resources\About.png" />
     <Content Include="Resources\Add To Aras.png" />
     <Content Include="Resources\Add_blocks.png" />
+    <None Include="Resources\BG.png" />
     <Content Include="Resources\blocks.png" />
     <None Include="Resources\bracket.jpg" />
     <Content Include="Resources\CheckoutUserSettings.png" />

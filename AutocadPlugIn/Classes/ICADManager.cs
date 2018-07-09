@@ -24,7 +24,7 @@ namespace AutocadPlugIn
          void DeleteActiveDocument(String fileName);
          void LockActiveDocument();
          void UnLockActiveDocument();
-         System.Data.DataTable GetExternalRefreces();         
+         System.Data.DataTable GetExternalRefreces(bool IsSaveAsNew=false);         
          void SaveActiveDrawing();
         void SaveActiveDrawing(bool openInReadOnly);
     }

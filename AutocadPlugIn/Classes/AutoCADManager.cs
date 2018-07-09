@@ -840,26 +840,29 @@ namespace AutocadPlugIn
 
                                     string PName = Path.GetFileName(FilePath);
                                     PName = Helper.RemovePreFixFromFileName(PName, oldPreFix);
-
+                                    PName = Helper.RemovePreFixFromFileName(PName, PreFix);
 
 
 
                                     string NewFilePath = path + PName;
-
-                                    File.Delete(NewFilePath);
-                                    ParentNewPath = NewFilePath;
-                                    if (FilePath.Contains(checkoutPath))
+                                    if(NewFilePath!= FilePath)
                                     {
-                                        IsMove = true;
-                                    }
-                                    foreach (PLMObject obj in plmObjs)
-                                    {
-                                        if (obj.FilePath == xgn.Name)
+                                        File.Delete(NewFilePath);
+                                        ParentNewPath = NewFilePath;
+                                        if (FilePath.Contains(checkoutPath))
                                         {
-                                            obj.FilePath = NewFilePath;
-                                            break;
+                                            IsMove = true;
+                                        }
+                                        foreach (PLMObject obj in plmObjs)
+                                        {
+                                            if (obj.FilePath == xgn.Name)
+                                            {
+                                                obj.FilePath = NewFilePath;
+                                                break;
+                                            }
                                         }
                                     }
+                                   
 
                                     continue;
                                 }
@@ -877,12 +880,22 @@ namespace AutocadPlugIn
                                     string originalpath = btr.PathName;
                                     string childname = Path.GetFileName(originalpath);
 
-                                    childname = Helper.RemovePreFixFromFileName(childname, oldPreFix);
+                                    bool IsChildinSameFolder = false;
+                                    string ParentPath = Path.GetDirectoryName(FilePath);
+                                    int L = originalpath.Length;
+                                    int L1 = childname.Length;
+                                    if(L==L1+2)
+                                    {
+                                        IsChildinSameFolder = true;
+                                    }
 
+                                    childname = Helper.RemovePreFixFromFileName(childname, oldPreFix);
+                                    childname = Helper.RemovePreFixFromFileName(childname, PreFix);
 
 
                                     newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
+                                     
                                     if (File.Exists(OldChildPath))
                                     {
 
@@ -898,19 +911,28 @@ namespace AutocadPlugIn
                                     }
                                     else
                                     {
-                                        
+                                        OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), oldPreFix + childname);
+
+                                    }
+                                    if (File.Exists(OldChildPath))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
                                         if (File.Exists(originalpath))
                                         {
                                             FileInfo fi = new FileInfo(originalpath);
                                             string OP = fi.DirectoryName;
-                                            OldChildPath = Path.Combine( OP, childname);
+                                            OldChildPath = Path.Combine(OP, childname);
                                         }
                                         else
                                         {
-                                            ShowMessage.ErrorMess("File not found.\n" + originalpath);
-                                            return;
+                                            //ShowMessage.ErrorMess("File not found.\n" + originalpath);
+                                            //return;
                                         }
-                                        
+
 
                                     }
                                     if (File.Exists(OldChildPath) && OldChildPath != newpath)
@@ -924,27 +946,31 @@ namespace AutocadPlugIn
                                         {
                                             File.Copy(OldChildPath, newpath);
                                         }
-                                    }
-                                    foreach (PLMObject obj in plmObjs)
-                                    {
-                                        string name = Path.GetFileNameWithoutExtension(obj.FilePath);
-
-                                        name = Helper.RemovePreFixFromFileName(name, oldPreFix);
-
-                                        string XrefName =Path.GetFileNameWithoutExtension(Helper.RemovePreFixFromFileName(xgn.Name, oldPreFix));
-                                        if (name == XrefName)
+                                        foreach (PLMObject obj in plmObjs)
                                         {
-                                            obj.FilePath = newpath;
-                                            break;
+                                            string name = Path.GetFileNameWithoutExtension(obj.FilePath);
+
+                                            name = Helper.RemovePreFixFromFileName(name, oldPreFix);
+
+                                            string XrefName = Path.GetFileNameWithoutExtension(Helper.RemovePreFixFromFileName(xgn.Name, oldPreFix));
+                                            if (name == XrefName)
+                                            {
+                                                obj.FilePath = newpath;
+                                                break;
+                                            }
                                         }
+                                        
                                     }
-
-                                    string TnewPath = @".\" + Path.GetFileName(newpath);
-                                    btr.PathName = TnewPath;
-
-
+                                    if(File.Exists(newpath))
+                                    {
+                                        string TnewPath = @".\" + Path.GetFileName(newpath);
+                                        btr.PathName = TnewPath;
+                                    }
+                                    
 
                                     tr.Commit();
+
+                                    UpdateExRefPathInfo2(newpath, ref plmObjs);
                                 }
                             }
                         }
@@ -962,10 +988,12 @@ namespace AutocadPlugIn
                 }//using db complete
                 if (IsMove)
                 {
-                    File.Move(FilePath, ParentNewPath);
+                    if (ParentNewPath.Trim().Length > 0 && File.Exists(FilePath))
+                        File.Move(FilePath, ParentNewPath);
                 }
                 else
                 {
+                    if (ParentNewPath.Trim().Length>0&& File.Exists(FilePath))
                     File.Copy(FilePath, ParentNewPath);
                 }
             }
@@ -974,7 +1002,7 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(ex.Message);
             }
         }
-        public System.Data.DataTable GetExternalRefreces()
+        public System.Data.DataTable GetExternalRefreces(bool IsSaveAsNew = false)
         {
             System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
             dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
@@ -1079,8 +1107,15 @@ namespace AutocadPlugIn
 
                                                         dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
 
-                                                        dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["filepath"] = xgn.Name;
-                                                        dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["isroot"] = "true";
+                                                        int RowIndex = dtTreeGrid.Rows.Count - 1;
+                                                        dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Name;
+                                                        dtTreeGrid.Rows[RowIndex]["isroot"] = "true";
+
+                                                        if (IsSaveAsNew)
+                                                        {
+                                                            dtTreeGrid.Rows[RowIndex]["DrawingName"] = Helper.RemovePreFixFromFileName(Path.GetFileName(xgn.Name), Convert.ToString(dtTreeGrid.Rows[RowIndex]["prefix"]));
+                                                            dtTreeGrid.Rows[RowIndex]["DrawingId"] = "";
+                                                        }
 
                                                     }
                                                     catch (System.Exception E)
@@ -1130,13 +1165,18 @@ namespace AutocadPlugIn
                                                 if (drawingAttrs.Count != 0)
                                                 {
                                                     dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
-                                                    dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["filepath"] = xgn.Database.Filename; 
-                                                    
-                                                    if(Convert.ToString(dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["isroot"]).ToLower()=="true")
+
+                                                    int RowIndex = dtTreeGrid.Rows.Count - 1;
+                                                    dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Database.Filename;
+
+                                                    if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["isroot"]).ToLower() == "true")
                                                     {
-                                                        dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["IsNewXref"] = "true";
+                                                        dtTreeGrid.Rows[RowIndex]["IsNewXref"] = "true";
                                                     }
-                                                    dtTreeGrid.Rows[dtTreeGrid.Rows.Count - 1]["isroot"] = "false";
+                                                    dtTreeGrid.Rows[RowIndex]["isroot"] = "false";
+
+                                                    if (IsSaveAsNew)
+                                                        dtTreeGrid.Rows[RowIndex]["DrawingName"] = Helper.RemovePreFixFromFileName(Path.GetFileName(xgn.Name), Convert.ToString(dtTreeGrid.Rows[RowIndex]["prefix"]));
                                                 }
 
                                                 else
