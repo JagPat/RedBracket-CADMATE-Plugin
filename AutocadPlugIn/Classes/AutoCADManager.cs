@@ -497,6 +497,32 @@ namespace AutocadPlugIn
             return hastable;
         }
 
+        public System.Data.DataTable GetAttributes(string FilePath)
+        {
+            System.Data.DataTable dtDrawingInfo = Helper.GetDrawingPropertiesTableStructure();
+            try
+            {
+                Hashtable hastable = new Hashtable();
+
+                Database Db = new Database(false, true);
+                Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                 
+                IDictionaryEnumerator en = Db.SummaryInfo.CustomProperties;
+                while (en.MoveNext())
+                {
+                    hastable.Add(en.Key, en.Value);
+                }
+                dtDrawingInfo = Helper.AddRowDrawingPropertiesTable(dtDrawingInfo, hastable);
+            
+            }
+            catch(System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+            return dtDrawingInfo;
+        }
+
         public void UpdateAttributes(Hashtable hashTable)
         {
 
@@ -845,7 +871,7 @@ namespace AutocadPlugIn
 
 
                                     string NewFilePath = path + PName;
-                                    if(NewFilePath!= FilePath)
+                                    if (NewFilePath != FilePath)
                                     {
                                         File.Delete(NewFilePath);
                                         ParentNewPath = NewFilePath;
@@ -862,7 +888,7 @@ namespace AutocadPlugIn
                                             }
                                         }
                                     }
-                                   
+
 
                                     continue;
                                 }
@@ -884,7 +910,7 @@ namespace AutocadPlugIn
                                     string ParentPath = Path.GetDirectoryName(FilePath);
                                     int L = originalpath.Length;
                                     int L1 = childname.Length;
-                                    if(L==L1+2)
+                                    if (L == L1 + 2)
                                     {
                                         IsChildinSameFolder = true;
                                     }
@@ -895,7 +921,7 @@ namespace AutocadPlugIn
 
                                     newpath = path + childname;
                                     OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
-                                     
+
                                     if (File.Exists(OldChildPath))
                                     {
 
@@ -903,38 +929,35 @@ namespace AutocadPlugIn
                                     else
                                     {
                                         OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), childname);
-
-                                    }
-                                    if (File.Exists(OldChildPath))
-                                    {
-
-                                    }
-                                    else
-                                    {
-                                        OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), oldPreFix + childname);
-
-                                    }
-                                    if (File.Exists(OldChildPath))
-                                    {
-
-                                    }
-                                    else
-                                    {
-
-                                        if (File.Exists(originalpath))
+                                        if (File.Exists(OldChildPath))
                                         {
-                                            FileInfo fi = new FileInfo(originalpath);
-                                            string OP = fi.DirectoryName;
-                                            OldChildPath = Path.Combine(OP, childname);
+
                                         }
                                         else
                                         {
-                                            //ShowMessage.ErrorMess("File not found.\n" + originalpath);
-                                            //return;
+                                            OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), oldPreFix + childname);
+                                            if (File.Exists(OldChildPath))
+                                            {
+
+                                            }
+                                            else
+                                            {
+                                                if (File.Exists(originalpath))
+                                                {
+                                                    FileInfo fi = new FileInfo(originalpath);
+                                                    string OP = fi.DirectoryName;
+                                                    OldChildPath = Path.Combine(OP, childname);
+                                                }
+                                                else
+                                                {
+                                                    //ShowMessage.ErrorMess("File not found.\n" + originalpath);
+                                                    //return;
+                                                }
+                                            }
                                         }
-
-
                                     }
+
+
                                     if (File.Exists(OldChildPath) && OldChildPath != newpath)
                                     {
                                         File.Delete(newpath);
@@ -946,6 +969,7 @@ namespace AutocadPlugIn
                                         {
                                             File.Copy(OldChildPath, newpath);
                                         }
+                                        bool IsPathNotFound = true;
                                         foreach (PLMObject obj in plmObjs)
                                         {
                                             string name = Path.GetFileNameWithoutExtension(obj.FilePath);
@@ -955,18 +979,27 @@ namespace AutocadPlugIn
                                             string XrefName = Path.GetFileNameWithoutExtension(Helper.RemovePreFixFromFileName(xgn.Name, oldPreFix));
                                             if (name == XrefName)
                                             {
+                                                IsPathNotFound = true;
                                                 obj.FilePath = newpath;
                                                 break;
                                             }
                                         }
-                                        
+                                        if (IsPathNotFound)
+                                        {
+                                            ShowMessage.ErrorMess("File not found.\n" + xgn.Name); return;
+                                        }
+
                                     }
-                                    if(File.Exists(newpath))
+                                    if (File.Exists(newpath))
                                     {
                                         string TnewPath = @".\" + Path.GetFileName(newpath);
                                         btr.PathName = TnewPath;
                                     }
-                                    
+                                    else
+                                    {
+                                        ShowMessage.ErrorMess("File not found.\n" + newpath); return;
+                                    }
+
 
                                     tr.Commit();
 
@@ -993,8 +1026,8 @@ namespace AutocadPlugIn
                 }
                 else
                 {
-                    if (ParentNewPath.Trim().Length>0&& File.Exists(FilePath))
-                    File.Copy(FilePath, ParentNewPath);
+                    if (ParentNewPath.Trim().Length > 0 && File.Exists(FilePath))
+                        File.Copy(FilePath, ParentNewPath);
                 }
             }
             catch (System.Exception ex)
@@ -1108,6 +1141,17 @@ namespace AutocadPlugIn
                                                         dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
 
                                                         int RowIndex = dtTreeGrid.Rows.Count - 1;
+                                                        if (RowIndex < 0)
+                                                        {
+                                                            DataRow dr = dtTreeGrid.NewRow();
+                                                            dr["DrawingName"] = drawingName;
+                                                            dr["filepath"] = xgn.Database.Filename.ToString();
+                                                            dr["sourceid"] = childrens;
+                                                            dr["isroot"] = "true";
+                                                            dr["Layouts"] = Layouts.ToString();
+                                                            dtTreeGrid.Rows.Add(dr);
+                                                            RowIndex = dtTreeGrid.Rows.Count - 1;
+                                                        }
                                                         dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Name;
                                                         dtTreeGrid.Rows[RowIndex]["isroot"] = "true";
 
@@ -1164,9 +1208,22 @@ namespace AutocadPlugIn
                                                 }
                                                 if (drawingAttrs.Count != 0)
                                                 {
+                                                    int RowDiff = dtTreeGrid.Rows.Count;
                                                     dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
-
+                                                    RowDiff = dtTreeGrid.Rows.Count - RowDiff;
                                                     int RowIndex = dtTreeGrid.Rows.Count - 1;
+
+                                                    if (RowDiff == 0)
+                                                    {
+                                                        DataRow dr = dtTreeGrid.NewRow();
+                                                        dr["DrawingName"] = drawingName;
+                                                        dr["filepath"] = xgn.Database.Filename.ToString();
+                                                        dr["sourceid"] = childrens;
+                                                        dr["isroot"] = "true";
+                                                        dr["Layouts"] = Layouts.ToString();
+                                                        dtTreeGrid.Rows.Add(dr);
+                                                        RowIndex = dtTreeGrid.Rows.Count - 1;
+                                                    }
                                                     dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Database.Filename;
 
                                                     if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["isroot"]).ToLower() == "true")

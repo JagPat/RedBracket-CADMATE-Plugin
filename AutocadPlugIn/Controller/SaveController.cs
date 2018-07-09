@@ -315,6 +315,7 @@ namespace AutocadPlugIn
                                 , plmobj.FolderID
                                 , plmobj.FolderPath
                                 ,"" //IsNewXref  not to assign value from here, if ever assign assign fasle.
+                                ,"true"//Always true
                                 );
                         }
                     }

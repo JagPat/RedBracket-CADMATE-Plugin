@@ -247,26 +247,18 @@ namespace AutocadPlugIn
 
             try
             {
-                var dbsi = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.SummaryInfo.CustomProperties;
 
-                while (dbsi.MoveNext())
+                System.Data.DataTable dtDrawing = Helper.cadManager.GetAttributes(Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.Filename);
+
+                if (dtDrawing.Rows.Count > 0)
                 {
-                    if (Convert.ToString(dbsi.Key) == "drawingid")
-                    {
-                        drawingid = Convert.ToString(dbsi.Value);
-                    }
-                    else if (Convert.ToString(dbsi.Key) == "revision")
-                    {
-                        Rev = Convert.ToString(dbsi.Value);
-                    }
-                    else if (Convert.ToString(dbsi.Key) == "drawingnumber")
-                    {
-                        DrawingNO = Convert.ToString(dbsi.Value);
-                    }
-                }
+                    drawingid = Convert.ToString(dtDrawing.Rows[0][""]);
+                    drawingid = Convert.ToString(dtDrawing.Rows[0][""]);
+                    drawingid = Convert.ToString(dtDrawing.Rows[0][""]);
 
-
-                // objcr.txtCurrentFileVersion.Tag = objcr.txtCurrentFileVersion.Text = Rev;
+                    Helper.CurrentVersion = CurrentVersion = Helper.VerTextAdjustment(Rev);
+                    Helper.LatestVersion = LatestVersion = Helper.GetLatestVersion(DrawingNO);
+                } 
 
                 if (drawingid.Trim().Length == 0)
                 {
@@ -276,8 +268,7 @@ namespace AutocadPlugIn
                     return;
                 }
 
-                Helper.CurrentVersion = CurrentVersion = Helper.VerTextAdjustment(Rev);
-                Helper.LatestVersion = LatestVersion = Helper.GetLatestVersion(DrawingNO);
+              
             }
             catch (System.Exception E)
             {
@@ -791,7 +782,7 @@ namespace AutocadPlugIn
             {
                 IsSaveAs = true;
             }
-            if (btn.Text != "Save As New"&& btn.Text != "Save to redbracket")
+            if (btn.Text != "Save As New" && btn.Text != "Save to redbracket")
             {
                 return;
             }
@@ -800,7 +791,7 @@ namespace AutocadPlugIn
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-         
+
 
             if (!File.Exists(doc.Name))
             {

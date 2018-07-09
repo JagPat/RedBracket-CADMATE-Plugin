@@ -772,7 +772,7 @@ namespace AutocadPlugIn
                 dtDrawingProperty.Columns.Add("folderid");
                 dtDrawingProperty.Columns.Add("folderpath");
                 dtDrawingProperty.Columns.Add("IsNewXref");
-
+                dtDrawingProperty.Columns.Add("IsRBCFile");
 
             }
             catch (Exception E)
@@ -992,6 +992,7 @@ namespace AutocadPlugIn
                 dr["folderid"] = Drawing.folderid == null ? string.Empty : Drawing.folderid;
                 dr["folderpath"] = Drawing.folderpath == null ? string.Empty : Drawing.folderpath;
                 dr["IsNewXref"] = "";//IsNewXref  not to assign value from here, if ever assign assign fasle.
+                dr["IsRBCFile"] = "true";//Always true.
                 dtDrawing.Rows.Add(dr);
 
             }
@@ -1023,7 +1024,15 @@ namespace AutocadPlugIn
                     }
                     if (IsAnyValueMatch)
                     {
-                        dtDrawingProperties.Rows.Add(dr);
+                        if (Convert.ToString(dr["IsRBCFile"]) == "true")
+                        {
+                            dtDrawingProperties.Rows.Add(dr);
+                        }
+
+                    }
+                    else
+                    {
+
                     }
                 }
 
