@@ -12,6 +12,7 @@ using System.IO;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Management;
+using AdvancedDataGridView;
 
 namespace AutocadPlugIn
 {
@@ -37,6 +38,9 @@ namespace AutocadPlugIn
         public static Color clrChildPopupBorderColor = Color.FromArgb(130, 130, 156);
         public static Color clrParentPopupBorderColor = Color.FromArgb(46, 49, 50);
         public static Color clrDiffHighlighColor = Color.FromArgb(255, 180, 180);
+        public static string DateFormat = "dd-MMM-yy";
+        public static string DateTimeFormat = "dd-MMM-yy hh:mm:ss tt";
+        public static string TimeFormat = "hh:mm:ss tt";
 
         public static frmProgressBar objfrmPB = new frmProgressBar();
         public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
@@ -80,6 +84,31 @@ namespace AutocadPlugIn
                 objfrmPB.pbProcess.Value = objfrmPB.pbProcess.Maximum;
                 objfrmPB.lblStatus.Text = string.Empty;
                 objfrmPB.Close();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+        public static void HideProgressBar()
+        {
+            try
+            {
+               
+                objfrmPB.Hide();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+        public static void ShowProgressBar()
+        {
+            try
+            { 
+                objfrmPB.Show();
             }
             catch (Exception E)
             {
@@ -133,14 +162,14 @@ namespace AutocadPlugIn
         /// </summary>
         /// <param name="IsSelect"></param>
         /// <returns></returns>
-        public static void FIllCMB(ComboBox cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect)
+        public static void FIllCMB(ComboBox cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect, bool IsSortByDisplayMember = true)
         {
             try
             {
                 String Text = "All";
                 if (IsSelect)
                     Text = "---Select---";
-                dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember);
+                dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember, IsSortByDisplayMember);
 
                 cmb.DataSource = dt;
                 cmb.DisplayMember = DisplayMember;
@@ -154,7 +183,7 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
         }
-        public static void FIllCMB(DataGridViewComboBoxColumn cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect, string FirstRowText = null)
+        public static void FIllCMB(DataGridViewComboBoxColumn cmb, DataTable dt, string DisplayMember, string ValueMenmber, bool IsSelect, string FirstRowText = null, bool IsSortByDisplayMember = true)
         {
             try
             {
@@ -169,7 +198,7 @@ namespace AutocadPlugIn
                     Text = FirstRowText;
                 }
 
-                dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember);
+                dt = Helper.AddFirstRowToTable(dt, Text, DisplayMember, IsSortByDisplayMember);
 
                 cmb.DataSource = dt;
                 cmb.DisplayMember = DisplayMember;
@@ -185,7 +214,7 @@ namespace AutocadPlugIn
             }
         }
 
-        public static DataTable AddFirstRowToTable(DataTable dt, string Text, string DisplayMember)
+        public static DataTable AddFirstRowToTable(DataTable dt, string Text, string DisplayMember, bool IsSortByDisplayMember = true)
         {
             try
             {
@@ -220,7 +249,10 @@ namespace AutocadPlugIn
                 dt.Rows.Add(dr);
 
                 DataView dv = dt.DefaultView;
-                dv.Sort = "Rank," + DisplayMember;
+                if (IsSortByDisplayMember)
+                    dv.Sort = "Rank," + DisplayMember;
+                else
+                    dv.Sort = "Rank";
                 dt = dv.ToTable();
 
             }
@@ -393,6 +425,28 @@ namespace AutocadPlugIn
 
             return DrawingProperty;
 
+        }
+        public static LayoutInfo FindLayoutDetail(Hashtable ht, string LayoutName)
+        {
+            LayoutInfo objLayoutInfo = new LayoutInfo();
+            try
+            {
+                string LayoutInfo1 = Convert.ToString(ht["layoutinfo"]);
+                List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
+                foreach (LayoutInfo objLI1 in objLI)
+                {
+                    if(objLI1.name==LayoutName)
+                    {
+                        objLayoutInfo = objLI1;
+                        break;
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return objLayoutInfo;
         }
 
 
@@ -774,6 +828,9 @@ namespace AutocadPlugIn
                 dtDrawingProperty.Columns.Add("IsNewXref");
                 dtDrawingProperty.Columns.Add("IsRBCFile");
 
+                dtDrawingProperty.Columns.Add("PK");
+                dtDrawingProperty.Columns.Add("FK");
+
             }
             catch (Exception E)
             {
@@ -836,7 +893,7 @@ namespace AutocadPlugIn
             return FileName;
         }
 
-        public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false)
+        public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false, List<string> DownloadedFiles = null)
         {
 
             Hashtable DrawingProperty = new Hashtable();
@@ -857,7 +914,7 @@ namespace AutocadPlugIn
                 {
                     if (cadManager.CheckForCurruntlyOpenDoc(FilePath))
                     {
-
+                        Helper.CloseProgressBar();
                         ShowMessage.ValMess("This file is already open.");
 
                         return null;
@@ -866,14 +923,24 @@ namespace AutocadPlugIn
                     {
                         if (!IsTemp)
                         {
-                            if (ShowMessage.InfoYNMess("This file is already in working directory,\n Do you want to replace it ?\n" + FilePath) == DialogResult.Yes)
+                            if (DownloadedFiles == null || !DownloadedFiles.Contains(FilePath))
                             {
-                                File.Delete(FilePath);
+                                Helper.HideProgressBar();
+                                if (ShowMessage.InfoYNMess("This file is already in working directory,\n Do you want to replace it ?\n" + FilePath) == DialogResult.Yes)
+                                {
+                                    File.Delete(FilePath);
+                                }
+                                else
+                                {
+                                    FileRename(FilePath);
+                                }
+                                Helper.ShowProgressBar();
                             }
                             else
                             {
-                                FileRename(FilePath);
+                                return null;
                             }
+
                         }
 
                     }
@@ -993,6 +1060,8 @@ namespace AutocadPlugIn
                 dr["folderpath"] = Drawing.folderpath == null ? string.Empty : Drawing.folderpath;
                 dr["IsNewXref"] = "";//IsNewXref  not to assign value from here, if ever assign assign fasle.
                 dr["IsRBCFile"] = "true";//Always true.
+                dr["PK"] = "";// will be assign later
+                dr["FK"] = "";// will be assign later
                 dtDrawing.Rows.Add(dr);
 
             }
@@ -1324,6 +1393,93 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message); return null;
             }
 
+        }
+
+        public static DataTable RowFilter(DataTable dt, string ColumnName, string Value)
+        {
+            DataTable dtResult = dt.Clone();
+            try
+            {
+                DataView dv = dt.Copy().DefaultView;
+                dv.RowFilter = ColumnName + "='" + Value + "'";
+                dtResult = dv.ToTable();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return dtResult;
+        }
+        public static DataTable RowFilter(DataTable dt, string ColumnName1, string ColumnName2, string Operator)
+        {
+            DataTable dtResult = dt.Clone();
+            try
+            {
+                DataView dv = dt.Copy().DefaultView;
+                dv.RowFilter = ColumnName1 + Operator + ColumnName2;
+                dtResult = dv.ToTable();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return dtResult;
+        }
+
+        public static void GetSellectedNode(TreeGridNode ParentNode, ref int PBValue, int IncrementValue = 1)
+        {
+            try
+            {
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+                        PBValue += IncrementValue;
+
+                        GetSellectedNode(childNode, ref PBValue, IncrementValue);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public static string FormatDateTime(object dtDateTime)
+        {
+            return FormatDateTimeString(dtDateTime, 1);
+        }
+        public static string FormatDate(object dtDateTime)
+        {
+            return FormatDateTimeString(dtDateTime, 2);
+        }
+        public static string FormatTime(object dtDateTime)
+        {
+            return FormatDateTimeString(dtDateTime, 3);
+        }
+        /// <summary>
+        /// Returns formated date time string
+        /// </summary>
+        /// <param name="dtDateTime"></param>
+        /// <param name="Flag">1 for datetime, 2 for date and 3 for Time</param>
+        /// <returns></returns>
+        public static string FormatDateTimeString(object dtDateTime, int Flag)
+        {
+            string DT = "";
+            try
+            {
+                if (dtDateTime != null)
+                {
+                    string Format = Flag == 1 ? Helper.DateTimeFormat : Flag == 2 ? Helper.DateFormat : Flag == 3 ? Helper.TimeFormat : string.Empty;
+                    DT = Convert.ToString(dtDateTime) == string.Empty ? string.Empty : Convert.ToString(dtDateTime);
+                    DT = DT == string.Empty || Format == string.Empty ? string.Empty : Convert.ToDateTime(DT).ToString(Format);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return DT;
         }
     }
 }

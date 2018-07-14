@@ -8,25 +8,18 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using AdvancedDataGridView;
 using System.IO;
-
-using RedBracketConnector;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
 using Newtonsoft.Json;
-using RestSharp;
 namespace AutocadPlugIn.UI_Forms
 {
     public partial class frmSave_Active_Drawings : Form
     {
-        public ArrayList drawings = new ArrayList();
-        public ArrayList drawingsOpen = new ArrayList();
-        public Hashtable htNewDrawings = new Hashtable();
+
+        public Hashtable htAllDrawing = new Hashtable();
         private System.Data.DataTable dtTreeGridData = new System.Data.DataTable();
         RBConnector objRBC = new RBConnector();
-        Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
+        //  Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
         List<System.Data.DataTable> lstdtLayoutInfo = new List<System.Data.DataTable>();
         public bool LoadFlag = false;
         bool IsParentNew = false;
@@ -34,6 +27,8 @@ namespace AutocadPlugIn.UI_Forms
         bool IsParentNewChildOld = false;
         bool IsSaveAs = false;
         public List<String> AllDrawing = new List<String>();
+        public List<String> UnqDrawing = new List<String>();
+        public List<object> objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
         public frmSave_Active_Drawings(bool IsSaveAs = false)
         {
 
@@ -44,6 +39,7 @@ namespace AutocadPlugIn.UI_Forms
             //objCadMgr.SaveActiveDrawing();
 
         }
+
 
         private void Save_Active_Drawings_Load(object sender, EventArgs e)
         {
@@ -61,7 +57,7 @@ namespace AutocadPlugIn.UI_Forms
                 int totalCount = savetreeGrid.Nodes.Count;
                 int counter = 0;
 
-                ICADManager objCadMgr = CADFactory.getCADManager();
+
                 //objCadMgr.SaveActiveDrawing();
                 TreeGridNode node = null;
                 for (int i = 0; i < totalCount; i++)
@@ -71,13 +67,13 @@ namespace AutocadPlugIn.UI_Forms
                     savetreeGrid.Nodes.Remove(TreeNode1);
                 }
 
-                dtTreeGridData = objCadMgr.GetExternalRefreces(IsSaveAs);
+                dtTreeGridData = Helper.cadManager.GetExternalRefreces1(IsSaveAs);
 
 
                 string FoldID = "", FoldPath = "", ProJNmNo = "";
                 for (int i = 0; i < dtTreeGridData.Rows.Count; i++)
                 {
-                    
+
 
                     if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true" &&
                         Convert.ToString(dtTreeGridData.Rows[i]["DrawingId"]).Trim().Length == 0)
@@ -133,22 +129,30 @@ namespace AutocadPlugIn.UI_Forms
                     if (Convert.ToString(dtTreeGridData.Rows[i]["DrawingId"]).Trim().Length > 0)
                     {
                         decimal CurrentVersion = Convert.ToDecimal(dtTreeGridData.Rows[i]["Revision"]);
-                        decimal LatestVersion = Convert.ToDecimal(Helper.GetLatestVersion(Convert.ToString(dtTreeGridData.Rows[i]["DrawingNumber"])));
-
-                        if (CurrentVersion < LatestVersion)
+                        try
                         {
-                            if (ShowMessage.InfoYNMess("Newer version file\n" + Convert.ToString(dtTreeGridData.Rows[i]["DrawingName"]) + "\n is already available on server, Are you sure you want to upload ?") == DialogResult.No)
-                            {
-                                dtTreeGridData.Rows[i]["sourceid"] = "false";
-                                if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true")
-                                {
-                                    this.Close();
-                                    return;
-                                }
-                            }
 
+
+                            decimal LatestVersion = Convert.ToDecimal(Helper.GetLatestVersion(Convert.ToString(dtTreeGridData.Rows[i]["DrawingNumber"])));
+
+                            if (CurrentVersion < LatestVersion)
+                            {
+                                if (ShowMessage.InfoYNMess("Newer version file\n" + Convert.ToString(dtTreeGridData.Rows[i]["DrawingName"]) + "\n is already available on server, Are you sure you want to upload ?") == DialogResult.No)
+                                {
+                                    dtTreeGridData.Rows[i]["sourceid"] = "false";
+                                    if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true")
+                                    {
+                                        this.Close();
+                                        return;
+                                    }
+                                }
+
+                            }
                         }
+                        catch { }
                     }
+
+
                 }
 
 
@@ -168,7 +172,7 @@ namespace AutocadPlugIn.UI_Forms
 
 
                 Helper.FIllCMB(cadtype, objRBC.GetFIleType(), "name", "id", true);
-                Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true);
+                Helper.FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true, IsSortByDisplayMember: false);
                 Helper.FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true, "My Files");
 
 
@@ -183,66 +187,9 @@ namespace AutocadPlugIn.UI_Forms
                     }
 
 
-                    CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
+                    DataTable dtLayoutInfo = GetdtLayoutInfo(rw);
 
-
-
-                    #region LayoutInfo
-                    string LayoutInfo1 = Convert.ToString(rw["layoutinfo"]);
-                    List<LayoutInfo> objLI = JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
-
-                    System.Data.DataTable dtLayoutInfo = new System.Data.DataTable();
-                    dtLayoutInfo.Columns.Add("ChangeVersion");
-                    dtLayoutInfo.Columns.Add("FileLayoutName");
-                    dtLayoutInfo.Columns.Add("FileID1");
-                    dtLayoutInfo.Columns.Add("LayoutID");
-                    dtLayoutInfo.Columns.Add("LayoutType");
-                    dtLayoutInfo.Columns.Add("LayoutStatus");
-                    dtLayoutInfo.Columns.Add("Version");
-                    dtLayoutInfo.Columns.Add("Description");
-                    dtLayoutInfo.Columns.Add("IsFile");
-                    dtLayoutInfo.Columns.Add("TypeID");
-                    dtLayoutInfo.Columns.Add("StatusID");
-                    dtLayoutInfo.Columns.Add("ACLayoutID");
-                    dtLayoutInfo.Columns.Add("LayoutName1");
-
-                    dtLayoutInfo.Columns.Add("LayoutNo");
-                    dtLayoutInfo.Columns.Add("CreatedBy");
-                    dtLayoutInfo.Columns.Add("CreatedOn");
-                    dtLayoutInfo.Columns.Add("UpdatedBy");
-                    dtLayoutInfo.Columns.Add("UpdatedOn");
-                    if (objLI != null)
-                    {
-                        foreach (LayoutInfo obj in objLI)
-                        {
-                            DataRow dr = dtLayoutInfo.NewRow();
-                            dr["ChangeVersion"] = false;
-                            dr["FileLayoutName"] = obj.name;
-                            dr["FileID1"] = rw["drawingid"];
-                            dr["LayoutID"] = obj.id;
-                            dr["LayoutType"] = obj.typename;
-                            dr["LayoutStatus"] = obj.statusname;
-                            dr["Version"] = obj.versionno;
-                            dr["Description"] = obj.description;
-                            dr["IsFile"] = "0";
-                            dr["TypeID"] = obj.typeId;
-                            dr["StatusID"] = obj.statusId;
-                            dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
-                            dr["LayoutName1"] = obj.name;
-
-                            dr["LayoutNo"] = obj.fileNo;
-                            dr["CreatedBy"] = obj.createdby;
-                            dr["CreatedOn"] = obj.createdon;
-                            dr["UpdatedBy"] = obj.updatedby;
-                            dr["UpdatedOn"] = obj.updatedon;
-                            dtLayoutInfo.Rows.Add(dr);
-                        }
-                    }
-
-
-
-                    #endregion
-                    if (counter == 0 || rw["isroot"].ToString() == "true")
+                    if (rw["isroot"].ToString() == "true")
                     {
                         if (rw["drawingid"].ToString() != "")//update
                         {
@@ -274,7 +221,12 @@ namespace AutocadPlugIn.UI_Forms
                             , rw["folderid"]
                              , rw["folderid"]
                              , rw["IsNewXref"]
-                             , "", "", "","" //project,status,type id,ProjNo
+                             , "", "", "", "" //project,status,type id,ProjNo
+                            , rw["PK"]
+                            , rw["FK"]
+                             , rw["projectname"]
+                              , rw["folderid"]
+                              , rw["drawingstate"].ToString()
                             );
 
 
@@ -298,7 +250,7 @@ namespace AutocadPlugIn.UI_Forms
                             node.Cells["Check"].ReadOnly = true;
                         }
                         node.Expand();
-                        counter = 1;
+
 
 
                         if (rw["drawingid"].ToString() == "")
@@ -317,65 +269,23 @@ namespace AutocadPlugIn.UI_Forms
                                 dtLayoutInfo.Rows[i]["LayoutID"] = "";
                             }
                         }
-                        
 
+                        objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
 
-                        node.Tag = dtLayoutInfo;
+                        node.Tag = objTag;
+                        AssigndtLayoutInfoToTag(node, dtLayoutInfo);
+                        AddNode(dtTreeGridData, rw, node);
                     }
-                    else
-                    {
-
-                        TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
-                              rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(),
-                               rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"], rw["projectnameno"]
-                                   , rw["revision"].ToString(), rw["candelete"]
-                               , rw["isowner"]
-                               , rw["hasviewpermission"]
-                               , rw["isactfilelatest"]
-                               , rw["iseditable"]
-                               , rw["caneditstatus"]
-                               , rw["hasstatusclosed"]
-                               , rw["isletest"]
-                               , rw["prefix"]
-                               , rw["projectnameno"]
-                                , rw["folderpath"]
-                                , rw["folderid"]
-                                 , rw["folderid"]
-                                  , rw["IsNewXref"]
-                                  , "", "", "", "" //project,status,type id,ProjNo
-                                  );
 
 
-                        node1.Cells["projectname"].ReadOnly = true;
-                        if (rw["drawingid"].ToString() == "")
-                        {
-                            if (IsParentNew)
-                            {
-                                node1.Cells["projectname"].Value = "";
-                                node1.Cells["FolderPath"].Value = "";
-                                node1.Cells["FolderID"].Value = "";
-                            }
 
 
-                            node1.Cells["drawingnumber"].Value = "AutoFill";
-                        }
-                        else
-                        {
-                            node.Cells["State"].ReadOnly = !Convert.ToBoolean(rw["caneditstatus"]);
-                        }
 
-                        if (rw["lockstatus"].ToString() == "1")
-                        {
-                            node1.ImageIndex = 0;
-                        }
 
-                        else if (rw["lockstatus"].ToString() == "2")
-                        {
-                            node1.ImageIndex = 1;
-                        }
 
-                        node1.Tag = dtLayoutInfo;
-                    }
+
+
+
 
 
                 }
@@ -396,7 +306,7 @@ namespace AutocadPlugIn.UI_Forms
                         }
                     }
                 }
-                if(IsRevisionVisible)
+                if (IsRevisionVisible)
                 {
                     revision.Visible = true;
                 }
@@ -413,6 +323,152 @@ namespace AutocadPlugIn.UI_Forms
             }
             LoadFlag = false;
             Cursor.Current = Cursors.Default;
+        }
+
+        public void AddNode(DataTable dtDrawing, DataRow rw1, TreeGridNode node = null)
+        {
+            try
+            {
+
+                System.Data.DataTable dtLayoutInfo = GetdtLayoutInfo(rw1);
+
+                DataTable dtChild = Helper.RowFilter(Helper.RowFilter(dtDrawing, "PK", "FK", "<>"), "FK", Convert.ToString(rw1["PK"]));
+                foreach (DataRow rw in dtChild.Rows)
+                {
+
+                    TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
+                          rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(),
+                           rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"], rw["projectnameno"]
+                               , rw["revision"].ToString(), rw["candelete"]
+                           , rw["isowner"]
+                           , rw["hasviewpermission"]
+                           , rw["isactfilelatest"]
+                           , rw["iseditable"]
+                           , rw["caneditstatus"]
+                           , rw["hasstatusclosed"]
+                           , rw["isletest"]
+                           , rw["prefix"]
+                           , rw["projectnameno"]
+                            , rw["folderpath"]
+                            , rw["folderid"]
+                             , rw["folderid"]
+                              , rw["IsNewXref"]
+                              , "", "", "", "" //project,status,type id,ProjNo 
+                            , rw["PK"]
+                            , rw["FK"]
+                             , rw["projectname"]
+                              , rw["folderid"]
+                              , rw["drawingstate"].ToString()
+                              );
+
+
+                    node1.Cells["projectname"].ReadOnly = true;
+                    if (rw["drawingid"].ToString() == "")
+                    {
+                        if (IsParentNew)
+                        {
+                            node1.Cells["projectname"].Value = "";
+                            node1.Cells["FolderPath"].Value = "";
+                            node1.Cells["FolderID"].Value = "";
+                        }
+
+
+                        node1.Cells["drawingnumber"].Value = "AutoFill";
+                    }
+                    else
+                    {
+                        node.Cells["State"].ReadOnly = !Convert.ToBoolean(rw["caneditstatus"]);
+                    }
+
+                    if (rw["lockstatus"].ToString() == "1")
+                    {
+                        node1.ImageIndex = 0;
+                    }
+
+                    else if (rw["lockstatus"].ToString() == "2")
+                    {
+                        node1.ImageIndex = 1;
+                    }
+                    node1.Expand();
+
+                    objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
+
+                    node1.Tag = objTag;
+                    AssigndtLayoutInfoToTag(node1, dtLayoutInfo);
+
+                    AddNode(dtTreeGridData, rw, node1);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+
+        public DataTable GetdtLayoutInfo(DataRow rw)
+        {
+            System.Data.DataTable dtLayoutInfo = new System.Data.DataTable();
+            try
+            {
+                #region LayoutInfo
+                string LayoutInfo1 = Convert.ToString(rw["layoutinfo"]);
+                List<LayoutInfo> objLI = JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
+
+
+                dtLayoutInfo.Columns.Add("ChangeVersion");
+                dtLayoutInfo.Columns.Add("FileLayoutName");
+                dtLayoutInfo.Columns.Add("FileID1");
+                dtLayoutInfo.Columns.Add("LayoutID");
+                dtLayoutInfo.Columns.Add("LayoutType");
+                dtLayoutInfo.Columns.Add("LayoutStatus");
+                dtLayoutInfo.Columns.Add("Version");
+                dtLayoutInfo.Columns.Add("Description");
+                dtLayoutInfo.Columns.Add("IsFile");
+                dtLayoutInfo.Columns.Add("TypeID");
+                dtLayoutInfo.Columns.Add("StatusID");
+                dtLayoutInfo.Columns.Add("ACLayoutID");
+                dtLayoutInfo.Columns.Add("LayoutName1");
+
+                dtLayoutInfo.Columns.Add("LayoutNo");
+                dtLayoutInfo.Columns.Add("CreatedBy");
+                dtLayoutInfo.Columns.Add("CreatedOn");
+                dtLayoutInfo.Columns.Add("UpdatedBy");
+                dtLayoutInfo.Columns.Add("UpdatedOn");
+                if (objLI != null)
+                {
+                    foreach (LayoutInfo obj in objLI)
+                    {
+                        DataRow dr = dtLayoutInfo.NewRow();
+                        dr["ChangeVersion"] = false;
+                        dr["FileLayoutName"] = obj.name;
+                        dr["FileID1"] = rw["drawingid"];
+                        dr["LayoutID"] = obj.id;
+                        dr["LayoutType"] = obj.typename;
+                        dr["LayoutStatus"] = obj.statusname;
+                        dr["Version"] = obj.versionno;
+                        dr["Description"] = obj.description;
+                        dr["IsFile"] = "0";
+                        dr["TypeID"] = obj.typeId;
+                        dr["StatusID"] = obj.statusId;
+                        dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
+                        dr["LayoutName1"] = obj.name;
+
+                        dr["LayoutNo"] = obj.fileNo;
+                        dr["CreatedBy"] = obj.createdby;
+                        dr["CreatedOn"] = obj.createdon;
+                        dr["UpdatedBy"] = obj.updatedby;
+                        dr["UpdatedOn"] = obj.updatedon;
+                        dtLayoutInfo.Rows.Add(dr);
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return dtLayoutInfo;
         }
 
         private void ClearTreeView(TreeGridNode CurrentNode)
@@ -451,30 +507,7 @@ namespace AutocadPlugIn.UI_Forms
                 bool Is_Delete = false;
                 bool Is_Save = false;
                 int PBValue = 7;
-                #region Commented Code
-                //String FilePath = db.OriginalFileName;
 
-                //Test Code
-                try
-                {
-                    //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                    //DocumentLock doclock = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.LockDocument();
-                    //Database db = doc.Database;
-
-
-                    //    db.ThumbnailBitmap = doc.CapturePreviewImage(100,100);
-                    //    Bitmap bm = db.ThumbnailBitmap;
-
-                    //    //db.SaveAs("castial", DwgVersion.Current);
-                    //    pictureBox1.Image = bm;
-                    //return;
-
-                }
-                catch (Exception E)
-                {
-
-                }
-                #endregion
 
                 //To check howmany file is selected.
                 foreach (TreeGridNode treeGridNode in savetreeGrid.Nodes)
@@ -483,6 +516,7 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         selectedTreeGridNodes.Add(treeGridNode);
                         PBValue++; PBValue++; PBValue++; PBValue++;
+                        Helper.GetSellectedNode(treeGridNode, ref PBValue, 3);
                     }
                 }
 
@@ -494,185 +528,19 @@ namespace AutocadPlugIn.UI_Forms
                     return;
                 }
                 #region LayoutTable Settlement
-                foreach (TreeGridNode ParentNode in savetreeGrid.Nodes)
-                {
-                    foreach (TreeGridNode ChildNode in ParentNode.Nodes)
-                    {
-                        if (IsParentNewChildOld  || IsSaveAs)
-                        {
-                            if (Convert.ToString(ChildNode.Cells["drawingID"].Value).Trim().Length > 0)
-                            {
-                                string PN = Convert.ToString(ChildNode.Cells["ProjectName"].Value).Trim();
-                                string OPN = Convert.ToString(ChildNode.Cells["OldProject"].Value).Trim();
-                                if (PN == OPN)
-                                {
-                                    ChildNode.Cells["FolderID"].Value = ChildNode.Cells["OldFolderID"].Value;
-                                    ChildNode.Cells["FolderPath"].Value = "";
-                                }
-                                else
-                                {
-                                    ChildNode.Cells["drawingID"].Value = "";
-                                    System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)ChildNode.Tag;
+                LayoutInfoSettlement(selectedTreeGridNodes[0]);
 
-                                    for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
-                                    {
-                                        if (Convert.ToString(dtLayoutInfo.Rows[i]["IsFile"]) == "1")
-                                        {
-                                            dtLayoutInfo.Rows[i]["ChangeVersion"] = "False";
-                                        }
-                                        else
-                                        {
-                                            dtLayoutInfo.Rows[i]["ChangeVersion"] = "True";
-                                        }
-                                        dtLayoutInfo.Rows[i]["FileID1"] = "";
-                                        dtLayoutInfo.Rows[i]["LayoutID"] = "";
-                                    }
-
-                                    ChildNode.Tag = dtLayoutInfo;
-                                }
-                            }
-                        }
-                    }
-                }
                 #endregion
                 //To check whether any file with same name exist or not
                 #region Duplication Check
                 bool IsDuplicationCheck = true;
                 if (IsDuplicationCheck)
                 {
-                    foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
+                    if (Name_Length_Duplication_Check(selectedTreeGridNodes[0]))
                     {
-                        System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)currentTreeGrdiNode.Tag;
-                        //File name and layout out name length validation
-                        for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
-                        {
-                            string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
-                            string LN = Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"]);
-
-                            if (Convert.ToString(dtLayoutInfo.Rows[i]["IsFile"]) == "1")
-                            {
-                                if (FN.Length < Helper.FileLayoutNameLength)
-                                {
-
-                                }
-                                else
-                                {
-                                    ShowMessage.ErrorMess(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File name length exceeds maximum limit.");
-                                    this.Cursor = Cursors.Default;
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                if (LN.Length < Helper.FileLayoutNameLength)
-                                {
-
-                                }
-                                else
-                                {
-                                    ShowMessage.ErrorMess(LN + "\n Layout name length exceeds maximum limit. of file " + Environment.NewLine + FN);
-                                    this.Cursor = Cursors.Default;
-                                    return;
-                                }
-                            }
-                        }
-                        string MyProjectId = "";
-                        try
-                        {
-
-                            MyProjectId = Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(currentTreeGrdiNode.Cells["projectname"].Value));
-                        }
-                        catch
-                        {
-                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-
-                            MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(currentTreeGrdiNode.Cells["projectname"].Value), "PNAMENO");
-                        }
-                        MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
-                        if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Trim().Length == 0)
-                        {
-                            if (File.Exists(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()))
-                            {
-                                string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
-
-                                if (!objRBC.CheckFileExistance(MyProjectId, FN))
-                                {
-                                    this.Cursor = Cursors.Default;
-                                    return;
-                                }
-
-
-                            }
-                            else
-                            {
-                                ShowMessage.ErrorMess(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File does not exists.");
-                                this.Cursor = Cursors.Default;
-                                return;
-                            }
-                        }
-                        foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                        {
-                            //File name and layout out name length validation
-                            dtLayoutInfo = (System.Data.DataTable)ChildNode.Tag;
-                            for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
-                            {
-                                string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(ChildNode.Cells["filepath"].Value).Trim()), Convert.ToString(ChildNode.Cells["prefix"].Value).Trim());
-                                string LN = Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"]);
-                                if (FN.Length < Helper.FileLayoutNameLength)
-                                {
-
-                                }
-                                else
-                                {
-                                    ShowMessage.ErrorMess(FN + "\n File name length exceeds maximum limit.");
-                                    this.Cursor = Cursors.Default;
-                                    return;
-                                }
-                                if (LN.Length < Helper.FileLayoutNameLength)
-                                {
-
-                                }
-                                else
-                                {
-                                    ShowMessage.ErrorMess(LN + "\n Layout name length exceeds maximum limit. of file " + Environment.NewLine + FN);
-                                    this.Cursor = Cursors.Default;
-                                    return;
-                                }
-                            }
-                            MyProjectId = "";
-                            try
-                            {
-
-                                MyProjectId = Convert.ToString(ChildNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(ChildNode.Cells["projectname"].Value));
-                            }
-                            catch
-                            {
-                                DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)currentTreeGrdiNode.Cells["projectname"];
-
-                                MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(ChildNode.Cells["projectname"].Value), "PNAMENO");
-                            }
-                            MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
-                            if (Convert.ToString(ChildNode.Cells["drawingID"].Value).Trim().Length == 0)
-                            {
-                                if (File.Exists(Convert.ToString(ChildNode.Cells["filepath"].Value).Trim()))
-                                {
-                                    string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(ChildNode.Cells["filepath"].Value).Trim()), Convert.ToString(ChildNode.Cells["prefix"].Value).Trim());
-                                    if (!objRBC.CheckFileExistance(MyProjectId, FN))
-                                    {
-                                        this.Cursor = Cursors.Default;
-                                        return;
-                                    }
-
-                                }
-                                else
-                                {
-                                    ShowMessage.ErrorMess(Convert.ToString(ChildNode.Cells["filepath"].Value).Trim() + "\n File does not exists.");
-                                    this.Cursor = Cursors.Default;
-                                    return;
-                                }
-                            }
-                        }
+                        return;
                     }
+
                 }
                 #endregion
                 //To check whether any file is selected or not
@@ -681,13 +549,20 @@ namespace AutocadPlugIn.UI_Forms
 
                 //string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
                 SaveController objController = new SaveController();
-                AutoCADManager objMgr = new AutoCADManager();
-                SaveCommand objCmd = new SaveCommand(); 
+
+                SaveCommand objCmd = new SaveCommand();
                 lstdtLayoutInfo = new List<System.Data.DataTable>();
-                 
+
+                htAllDrawing.Clear();
                 AllDrawing.Clear();
-                GenFileInfo();
-                 
+                GenFileInfoDT(selectedTreeGridNodes[0]);
+                GenFileInfo(selectedTreeGridNodes[0]);
+
+                foreach (var key in htAllDrawing.Keys)
+                {
+                    UnqDrawing.Add(Convert.ToString(htAllDrawing[key]));
+                }
+
                 objCmd.AllDrawing = AllDrawing;
                 // to ask user want to delete file after save or not.
                 if (ShowMessage.InfoYNMess("Would you like to delete local file/files" + Environment.NewLine + " after saving it to RedBracket ?") == DialogResult.Yes)
@@ -713,103 +588,75 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     String FilePath = objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
-                    try
-                    {
-                        objMgr.SaveActiveDrawing(false);
-                    }
-                    catch { }
-
-
-                    bool IsRenameXref = true;
                     Helper.GetProgressBar(PBValue, "File Save in Progress...", "Closing files to upload.");
 
-                    if (IsRenameXref)
-                    {
-                        #region Close Files
-                        bool IsCloseFile = true;
 
-                        if (IsCloseFile)
+                    #region Close Files
+
+                    Helper.cadManager.ChecknCloseOpenedDoc(FilePath);
+                    CloseFile(currentTreeGrdiNode);
+
+                    #endregion
+
+
+
+                    Helper.IncrementProgressBar(1, "Uploading file properties.");
+
+                    // save properties in RB
+                    Is_Save = objController.ExecuteSave(objCmd, false, lstdtLayoutInfo);
+
+
+
+                    if (Is_Save)
+                    {
+                        //Helper.CloseProgressBar();
+
+
+                        #region Update File Properties 
+
+                        Helper.IncrementProgressBar(1, "Updating new properties to local file.");
+
+                        // Update document info into document for future referance 
+                        if (objController.dtDrawingProperty.Rows.Count > 0)
                         {
-                            objMgr.ChecknCloseOpenedDoc(FilePath);
-                            foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                            {
-                                if ((bool)ChildNode.Cells[0].FormattedValue)
-                                {
-                                    objMgr.ChecknCloseOpenedDoc(Convert.ToString(ChildNode.Cells["filepath"].Value));
-                                }
-                            }
+                            Helper.cadManager.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
                         }
+
+                        //Update Xref name to wihout prefix 
+                        //objMgr.UpdateExRefPathInfo1(FilePath);
+
+
+                        #endregion
+                        Helper.IncrementProgressBar(1, "Updating file names.");
+                        //Helper.CloseProgressBar();
+
+                        Helper.cadManager.UpdateExRefPathInfo2(objCmd.FilePath, objCmd.FilePath, ref objController.plmObjs);
+
+                        Helper.IncrementProgressBar(1, "Uploading file to redbracket.");
+
+
+                        // save File in RB
+                        Is_Save = objController.ExecuteSave(objCmd, true);
+                        #region  Renaming Parent and XRef Files
+
+                        //update Xref name to NewXref Name with PreFix
+
+
                         #endregion
 
 
 
-                        Helper.IncrementProgressBar(1, "Uploading file properties.");
-
-                        // save properties in RB
-                        Is_Save = objController.ExecuteSave(objCmd, false, lstdtLayoutInfo);
-
-
-
-                        if (Is_Save)
-                        {
-                            //Helper.CloseProgressBar();
-
-
-                            #region Update File Properties 
-
-                            Helper.IncrementProgressBar(1, "Updating new properties to local file.");
-
-                            // Update document info into document for future referance 
-                            if (objController.dtDrawingProperty.Rows.Count > 0)
-                            {
-                                objMgr.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
-                            }
-
-                            //Update Xref name to wihout prefix 
-                            //objMgr.UpdateExRefPathInfo1(FilePath);
-
-
-                            #endregion
-                            Helper.IncrementProgressBar(1, "Updating file names.");
-
-
-                            objMgr.UpdateExRefPathInfo2(objCmd.FilePath, ref objController.plmObjs);
-
-                            Helper.IncrementProgressBar(1, "Uploading file to redbracket.");
-
-
-                            // save File in RB
-                            Is_Save = objController.ExecuteSave(objCmd, true);
-                            #region  Renaming Parent and XRef Files
-
-                            //update Xref name to NewXref Name with PreFix
-
-
-                            #endregion
-
-
-
-                        }
-
-
                     }
+
+
+
 
                     // To delete file
                     if (Is_Delete && File.Exists(objCmd.FilePath) && Is_Save)
                     {
                         Helper.IncrementProgressBar(1, "Deleting local files.");
-
-                        // Save and close the file before deleting. Otherwise system will not allow you to Delete the file.
-                        //objMgr.SaveActiveDrawing(); // Saves the current active drawing.
-                        //objMgr.CloseActiveDocument(objCmd.FilePath);    // Close the active document. Specify the file name, other files may be opened.
                         File.Delete(objCmd.FilePath);
-                        foreach (TreeGridNode ChildNode in currentTreeGrdiNode.Nodes)
-                        {
-                            if ((bool)ChildNode.Cells[0].FormattedValue)
-                            {
-                                File.Delete(Convert.ToString(ChildNode.Cells["filepath"].Value));
-                            }
-                        }
+                        DeleteFile(currentTreeGrdiNode, objController.plmObjs);
 
                     }
                 }
@@ -839,7 +686,533 @@ namespace AutocadPlugIn.UI_Forms
             this.Cursor = Cursors.Default;
         }
 
+        public bool Name_Length_Duplication_Check(TreeGridNode ParentNode)
+        {
 
+            try
+            {
+                if (Name_Length_Check(ParentNode))
+                {
+                    return true;
+                }
+                if (Name_Duplication_Check(ParentNode))
+                {
+                    return true;
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return true;
+            }
+            return false;
+        }
+        public bool Name_Length_Check(TreeGridNode ParentNode)
+        {
+
+            try
+            {
+                bool RetVal = FileName_LayoutNameLengthValidation(ParentNode);
+                if (RetVal)
+                    return RetVal;
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+                        RetVal = FileName_LayoutNameLengthValidation(childNode);
+
+                        if (RetVal)
+                            return RetVal;
+                        else
+                        {
+                            RetVal = Name_Length_Check1(childNode);
+                            if (RetVal)
+                                return RetVal;
+                        }
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return true;
+            }
+            return false;
+        }
+        public bool Name_Length_Check1(TreeGridNode ParentNode)
+        {
+
+            try
+            {
+                bool RetVal = false;
+
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+
+                        RetVal = FileName_LayoutNameLengthValidation(childNode);
+                        if (RetVal)
+                            return RetVal;
+                        else
+                        {
+                            RetVal = Name_Length_Check1(childNode);
+                            if (RetVal)
+                                return RetVal;
+                        }
+
+
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return true;
+            }
+            return false;
+        }
+        public bool FileName_LayoutNameLengthValidation(TreeGridNode currentTreeGrdiNode)
+        {
+            try
+            {
+                System.Data.DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(currentTreeGrdiNode);
+                //File name and layout out name length validation
+                for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
+                {
+                    string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
+                    string LN = Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"]);
+
+                    if (Convert.ToString(dtLayoutInfo.Rows[i]["IsFile"]) == "1")
+                    {
+                        if (FN.Length < Helper.FileLayoutNameLength)
+                        {
+
+                        }
+                        else
+                        {
+                            ShowMessage.ErrorMess(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File name length exceeds maximum limit.");
+                            this.Cursor = Cursors.Default;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (LN.Length < Helper.FileLayoutNameLength)
+                        {
+
+                        }
+                        else
+                        {
+                            ShowMessage.ErrorMess(LN + "\n Layout name length exceeds maximum limit. of file " + Environment.NewLine + FN);
+                            this.Cursor = Cursors.Default;
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return true;
+            }
+            return false;
+        }
+        public bool Name_Duplication_Check(TreeGridNode ParentNode)
+        {
+
+            try
+            {
+                bool RetVal = FileNameDuplicationCheck(ParentNode);
+                if (RetVal)
+                    return RetVal;
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+                        RetVal = FileNameDuplicationCheck(childNode);
+                        if (RetVal)
+                            return RetVal;
+                        else
+                        {
+                            RetVal = Name_Duplication_Check1(childNode);
+                            if (RetVal)
+                                return RetVal;
+                        }
+
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return true;
+            }
+            return false;
+        }
+        public bool Name_Duplication_Check1(TreeGridNode ParentNode)
+        {
+
+            try
+            {
+                bool RetVal = false;
+
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+
+                        RetVal = FileNameDuplicationCheck(childNode);
+                        if (RetVal)
+                            return RetVal;
+                        else
+                        {
+                            RetVal = Name_Duplication_Check1(childNode);
+                            if (RetVal)
+                                return RetVal;
+                        }
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return true;
+            }
+            return false;
+        }
+        public void SaveFiles(TreeGridNode ParentNode)
+        {
+            try
+            {
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+
+
+                        SaveFiles(childNode);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public string GetProjectID(TreeGridNode ParentNode)
+        {
+            string ProjectID = "";
+            string ProjectNameNo = "";
+            string ProjectName = "";
+            string ProjectNo = "";
+            try
+            {
+                GetProjectDetail(ParentNode, ref ProjectID, ref ProjectNameNo, ref ProjectName, ref ProjectNo);
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return ProjectID;
+        }
+        public string GetProjectNo(TreeGridNode ParentNode)
+        {
+            string ProjectID = "";
+            string ProjectNameNo = "";
+            string ProjectName = "";
+            string ProjectNo = "";
+            try
+            {
+                GetProjectDetail(ParentNode, ref ProjectID, ref ProjectNameNo, ref ProjectName, ref ProjectNo);
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return ProjectNo;
+        }
+        public string GetProjectName(TreeGridNode ParentNode)
+        {
+            string ProjectID = "";
+            string ProjectNameNo = "";
+            string ProjectName = "";
+            string ProjectNo = "";
+            try
+            {
+                GetProjectDetail(ParentNode, ref ProjectID, ref ProjectNameNo, ref ProjectName, ref ProjectNo);
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return ProjectName;
+        }
+        public string GetProjectNameNo(TreeGridNode ParentNode)
+        {
+            string ProjectID = "";
+            string ProjectNameNo = "";
+            string ProjectName = "";
+            string ProjectNo = "";
+            try
+            {
+                GetProjectDetail(ParentNode, ref ProjectID, ref ProjectNameNo, ref ProjectName, ref ProjectNo);
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return ProjectNameNo;
+        }
+        public void GetProjectDetail(TreeGridNode selectedTreeNode, ref string ProjectID, ref string ProjectNameNo, ref string ProjectName, ref string ProjectNo)
+        {
+            try
+            {
+                try
+                {
+
+                    ProjectID = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
+                    ProjectNameNo = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "PNAMENO");
+                    ProjectName = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "name");
+                    ProjectNo = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "number");
+
+                }
+                catch
+                {
+                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
+
+                    ProjectID = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    ProjectNameNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "PNAMENO", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    ProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public string GetFileStatus(TreeGridNode selectedTreeNode, bool IsOld = false)
+        {
+            string FileStatus = "";
+            try
+            {
+                string CN = "State";
+                if(IsOld)
+                    CN = "OldState";
+                DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["State"];
+                try
+                {
+                    //FileStatus = Convert.ToString(selectedTreeNode.Cells["State"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
+                    FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "statusname", Convert.ToString(selectedTreeNode.Cells[CN].Value), "id");
+                }
+                catch
+                {
+                    //FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
+                    FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "statusname", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return FileStatus;
+        }
+
+        public DataTable GetdtLayoutInfoFromTag(TreeGridNode selectedTreeNode)
+        {
+            try
+            {
+                objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
+                objTag = (List<object>)selectedTreeNode.Tag;
+                DataTable dtLayoutInfo = new DataTable();
+                dtLayoutInfo = (DataTable)objTag[0];
+                return dtLayoutInfo;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return null;
+        }
+        public Stack<List<clsFolderSearchReasult>> GetStackFolderSearchReasultFromTag(TreeGridNode selectedTreeNode)
+        {
+            try
+            {
+                objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
+                objTag = (List<object>)selectedTreeNode.Tag;
+                Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
+                StackFolderSearchReasult = (Stack<List<clsFolderSearchReasult>>)objTag[1];
+                return StackFolderSearchReasult;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return null;
+        }
+        public void AssignStackFolderSearchReasultToTag(TreeGridNode selectedTreeNode, Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult)
+        {
+            try
+            {
+                objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
+                objTag = (List<object>)selectedTreeNode.Tag;
+                objTag[1] = StackFolderSearchReasult;
+                selectedTreeNode.Tag = objTag;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+        public void AssigndtLayoutInfoToTag(TreeGridNode selectedTreeNode, DataTable dtLayoutInfo)
+        {
+            try
+            {
+                objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
+                objTag = (List<object>)selectedTreeNode.Tag;
+                objTag[0] = dtLayoutInfo;
+                selectedTreeNode.Tag = objTag;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+        public void LayoutInfoSettlement(TreeGridNode ParentNode)
+        {
+            try
+            {
+                foreach (TreeGridNode ChildNode in ParentNode.Nodes)
+                {
+                    if ((bool)ChildNode.Cells[0].FormattedValue)
+                    {
+
+                        if (IsParentNewChildOld || IsSaveAs)
+                        {
+                            if (Convert.ToString(ChildNode.Cells["drawingID"].Value).Trim().Length > 0)
+                            {
+                                string PN = Convert.ToString(ChildNode.Cells["ProjectName"].Value).Trim();
+                                string OPN = Convert.ToString(ChildNode.Cells["OldProject"].Value).Trim();
+                                if (PN == OPN)
+                                {
+                                    ChildNode.Cells["FolderID"].Value = ChildNode.Cells["OldFolderID"].Value;
+                                    ChildNode.Cells["FolderPath"].Value = "";
+                                }
+                                else
+                                {
+                                    ChildNode.Cells["drawingID"].Value = "";
+                                    System.Data.DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(ChildNode);
+
+                                    for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
+                                    {
+                                        if (Convert.ToString(dtLayoutInfo.Rows[i]["IsFile"]) == "1")
+                                        {
+                                            dtLayoutInfo.Rows[i]["ChangeVersion"] = "False";
+                                        }
+                                        else
+                                        {
+                                            dtLayoutInfo.Rows[i]["ChangeVersion"] = "True";
+                                        }
+                                        dtLayoutInfo.Rows[i]["FileID1"] = "";
+                                        dtLayoutInfo.Rows[i]["LayoutID"] = "";
+                                    }
+
+
+                                    AssigndtLayoutInfoToTag(ChildNode, dtLayoutInfo);
+                                }
+                            }
+                            LayoutInfoSettlement(ChildNode);
+                        }
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public bool FileNameDuplicationCheck(TreeGridNode currentTreeGrdiNode)
+        {
+            try
+            {
+                string MyProjectId = GetProjectID(currentTreeGrdiNode);
+
+                MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
+                if (Convert.ToString(currentTreeGrdiNode.Cells["drawingID"].Value).Trim().Length == 0)
+                {
+                    if (File.Exists(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()))
+                    {
+                        string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
+
+                        if (!objRBC.CheckFileExistance(MyProjectId, FN))
+                        {
+                            this.Cursor = Cursors.Default;
+                            return true;
+                        }
+
+
+                    }
+                    else
+                    {
+                        ShowMessage.ErrorMess(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File does not exists.");
+                        this.Cursor = Cursors.Default;
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return true;
+            }
+        }
+
+        public void DeleteFile(TreeGridNode ParentNode, List<PLMObject> plmObjs)
+        {
+            try
+            {
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+
+                        foreach (PLMObject obj in plmObjs)
+                        {
+                            if (obj.ObjectName == Convert.ToString(childNode.Cells["filepath"].Value))
+                            {
+                                childNode.Cells["filepath"].Value = obj.FilePath;
+                                break;
+                            }
+                        }
+                        File.Delete(Convert.ToString(childNode.Cells["filepath"].Value));
+
+                        DeleteFile(childNode, plmObjs);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public void CloseFile(TreeGridNode ParentNode)
+        {
+            try
+            {
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+
+                        Helper.cadManager.ChecknCloseOpenedDoc(Convert.ToString(childNode.Cells["filepath"].Value));
+
+                        CloseFile(childNode);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
 
         private void cancel_Click(object sender, EventArgs e)
         {
@@ -849,209 +1222,309 @@ namespace AutocadPlugIn.UI_Forms
         private void savetreeGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // return;
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+            {
+                return;
+            }
             TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-            if (e.ColumnIndex == 0)
+
+            try
             {
-
-
-
-                #region "Lock Drawings"
-                if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "0")
+                if (e.ColumnIndex == 0)
                 {
-                    ArrayList arDrawingIDs = new ArrayList();
-                    arDrawingIDs.Add(selectedTreeNode.Cells["drawingID"].Value.ToString());
-                    frmLock1 objLock = new frmLock1();
-                    if (!objLock.LockDrawings(arDrawingIDs))
+
+
+
+                    #region "Lock Drawings"
+                    if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "0")
                     {
-                        selectedTreeNode.ImageIndex = 0;
-                        selectedTreeNode.Cells["lockstatus"].Value = "1";
+                        ArrayList arDrawingIDs = new ArrayList();
+                        arDrawingIDs.Add(selectedTreeNode.Cells["drawingID"].Value.ToString());
+                        frmLock1 objLock = new frmLock1();
+                        if (!objLock.LockDrawings(arDrawingIDs))
+                        {
+                            selectedTreeNode.ImageIndex = 0;
+                            selectedTreeNode.Cells["lockstatus"].Value = "1";
+                        }
                     }
-                }
-                if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "2")
-                {
-                    selectedTreeNode.Cells["Check"].Value = false;
-                    savetreeGrid.RefreshEdit();
-                    MessageBox.Show("This drawing is locked by other user.");
+                    if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "2")
+                    {
+                        selectedTreeNode.Cells["Check"].Value = false;
+                        savetreeGrid.RefreshEdit();
+                        MessageBox.Show("This drawing is locked by other user.");
 
-                    return;
-                }
-                #endregion
+                        return;
+                    }
+                    #endregion
 
-
-                if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
-                {
-
-
-                    if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim().Length > 0)
+                    ChangeNodeValue(savetreeGrid.Nodes[0], selectedTreeNode);
+                    if ((bool)selectedTreeNode.Cells["check"].EditedFormattedValue)
                     {
 
-                        if (!Convert.ToBoolean(selectedTreeNode.Cells["isletest"].Value))
-                        {
-                            ShowMessage.ValMess("This file is not latest file, so you can not save it."); selectedTreeNode.Cells["check"].Value = false; savetreeGrid.RefreshEdit();
-                            return;
-                        }
-                        if (Convert.ToBoolean(selectedTreeNode.Cells["hasStatusClosed"].Value))
-                        {
-                            ShowMessage.ValMess("This file is closed, so you can not save it."); selectedTreeNode.Cells["check"].Value = false; savetreeGrid.RefreshEdit();
-                            return;
-                        }
 
-                        if (Convert.ToBoolean(selectedTreeNode.Cells["isowner"].Value))
+                        if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim().Length > 0)
                         {
-                        }
-                        else
-                        {
-                            if (!Convert.ToBoolean(selectedTreeNode.Cells["isEditable"].Value))
+
+                            if (!Convert.ToBoolean(selectedTreeNode.Cells["isletest"].Value))
                             {
-                                ShowMessage.InfoMess("This file is not editable. so you can not save it.");
-                                selectedTreeNode.Cells["check"].Value = false;
-                                savetreeGrid.RefreshEdit();
-                                return;
+                                if (ShowMessage.ValMessYN("This file is not latest file, Do you want to upload it anyway ?.") == DialogResult.Yes)
+                                {
+
+                                }
+                                else
+                                {
+                                    selectedTreeNode.Cells["check"].Value = false; savetreeGrid.RefreshEdit();
+                                    return;
+                                }
                             }
-                        }
-
-
-                    }
-                    //if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
-                    {
-                        string MyProjectId = "";
-                        try
-                        {
-                            MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
-                        }
-                        catch
-                        {
-                            DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
-                            MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                        }
-
-                        MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
-                        System.Data.DataTable dtLayoutInfo = selectedTreeNode.Tag == null ? new System.Data.DataTable() : (System.Data.DataTable)selectedTreeNode.Tag;
-                        frmLayoutVersionUpdate objfrm = new frmLayoutVersionUpdate(
-                            Convert.ToString(selectedTreeNode.Cells["drawingid"].Value),
-                             Convert.ToString(selectedTreeNode.Cells["drawing"].Value),
-                              Convert.ToString(selectedTreeNode.Cells["cadtype"].FormattedValue),
-                               Convert.ToString(selectedTreeNode.Cells["State"].FormattedValue),
-                                Convert.ToString(selectedTreeNode.Cells["revision"].Value),
-                                MyProjectId,
-                                Convert.ToString(selectedTreeNode.Cells["filepath"].Value));
-                        objfrm.dtLayoutInfo = dtLayoutInfo.Copy();
-                        objfrm.ShowDialog();
-                        if (objfrm.dtLayoutInfo.Rows.Count > 0)
-                        {
-                            selectedTreeNode.Tag = objfrm.dtLayoutInfo;
-                        }
-                    }
-
-
-
-                    if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value) == string.Empty)
-                    {
-                        selectedTreeNode.Cells["projectname"].ReadOnly = false;
-                    }
-                    else
-                    {
-                        selectedTreeNode.Cells["projectname"].ReadOnly = true;
-                    }
-
-                }
-            }
-            if (e.ColumnIndex == BtnBrowseFolder.Index)
-            {
-                if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "true")
-                {
-                    string MyProjectId = "", FolderID = "", ProjectName = "", FolderPath = "";
-
-                    try
-                    {
-                        MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
-                        ProjectName = Convert.ToString(selectedTreeNode.Cells["projectname"].FormattedValue);
-                    }
-                    catch
-                    {
-                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
-
-                        MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                        ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                    }
-
-                    FolderID = Convert.ToString(selectedTreeNode.Cells["FolderID"].Value).Trim();
-                    FolderPath = Convert.ToString(selectedTreeNode.Cells["FolderPath"].Value).Trim();
-                    MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? "0" : MyProjectId;
-                    FolderID = FolderID == string.Empty || FolderID == "0" || FolderID == "-1" ? "0" : FolderID;
-                    ProjectName = ProjectName == string.Empty ? "My Files" : ProjectName;
-
-                    if (StackFolderSearchReasult.Count == 0)
-                    {
-                        //List<clsFolderSearchReasult> objFolderSearchResult = objRBC.SearchFolder(MyProjectId, FolderID);
-
-                        List<clsFolderSearchReasult> objFolderSearchResult = new List<clsFolderSearchReasult>(); ;
-                        clsFolderSearchReasult obj = new clsFolderSearchReasult() { id = "-2", name = ProjectName, childFolderSize = 0, companyId = "0" };
-                        objFolderSearchResult.Add(obj);
-                        StackFolderSearchReasult.Clear();
-                        StackFolderSearchReasult.Push(objFolderSearchResult);
-
-                        if (objFolderSearchResult == null)
-                        {
-                            ShowMessage.InfoMess("No folder found inside project " + ProjectName); return;
-                        }
-                        else
-                        {
-                            if (StackFolderSearchReasult.Count == 0)
+                            if (Convert.ToBoolean(selectedTreeNode.Cells["hasStatusClosed"].Value))
                             {
-                                StackFolderSearchReasult.Push(objFolderSearchResult);
+                                if (ShowMessage.ValMessYN("This file is closed, Do you want to make new revision ?.") == DialogResult.Yes)
+                                {
+
+                                }
+                                else
+                                {
+                                    selectedTreeNode.Cells["check"].Value = false; savetreeGrid.RefreshEdit();
+                                    return;
+                                }
+                            }
+
+                            if (Convert.ToBoolean(selectedTreeNode.Cells["isowner"].Value))
+                            {
+                            }
+                            else
+                            {
+                                if (!Convert.ToBoolean(selectedTreeNode.Cells["isEditable"].Value))
+                                {
+                                    ShowMessage.InfoMess("This file is not editable. so you can not save it.");
+                                    selectedTreeNode.Cells["check"].Value = false;
+                                    savetreeGrid.RefreshEdit();
+                                    return;
+                                }
                             }
 
 
                         }
-                    }
-
-                    Stack<List<clsFolderSearchReasult>> TStackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
-                    TStackFolderSearchReasult = Helper.CopyStack(StackFolderSearchReasult);
-
-
-                    frmFolderSelection objFolderSelection = new frmFolderSelection(FolderID, MyProjectId, StackFolderSearchReasult, FolderPath);
-                    objFolderSelection.ShowDialog();
-                    if (objFolderSelection.IsSelect)
-                    {
-                        selectedTreeNode.Cells["FolderID"].Value = objFolderSelection.FolderID;
-                        selectedTreeNode.Cells["FolderPath"].Value = objFolderSelection.FolderPath;
-
-                        foreach (TreeGridNode Child in selectedTreeNode.Nodes)
+                        //if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
                         {
-                            Child.Cells["FolderID"].Value = objFolderSelection.FolderID;
-                            Child.Cells["FolderPath"].Value = objFolderSelection.FolderPath;
+                            string MyProjectId = GetProjectID(selectedTreeNode); ;
+
+
+                            MyProjectId = MyProjectId == "-1" ? string.Empty : MyProjectId;
+                            System.Data.DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(selectedTreeNode) == null ? new System.Data.DataTable() : GetdtLayoutInfoFromTag(selectedTreeNode);
+                            frmLayoutVersionUpdate objfrm = new frmLayoutVersionUpdate(
+                                Convert.ToString(selectedTreeNode.Cells["drawingid"].Value),
+                                 Convert.ToString(selectedTreeNode.Cells["drawing"].Value),
+                                  Convert.ToString(selectedTreeNode.Cells["cadtype"].FormattedValue),
+                                   Convert.ToString(selectedTreeNode.Cells["State"].FormattedValue),
+                                    Convert.ToString(selectedTreeNode.Cells["revision"].Value),
+                                    MyProjectId,
+                                    Convert.ToString(selectedTreeNode.Cells["filepath"].Value));
+                            objfrm.dtLayoutInfo = dtLayoutInfo.Copy();
+                            objfrm.ShowDialog();
+                            if (objfrm.dtLayoutInfo.Rows.Count > 0)
+                            {
+                                if (Convert.ToString(selectedTreeNode.Cells["isroot"].FormattedValue) == "true")
+                                {
+                                    AssigndtLayoutInfoToTag(selectedTreeNode, objfrm.dtLayoutInfo);
+                                }
+                                else
+                                {
+                                    LoadFlag = true;
+                                    ChangeNodeTagValue(savetreeGrid.Nodes[0], selectedTreeNode, objfrm.dtLayoutInfo);
+                                    LoadFlag = false;
+                                }
+
+                            }
                         }
-                    }
-                    else
-                    {
-                        StackFolderSearchReasult = TStackFolderSearchReasult;
+
+
+
+                        //if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value) == string.Empty)
+                        //{
+                        //    selectedTreeNode.Cells["projectname"].ReadOnly = false;
+                        //}
+                        //else
+                        //{
+                        //    selectedTreeNode.Cells["projectname"].ReadOnly = true;
+                        //}
+
                     }
                 }
+                if (e.ColumnIndex == BtnBrowseFolder.Index)
+                {
+                    //if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "true")
+                    {
+                        string MyProjectId = "", FolderID = "", ProjectName = "", FolderPath = "";
+                        ProjectName = GetProjectName(selectedTreeNode);
+                        MyProjectId = GetProjectID(selectedTreeNode);
+
+
+                        FolderID = Convert.ToString(selectedTreeNode.Cells["FolderID"].Value).Trim();
+                        FolderPath = Convert.ToString(selectedTreeNode.Cells["FolderPath"].Value).Trim();
+                        MyProjectId = MyProjectId == "0" || MyProjectId == "-1" ? "0" : MyProjectId;
+                        FolderID = FolderID == string.Empty || FolderID == "0" || FolderID == "-1" ? "0" : FolderID;
+                        ProjectName = ProjectName == string.Empty ? "My Files" : ProjectName;
+                        Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult1 = GetStackFolderSearchReasultFromTag(selectedTreeNode);
+                        Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = Helper.CopyStack(StackFolderSearchReasult1);
+                        if (StackFolderSearchReasult.Count == 0)
+                        {
+                            List<clsFolderSearchReasult> objFolderSearchResult1 = objRBC.SearchFolder(MyProjectId, "0");
+
+                            List<clsFolderSearchReasult> objFolderSearchResult = new List<clsFolderSearchReasult>(); ;
+                            clsFolderSearchReasult obj = new clsFolderSearchReasult() { id = "-2", name = ProjectName, childFolderSize = Convert.ToInt16(objFolderSearchResult1.Count), companyId = "0" };
+                            objFolderSearchResult.Add(obj);
+                            StackFolderSearchReasult.Clear();
+                            StackFolderSearchReasult.Push(objFolderSearchResult);
+
+                            if (objFolderSearchResult == null)
+                            {
+                                ShowMessage.InfoMess("No folder found inside project " + ProjectName); return;
+                            }
+                            else
+                            {
+                                if (StackFolderSearchReasult.Count == 0)
+                                {
+                                    StackFolderSearchReasult.Push(objFolderSearchResult);
+                                }
+                            }
+                        }
+
+                        Stack<List<clsFolderSearchReasult>> TStackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
+                        TStackFolderSearchReasult = Helper.CopyStack(StackFolderSearchReasult);
+
+
+                        frmFolderSelection objFolderSelection = new frmFolderSelection(FolderID, MyProjectId, StackFolderSearchReasult, FolderPath);
+                        objFolderSelection.ShowDialog();
+                        if (objFolderSelection.IsSelect)
+                        {
+
+
+                            selectedTreeNode.Cells["FolderID"].Value = objFolderSelection.FolderID;
+                            selectedTreeNode.Cells["FolderPath"].Value = objFolderSelection.FolderPath;
+                            if (Convert.ToString(selectedTreeNode.Cells["isroot"].FormattedValue) == "true")
+                            {
+                                LoadFlag = true;
+                                AssignFolderPath(savetreeGrid.Nodes[0], selectedTreeNode, objFolderSelection);
+                                LoadFlag = false;
+                            }
+                            else
+                            {
+                                AssignStackFolderSearchReasultToTag(selectedTreeNode, StackFolderSearchReasult);
+                            }
+                            selectedTreeNode.Cells["oldFolderID1"].Value = objFolderSelection.FolderID;
+
+
+
+
+                        }
+                        else
+                        {
+
+                            AssignStackFolderSearchReasultToTag(selectedTreeNode, TStackFolderSearchReasult);
+                        }
+                    }
+                }
+                if(e.RowIndex==State.Index)
+                {
+
+                }
             }
-            //#endregion
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
 
         }
-        public void GenFileInfo()
+        public void AssignFolderPath(TreeGridNode ParentNode, TreeGridNode CurrentNode, frmFolderSelection objFolderSelection)
         {
             try
             {
-                foreach (TreeGridNode tgnParent in savetreeGrid.Nodes)
+                foreach (TreeGridNode ChildNode in ParentNode.Nodes)
                 {
-
-                    foreach (TreeGridNode tgnChild in tgnParent.Nodes)
+                    if (Convert.ToString(ChildNode.Cells["oldFolderID1"].Value) == string.Empty || Convert.ToString(ChildNode.Cells["FolderID"].Value) == Convert.ToString(CurrentNode.Cells["oldFolderID1"].Value))
                     {
-                        if ((bool)tgnChild.Cells[0].Value)
-                            GenFileInfoDT(tgnChild);
+                        ChildNode.Cells["FolderID"].Value = objFolderSelection.FolderID;
+                        ChildNode.Cells["FolderPath"].Value = objFolderSelection.FolderPath;
+                        AssignStackFolderSearchReasultToTag(ChildNode, objFolderSelection.StackFolderSearchReasult);
                     }
-                    GenFileInfoDT(tgnParent);
+                    AssignFolderPath(ChildNode, CurrentNode, objFolderSelection);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public void ChangeNodeTagValue(TreeGridNode ParentNode, TreeGridNode CurrentNode, DataTable dtLayoutInfo)
+        {
+            try
+            {
+                foreach (TreeGridNode ChildNode in ParentNode.Nodes)
+                {
+                    if (Convert.ToString(ChildNode.Cells["filepath"].Value) == Convert.ToString(CurrentNode.Cells["filepath"].Value))
+                    {
+                        ChildNode.Cells[0].Value = true;
+                        AssigndtLayoutInfoToTag(ChildNode, dtLayoutInfo);
+                    }
+                    ChangeNodeTagValue(ChildNode, CurrentNode, dtLayoutInfo);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public void ChangeNodeValue(TreeGridNode ParentNode, TreeGridNode CurrentNode)
+        {
+            try
+            {
+                if (LoadFlag)
+                {
+                    return;
+                }
+                foreach (TreeGridNode ChildNode in ParentNode.Nodes)
+                {
+                    if (Convert.ToString(ChildNode.Cells["filepath"].Value) == Convert.ToString(CurrentNode.Cells["filepath"].Value) && ChildNode != CurrentNode)
+                    {
+                        ChildNode.Cells["cadtype"].Value = CurrentNode.Cells["cadtype"].Value;
+                        ChildNode.Cells["State"].Value = CurrentNode.Cells["State"].Value;
+                        ChildNode.Cells[0].Value = CurrentNode.Cells[0].Value;
+                        ChildNode.Cells["FolderID"].Value = CurrentNode.Cells["FolderID"].Value;
+                        ChildNode.Cells["FolderPath"].Value = CurrentNode.Cells["FolderPath"].Value;
+                        LoadFlag = true;
+                        ChildNode.Cells["OldFolderID1"].Value = CurrentNode.Cells["OldFolderID1"].Value;
+                        LoadFlag = false;
+                        ChildNode.Cells["OldState"].Value = CurrentNode.Cells["OldState"].Value;
+                        AssignStackFolderSearchReasultToTag(ChildNode, GetStackFolderSearchReasultFromTag(CurrentNode));
+                    }
+                    ChangeNodeValue(ChildNode, CurrentNode);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public void GenFileInfo(TreeGridNode tgnParent)
+        {
+            try
+            {
+
+                foreach (TreeGridNode tgnChild in tgnParent.Nodes)
+                {
+                    if ((bool)tgnChild.Cells[0].Value)
+                    {
+                        GenFileInfoDT(tgnChild);
+                        GenFileInfo(tgnChild);
+                    }
+
                 }
 
-                // var v = htNewDrawings;
 
-                //var ht = from ht1 in htNewDrawings.AsQueryable()
-                //         orderby ht.IsRoot
-                //         select ht.*;
+
+
 
             }
             catch (Exception E)
@@ -1075,7 +1548,7 @@ namespace AutocadPlugIn.UI_Forms
                 string FileStatusID = "";
                 string FileType = "";
 
-                System.Data.DataTable dtLayoutInfo = (System.Data.DataTable)selectedTreeNode.Tag;
+                System.Data.DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(selectedTreeNode);
 
                 if (dtLayoutInfo == null)
                     dtLayoutInfo = new System.Data.DataTable();
@@ -1086,6 +1559,7 @@ namespace AutocadPlugIn.UI_Forms
                     MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
                     MyProjectNo = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "number");
+                    MyProjectName = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "name");
                 }
                 catch
                 {
@@ -1095,6 +1569,7 @@ namespace AutocadPlugIn.UI_Forms
                     //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                     MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
                     MyProjectNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    MyProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
                 }
 
                 try
@@ -1141,7 +1616,9 @@ namespace AutocadPlugIn.UI_Forms
                 selectedTreeNode.Cells["StatusID"].Value = FileStatusID;
                 selectedTreeNode.Cells["TypeID"].Value = FileTypeID;
                 selectedTreeNode.Cells["ProjNo"].Value = MyProjectNo;
-                
+                selectedTreeNode.Cells["ProjName"].Value = MyProjectName;
+
+
                 #endregion
 
                 String DI = "";
@@ -1151,44 +1628,14 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 DI += (CADDescription.Text + ";");
                 AllDrawing.Add(DI);
+                try
+                {
+                    htAllDrawing.Add(selectedTreeNode.Cells["filepath"].Value, DI);
+                }
+                catch
+                {
 
-                //if (selectedTreeNode.Cells["drawingid"].Value.ToString() != "")
-                //{
-                //    String DrawingInformation = id + ";" + ItemType + ";" + FilePath + ";" + selectedTreeNode.Cells["isroot"].Value.ToString() +
-                // ";" + "" + ";" + "" +
-                // ";" + CADDescription.Text + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";"
-                // + "" + ";" + "" + ";" + "" + ";"
-                // + "" + ";" + selectedTreeNode.Cells["Layouts"].Value.ToString()
-                //+ ";" + FileStatusID
-                //  + ";" + FileTypeID + ";" + selectedTreeNode.Cells["revision"].Value.ToString() + ";" + MyProjectNo + ";" + selectedTreeNode.Cells["DrawingNumber"].Value.ToString()
-                //  + ";" + FileType + ";" + PreFix + ";" + Convert.ToString(selectedTreeNode.Cells["FolderID"].Value) + ";" + Convert.ToString(selectedTreeNode.Cells["FolderPath"].Value);
-
-                //    drawings.Add(DrawingInformation);
-                //}
-
-
-
-
-                //String DrawingInformation1;
-                //String DrawingNameandNumber = selectedTreeNode.Cells["drawing"].Value.ToString();
-
-
-
-                //DrawingInformation1 = DrawingNameandNumber + ";;" + DrawingNameandNumber + ";" +
-                //        selectedTreeNode.Cells["filepath"].Value.ToString() + ";" + selectedTreeNode.Cells["sourceid"].Value.ToString() +
-                //        ";CAD;" + selectedTreeNode.Cells["isroot"].Value.ToString() + ";" + Convert.ToString(selectedTreeNode.Cells["projectname"].Value) + ";"
-                //        + "" + ";" + CADDescription.Text + ";"
-                //        + selectedTreeNode.Cells["sourceid"].Value.ToString() + ";" + MyProjectName + ";" + MyProjectId + ";" + ""
-                //        + ";" + "" + ";" + "" + ";" + "" + ";"
-                //        + selectedTreeNode.Cells["Layouts"].Value.ToString()
-                //  + ";" + FileStatusID
-                // + ";" + FileTypeID + ";" + selectedTreeNode.Cells["revision"].Value.ToString() + ";" + MyProjectNo + ";" + selectedTreeNode.Cells["DrawingNumber"].Value.ToString()
-                // + ";" + FileType + ";" + PreFix + ";" + Convert.ToString(selectedTreeNode.Cells["FolderID"].Value) + ";" + Convert.ToString(selectedTreeNode.Cells["FolderPath"].Value);
-
-                //if (Convert.ToString(selectedTreeNode.Cells["drawingid"].Value).Trim() == String.Empty)
-                //    htNewDrawings.Add(selectedTreeNode.Cells["drawing"].Value.ToString(), DrawingInformation1);
-
-
+                }
 
 
             }
@@ -1197,118 +1644,8 @@ namespace AutocadPlugIn.UI_Forms
                 ShowMessage.ErrorMess(E.Message);
             }
         }
-
-        private void savetreeGrid_CellBeginEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            try
-            {
-                if (e.ColumnIndex == 13)
-                {
-                    //CADIntegrationConfiguration objWordConfig = new CADIntegrationConfiguration();
-                    TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                    //String sg_projectid = Convert.ToString(selectedTreeNode.Cells["projectname"].Value);
-
-                    foreach (TreeGridNode ChildTreeNode in selectedTreeNode.Nodes)
-                    {
-                        //ChildTreeNode.Cells["projectname"].Value = Convert.ToString(selectedTreeNode.Cells["projectname"].FormattedValue);
-
-                        DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
-
-                        c.Value = selectedTreeNode.Cells["projectname"].Value;
-                    }
-                    #region Commented Code
-                    //decimal int_projectid =Convert.ToString(selectedTreeNode.Cells["projectname"].Value).Trim()==string.Empty?0: Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value);
-                    ////DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell);
-                    //// c2.Value = Helper.FindValueInCMB((System.Data.DataTable)c2.DataSource, "id", sg_projectid, "number"); ; ;
-                    ////c2.Value = int_projectid;
-                    //selectedTreeNode.Cells["projectid"].Value = selectedTreeNode.Cells["projectname"].Value;
-                    ////selectedTreeNode.Cells["projectid"].Value = sg_projectid;
-                    //selectedTreeNode.Cells["realtyname"].Value = "";
-                    //selectedTreeNode.Cells["realtyid"].Value = "";
-                    //for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
-                    //{
-                    //    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
-                    //    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
-
-                    //    c.Value = selectedTreeNode.Cells["projectid"].Value;
-                    //    //c.Value = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "name");
-                    //    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
-                    //    c1.Value = selectedTreeNode.Cells["projectid"].Value;
-                    //    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
-                    //    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
-                    //    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
-                    //}
-                    //System.Data.DataTable dtRealtyNo = new System.Data.DataTable();
-                    //dtRealtyNo.Columns.Add("ProjectId", typeof(string));
-                    //dtRealtyNo.Columns.Add("RealtyName", typeof(string));
-                    //dtRealtyNo.Columns.Add("RealtyNo", typeof(string));
-                    //dtRealtyNo = objWordConfig.GetRealtyEntity();
-                    //DataView Realty = new DataView(dtRealtyNo, "ProjectId='" + sg_projectid + "'", "RealtyNo", DataViewRowState.CurrentRows);
-                    //Realty.AddNew();
-
-                    //RealtyName.DataSource = Realty;
-                    //RealtyName.DisplayMember = "RealtyName";
-                    //RealtyName.ValueMember = "RealtyNo";
-                    //RealtyId.DataSource = Realty;
-                    //RealtyId.DisplayMember = "RealtyNo";
-                    //RealtyId.ValueMember = "RealtyNo";
-
-                    //savetreeGrid.Refresh();
-                    //this.Refresh();
-                    #endregion
-                }
-                if (e.ColumnIndex == 14)
-                {
-                    #region Commented Code
-                    //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-
-                    //String sg_projectid = Convert.ToString(selectedTreeNode.Cells["projectid"].Value);
-                    //DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectid"];
-
-                    //selectedTreeNode.Cells["projectname"].Value = c2.Value;
-                    //for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
-                    //{
-                    //    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
-                    //    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectname"];
-
-                    //    c.Value = c2.Value;
-
-                    //    //c.Value = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", sg_projectid, "number");
-                    //    DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)ChildTreeNode.Cells["projectid"];
-                    //    c1.Value = c2.Value;
-                    //    //c1.Value = Helper.FindValueInCMB((System.Data.DataTable)c1.DataSource, "id", sg_projectid, "number"); ;
-                    //    //ChildTreeNode.Cells["projectname"].Value = sg_projectid;
-                    //    //ChildTreeNode.Cells["projectid"].Value = sg_projectid;
-                    //}
-                    #endregion
-                }
-                if (e.ColumnIndex == 15)
-                {
-                    //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                    //String sg_projectid = selectedTreeNode.Cells["realtyname"].Value.ToString();
-                    //selectedTreeNode.Cells["realtyid"].Value = sg_projectid;
-                }
-                if (e.ColumnIndex == 16)
-                {
-                    //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                    //String sg_projectid = selectedTreeNode.Cells["realtyid"].Value.ToString();
-                    //selectedTreeNode.Cells["realtyname"].Value = sg_projectid;
-                }
-                if (e.ColumnIndex == 18)
-                {
-                    //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
-                    //for (int rows = 1; rows < savetreeGrid.Rows.Count; rows++)
-                    //{
-                    //    TreeGridNode ChildTreeNode = (TreeGridNode)savetreeGrid.Rows[rows];
-                    //    ChildTreeNode.Cells["version"].Value = selectedTreeNode.Cells["version"].Value;
-                    //}
-                }
-            }
-            catch (Exception E)
-            {
-                ShowMessage.ErrorMess(E.Message);
-            }
-        }
+                  
+        
 
         private void Save_Active_Drawings_Resize(object sender, EventArgs e)
         {
@@ -1327,9 +1664,15 @@ namespace AutocadPlugIn.UI_Forms
 
         private void savetreeGrid_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
-            if (savetreeGrid.IsCurrentCellDirty)
+            //if (savetreeGrid.IsCurrentCellDirty)
+            //{
+            //    savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            //}
+
+            if (savetreeGrid.CurrentCell is DataGridViewComboBoxCell)
             {
                 savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                //savetreeGrid.EndEdit();
             }
         }
 
@@ -1370,41 +1713,70 @@ namespace AutocadPlugIn.UI_Forms
                 TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
                 if (e.ColumnIndex == ProjectName.Index && Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "true")
                 {
-                    string MyProjectId = "", FolderID = "", ProjectName = "", FolderPath = "", ProjectNameNo = "";
+                    string MyProjectId = GetProjectID(selectedTreeNode), ProjectName = GetProjectName(selectedTreeNode), ProjectNameNo = GetProjectNameNo(selectedTreeNode);
 
-                    DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
-                    try
-                    {
-                        MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
-                        ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "id");
-                        ProjectNameNo = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "PNAMENO", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "id");
-                    }
-                    catch
-                    {
-                        ProjectNameNo = Convert.ToString(selectedTreeNode.Cells["projectname"].Value);
-                        MyProjectId = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                        ProjectName = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                    }
+
 
                     selectedTreeNode.Cells["FolderPath"].Value = "";
                     selectedTreeNode.Cells["FolderID"].Value = "0";
+                    selectedTreeNode.Cells["OldFolderID1"].Value = "0";
                     ProjectName = ProjectName == string.Empty ? "My Files" : ProjectName;
                     ProjectNameNo = ProjectNameNo == string.Empty ? "My Files" : ProjectNameNo;
 
-                    foreach (TreeGridNode Child in selectedTreeNode.Nodes)
-                    {
-                        Child.Cells["FolderID"].Value = "0";
-                        Child.Cells["FolderPath"].Value = "";
-                        Child.Cells["projectname"].Value = ProjectNameNo;
 
-                    }
-
-
+                    AssignValuetoGridCell(selectedTreeNode, "FolderID", "0");
+                    AssignValuetoGridCell(selectedTreeNode, "FolderPath", "");
+                    AssignValuetoGridCell(selectedTreeNode, "projectname", ProjectNameNo);
+                    List<clsFolderSearchReasult> objFolderSearchResult1 = objRBC.SearchFolder(MyProjectId, "0");
                     List<clsFolderSearchReasult> objFolderSearchResult = new List<clsFolderSearchReasult>(); ;
-                    clsFolderSearchReasult obj = new clsFolderSearchReasult() { id = "-2", name = ProjectName, childFolderSize = 0, companyId = "0" };
+                    clsFolderSearchReasult obj = new clsFolderSearchReasult() { id = "-2", name = ProjectName, childFolderSize = Convert.ToInt16(objFolderSearchResult1.Count), companyId = "0" };
                     objFolderSearchResult.Add(obj);
+
+                    Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = GetStackFolderSearchReasultFromTag(selectedTreeNode);
                     StackFolderSearchReasult.Clear();
                     StackFolderSearchReasult.Push(objFolderSearchResult);
+                    AssignStackFolderSearchReasultToTag(selectedTreeNode, StackFolderSearchReasult);
+
+                }
+                if ((e.ColumnIndex == cadtype.Index || e.ColumnIndex == State.Index || e.ColumnIndex == OldFolderID1.Index) /*&& Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "false"*/)
+                {
+                    bool IsValueChanged = true;
+
+                    if (e.ColumnIndex == State.Index)
+                    {
+                        if (LoadFlag)
+                            return;
+                        LoadFlag = true;
+                        if (IsClosedStatus(selectedTreeNode))
+                        {
+                            if (!IsAllLayoutClose(selectedTreeNode))
+                            {
+                                ShowMessage.ValMess("You can not change status to '" + GetFileStatus(selectedTreeNode) + "' unless all layouts are in Close state.");
+
+
+                                selectedTreeNode.Cells["State"].Value = selectedTreeNode.Cells["OldState"].Value;
+                                //savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                                //;
+                                //savetreeGrid.CurrentCell = selectedTreeNode.Cells[0];
+                                //savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                                //savetreeGrid.RefreshEdit();
+                                //savetreeGrid.ClearSelection();
+                                //cancel.Focus();
+
+                                savetreeGrid.Refresh();
+                                //Refresh();
+                                IsValueChanged = false;
+                            }
+                        }
+                        LoadFlag = false;
+                    }
+                    if (IsValueChanged)
+                    {
+                        if (e.ColumnIndex == State.Index)
+                            selectedTreeNode.Cells["OldState"].Value = GetFileStatus(selectedTreeNode);
+
+                        ChangeNodeValue(savetreeGrid.Nodes[0], selectedTreeNode);
+                    }
 
                 }
 
@@ -1415,7 +1787,141 @@ namespace AutocadPlugIn.UI_Forms
             }
         }
 
+        public bool IsAllLayoutClose(TreeGridNode CurrentNode)
+        {
+            try
+            {
+                DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(CurrentNode);
+                DataTable dtStatus = objRBC.GetFIleStatus();
+                if(dtStatus !=null)
+                {
+                    foreach (DataRow dr in dtLayoutInfo.Rows)
+                    {
+                        string LayoutStatus = Convert.ToString(dr["LayoutStatus"]);
 
+                        foreach (DataRow dr1 in dtStatus.Rows)
+                        {
+                            string Status = Convert.ToString(dr1["statusname"]);
+                            bool IsClose = Convert.ToBoolean(dr1["IsClosed"]);
+                            if (LayoutStatus == Status && !IsClose)
+                            {
+                                return false;
+                            }
+                        }
+
+                    }
+                }
+               
+                return true;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
+        }
+        public bool IsClosedStatus(TreeGridNode CurrentNode,bool IsOld=false)
+        {
+            try
+            {
+                DataTable dtStatus = objRBC.GetFIleStatus();
+
+                string FileStatus = GetFileStatus(CurrentNode);
+                if (dtStatus != null)
+                {
+                    foreach (DataRow dr in dtStatus.Rows)
+                    {
+                        string Status = Convert.ToString(dr["statusname"]);
+                        bool IsClose = Convert.ToBoolean(dr["IsClosed"]);
+                        if (FileStatus == Status && !IsClose)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
+        }
+        public void AssignValuetoGridCell(TreeGridNode Parent, string ColumnName, string Value)
+        {
+            try
+            {
+                foreach (TreeGridNode Child in Parent.Nodes)
+                {
+                    Child.Cells[ColumnName].Value = Value;
+                    AssignValuetoGridCell(Child, ColumnName, Value);
+                }
+                //Parent.Cells[ColumnName].Value = Value;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+
+        private void savetreeGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            
+        }
+
+        private void savetreeGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0 || e.ColumnIndex < 0 || LoadFlag)
+                {
+                    return;
+                }
+                //TreeGridNode selectedTreeNode = (TreeGridNode)savetreeGrid.Rows[e.RowIndex];
+                //if ((e.ColumnIndex == cadtype.Index || e.ColumnIndex == State.Index || e.ColumnIndex == OldFolderID1.Index) /*&& Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "false"*/)
+                //{
+                //    bool IsValueChanged = true;
+
+                //    if (e.ColumnIndex == State.Index)
+                //    {
+                //        if (LoadFlag)
+                //            return;
+                //        LoadFlag = true;
+                //        if (IsClosedStatus(selectedTreeNode))
+                //        {
+                //            if (!IsAllLayoutClose(selectedTreeNode))
+                //            {
+                //                ShowMessage.ValMess("You can not change status to '" + GetFileStatus(selectedTreeNode) + "' unless all layouts are in Close state.");
+
+                //                //selectedTreeNode.Cells["State"].Value = selectedTreeNode.Cells["OldState"].Value;
+                //                //savetreeGrid.CurrentCell = selectedTreeNode.Cells[0];
+                //                //savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                //                //savetreeGrid.RefreshEdit();
+                //                //savetreeGrid.ClearSelection();
+                //                //cancel.Focus();
+
+                //                // savetreeGrid.Refresh();
+                //                //Refresh();
+                //                IsValueChanged = false;
+                //            }
+                //        }
+                //        LoadFlag = false;
+                //    }
+                //    if (IsValueChanged)
+                //    {
+                //        if (e.ColumnIndex == State.Index)
+                //            selectedTreeNode.Cells["OldState"].Value = GetFileStatus(selectedTreeNode);
+
+                //        ChangeNodeValue(savetreeGrid.Nodes[0], selectedTreeNode);
+                //    }
+                //}
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
 
 
 

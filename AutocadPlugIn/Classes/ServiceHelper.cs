@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net; 
+using System.Net;
 using Microsoft.Win32;
 using RestSharp;
 using AutocadPlugIn;
@@ -139,16 +139,8 @@ namespace AutocadPlugIn
 
                 var request = new RestRequest(relevantAddress, Method.POST);
 
-                fileName = Path.GetFileName(filePath);
-                if (fileName.Trim().Length >= PreFix.Length)
-                {
-                    if (fileName.Substring(0, PreFix.Length) == PreFix)
-                    {
-                        fileName = fileName.Substring(PreFix.Length);
-                    }
-                }
-
-                //request.AddFile("files", File.ReadAllBytes(filePath), fileName);
+                fileName = Helper.RemovePreFixFromFileName(Path.GetFileName(filePath), PreFix);
+          
                 if (IsFileUpload)
                     request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
                 //else
@@ -202,15 +194,8 @@ namespace AutocadPlugIn
 
                 var request = new RestRequest(relevantAddress, Method.POST);
 
-                fileName = Path.GetFileName(filePath);
-                if (fileName.Trim().Length >= PreFix.Length)
-                {
-                    if (fileName.Substring(0, PreFix.Length) == PreFix)
-                    {
-                        fileName = fileName.Substring(PreFix.Length);
-                    }
-                }
-                //request.AddFile("files", File.ReadAllBytes(filePath), fileName);
+                fileName = Helper.RemovePreFixFromFileName(Path.GetFileName(filePath), PreFix);
+                 
                 request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
 
                 return restClient.Execute(request);

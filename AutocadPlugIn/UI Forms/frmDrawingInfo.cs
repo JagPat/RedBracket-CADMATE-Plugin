@@ -58,9 +58,9 @@ namespace AutocadPlugIn.UI_Forms
                     Helper.FIllCMB(cmbLayoutTypeC1, objRBC.GetFIleType(), "name", "id", true);
                     Helper.FIllCMB(cmbLayoutTypeC2, objRBC.GetFIleType(), "name", "id", true);
 
-                    Helper.FIllCMB(cmbFileStatusC, objRBC.GetFIleStatus(), "statusname", "id", true);
-                    Helper.FIllCMB(cmbLayoutStatusC1, objRBC.GetFIleStatus(), "statusname", "id", true);
-                    Helper.FIllCMB(cmbLayoutStatusC2, objRBC.GetFIleStatus(), "statusname", "id", true);
+                    Helper.FIllCMB(cmbFileStatusC, objRBC.GetFIleStatus(), "statusname", "id", true, false);
+                    Helper.FIllCMB(cmbLayoutStatusC1, objRBC.GetFIleStatus(), "statusname", "id", true, false);
+                    Helper.FIllCMB(cmbLayoutStatusC2, objRBC.GetFIleStatus(), "statusname", "id", true, false);
                     FileID = lbDrawingIDC.Text = DrawingID1 = Convert.ToString(dtCurrentData[0]["drawingid"]);
                     if (DrawingID1.Trim().Length == 0)
                     {
@@ -89,8 +89,8 @@ namespace AutocadPlugIn.UI_Forms
                     cmbFileStatusC.Tag = cmbFileStatusC.Text = Convert.ToString(dtCurrentData[0]["drawingstate"]) == string.Empty ? "---Select---" : Convert.ToString(dtCurrentData[0]["drawingstate"]);
                     lbDrawingIDC.Text = DrawingID1 = Convert.ToString(dtCurrentData[0]["drawingid"]);
 
-                    lbCreatedByC.Text = Convert.ToString(dtCurrentData[0]["createdby"]) + " (" + Convert.ToString(dtCurrentData[0]["createdon"]) + ")";
-                    lbModifiedByC.Text = Convert.ToString(dtCurrentData[0]["modifiedby"]) + " (" + Convert.ToString(dtCurrentData[0]["modifiedon"]) + ")";
+                    lbCreatedByC.Text = Convert.ToString(dtCurrentData[0]["createdby"]) + " (" + Helper.FormatDateTime(dtCurrentData[0]["createdon"]) + ")";
+                    lbModifiedByC.Text = Convert.ToString(dtCurrentData[0]["modifiedby"]) + " (" + Helper.FormatDateTime(dtCurrentData[0]["modifiedon"]) + ")";
 
 
 
@@ -167,7 +167,7 @@ namespace AutocadPlugIn.UI_Forms
 
                                 if (combo1 != null)
                                 {
-                                    Helper.FIllCMB(combo1, objRBC.GetFIleStatus(), "statusname", "id", true);
+                                    Helper.FIllCMB(combo1, objRBC.GetFIleStatus(), "statusname", "id", true, false);
                                     combo1.Tag = combo1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty || objLI1.statusId == "0" ? -1 : Convert.ToInt16(objLI1.statusId);
                                     combo1.SelectedValueChanged += new System.EventHandler(cmbFileTypeC_SelectedValueChanged);
                                 }
@@ -204,9 +204,10 @@ namespace AutocadPlugIn.UI_Forms
                 ResultSearchCriteria objRSC = objRBC.GetDrawingInformation(LatestDrawingID);
                 //ResultSearchCriteria objRSC = objRBC.GetSingleFileInfo(objRBC.SearchLatestFile(lbDrawingNoC.Text), ref DBFile);
 
-                string TempFilePath = Helper.DownloadFile(LatestDrawingID, "true", true);
+                string TempFilePath = "";
                 if (objRSC != null)
                 {
+                    TempFilePath = Helper.DownloadFile(LatestDrawingID, "true", true);
                     Helper.IncrementProgressBar(1, "Filling Latest file info.");
                     lbDrawingNameL.Text = Convert.ToString(objRSC.name);
 
@@ -218,8 +219,8 @@ namespace AutocadPlugIn.UI_Forms
                     lbFileStatusL.Text = Convert.ToString(objRSC.status == null ? string.Empty : objRSC.status.statusname == null ? string.Empty : objRSC.status.statusname);
                     lbDrawingIDL.Text = DrawingID1 = Convert.ToString(objRSC.id);
 
-                    lbCreatedByL.Text = Convert.ToString(objRSC.createdby) + " (" + objRSC.created0n + ")";
-                    lbModifiedByL.Text = Convert.ToString(objRSC.updatedby) + " (" + objRSC.updatedon + ")";
+                    lbCreatedByL.Text = Convert.ToString(objRSC.createdby) + " (" + Helper.FormatDateTime(objRSC.created0n) + ")";
+                    lbModifiedByL.Text = Convert.ToString(objRSC.updatedby) + " (" + Helper.FormatDateTime(objRSC.updatedon) + ")";
                     if (Convert.ToBoolean(objRSC.filelock))
                     {
                         lbLockedByL.Text = Convert.ToString(objRSC.updatedby);
@@ -356,10 +357,10 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 else
                 {
-                    Helper.CloseProgressBar();
+                    //Helper.CloseProgressBar();
                     ShowMessage.ValMess("Latest file not found on server.");
-                    this.Close();
-                    return;
+                    //this.Close();
+                    //return;
                 }
                 Helper.IncrementProgressBar(1, "Generating form layout.");
                 tlpMain.RowCount += 1;
@@ -425,29 +426,33 @@ namespace AutocadPlugIn.UI_Forms
                     }
                 }
                 btnSave.Enabled = false;
-                Helper.IncrementProgressBar(1, "Comparing file info.");
-                string TempFilePath1 = Helper.CopyTempFile(FilePath);
-                //Comparing Files
-                bool IsSame = Helper.FileCompare(TempFilePath, TempFilePath1);
-                long LocalFile = Helper.GetFileSizeOnDisk(TempFilePath1);
-                long ServerFile = Helper.GetFileSizeOnDisk(TempFilePath);
-                if (LocalFile != ServerFile)
+                if(System.IO.File.Exists(TempFilePath))
                 {
-                    lbVersionC.Text = lbVersionC.Text + "+";
-                }
-
-                for (int i = 1; i < tlpMain.RowCount; i++)
-                {
-                    Control lblLabel = tlpMain.GetControlFromPosition(0, i);
-                    Control ctrlCurrent = tlpMain.GetControlFromPosition(1, i);
-                    Control lblLatest = tlpMain.GetControlFromPosition(2, i);
-
-
-                    if (ctrlCurrent != null && lblLatest != null && lblLabel != null && lblLabel is Label)
+                    Helper.IncrementProgressBar(1, "Comparing file info.");
+                    string TempFilePath1 = Helper.CopyTempFile(FilePath);
+                    //Comparing Files
+                    bool IsSame = Helper.FileCompare(TempFilePath, TempFilePath1);
+                    long LocalFile = Helper.GetFileSizeOnDisk(TempFilePath1);
+                    long ServerFile = Helper.GetFileSizeOnDisk(TempFilePath);
+                    if (LocalFile != ServerFile)
                     {
-                        CompareProperties(ctrlCurrent,lblLatest, lblLabel);
+                        lbVersionC.Text = lbVersionC.Text + "+";
+                    }
+
+                    for (int i = 1; i < tlpMain.RowCount; i++)
+                    {
+                        Control lblLabel = tlpMain.GetControlFromPosition(0, i);
+                        Control ctrlCurrent = tlpMain.GetControlFromPosition(1, i);
+                        Control lblLatest = tlpMain.GetControlFromPosition(2, i);
+
+
+                        if (ctrlCurrent != null && lblLatest != null && lblLabel != null && lblLabel is Label)
+                        {
+                            CompareProperties(ctrlCurrent, lblLatest, lblLabel);
+                        }
                     }
                 }
+                
 
 
 

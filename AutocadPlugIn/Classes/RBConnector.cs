@@ -70,7 +70,7 @@ namespace AutocadPlugIn
 
                     if (IsFileSave)
                     {
-                        Helper.IncrementProgressBar(1, "Uploading file to redbracket."+Path.GetFileNameWithoutExtension(obj.FilePath));
+                        Helper.IncrementProgressBar(1, "Uploading file : " + Path.GetFileNameWithoutExtension(obj.FilePath));
 
                         if (obj.IsNew)
                         {
@@ -121,8 +121,8 @@ namespace AutocadPlugIn
 
                             if (!obj.IsRoot)
                             {
-                               // Helper.IncrementProgressBar(1, "Checking for association in redbracket." + Path.GetFileNameWithoutExtension(obj.FilePath));
-                                if (!IsXrefNew(ParentFileID,obj.ObjectId))
+                                // Helper.IncrementProgressBar(1, "Checking for association in redbracket." + Path.GetFileNameWithoutExtension(obj.FilePath));
+                                if (!IsXrefNew(obj.FK, obj.ObjectId))
                                 {
                                     obj.IsNewXref = true;
                                 }
@@ -130,38 +130,15 @@ namespace AutocadPlugIn
                         }
 
 
-                        if ((!obj.IsRoot && (obj.IsNew || obj.IsNewXref || IsParentNew))  )
-                        //if (!obj.IsRoot)
+                        if ((!obj.IsRoot && (obj.IsNew || obj.IsNewXref || IsParentNew)))
                         {
-                            List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
-                            KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
-
-
-                            Keys = new KeyValuePair<string, string>("parentFileId", ParentFileID);
-                            keyValuePairs.Add(Keys);
-
-                            Keys = new KeyValuePair<string, string>("childFileId", obj.ObjectId);
-                            keyValuePairs.Add(Keys);
-
-
-                            // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
-                            RestResponse restResponse1 = (RestResponse)ServiceHelper.PostData(
-                                            Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
-                                            "/AutocadFiles/uploadXRef", DataFormat.Json, null,
-                                                 true, keyValuePairs);
-
-                            if (restResponse1.StatusCode != System.Net.HttpStatusCode.OK)
-                            {
-                                //ShowMessage.InfoMess(restResponse.Content);
-                                //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
-                                ShowMessage.ErrorMess("Some error occurred while defining file relationship.");
+                            if (SaveXref(obj.FK, obj.ObjectId))
                                 return false;
-                            }
                         }
                         else
                         {
                             ParentFileID = obj.ObjectId;
-                            if(obj.IsNew)
+                            if (obj.IsNew)
                             {
                                 IsParentNew = true;
                             }
@@ -271,9 +248,52 @@ namespace AutocadPlugIn
                                 {
 
                                     if (obj.IsRoot)
+                                    {
                                         obj.ObjectId = ParentFileID = Drawing.id;
+
+                                        string PK = "";
+                                        foreach (PLMObject obj1 in plmobjs)
+                                        {
+                                            if (obj1.FilePath == obj.FilePath)
+                                            {
+                                                PK = obj1.PK;
+                                                if (obj.PK == obj.FK)
+                                                {
+                                                    obj.PK = obj.FK = Drawing.id;
+                                                }
+                                            }
+
+                                        }
+                                        foreach (PLMObject obj1 in plmobjs)
+                                        {
+                                            if (PK == obj1.FK)
+                                            {
+                                                obj1.FK = Drawing.id;
+                                            }
+                                        }
+                                    }
                                     else
+                                    {
                                         obj.ObjectId = Drawing.id;
+
+                                        string PK = "";
+                                        foreach (PLMObject obj1 in plmobjs)
+                                        {
+                                            if (obj1.FilePath == obj.FilePath)
+                                            {
+                                                PK = obj1.PK;
+                                                obj.PK = Drawing.id;
+                                            }
+                                        }
+                                        foreach (PLMObject obj1 in plmobjs)
+                                        {
+                                            if (PK == obj1.FK)
+                                            {
+                                                obj1.FK = Drawing.id;
+                                            }
+                                        }
+                                    }
+
 
 
                                     if (!IsFileSave)
@@ -289,7 +309,7 @@ namespace AutocadPlugIn
                                         obj.LockStatus = Convert.ToString(Drawing.filelock);
                                         obj.ObjectGeneration = "123";
                                         obj.ItemType = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
-                                        obj.ObjectProjectName = Drawing.projectname == null ? string.Empty : Drawing.projectname;
+                                        obj.ObjectProjectName = Drawing.projectname == null ? obj.ObjectProjectName : Drawing.projectname;
                                         //obj.ObjectProjectId = "123";
                                         obj.ObjectCreatedById = Drawing.createdby;
                                         obj.ObjectCreatedOn = Drawing.created0n;
@@ -307,7 +327,7 @@ namespace AutocadPlugIn
                                         obj.isletest = Drawing.isletest;
                                         obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
                                         obj.objectProjectNo = Drawing.projectno == null ? obj.objectProjectNo : Drawing.projectno;
-                                       
+                                        obj.IsSaved = true;
 
                                         obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
                                     }
@@ -345,7 +365,47 @@ namespace AutocadPlugIn
             return false;
 
         }
-        public bool IsXrefNew(string ParentID,string ChildID)
+        public bool SaveXref(string parentFileId, string childFileId)
+        {
+            try
+            {
+                if ( IsXrefNew(parentFileId, childFileId))
+                {
+                    return false;
+                }
+                    List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+                KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
+
+
+                //Keys = new KeyValuePair<string, string>("parentFileId", ParentFileID);
+                Keys = new KeyValuePair<string, string>("parentFileId", parentFileId);
+                keyValuePairs.Add(Keys);
+
+                Keys = new KeyValuePair<string, string>("childFileId", childFileId);
+                keyValuePairs.Add(Keys);
+
+
+                // http://redbracketpms.com:8090/red-bracket-pms/AutocadFiles/uploadFileServiceProp?userName=archi@yopmail.com&project=0&fileStatus=905&fileType=692&source=Computer&fileId=9d5c029d-f085-427d-a199-f899f35ec8e7&isNew=false
+                RestResponse restResponse1 = (RestResponse)ServiceHelper.PostData(
+                                Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                                "/AutocadFiles/uploadXRef", DataFormat.Json, null,
+                                     true, keyValuePairs);
+
+                if (restResponse1.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    //ShowMessage.InfoMess(restResponse.Content);
+                    //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
+                    ShowMessage.ErrorMess("Some error occurred while defining file relationship.");
+                    return true;
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
+        }
+        public bool IsXrefNew(string ParentID, string ChildID)
         {
             try
             {
@@ -353,7 +413,7 @@ namespace AutocadPlugIn
 
                 foreach (var item in objRSC)
                 {
-                    if(item.id==ChildID)
+                    if (item.id == ChildID)
                     {
                         return true;
                     }
@@ -361,9 +421,9 @@ namespace AutocadPlugIn
 
                 return false;
             }
-            catch(Exception E)
+            catch (Exception E)
             {
-                ShowMessage.ErrorMess(E.Message);return true;
+                ShowMessage.ErrorMess(E.Message); return true;
             }
         }
         public bool UpdateFileProperties(string FileID, string Type, string Status, string Project)
@@ -755,7 +815,7 @@ namespace AutocadPlugIn
                         objLI.updatedby = Drawing.updatedby;
                         objLI.updatedon = Drawing.updatedon;
                         objLI.createdby = Drawing.createdby;
-                        objLI.createdon = Drawing.createdOn == null ? string.Empty : Drawing.createdOn;
+                        objLI.createdon = Drawing.createdon == null ? string.Empty : Drawing.createdon;
                         objLI.description = Drawing.description;
                         objLI.fileNo = Drawing.fileNo;
                         objLI.hasStatusClosed = Drawing.hasStatusClosed;
@@ -1044,6 +1104,18 @@ namespace AutocadPlugIn
                         if (type == typeof(List<ResultStatusData>))
                         {
                             List<ResultStatusData> ObjFileInfo = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
+
+                            foreach(ResultStatusData obj in ObjFileInfo)
+                            {
+                                if((obj.coretype==null?string.Empty:obj.coretype.name==null?string.Empty:obj.coretype.name).ToLower()=="closed")
+                                {
+                                    obj.IsClosed = true;
+                                }
+                                else
+                                {
+                                    obj.IsClosed = false;
+                                }
+                            }
                             dataTableProjectInfo = Helper.ToDataTable(ObjFileInfo);
                         }
                     }
@@ -1323,7 +1395,7 @@ namespace AutocadPlugIn
 
                     }
                     catch { }
-                    }
+                }
 
             }
             catch (Exception ex)
@@ -1552,9 +1624,9 @@ namespace AutocadPlugIn
 
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.fileNo = OldFileNo;
-          
 
-                var resultSearchCriteriaResponseList = SearchFiles(searchCriteria );
+
+                var resultSearchCriteriaResponseList = SearchFiles(searchCriteria);
 
                 return resultSearchCriteriaResponseList == null ? string.Empty : resultSearchCriteriaResponseList.Count > 0 ? resultSearchCriteriaResponseList[0].id : string.Empty;
             }
@@ -1565,7 +1637,7 @@ namespace AutocadPlugIn
             }
         }
 
-        public List<ResultSearchCriteria> SearchFiles(SearchCriteria searchCriteria, List<KeyValuePair<string, string>> urlParameters=null)
+        public List<ResultSearchCriteria> SearchFiles(SearchCriteria searchCriteria, List<KeyValuePair<string, string>> urlParameters = null)
         {
             try
             {

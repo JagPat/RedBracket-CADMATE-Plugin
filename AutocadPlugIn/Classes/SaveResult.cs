@@ -37,6 +37,7 @@ namespace AutocadPlugIn
         public string created0n { get; set; }
 
         public string createdOn { get; set; }
+        public string createdon { get; set; }
 
         public SaveResultUserDetails updatedBy { get; set; }
 

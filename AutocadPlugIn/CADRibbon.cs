@@ -252,13 +252,13 @@ namespace AutocadPlugIn
 
                 if (dtDrawing.Rows.Count > 0)
                 {
-                    drawingid = Convert.ToString(dtDrawing.Rows[0][""]);
-                    drawingid = Convert.ToString(dtDrawing.Rows[0][""]);
-                    drawingid = Convert.ToString(dtDrawing.Rows[0][""]);
+                    drawingid = Convert.ToString(dtDrawing.Rows[0]["DrawingId"]);
+                    Rev = Convert.ToString(dtDrawing.Rows[0]["revision"]);
+                    DrawingNO = Convert.ToString(dtDrawing.Rows[0]["DrawingNumber"]);
 
                     Helper.CurrentVersion = CurrentVersion = Helper.VerTextAdjustment(Rev);
                     Helper.LatestVersion = LatestVersion = Helper.GetLatestVersion(DrawingNO);
-                } 
+                }
 
                 if (drawingid.Trim().Length == 0)
                 {
@@ -268,7 +268,7 @@ namespace AutocadPlugIn
                     return;
                 }
 
-              
+
             }
             catch (System.Exception E)
             {
@@ -643,10 +643,29 @@ namespace AutocadPlugIn
                     // MyRibbon();
                     //Btn_Save.IsEnabled = false;
                     Btn_Save.IsEnabled = SaveEnable;
+                    if (SaveEnable)
+                    {
+                        Btn_SaveAS.IsEnabled = true;
+                    }
+                    else
+                    {
+                        Btn_SaveAS.IsEnabled = SaveEnable;
+                    }
                 }
                 else
                 {
                     Btn_Save.IsEnabled = SaveEnable;
+                    if (SaveEnable)
+                    {
+                        if (V1.Trim().Length == 0 || V2.Trim().Length == 0)
+                            Btn_SaveAS.IsEnabled = false;
+                        else
+                            Btn_SaveAS.IsEnabled = true;
+                    }
+                    else
+                    {
+                        Btn_SaveAS.IsEnabled = SaveEnable;
+                    }
                 }
             }
             catch (System.Exception E)
@@ -1221,7 +1240,7 @@ namespace AutocadPlugIn
                 //}
                 if (Convert.ToDateTime(Drawing.updatedon) != Convert.ToDateTime(updatedon))
                 {
-                    if (ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes will be lost.") == DialogResult.Yes)
+                    if (ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes  in current file will be lost.") == DialogResult.Yes)
                     {
                         string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
                         string ProjectName = projectnameOnly;

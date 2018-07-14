@@ -30,5 +30,9 @@ namespace AutocadPlugIn
         {
             MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
+        public static DialogResult ValMessYN(string Message)
+        {
+            return MessageBox.Show(Message, "System Message", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+        }
     }
 }

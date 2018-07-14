@@ -23,6 +23,8 @@ namespace AutocadPlugIn
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public SearchCriteriaFolder folder { set; get; }
+
+ 
     }
 
     public class SearchCriteriaType

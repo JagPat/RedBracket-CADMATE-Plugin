@@ -18,7 +18,7 @@ namespace AutocadPlugIn.UI_Forms
         public string FolderID = "";
         public string ProjectID = "";
         public string FolderPath = "";
-        Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
+        public Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
         public bool IsSelect = false;
         public bool LoadFlag = false;
 
@@ -45,7 +45,7 @@ namespace AutocadPlugIn.UI_Forms
             try
             {
                 Location = new Point(Location.X, Location.Y + 25);
-                dgvFolderSelection.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold); 
+                dgvFolderSelection.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 btnSelect.Enabled = false;
                 List<clsFolderSearchReasult> objFolderSearchResult = StackFolderSearchReasult.Pop();
                 StackFolderSearchReasult.Push(objFolderSearchResult);
@@ -63,7 +63,7 @@ namespace AutocadPlugIn.UI_Forms
                     }
 
                     if (FolderPath.Length > 0)
-                        lblParentFolder.Text = Path.GetDirectoryName(FolderPath)+@"\";
+                        lblParentFolder.Text = Path.GetDirectoryName(FolderPath) + @"\";
 
                     lblSelectedPath.Text = FolderPath;
 
@@ -158,7 +158,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 if (Convert.ToDecimal(FolderID) > 0 || Convert.ToDecimal(FolderID) == -2)
                 {
-                    objFolderSearchResult = objRBC.SearchFolder(ProjectID, FolderID); 
+                    objFolderSearchResult = objRBC.SearchFolder(ProjectID, FolderID);
                 }
                 else
                 {
@@ -196,7 +196,7 @@ namespace AutocadPlugIn.UI_Forms
                         if (StackFolderSearchReasult.Count > 1)
                         {
                             dgvFolderSelection.Rows.Add();
-                            dgvFolderSelection.Rows[RC].Cells["FolderName"].Value = "Go Back";
+                            dgvFolderSelection.Rows[RC].Cells["FolderName"].Value = "<== Go Back";
                             dgvFolderSelection.Rows[RC].Cells["HasFolder"].Value = "";
                             dgvFolderSelection.Rows[RC].Cells["FolderID1"].Value = "-1";
                         }
@@ -276,7 +276,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                if(lblSelectedPath.Text.Trim().Length==0)
+                if (lblSelectedPath.Text.Trim().Length == 0)
                 {
                     btnSelect.Enabled = false;
                 }

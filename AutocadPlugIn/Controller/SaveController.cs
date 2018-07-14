@@ -14,6 +14,8 @@ namespace AutocadPlugIn
         String ProjectId = "";
 
         public List<PLMObject> plmObjs = new List<PLMObject>();
+        public List<PLMObject> AllplmObjs = new List<PLMObject>();
+        public List<PLMObject> TempplmObjs = new List<PLMObject>();
         public override void Execute(Command command)
         {
         }
@@ -24,10 +26,10 @@ namespace AutocadPlugIn
 
                 if (!IsFileSave)
                 {
-                     //Helper.CloseProgressBar();
+                    //Helper.CloseProgressBar();
 
                     plmObjs = new List<PLMObject>();
-                    dtDrawingProperty = new DataTable(); 
+                    dtDrawingProperty = new DataTable();
                     // creating table to store document info
                     dtDrawingProperty = Helper.GetDrawingPropertiesTableStructure();
 
@@ -36,19 +38,19 @@ namespace AutocadPlugIn
                     foreach (String str in cmd.AllDrawing)
                     {
                         PLMObject plmObj = new PLMObject();
-                        String[] plmobjInfo =  null;
-                         plmobjInfo = str.Split(';');
+                        String[] plmobjInfo = null;
+                        plmobjInfo = str.Split(';');
 
 
                         plmObj.ObjectId = plmobjInfo[5];
                         string fileName = System.IO.Path.GetFileName(plmobjInfo[6]);
-                         
+                        plmObj.ObjectProjectName = plmobjInfo[34];
                         plmObj.objectProjectNo = plmobjInfo[31];
                         plmObj.ObjectStatus = plmobjInfo[29];
-                        plmObj.Classification = plmobjInfo[30];                         
-                        plmObj.FilePath = plmobjInfo[6];
+                        plmObj.Classification = plmobjInfo[30];
+                       plmObj.Oldfilepath= plmObj.FilePath = plmobjInfo[6];
                         plmObj.IsNew = false;
-                        if(plmObj.ObjectId.Trim().Length==0)
+                        if (plmObj.ObjectId.Trim().Length == 0)
                         {
                             plmObj.IsNew = true;
                         }
@@ -63,20 +65,22 @@ namespace AutocadPlugIn
                             plmObjs.Add(plmObj);
 
                         if (plmObj.IsRoot)
-                            plmObj.ObjectDescription = plmobjInfo[plmobjInfo.Length-2];
-                         
+                            plmObj.ObjectDescription = plmobjInfo[plmobjInfo.Length - 2];
+
 
                         plmObj.ObjectProjectId = ProjectId = plmobjInfo[28];
-                        plmObj.ObjectLayouts = plmobjInfo[11];                        
+                        plmObj.ObjectLayouts = plmobjInfo[11];
                         plmObj.FolderID = plmobjInfo[25];
                         plmObj.FolderPath = plmobjInfo[24];
                         if (!plmObj.IsRoot)
-                            plmObj.IsNewXref = plmobjInfo[27].Contains("true")|| plmobjInfo[27].Contains("true")?  Convert.ToBoolean(plmobjInfo[27]):false;
+                            plmObj.IsNewXref = plmobjInfo[27].Contains("true") || plmobjInfo[27].Contains("true") ? Convert.ToBoolean(plmobjInfo[27]) : false;
                         plmObj.PreFix = plmobjInfo[22];
                         fileName = Helper.RemovePreFixFromFileName(fileName, plmObj.PreFix);
                         plmObj.ObjectName = fileName;
-
-
+                        plmObj.OldPK = plmObj.PK = plmobjInfo[32];
+                        plmObj.OldFK = plmObj.FK = plmobjInfo[33];
+                        plmObj.IsSaved = false;
+                        //return false;
 
                         bool IsNotFound = true;
                         foreach (DataTable dt in lstdtLayoutInfo)
@@ -84,8 +88,8 @@ namespace AutocadPlugIn
                             if (dt.Rows.Count > 0)
                             {
                                 if (plmObj.IsNew && Convert.ToString(dt.Rows[0]["FileID1"]) == plmObj.ObjectId)
-                                { 
-                                    IsNotFound = false; 
+                                {
+                                    IsNotFound = false;
                                 }
                                 else if (System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(dt.Rows[0]["FileLayoutName"])) == System.IO.Path.GetFileNameWithoutExtension(fileName))
                                 {
@@ -101,7 +105,7 @@ namespace AutocadPlugIn
                                     plmObj.dtLayoutInfo = dt;
                                     break;
                                 }
-                                
+
                             }
 
                         }
@@ -110,158 +114,29 @@ namespace AutocadPlugIn
                             plmObj.dtLayoutInfo = new DataTable();
                         }
                     }
-
-
-
-
-
-
-
-
-                        // gethering document info
-
-                    //    foreach (String str in cmd.Drawings)
-                    //{
-                    //    PLMObject plmObj = new PLMObject();
-                    //    String[] plmobjInfo = new String[24];
-                    //    plmobjInfo = str.Split(';');
-                    //    plmObj.ObjectId = plmobjInfo[0];
-                    //    string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
-
-
-                    //    plmObj.ObjectRevision = plmobjInfo[17];
-
-                    //    plmObj.objectProjectNo= plmobjInfo[18];
-
-                    //    plmObj.ObjectStatus = plmobjInfo[15];
-                    //    plmObj.Classification = plmobjInfo[16];
-                    //    plmObj.ItemType = plmobjInfo[1];
-                    //    plmObj.FilePath = plmobjInfo[2];
-
-                    //    plmObj.IsNew = false;
-                    //    plmObj.IsRoot = false;
-                    //    if (plmobjInfo[3] == "true")
-                    //        plmObj.IsRoot = true;
-
-                    //    if (plmObj.IsRoot)
-                    //        plmObjs.Insert(0, plmObj);
-                    //    else
-                    //        plmObjs.Add(plmObj);
-
-                    //    if (plmObj.IsRoot)
-                    //        plmObj.ObjectDescription = plmobjInfo[6];
-                    //    plmObj.ObjectSourceId = plmobjInfo[7];
-
-                    //    plmObj.ObjectProjectId = ProjectId = plmobjInfo[9];
-
-                    //    plmObj.ObjectLayouts = plmobjInfo[14];
-
-                    //    plmObj.objectType = plmobjInfo[20];
-                    //    plmObj.FolderID = plmobjInfo[22];
-                    //    plmObj.FolderPath = plmobjInfo[23];
-                    //    plmObj.PreFix = plmobjInfo[21];
-                    //    fileName = Helper.RemovePreFixFromFileName(fileName, plmObj.PreFix);
-                    //    plmObj.ObjectName = fileName;
-
-                    //    bool IsNotFound = true;
-                    //    foreach (DataTable dt in lstdtLayoutInfo)
-                    //    {
-                    //        if (dt.Rows.Count > 0)
-                    //        {
-                    //            if (Convert.ToString(dt.Rows[0]["FileID1"]) == plmObj.ObjectId)
-                    //            {
-                    //                plmObj.dtLayoutInfo = dt;
-                    //                IsNotFound = false;
-                    //                break;
-                    //            }
-
-                    //        }
-
-                    //    }
-                    //    if (IsNotFound)
-                    //    {
-                    //        plmObj.dtLayoutInfo = new DataTable();
-                    //    }
-                    //}
-
-                    //foreach (String str in cmd.NewDrawings)
-                    //{
-                    //    try
-                    //    {
-                    //        PLMObject plmObj = new PLMObject();
-                    //        String[] plmobjInfo = new String[26];
-                    //        plmobjInfo = str.Split(';');
-                    //        plmObj.ObjectNumber = plmobjInfo[0];
-                    //        plmObj.ObjectName = plmobjInfo[2];
-                    //        plmObj.FilePath = plmobjInfo[3];
-                    //        plmObj.ObjectRevision = plmobjInfo[20];
-
-                    //        plmObj.ObjectId = "";
-                    //        plmObj.ItemType = plmobjInfo[5];
-                    //        plmObj.ObjectProjectId = ProjectId = plmobjInfo[12];
-                    //        plmObj.objectProjectNo = plmobjInfo[21];
-
-
-                    //        plmObj.AuthoringTool = "AutoCAD";
-
-                    //        plmObj.IsNew = true;
-                    //        plmObj.ObjectStatus = plmobjInfo[18];
-                    //        plmObj.Classification = plmobjInfo[19];
-
-
-
-
-
-                    //        plmObj.ObjectLayouts = plmobjInfo[17];
-
-                    //        plmObj.objectType = plmobjInfo[23];
-                    //        plmObj.FolderID = plmobjInfo[25];
-                    //        plmObj.FolderPath = plmobjInfo[26];
-                    //        string fileName = System.IO.Path.GetFileName(plmobjInfo[2]);
-                    //        plmObj.PreFix = plmobjInfo[24];
-                    //        fileName = Helper.RemovePreFixFromFileName(fileName, plmObj.PreFix);
-                    //        plmObj.ObjectName = fileName;
-
-                    //        plmObj.IsRoot = false;
-                    //        if (plmobjInfo[6] == "true")
-                    //            plmObj.IsRoot = true;
-
-                    //        if (plmObj.IsRoot)
-                    //            plmObj.ObjectDescription = plmobjInfo[9];
-                    //        bool IsNotFound = true;
-                    //        foreach (DataTable dt in lstdtLayoutInfo)
-                    //        {
-                    //            if (dt.Rows.Count > 0)
-                    //            {
-                    //                if (System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(dt.Rows[0]["FileLayoutName"])) == System.IO.Path.GetFileNameWithoutExtension(fileName))
-                    //                {
-                    //                    plmObj.dtLayoutInfo = dt;
-                    //                    IsNotFound = false;
-                    //                    break;
-                    //                }
-                    //            }
-
-                    //        }
-                    //        if (IsNotFound)
-                    //        {
-                    //            plmObj.dtLayoutInfo = new DataTable();
-                    //        }
-
-
-                    //        if (plmObj.IsRoot)
-                    //            plmObjs.Insert(0, plmObj);
-                    //        else
-                    //            plmObjs.Add(plmObj);
-                    //    }
-                    //    catch (System.Exception E)
-                    //    {
-
-                    //    }
-                    //}
-
+                    //Helper.CloseProgressBar();
+                    for (int i = 0; i < plmObjs.Count; ++i)
+                    {
+                        PLMObject obj = plmObjs[i];
+                        bool IsNotFound = true;
+                        for (int j = 0; j < TempplmObjs.Count; ++j)
+                        {
+                            PLMObject obj1 = plmObjs[j];
+                            if (obj.FilePath == obj1.FilePath)
+                            {
+                                IsNotFound = false;
+                            }
+                        }
+                        if (IsNotFound)
+                        {
+                            TempplmObjs.Add(obj);
+                        }
+                    }
+                    AllplmObjs = plmObjs;
+                    plmObjs = TempplmObjs;
                 }
+                //Helper.CloseProgressBar();
 
-                //  objConnector.SaveObject(ref plmObjs);
                 bool RetVal = ObjRBC.SaveObject(ref plmObjs, IsFileSave);
 
                 try
@@ -308,18 +183,55 @@ namespace AutocadPlugIn
                                 , plmobj.canEditStatus
                                 , plmobj.hasStatusClosed
                                 , plmobj.isletest
-                                , plmobj.objectProjectNo 
+                                , plmobj.objectProjectNo
                                 , PreFix
                                 , plmobj.LayoutInfo,
                                 OldPrefix
                                 , plmobj.FolderID
                                 , plmobj.FolderPath
-                                ,"" //IsNewXref  not to assign value from here, if ever assign assign fasle.
-                                ,"true"//Always true
+                                , "" //IsNewXref  not to assign value from here, if ever assign assign fasle.
+                                , "true"//Always true
+                                , plmobj.PK//PK
+                                , plmobj.FK //FK
                                 );
                         }
                     }
+                    else
+                    {
+                        if (RetVal)
+                        {
+                            //TempplmObjs = AllplmObjs;
+                            //AllplmObjs = TempplmObjs;
+                             //  Helper.CloseProgressBar();
+                            
+                            for (int i = 0; i < AllplmObjs.Count; ++i)
+                            {
+                                PLMObject obj = AllplmObjs[i];
+                                if (!obj.IsSaved)
+                                {
+                                    for (int j = 0; j < AllplmObjs.Count; ++j)
+                                    {
+                                        if (i != j)
+                                        {
+                                            PLMObject obj1 = AllplmObjs[j];
+                                            if (obj.FilePath == obj1.Oldfilepath)
+                                            {
+                                                obj.PK = obj1.PK;
+                                            }
+                                            if (obj.FK == obj1.OldPK)
+                                            {
+                                                obj.FK = obj1.PK;
+                                            }
+                                        }
+                                    }
+                                    ObjRBC.SaveXref(obj.FK, obj.PK);
 
+                                }
+                            }
+                           
+                        }
+
+                    }
                 }
                 catch (System.Exception E)
                 {

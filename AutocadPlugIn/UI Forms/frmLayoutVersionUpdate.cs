@@ -48,7 +48,7 @@ namespace AutocadPlugIn.UI_Forms
                 tgvLayouts.RowsDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Regular);
                 Cursor.Current = Cursors.WaitCursor;
                 Helper.FIllCMB(LayoutType, objRBC.GetFIleType(), "name", "id", true);
-                Helper.FIllCMB(LayoutStatus, objRBC.GetFIleStatus(), "statusname", "id", true);
+                Helper.FIllCMB(LayoutStatus, objRBC.GetFIleStatus(), "statusname", "id", true,IsSortByDisplayMember:false);
 
                 TreeGridNode node = null;
 

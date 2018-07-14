@@ -37,5 +37,7 @@ namespace AutocadPlugIn
 
         public string name { get; set; }
 
+        public bool IsClosed { get; set; }
+
     }
 }

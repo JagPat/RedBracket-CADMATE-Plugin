@@ -255,6 +255,12 @@ namespace AutocadPlugIn
         public System.Data.DataTable dtLayoutInfo { get; set; }
         public bool IsNewXref { get; set; }
 
+        public String PK { get; set; }
+        public String FK { get; set; }
+        public String OldPK { get; set; }
+        public String OldFK { get; set; }
+        public bool IsSaved { get; set; }
+        public String Oldfilepath { get; set; }
         private List<Relationship> fromRelationships = new List<Relationship>();
         private List<Relationship> toRelationships = new List<Relationship>();
 

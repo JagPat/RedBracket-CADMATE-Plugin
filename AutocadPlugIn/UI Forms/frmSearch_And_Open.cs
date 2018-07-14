@@ -23,6 +23,7 @@ namespace AutocadPlugIn.UI_Forms
         string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
         ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
         RBConnector objRBC = new RBConnector();
+        public List<string> DownloadedFiles = new List<string>();
         public frmSearch_And_Open()
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
@@ -52,7 +53,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 #region filestatus
 
-                Helper.FIllCMB(CDState, objRBC.GetFIleStatus(), "statusname", "statusname", false);
+                Helper.FIllCMB(CDState, objRBC.GetFIleStatus(), "statusname", "statusname", false,false);
 
                 #endregion filestatus
 
@@ -84,8 +85,9 @@ namespace AutocadPlugIn.UI_Forms
 
             if (CDProjectName.SelectedIndex > 0)
             {
-                string s = Helper.FindIDInCMB((System.Data.DataTable)CDProjectName.DataSource, "id", CDProjectName.Text, "PNAMENO");
-                urlParameters.Add(new KeyValuePair<string, string>("projno", Helper.FindIDInCMB((System.Data.DataTable)CDProjectName.DataSource, "number", CDProjectName.Text, "PNAMENO")));
+                //string s = Helper.FindIDInCMB((System.Data.DataTable)CDProjectName.DataSource, "id", CDProjectName.Text, "PNAMENO");
+                //urlParameters.Add(new KeyValuePair<string, string>("projno", Helper.FindIDInCMB((System.Data.DataTable)CDProjectName.DataSource, "number", CDProjectName.Text, "PNAMENO")));
+                urlParameters.Add(new KeyValuePair<string, string>("projid", Convert.ToString(CDProjectName.SelectedValue)));
             }
 
             // If folder name is not null or empty then add the parameter to the URL.
@@ -129,8 +131,11 @@ namespace AutocadPlugIn.UI_Forms
                     name = textBox_foldername.Text
                 };
             }
-
-
+            if (CDProjectName.SelectedIndex>0)
+            { 
+               
+            }
+            
 
 
             var resultSearchCriteriaResponseList = objRBC.SearchFiles(searchCriteria, urlParameters);
@@ -263,7 +268,7 @@ namespace AutocadPlugIn.UI_Forms
                                                 null,
                                                 null);
 
-                //AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
+                AddChildNode(resultSearchCriteriaChildRecord, ref treeGridNode);
             }
 
 
@@ -449,6 +454,7 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         selectedTreeGridNodes.Add(treeGridNode);
                         PBValue++;
+                        Helper.GetSellectedNode(treeGridNode, ref PBValue);
                     }
                 }
 
@@ -468,24 +474,17 @@ namespace AutocadPlugIn.UI_Forms
                 Helper.GetProgressBar(PBValue, "File Download in Progress...");
                 foreach (TreeGridNode currentTreeGrdiNode in selectedTreeGridNodes)
                 {
-                    foreach (TreeGridNode childNode in currentTreeGrdiNode.Nodes)
-                    {
-                        if ((bool)childNode.Cells[0].FormattedValue)
-                        {
-                            Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(childNode.Cells["DrawingName"].FormattedValue)));
-                            Helper.DownloadFile(Convert.ToString(childNode.Cells["DrawingID"].FormattedValue));
+                    DownloadChild(currentTreeGrdiNode);
 
-                           // pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
-                        }
-                    }
                     Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(currentTreeGrdiNode.Cells["DrawingName"].FormattedValue)));
                     string FileID = currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString();
                     Helper.DownloadFile(FileID, "true");
+
                     PLMObject objplmo = new PLMObject();
                     objplmo.ObjectId = FileID;
                     pLMObjects.Add(objplmo);
 
-
+                    break;
                 }
                 Helper.IncrementProgressBar(1, "Locking files.");
                 objRBC.LockObject(pLMObjects);
@@ -516,6 +515,30 @@ namespace AutocadPlugIn.UI_Forms
             this.Cursor = Cursors.Default;
         }
 
+        public void DownloadChild(TreeGridNode ParentNode)
+        {
+            try
+            {
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+                        Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(childNode.Cells["DrawingName"].FormattedValue)));
+                        string FP = Helper.DownloadFile(Convert.ToString(childNode.Cells["DrawingID"].FormattedValue), DownloadedFiles: DownloadedFiles);
+                        if (FP != null)
+                        {
+                            DownloadedFiles.Add(FP);
+                        }
+                        DownloadChild(childNode);
+                        // pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
         private void FormCancelButton_Click(object sender, EventArgs e)
         {
             this.Close();
