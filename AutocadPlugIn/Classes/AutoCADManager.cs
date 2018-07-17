@@ -1480,7 +1480,7 @@ namespace AutocadPlugIn
             return lstOldFiles;
         }
 
-        public List<string> CheckXrefStatus(string ParentFilePath, string Filepath, Hashtable DownloadedFiles)
+        public List<string> CheckXrefStatus(string ParentFilePath, string Filepath, List<clsDownloadedFiles> lstobjDownloadedFiles)
         {
             List<string> lstOldFiles = new List<string>();
             if (ParentFilePath != Filepath)
@@ -1512,7 +1512,22 @@ namespace AutocadPlugIn
                                 break;
                             case XrefStatus.Resolved:
                                 {
+                                    Database xdb = xgn.Database;
+                                    if (ParentFilePath!= xdb.Filename)
+                                    {
+                                        DirectoryInfo d = new DirectoryInfo(Path.GetDirectoryName(ParentFilePath));
 
+                                        string newpath = "";
+                                        newpath = Path.Combine(Path.GetDirectoryName(ParentFilePath),Path.GetFileName( xdb.Filename));
+
+                                        foreach (var item in lstobjDownloadedFiles)
+                                        {
+                                            item.XrefStatus =item.ParentFilePath== ParentFilePath && item.FilePath == newpath ? true : item.XrefStatus;
+                                        }
+                                        
+                                    }
+                                    
+                                    
                                     break;
                                 }
                             case XrefStatus.FileNotFound:
@@ -1543,13 +1558,16 @@ namespace AutocadPlugIn
                                                 string TnewPath = @".\" + Path.GetFileName(newpath);
                                                 btr.PathName = TnewPath;
 
-                                                DownloadedFiles[newpath] = false;
-                                                
+                                                foreach (var item in lstobjDownloadedFiles)
+                                                {
+                                                    item.XrefStatus = item.ParentFilePath == ParentFilePath && item.FilePath == newpath ? true : item.XrefStatus;
+                                                }
+
 
                                                 break;
                                             }
                                         }
-                                        CheckXrefStatus(ParentFilePath, newpath, DownloadedFiles);
+                                        CheckXrefStatus(ParentFilePath, newpath, lstobjDownloadedFiles);
                                     }
 
 
@@ -2870,15 +2888,15 @@ namespace AutocadPlugIn
         }
 
 
-        public void AttachingExternalReference(string ParentFilePath,Hashtable htDownloadedFiles)
+        public void AttachingExternalReference(string ParentFilePath, List<clsDownloadedFiles> lstobjDownloadedFiles)
         {
             try
             {
-                foreach (DictionaryEntry item in htDownloadedFiles)
+                foreach (clsDownloadedFiles item in lstobjDownloadedFiles)
                 {
-                    if(Convert.ToBoolean(item.Value)==false)
+                    if(Convert.ToBoolean(item.XrefStatus)==false)
                     {
-                        AttachingExternalReference(ParentFilePath, Convert.ToString(item.Key));
+                        AttachingExternalReference(item.ParentFilePath, item.FilePath);
                     }
                 }
             }
@@ -2894,34 +2912,40 @@ namespace AutocadPlugIn
         public void AttachingExternalReference(string ParentFilePath, string XrefFilePath)
         {
             // Get the current database and start a transaction
-            Database acCurDb;
-            acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
-
-            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+            //Database acCurDb;
+            Database acCurDb = new Database(false, true);
+            using (acCurDb)
             {
-                // Create a reference to a DWG file
-                string PathName = XrefFilePath;
-                ObjectId acXrefId = acCurDb.AttachXref(PathName, Path.GetFileNameWithoutExtension(XrefFilePath));
+                acCurDb.ReadDwgFile(ParentFilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                //acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
 
-                // If a valid reference is created then continue
-                if (!acXrefId.IsNull)
+                using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
                 {
-                    // Attach the DWG reference to the current space
-                    Point3d insPt = new Point3d(1, 1, 0);
-                    using (BlockReference acBlkRef = new BlockReference(insPt, acXrefId))
+                    // Create a reference to a DWG file
+                    string PathName = XrefFilePath;
+                    ObjectId acXrefId = acCurDb.AttachXref(PathName, Path.GetFileNameWithoutExtension(XrefFilePath));
+
+                    // If a valid reference is created then continue
+                    if (!acXrefId.IsNull)
                     {
-                        BlockTableRecord acBlkTblRec;
-                        acBlkTblRec = acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                        // Attach the DWG reference to the current space
+                        Point3d insPt = new Point3d(1, 1, 0);
+                        using (BlockReference acBlkRef = new BlockReference(insPt, acXrefId))
+                        {
+                            BlockTableRecord acBlkTblRec;
+                            acBlkTblRec = acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
 
-                        acBlkTblRec.AppendEntity(acBlkRef);
-                        acTrans.AddNewlyCreatedDBObject(acBlkRef, true);
+                            acBlkTblRec.AppendEntity(acBlkRef);
+                            acTrans.AddNewlyCreatedDBObject(acBlkRef, true);
+                        }
                     }
+
+                    // Save the new objects to the database
+                    acTrans.Commit();
+
+                    // Dispose of the transaction
                 }
-
-                // Save the new objects to the database
-                acTrans.Commit();
-
-                // Dispose of the transaction
+                acCurDb.SaveAs(ParentFilePath, DwgVersion.Current);
             }
         }
 

@@ -24,6 +24,7 @@ namespace AutocadPlugIn.UI_Forms
         ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
         RBConnector objRBC = new RBConnector();
         public List<string> DownloadedFiles = new List<string>();
+        public List<clsDownloadedFiles> lstobjDownloadedFiles = new List<clsDownloadedFiles>();
         public frmSearch_And_Open()
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
@@ -478,7 +479,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(currentTreeGrdiNode.Cells["DrawingName"].FormattedValue)));
                     string FileID = currentTreeGrdiNode.Cells["DrawingID"].FormattedValue.ToString();
-                    Helper.DownloadFile(FileID, "true");
+                    Helper.DownloadFile(FileID, "true", DownloadedFiles: DownloadedFiles, lstobjDownloadedFiles: lstobjDownloadedFiles);
 
                     PLMObject objplmo = new PLMObject();
                     objplmo.ObjectId = FileID;
@@ -515,7 +516,7 @@ namespace AutocadPlugIn.UI_Forms
             this.Cursor = Cursors.Default;
         }
 
-        public void DownloadChild(TreeGridNode ParentNode)
+        public void DownloadChild(TreeGridNode ParentNode,string ParentFilePath="")
         {
             try
             {
@@ -524,12 +525,13 @@ namespace AutocadPlugIn.UI_Forms
                     if ((bool)childNode.Cells[0].FormattedValue)
                     {
                         Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(childNode.Cells["DrawingName"].FormattedValue)));
-                        string FP = Helper.DownloadFile(Convert.ToString(childNode.Cells["DrawingID"].FormattedValue), DownloadedFiles: DownloadedFiles);
+                        string FP = Helper.DownloadFile(Convert.ToString(childNode.Cells["DrawingID"].FormattedValue), DownloadedFiles: DownloadedFiles, ParentFilePath: ParentFilePath,lstobjDownloadedFiles:lstobjDownloadedFiles);
                         if (FP != null)
                         {
                             DownloadedFiles.Add(FP);
+                            DownloadChild(childNode, FP);
                         }
-                        DownloadChild(childNode);
+                       
                         // pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
                     }
                 }

@@ -902,7 +902,7 @@ namespace AutocadPlugIn
             return FileName;
         }
 
-        public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false, List<string> DownloadedFiles = null)
+        public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false, List<string> DownloadedFiles = null, string ParentFilePath = "", List<clsDownloadedFiles> lstobjDownloadedFiles = null)
         {
 
             Hashtable DrawingProperty = new Hashtable();
@@ -966,19 +966,29 @@ namespace AutocadPlugIn
                 {
                     binaryWriter.Write(objRBC.GetSingleFileInfo(FileID));
                 }
-
+                clsDownloadedFiles objDownloadedFile = new clsDownloadedFiles()
+                {
+                    ParentFilePath = ParentFilePath,
+                    FilePath = FilePath,
+                    XrefStatus = false,
+                    Prefix= PreFix
+                };
+                lstobjDownloadedFiles.Add(objDownloadedFile);
                 if (IsRoot == "true" && !IsTemp)
                 {
                     //Helper.CloseProgressBar();
-                    Hashtable htDownloadedFile = new Hashtable();
-                    foreach (var item in DownloadedFiles)
+                    foreach (var item in lstobjDownloadedFiles)
                     {
-
-                        htDownloadedFile.Add(item, false);
-
+                        item.MainFilePath = FilePath;
+                        if(item.ParentFilePath==null|| item.ParentFilePath == string.Empty)
+                        {
+                            item.ParentFilePath = FilePath;
+                        }
                     }
-                    cadManager.CheckXrefStatus(FilePath, FilePath, htDownloadedFile);
-                    cadManager.AttachingExternalReference(FilePath, htDownloadedFile);
+
+                     
+                    cadManager.CheckXrefStatus(FilePath, FilePath, lstobjDownloadedFiles);
+                    cadManager.AttachingExternalReference(FilePath, lstobjDownloadedFiles);
                     cadManager.OpenActiveDocument(FilePath, "View", DrawingProperty);
                 }
                 else
