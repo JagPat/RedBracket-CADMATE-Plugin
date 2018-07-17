@@ -261,6 +261,8 @@ namespace AutocadPlugIn
         public String OldFK { get; set; }
         public bool IsSaved { get; set; }
         public String Oldfilepath { get; set; }
+        public String OldStatus { get; set; }
+        public String VersionType { get; set; }
         private List<Relationship> fromRelationships = new List<Relationship>();
         private List<Relationship> toRelationships = new List<Relationship>();
 

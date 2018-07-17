@@ -79,6 +79,25 @@ namespace AutocadPlugIn
                         plmObj.ObjectName = fileName;
                         plmObj.OldPK = plmObj.PK = plmobjInfo[32];
                         plmObj.OldFK = plmObj.FK = plmobjInfo[33];
+                        plmObj.OldStatus = plmobjInfo[36];
+                        bool IsOldStatusClosed = Helper.IsClosedStatus(plmObj.OldStatus);
+                        bool IsNewStatusClosed = Helper.IsClosedStatus(plmobjInfo[37]);
+                        if(IsOldStatusClosed&& IsNewStatusClosed)//Both state are closed
+                        {
+                            plmObj.VersionType = "Minor";
+                        }
+                        else if (!IsOldStatusClosed && IsNewStatusClosed)//old is open and new is closed
+                        {
+                            plmObj.VersionType = "Minor";
+                        }
+                        else if (IsOldStatusClosed && !IsNewStatusClosed)//old is closed and new is open
+                        {
+                            plmObj.VersionType = "Major";
+                        }
+                        else if (!IsOldStatusClosed && !IsNewStatusClosed)//None of them is closed
+                        {
+                            plmObj.VersionType = "Minor";
+                        }
                         plmObj.IsSaved = false;
                         //return false;
 

@@ -29,17 +29,19 @@ namespace AutocadPlugIn
         Hashtable currentDocumentProperties;
         public void SaveActiveDrawing()
         {
-            SaveActiveDrawing(true);
+            SaveActiveDrawing(false);
         }
 
-        public void SaveActiveDrawing(bool isOpenInReadOnly = true)
+        public void SaveActiveDrawing(bool isOpenInReadOnly = false)
         {
             try
             {
+                //Helper.CheckFileInfoFlag = false;
                 //String filePath = acadApp.DocumentManager.MdiActiveDocument.Database.Filename;
                 //acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(filePath);
 
-                //acadApp.DocumentManager.Open(filePath, isOpenInReadOnly);
+                //acadApp.DocumentManager.Open(filePath,false);
+                //Helper.CheckFileInfoFlag = true;
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
@@ -264,7 +266,7 @@ namespace AutocadPlugIn
                                             if (ar.Tag.ToUpper() == "DISCIPLINE")
                                             {
                                                 ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]); 
+                                                ar.TextString = drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]);
                                                 ar.DowngradeOpen();
                                             }
                                             if (ar.Tag.ToUpper() == "DWGSTATE")
@@ -932,52 +934,65 @@ namespace AutocadPlugIn
 
                                     newpath = path + childname;
                                     File.Delete(newpath);
-                                    OldChildPath = Path.Combine(ParentPath, oldPreFix + childname);
+
+                                    OldChildPath = originalpath;
+                                    if (IsChildinSameFolder)
+                                    {
+                                        FileInfo fi = new FileInfo(originalpath);
+                                        OldChildPath = Path.Combine(fi.DirectoryName, Path.GetFileName(originalpath));
+                                    }
                                     if (File.Exists(OldChildPath))
                                     {
 
                                     }
                                     else
                                     {
-                                        OldChildPath = Path.Combine(ParentPath, childname);
+                                        OldChildPath = Path.Combine(ParentPath, oldPreFix + childname);
                                         if (File.Exists(OldChildPath))
                                         {
 
                                         }
                                         else
                                         {
-                                            OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
-
+                                            OldChildPath = Path.Combine(ParentPath, childname);
                                             if (File.Exists(OldChildPath))
                                             {
 
                                             }
                                             else
                                             {
-                                                string OP = "";
-                                                if (File.Exists(originalpath))
-                                                {
-                                                    FileInfo fi = new FileInfo(originalpath);
-                                                    OP = fi.DirectoryName;
-                                                    OldChildPath = Path.Combine(OP, childname);
-                                                }
-                                                else
-                                                {
-                                                    //ShowMessage.ErrorMess("File not found.\n" + originalpath);
-                                                    //return;
-                                                }
+                                                OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
+
                                                 if (File.Exists(OldChildPath))
                                                 {
 
                                                 }
                                                 else
                                                 {
-                                                    OldChildPath = Path.Combine(OP, oldPreFix + childname);
+                                                    string OP = "";
+                                                    if (File.Exists(originalpath))
+                                                    {
+                                                        FileInfo fi = new FileInfo(originalpath);
+                                                        OP = fi.DirectoryName;
+                                                        OldChildPath = Path.Combine(OP, childname);
+                                                    }
+                                                    else
+                                                    {
+                                                        //ShowMessage.ErrorMess("File not found.\n" + originalpath);
+                                                        //return;
+                                                    }
+                                                    if (File.Exists(OldChildPath))
+                                                    {
+
+                                                    }
+                                                    else
+                                                    {
+                                                        OldChildPath = Path.Combine(OP, oldPreFix + childname);
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-
                                     int IsChildCopy = 0;
                                     if (File.Exists(OldChildPath) && OldChildPath != newpath)
                                     {
@@ -1457,6 +1472,94 @@ namespace AutocadPlugIn
                     }//For Complete                    
                 }//Complete MainDB
                 //mainDb.SaveAs(OldParentFilePath, DwgVersion.Current);
+            }
+            catch (System.Exception ex)
+            {
+                ShowMessage.ErrorMess(ex.Message);
+            }
+            return lstOldFiles;
+        }
+
+        public List<string> CheckXrefStatus(string ParentFilePath, string Filepath, Hashtable DownloadedFiles)
+        {
+            List<string> lstOldFiles = new List<string>();
+            if (ParentFilePath != Filepath)
+                ParentFilePath = Filepath;
+            try
+            {
+
+                Database mainDb = new Database(false, true);
+
+
+                using (mainDb)
+                {
+                    mainDb.ReadDwgFile(ParentFilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                    mainDb.ResolveXrefs(false, false);
+                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                    for (int i = 0; i < xg.NumNodes; i++)
+                    {
+                        XrefGraphNode xgn = xg.GetXrefNode(i);
+                        switch (xgn.XrefStatus)
+                        {
+                            case XrefStatus.Unresolved:
+                                //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Unloaded:
+                                //ed.WriteMessage("\nUnloaded xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Unreferenced:
+                                // ed.WriteMessage("\nUnreferenced xref \"{0}\"", xgn.Name);
+                                break;
+                            case XrefStatus.Resolved:
+                                {
+
+                                    break;
+                                }
+                            case XrefStatus.FileNotFound:
+                                {
+                                    Database xdb = xgn.Database;
+
+                                    Transaction tr = mainDb.TransactionManager.StartTransaction();
+
+
+                                    using (tr)
+                                    {
+                                        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                                        mainDb.XrefEditEnabled = true;
+
+                                        string originalpath = btr.PathName;
+                                        string s = originalpath.Replace(btr.Name, "").Replace(Path.GetExtension(originalpath), "").Replace("#", "");
+                                        s = s.Remove(s.LastIndexOf('-'));
+                                        s = s.Substring(s.LastIndexOf('-') + 1);
+
+                                        DirectoryInfo d = new DirectoryInfo(Path.GetDirectoryName(ParentFilePath));
+                                        FileInfo[] Files = d.GetFiles("*.dwg");
+                                        string newpath = "";
+                                        foreach (FileInfo file in Files)
+                                        {
+                                            if (file.Name.Contains(s))
+                                            {
+                                                newpath = Path.Combine(d.FullName, file.Name);
+                                                string TnewPath = @".\" + Path.GetFileName(newpath);
+                                                btr.PathName = TnewPath;
+
+                                                DownloadedFiles[newpath] = false;
+                                                
+
+                                                break;
+                                            }
+                                        }
+                                        CheckXrefStatus(ParentFilePath, newpath, DownloadedFiles);
+                                    }
+
+
+                                    break;
+                                }
+                        }//Switch Complete
+                    }//For Complete                  
+                    mainDb.SaveAs(ParentFilePath, DwgVersion.Current);
+                }//Complete MainDB
+
             }
             catch (System.Exception ex)
             {
@@ -2766,8 +2869,29 @@ namespace AutocadPlugIn
             }
         }
 
+
+        public void AttachingExternalReference(string ParentFilePath,Hashtable htDownloadedFiles)
+        {
+            try
+            {
+                foreach (DictionaryEntry item in htDownloadedFiles)
+                {
+                    if(Convert.ToBoolean(item.Value)==false)
+                    {
+                        AttachingExternalReference(ParentFilePath, Convert.ToString(item.Key));
+                    }
+                }
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+
+
+
         [CommandMethod("AttachingExternalReference")]
-        public void AttachingExternalReference(string FilePath)
+        public void AttachingExternalReference(string ParentFilePath, string XrefFilePath)
         {
             // Get the current database and start a transaction
             Database acCurDb;
@@ -2776,8 +2900,8 @@ namespace AutocadPlugIn
             using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
             {
                 // Create a reference to a DWG file
-                string PathName = FilePath;
-                ObjectId acXrefId = acCurDb.AttachXref(PathName, Path.GetFileNameWithoutExtension(FilePath));
+                string PathName = XrefFilePath;
+                ObjectId acXrefId = acCurDb.AttachXref(PathName, Path.GetFileNameWithoutExtension(XrefFilePath));
 
                 // If a valid reference is created then continue
                 if (!acXrefId.IsNull)
@@ -2799,6 +2923,68 @@ namespace AutocadPlugIn
 
                 // Dispose of the transaction
             }
+        }
+
+        [CommandMethod("RenameLayout")]
+
+        public void renamelayoutName(String FilePath, string OldLayoutName, string Suffix)
+
+        {
+
+
+            Database Db = new Database(false, true);
+            Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+            //get the Layout name
+
+            if (Db != null)
+            {
+
+
+
+                Transaction tr = Db.TransactionManager.StartTransaction();
+
+
+                using (tr)
+                {
+
+                    DBDictionary layoutDict = tr.GetObject(Db.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+                    foreach (DBDictionaryEntry de in layoutDict)
+                    {
+                        String layoutName = de.Key;
+                        if (layoutName != "Model")
+                        {
+
+                            Layout layout = tr.GetObject(de.Value, OpenMode.ForWrite) as Layout;
+                            LayoutManager acLayoutMgr = LayoutManager.Current;
+                            if (acLayoutMgr == null)
+                            {
+
+                            }
+                            acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
+                            //if (layout.LayoutName == OldLayoutName)
+                            //{
+                            //    layout.LayoutName = layout.LayoutName + "_" + Suffix;
+                            //    break;
+                            //}
+
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+
+
+                    tr.Commit();
+                }
+            }
+
+            //LayoutManager acLayoutMgr = LayoutManager.Current;
+            //acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
+
+
+
+
         }
     }
 }

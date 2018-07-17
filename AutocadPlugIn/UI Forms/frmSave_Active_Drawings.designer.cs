@@ -33,6 +33,17 @@
             this.submit = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.savetreeGrid = new AdvancedDataGridView.TreeGridView();
+            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
+            this.CADDescription = new System.Windows.Forms.TextBox();
+            this.Comments = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlTop = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.pnlLeft = new System.Windows.Forms.Panel();
+            this.pnlBottom = new System.Windows.Forms.Panel();
+            this.pnlRight = new System.Windows.Forms.Panel();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.drawing = new AdvancedDataGridView.TreeGridColumn();
             this.DrawingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -70,18 +81,8 @@
             this.ProjName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OldFolderID1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OldState = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FileStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BtnBrowseFolder = new System.Windows.Forms.DataGridViewImageColumn();
-            this.imageStrip = new System.Windows.Forms.ImageList(this.components);
-            this.CADDescription = new System.Windows.Forms.TextBox();
-            this.Comments = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlTop = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.pnlLeft = new System.Windows.Forms.Panel();
-            this.pnlBottom = new System.Windows.Forms.Panel();
-            this.pnlRight = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.savetreeGrid)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -157,6 +158,7 @@
             this.ProjName,
             this.OldFolderID1,
             this.OldState,
+            this.FileStatus,
             this.BtnBrowseFolder});
             this.savetreeGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.savetreeGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
@@ -177,6 +179,145 @@
             this.savetreeGrid.CurrentCellDirtyStateChanged += new System.EventHandler(this.savetreeGrid_CurrentCellDirtyStateChanged);
             this.savetreeGrid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.savetreeGrid_DataError);
             // 
+            // imageStrip
+            // 
+            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
+            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // CADDescription
+            // 
+            this.CADDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CADDescription.Location = new System.Drawing.Point(110, 3);
+            this.CADDescription.Multiline = true;
+            this.CADDescription.Name = "CADDescription";
+            this.CADDescription.Size = new System.Drawing.Size(418, 32);
+            this.CADDescription.TabIndex = 8;
+            // 
+            // Comments
+            // 
+            this.Comments.AutoSize = true;
+            this.Comments.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Comments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Comments.ForeColor = System.Drawing.Color.Black;
+            this.Comments.Location = new System.Drawing.Point(3, 3);
+            this.Comments.Margin = new System.Windows.Forms.Padding(3);
+            this.Comments.Name = "Comments";
+            this.Comments.Size = new System.Drawing.Size(101, 32);
+            this.Comments.TabIndex = 9;
+            this.Comments.Text = "Version Note :";
+            this.Comments.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.savetreeGrid, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 43);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 89.01869F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.98131F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(977, 392);
+            this.tableLayoutPanel1.TabIndex = 10;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 107F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 424F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel2.Controls.Add(this.cancel, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.submit, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.CADDescription, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.Comments, 0, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 351);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(971, 38);
+            this.tableLayoutPanel2.TabIndex = 11;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel3.Controls.Add(this.pnlTop, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel1, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.pnlLeft, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.pnlBottom, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.pnlRight, 2, 1);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1003, 448);
+            this.tableLayoutPanel3.TabIndex = 11;
+            // 
+            // pnlTop
+            // 
+            this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.tableLayoutPanel3.SetColumnSpan(this.pnlTop, 3);
+            this.pnlTop.Controls.Add(this.label1);
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Size = new System.Drawing.Size(1003, 40);
+            this.pnlTop.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(306, 29);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Save Active Drawings";
+            // 
+            // pnlLeft
+            // 
+            this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlLeft.Location = new System.Drawing.Point(0, 40);
+            this.pnlLeft.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlLeft.Name = "pnlLeft";
+            this.pnlLeft.Size = new System.Drawing.Size(10, 398);
+            this.pnlLeft.TabIndex = 0;
+            // 
+            // pnlBottom
+            // 
+            this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.tableLayoutPanel3.SetColumnSpan(this.pnlBottom, 3);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlBottom.Location = new System.Drawing.Point(0, 438);
+            this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Size = new System.Drawing.Size(1003, 10);
+            this.pnlBottom.TabIndex = 0;
+            // 
+            // pnlRight
+            // 
+            this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
+            this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlRight.Location = new System.Drawing.Point(993, 40);
+            this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlRight.Name = "pnlRight";
+            this.pnlRight.Size = new System.Drawing.Size(10, 398);
+            this.pnlRight.TabIndex = 0;
+            // 
             // Check
             // 
             this.Check.FillWeight = 41.15082F;
@@ -191,6 +332,7 @@
             this.drawing.FillWeight = 79.85113F;
             this.drawing.HeaderText = "File Name";
             this.drawing.Name = "drawing";
+            this.drawing.ReadOnly = true;
             this.drawing.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.drawing.Width = 177;
             // 
@@ -456,6 +598,13 @@
             this.OldState.Name = "OldState";
             this.OldState.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
+            // FileStatus
+            // 
+            this.FileStatus.HeaderText = "FileStatus";
+            this.FileStatus.Name = "FileStatus";
+            this.FileStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.FileStatus.Visible = false;
+            // 
             // BtnBrowseFolder
             // 
             this.BtnBrowseFolder.HeaderText = "";
@@ -463,145 +612,6 @@
             this.BtnBrowseFolder.Name = "BtnBrowseFolder";
             this.BtnBrowseFolder.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.BtnBrowseFolder.Width = 50;
-            // 
-            // imageStrip
-            // 
-            this.imageStrip.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
-            this.imageStrip.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // CADDescription
-            // 
-            this.CADDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CADDescription.Location = new System.Drawing.Point(110, 3);
-            this.CADDescription.Multiline = true;
-            this.CADDescription.Name = "CADDescription";
-            this.CADDescription.Size = new System.Drawing.Size(418, 32);
-            this.CADDescription.TabIndex = 8;
-            // 
-            // Comments
-            // 
-            this.Comments.AutoSize = true;
-            this.Comments.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Comments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Comments.ForeColor = System.Drawing.Color.Black;
-            this.Comments.Location = new System.Drawing.Point(3, 3);
-            this.Comments.Margin = new System.Windows.Forms.Padding(3);
-            this.Comments.Name = "Comments";
-            this.Comments.Size = new System.Drawing.Size(101, 32);
-            this.Comments.TabIndex = 9;
-            this.Comments.Text = "Version Note :";
-            this.Comments.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.savetreeGrid, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 43);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 89.01869F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.98131F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(977, 392);
-            this.tableLayoutPanel1.TabIndex = 10;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 5;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 107F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 424F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel2.Controls.Add(this.cancel, 4, 0);
-            this.tableLayoutPanel2.Controls.Add(this.submit, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.CADDescription, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.Comments, 0, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 351);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(971, 38);
-            this.tableLayoutPanel2.TabIndex = 11;
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 3;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.Controls.Add(this.pnlTop, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel1, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.pnlLeft, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.pnlBottom, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.pnlRight, 2, 1);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(1003, 448);
-            this.tableLayoutPanel3.TabIndex = 11;
-            // 
-            // pnlTop
-            // 
-            this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.tableLayoutPanel3.SetColumnSpan(this.pnlTop, 3);
-            this.pnlTop.Controls.Add(this.label1);
-            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTop.Location = new System.Drawing.Point(0, 0);
-            this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(1003, 40);
-            this.pnlTop.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(306, 29);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Save Active Drawings";
-            // 
-            // pnlLeft
-            // 
-            this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlLeft.Location = new System.Drawing.Point(0, 40);
-            this.pnlLeft.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(10, 398);
-            this.pnlLeft.TabIndex = 0;
-            // 
-            // pnlBottom
-            // 
-            this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.tableLayoutPanel3.SetColumnSpan(this.pnlBottom, 3);
-            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 438);
-            this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(1003, 10);
-            this.pnlBottom.TabIndex = 0;
-            // 
-            // pnlRight
-            // 
-            this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(49)))), ((int)(((byte)(50)))));
-            this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlRight.Location = new System.Drawing.Point(993, 40);
-            this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlRight.Name = "pnlRight";
-            this.pnlRight.Size = new System.Drawing.Size(10, 398);
-            this.pnlRight.TabIndex = 0;
             // 
             // frmSave_Active_Drawings
             // 
@@ -677,6 +687,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ProjName;
         private System.Windows.Forms.DataGridViewTextBoxColumn OldFolderID1;
         private System.Windows.Forms.DataGridViewTextBoxColumn OldState;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FileStatus;
         private System.Windows.Forms.DataGridViewImageColumn BtnBrowseFolder;
     }
 }

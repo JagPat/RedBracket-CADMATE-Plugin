@@ -206,6 +206,8 @@ namespace AutocadPlugIn
 
             private void DocumentManager_DocumentActivated(object sender, DocumentCollectionEventArgs e)
             {
+                if (!Helper.CheckFileInfoFlag)
+                    return;
                 Cursor.Current = Cursors.WaitCursor;
                 e.Document.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
                 CADRibbon objcr = new CADRibbon();
@@ -239,6 +241,8 @@ namespace AutocadPlugIn
         public void GetVersion(ref string CurrentVersion, ref string LatestVersion)
         {
             //return;
+            if (!Helper.CheckFileInfoFlag)
+                return;
             Cursor.Current = Cursors.WaitCursor;
 
 

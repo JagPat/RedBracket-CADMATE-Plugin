@@ -443,7 +443,7 @@ namespace AutocadPlugIn.UI_Forms
 
             List<PLMObject> pLMObjects = new List<PLMObject>();
             RBConnector objRBC = new RBConnector();
-            int PBValue = 3;
+            int PBValue = 1;
             try
             {
                 this.Cursor = Cursors.WaitCursor;

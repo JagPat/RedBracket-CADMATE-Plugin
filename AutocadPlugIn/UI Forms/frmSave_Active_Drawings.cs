@@ -36,7 +36,7 @@ namespace AutocadPlugIn.UI_Forms
             this.FormBorderStyle = FormBorderStyle.None;
             this.IsSaveAs = IsSaveAs;
             //ICADManager objCadMgr = CADFactory.getCADManager();
-            //objCadMgr.SaveActiveDrawing();
+            Helper.cadManager.SaveActiveDrawing();
 
         }
 
@@ -73,6 +73,10 @@ namespace AutocadPlugIn.UI_Forms
                 string FoldID = "", FoldPath = "", ProJNmNo = "";
                 for (int i = 0; i < dtTreeGridData.Rows.Count; i++)
                 {
+                    if (Convert.ToString(dtTreeGridData.Rows[i]["DrawingId"]).Trim().Length == 0 || IsSaveAs)
+                    {
+                        dtTreeGridData.Rows[i]["drawingstate"] = Helper.FirstStatusName;
+                    }
 
 
                     if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true" &&
@@ -203,7 +207,7 @@ namespace AutocadPlugIn.UI_Forms
                         }
 
 
-                        node = savetreeGrid.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
+                        node = savetreeGrid.Nodes.Add(Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ?true:false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
                            rw["drawingstate"].ToString(),
                             rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString()
                             , rw["isroot"].ToString(), rw["Layouts"], rw["projectnameno"], rw["revision"].ToString()
@@ -227,8 +231,9 @@ namespace AutocadPlugIn.UI_Forms
                              , rw["projectname"]
                               , rw["folderid"]
                               , rw["drawingstate"].ToString()
+                              , rw["drawingstate"].ToString()
                             );
-
+                        node.Cells[0].ReadOnly=   Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false;
 
                         if (rw["drawingid"].ToString() == "")
                         {
@@ -336,7 +341,7 @@ namespace AutocadPlugIn.UI_Forms
                 foreach (DataRow rw in dtChild.Rows)
                 {
 
-                    TreeGridNode node1 = node.Nodes.Add(false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
+                    TreeGridNode node1 = node.Nodes.Add(Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
                           rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(),
                            rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"], rw["projectnameno"]
                                , rw["revision"].ToString(), rw["candelete"]
@@ -358,6 +363,7 @@ namespace AutocadPlugIn.UI_Forms
                             , rw["FK"]
                              , rw["projectname"]
                               , rw["folderid"]
+                              , rw["drawingstate"].ToString()
                               , rw["drawingstate"].ToString()
                               );
 
@@ -397,6 +403,8 @@ namespace AutocadPlugIn.UI_Forms
                     AssigndtLayoutInfoToTag(node1, dtLayoutInfo);
 
                     AddNode(dtTreeGridData, rw, node1);
+                    node1.Expand();
+                    node1.Cells[0].ReadOnly = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false;
                 }
             }
             catch (Exception E)
@@ -434,6 +442,7 @@ namespace AutocadPlugIn.UI_Forms
                 dtLayoutInfo.Columns.Add("CreatedOn");
                 dtLayoutInfo.Columns.Add("UpdatedBy");
                 dtLayoutInfo.Columns.Add("UpdatedOn");
+                dtLayoutInfo.Columns.Add("LayoutStatusOld");
                 if (objLI != null)
                 {
                     foreach (LayoutInfo obj in objLI)
@@ -444,12 +453,19 @@ namespace AutocadPlugIn.UI_Forms
                         dr["FileID1"] = rw["drawingid"];
                         dr["LayoutID"] = obj.id;
                         dr["LayoutType"] = obj.typename;
-                        dr["LayoutStatus"] = obj.statusname;
+                        if (IsSaveAs)
+                            dr["LayoutStatus"] =Helper.FirstStatusName;
+                        else
+                            dr["LayoutStatus"] = obj.statusname;
                         dr["Version"] = obj.versionno;
                         dr["Description"] = obj.description;
                         dr["IsFile"] = "0";
                         dr["TypeID"] = obj.typeId;
-                        dr["StatusID"] = obj.statusId;
+
+                        if (IsSaveAs)
+                            dr["StatusID"] = Helper.FirstStatusID;
+                        else
+                            dr["StatusID"] = obj.statusId;
                         dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
                         dr["LayoutName1"] = obj.name;
 
@@ -458,6 +474,10 @@ namespace AutocadPlugIn.UI_Forms
                         dr["CreatedOn"] = obj.createdon;
                         dr["UpdatedBy"] = obj.updatedby;
                         dr["UpdatedOn"] = obj.updatedon;
+                        if (IsSaveAs)
+                            dr["LayoutStatusOld"] = Helper.FirstStatusName;
+                        else
+                            dr["LayoutStatusOld"] = obj.statusname;
                         dtLayoutInfo.Rows.Add(dr);
                     }
                 }
@@ -543,7 +563,13 @@ namespace AutocadPlugIn.UI_Forms
 
                 }
                 #endregion
-                //To check whether any file is selected or not
+
+                //if (!CheckStatusChange(selectedTreeGridNodes[0], true) || !Check_Status_Change(selectedTreeGridNodes[0]))
+                //{
+                //    Cursor.Current = Cursors.Default;
+                //    return;
+
+                //}
 
 
 
@@ -685,6 +711,7 @@ namespace AutocadPlugIn.UI_Forms
             }
             this.Cursor = Cursors.Default;
         }
+
 
         public bool Name_Length_Duplication_Check(TreeGridNode ParentNode)
         {
@@ -993,18 +1020,20 @@ namespace AutocadPlugIn.UI_Forms
             try
             {
                 string CN = "State";
-                if(IsOld)
+                if (IsOld)
                     CN = "OldState";
                 DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["State"];
                 try
                 {
+                    decimal d = Convert.ToDecimal(selectedTreeNode.Cells[CN].Value);
                     //FileStatus = Convert.ToString(selectedTreeNode.Cells["State"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
-                    FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "statusname", Convert.ToString(selectedTreeNode.Cells[CN].Value), "id");
+                    FileStatus = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
                 }
                 catch
                 {
                     //FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
-                    FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "statusname", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
+                    //FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "statusname", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
+                    FileStatus = Convert.ToString(selectedTreeNode.Cells[CN].Value);
                 }
             }
             catch (Exception E)
@@ -1335,7 +1364,7 @@ namespace AutocadPlugIn.UI_Forms
                                     ChangeNodeTagValue(savetreeGrid.Nodes[0], selectedTreeNode, objfrm.dtLayoutInfo);
                                     LoadFlag = false;
                                 }
-
+                                CheckStatusChange(selectedTreeNode, true);
                             }
                         }
 
@@ -1426,7 +1455,7 @@ namespace AutocadPlugIn.UI_Forms
                         }
                     }
                 }
-                if(e.RowIndex==State.Index)
+                if (e.RowIndex == State.Index)
                 {
 
                 }
@@ -1496,7 +1525,7 @@ namespace AutocadPlugIn.UI_Forms
                         LoadFlag = true;
                         ChildNode.Cells["OldFolderID1"].Value = CurrentNode.Cells["OldFolderID1"].Value;
                         LoadFlag = false;
-                        ChildNode.Cells["OldState"].Value = CurrentNode.Cells["OldState"].Value;
+                        //ChildNode.Cells["OldState"].Value = CurrentNode.Cells["OldState"].Value;
                         AssignStackFolderSearchReasultToTag(ChildNode, GetStackFolderSearchReasultFromTag(CurrentNode));
                     }
                     ChangeNodeValue(ChildNode, CurrentNode);
@@ -1546,6 +1575,7 @@ namespace AutocadPlugIn.UI_Forms
                 string PreFix = Convert.ToString(selectedTreeNode.Cells["prefix"].Value);
                 string FileTypeID = "";
                 string FileStatusID = "";
+                string FileStatus = GetFileStatus(selectedTreeNode);
                 string FileType = "";
 
                 System.Data.DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(selectedTreeNode);
@@ -1617,7 +1647,7 @@ namespace AutocadPlugIn.UI_Forms
                 selectedTreeNode.Cells["TypeID"].Value = FileTypeID;
                 selectedTreeNode.Cells["ProjNo"].Value = MyProjectNo;
                 selectedTreeNode.Cells["ProjName"].Value = MyProjectName;
-
+                selectedTreeNode.Cells["FileStatus"].Value = FileStatus;
 
                 #endregion
 
@@ -1644,8 +1674,8 @@ namespace AutocadPlugIn.UI_Forms
                 ShowMessage.ErrorMess(E.Message);
             }
         }
-                  
-        
+
+
 
         private void Save_Active_Drawings_Resize(object sender, EventArgs e)
         {
@@ -1746,34 +1776,12 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         if (LoadFlag)
                             return;
-                        LoadFlag = true;
-                        if (IsClosedStatus(selectedTreeNode))
-                        {
-                            if (!IsAllLayoutClose(selectedTreeNode))
-                            {
-                                ShowMessage.ValMess("You can not change status to '" + GetFileStatus(selectedTreeNode) + "' unless all layouts are in Close state.");
-
-
-                                selectedTreeNode.Cells["State"].Value = selectedTreeNode.Cells["OldState"].Value;
-                                //savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
-                                //;
-                                //savetreeGrid.CurrentCell = selectedTreeNode.Cells[0];
-                                //savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
-                                //savetreeGrid.RefreshEdit();
-                                //savetreeGrid.ClearSelection();
-                                //cancel.Focus();
-
-                                savetreeGrid.Refresh();
-                                //Refresh();
-                                IsValueChanged = false;
-                            }
-                        }
-                        LoadFlag = false;
+                        IsValueChanged = CheckStatusChange(selectedTreeNode);
                     }
                     if (IsValueChanged)
                     {
-                        if (e.ColumnIndex == State.Index)
-                            selectedTreeNode.Cells["OldState"].Value = GetFileStatus(selectedTreeNode);
+                        //if (e.ColumnIndex == State.Index)
+                        //    selectedTreeNode.Cells["OldState"].Value = GetFileStatus(selectedTreeNode);
 
                         ChangeNodeValue(savetreeGrid.Nodes[0], selectedTreeNode);
                     }
@@ -1787,31 +1795,163 @@ namespace AutocadPlugIn.UI_Forms
             }
         }
 
+        public bool Check_Status_Change(TreeGridNode ParentNode)
+        {
+
+            try
+            {
+                bool RetVal = CheckStatusChange(ParentNode, true);
+                if (!RetVal)
+                    return !RetVal;
+                foreach (TreeGridNode childNode in ParentNode.Nodes)
+                {
+                    if ((bool)childNode.Cells[0].FormattedValue)
+                    {
+
+
+                        RetVal = Check_Status_Change(childNode);
+                        if (!RetVal)
+                            return !RetVal;
+
+
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return false;
+            }
+            return true;
+        }
+        //public bool Name_Duplication_Check1(TreeGridNode ParentNode)
+        //{
+
+        //    try
+        //    {
+        //        bool RetVal = false;
+
+        //        foreach (TreeGridNode childNode in ParentNode.Nodes)
+        //        {
+        //            if ((bool)childNode.Cells[0].FormattedValue)
+        //            {
+
+        //                RetVal = FileNameDuplicationCheck(childNode);
+        //                if (RetVal)
+        //                    return RetVal;
+        //                else
+        //                {
+        //                    RetVal = Name_Duplication_Check1(childNode);
+        //                    if (RetVal)
+        //                        return RetVal;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception E)
+        //    {
+        //        ShowMessage.ErrorMess(E.Message); return true;
+        //    }
+        //    return false;
+        //}
+
+        public bool CheckStatusChange(TreeGridNode selectedTreeNode, bool ShowFileName = false)
+        {
+            LoadFlag = true;
+            try
+            {
+                bool OldStatusTypeClosed = IsClosedStatus(selectedTreeNode, true);
+                bool NewStatusTypeCLosed = IsClosedStatus(selectedTreeNode);
+                string FileName = "";
+
+                if (ShowFileName)
+                {
+                    FileName = Convert.ToString(selectedTreeNode.Cells["drawing"].Value) + Environment.NewLine;
+                }
+
+
+
+                if (OldStatusTypeClosed && NewStatusTypeCLosed)
+                {
+
+                }
+                else if (OldStatusTypeClosed && !NewStatusTypeCLosed)
+                {
+                    if (ShowMessage.ValMessYN(FileName + "Changing file status from '" + GetFileStatus(selectedTreeNode, true) + "' to '" + GetFileStatus(selectedTreeNode) + "' will lead to creation of new revision, \n Do you want to proceeds anyway ?") == DialogResult.No)
+                    {
+                        selectedTreeNode.Cells["State"].Value = selectedTreeNode.Cells["OldState"].Value;
+                    }
+                    else
+                    {
+                        LoadFlag = false;
+                        return false;
+                    }
+                }
+                if (!OldStatusTypeClosed && NewStatusTypeCLosed)
+                {
+                    if (!IsAllLayoutClose(selectedTreeNode))
+                    {
+                        ShowMessage.ValMess("You can not change status to '" + GetFileStatus(selectedTreeNode) + "' unless all layouts are in Close state.");
+
+
+                        selectedTreeNode.Cells["State"].Value = selectedTreeNode.Cells["OldState"].Value;
+                        //savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                        //;
+                        //savetreeGrid.CurrentCell = selectedTreeNode.Cells[0];
+                        //savetreeGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                        //savetreeGrid.RefreshEdit();
+                        //savetreeGrid.ClearSelection();
+                        //cancel.Focus();
+
+                        savetreeGrid.Refresh();
+                        //Refresh();
+                        LoadFlag = false;
+                        return false;
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            LoadFlag = false;
+            return true;
+        }
         public bool IsAllLayoutClose(TreeGridNode CurrentNode)
         {
             try
             {
-                DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(CurrentNode);
+                DataRow[] dtLayoutInfo = GetdtLayoutInfoFromTag(CurrentNode).Select("IsFile='0'");
                 DataTable dtStatus = objRBC.GetFIleStatus();
-                if(dtStatus !=null)
+                if (dtStatus != null)
                 {
-                    foreach (DataRow dr in dtLayoutInfo.Rows)
+                    foreach (DataRow dr in dtLayoutInfo)
                     {
                         string LayoutStatus = Convert.ToString(dr["LayoutStatus"]);
+                        DataRow[] dr1 = dtStatus.Select("statusname = '" + LayoutStatus + "' and IsClosed ='False'");
 
-                        foreach (DataRow dr1 in dtStatus.Rows)
+
+                        if (dr1.Length > 0)
                         {
-                            string Status = Convert.ToString(dr1["statusname"]);
-                            bool IsClose = Convert.ToBoolean(dr1["IsClosed"]);
-                            if (LayoutStatus == Status && !IsClose)
-                            {
-                                return false;
-                            }
+                            return false;
                         }
+
+
+
+
+                        //foreach (DataRow dr1 in dtStatus.Rows)
+                        //{
+                        //    string Status = Convert.ToString(dr1["statusname"]);
+                        //    bool IsClose = Convert.ToBoolean(dr1["IsClosed"]);
+
+                        //    if (LayoutStatus == Status && !IsClose)
+                        //    {
+                        //        return false;
+                        //    }
+                        //}
 
                     }
                 }
-               
+
                 return true;
             }
             catch (Exception E)
@@ -1820,23 +1960,27 @@ namespace AutocadPlugIn.UI_Forms
             }
             return false;
         }
-        public bool IsClosedStatus(TreeGridNode CurrentNode,bool IsOld=false)
+        public bool IsClosedStatus(TreeGridNode CurrentNode, bool IsOld = false)
         {
             try
             {
                 DataTable dtStatus = objRBC.GetFIleStatus();
 
-                string FileStatus = GetFileStatus(CurrentNode);
+                string FileStatus = GetFileStatus(CurrentNode, IsOld);
                 if (dtStatus != null)
                 {
-                    foreach (DataRow dr in dtStatus.Rows)
+
+                    DataRow[] dr1 = dtStatus.Select("statusname = '" + FileStatus + "' and IsClosed ='True'");
+                    if (dr1.Length > 0)
                     {
-                        string Status = Convert.ToString(dr["statusname"]);
-                        bool IsClose = Convert.ToBoolean(dr["IsClosed"]);
-                        if (FileStatus == Status && !IsClose)
-                        {
-                            return false;
-                        }
+
+
+                        return true;
+
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
                 return true;
@@ -1867,7 +2011,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void savetreeGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            
+
         }
 
         private void savetreeGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)

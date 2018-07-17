@@ -57,6 +57,8 @@
             this.CreatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UpdatedBy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UpdatedOn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LayoutStatusOld = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.VersionType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tgvLayouts)).BeginInit();
@@ -145,7 +147,9 @@
             this.CreatedBy,
             this.CreatedOn,
             this.UpdatedBy,
-            this.UpdatedOn});
+            this.UpdatedOn,
+            this.LayoutStatusOld,
+            this.VersionType});
             this.tgvLayouts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tgvLayouts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.tgvLayouts.ImageList = null;
@@ -368,6 +372,19 @@
             this.UpdatedOn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.UpdatedOn.Visible = false;
             // 
+            // LayoutStatusOld
+            // 
+            this.LayoutStatusOld.HeaderText = "LayoutStatusOld";
+            this.LayoutStatusOld.Name = "LayoutStatusOld";
+            this.LayoutStatusOld.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // VersionType
+            // 
+            this.VersionType.HeaderText = "VersionType";
+            this.VersionType.Name = "VersionType";
+            this.VersionType.ReadOnly = true;
+            this.VersionType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
             // frmLayoutVersionUpdate
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -419,5 +436,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CreatedOn;
         private System.Windows.Forms.DataGridViewTextBoxColumn UpdatedBy;
         private System.Windows.Forms.DataGridViewTextBoxColumn UpdatedOn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LayoutStatusOld;
+        private System.Windows.Forms.DataGridViewTextBoxColumn VersionType;
     }
 }

@@ -41,6 +41,7 @@ namespace AutocadPlugIn
         public static string DateFormat = "dd-MMM-yy";
         public static string DateTimeFormat = "dd-MMM-yy hh:mm:ss tt";
         public static string TimeFormat = "hh:mm:ss tt";
+        public static bool CheckFileInfoFlag = true;
 
         public static frmProgressBar objfrmPB = new frmProgressBar();
         public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
@@ -62,6 +63,11 @@ namespace AutocadPlugIn
             }
 
         }
+        public static string FirstStatusName = "";
+        public static string FirstStatusID = "";
+
+
+
         public static void IncrementProgressBar(int IntcrementValue = 1, string Status = null)
         {
             try
@@ -69,6 +75,8 @@ namespace AutocadPlugIn
                 objfrmPB.TopMost = true;
                 objfrmPB.pbProcess.Increment(IntcrementValue);
                 objfrmPB.lblStatus.Text = Status;
+                objfrmPB.pbProcess.Refresh();
+                objfrmPB.Refresh();
             }
             catch (Exception E)
             {
@@ -95,7 +103,6 @@ namespace AutocadPlugIn
         {
             try
             {
-               
                 objfrmPB.Hide();
             }
             catch (Exception E)
@@ -107,8 +114,10 @@ namespace AutocadPlugIn
         public static void ShowProgressBar()
         {
             try
-            { 
+            {
                 objfrmPB.Show();
+                objfrmPB.pbProcess.Refresh();
+                objfrmPB.Refresh();
             }
             catch (Exception E)
             {
@@ -435,7 +444,7 @@ namespace AutocadPlugIn
                 List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
                 foreach (LayoutInfo objLI1 in objLI)
                 {
-                    if(objLI1.name==LayoutName)
+                    if (objLI1.name == LayoutName)
                     {
                         objLayoutInfo = objLI1;
                         break;
@@ -960,6 +969,16 @@ namespace AutocadPlugIn
 
                 if (IsRoot == "true" && !IsTemp)
                 {
+                    //Helper.CloseProgressBar();
+                    Hashtable htDownloadedFile = new Hashtable();
+                    foreach (var item in DownloadedFiles)
+                    {
+
+                        htDownloadedFile.Add(item, false);
+
+                    }
+                    cadManager.CheckXrefStatus(FilePath, FilePath, htDownloadedFile);
+                    cadManager.AttachingExternalReference(FilePath, htDownloadedFile);
                     cadManager.OpenActiveDocument(FilePath, "View", DrawingProperty);
                 }
                 else
@@ -1480,6 +1499,34 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
             return DT;
+        }
+
+        public static bool IsClosedStatus(string Status)
+        {
+            try
+            {
+                DataTable dtStatus = objRBC.GetFIleStatus();
+                string FileStatus = Status;
+                if (dtStatus != null)
+                {
+                    DataRow[] dr1 = dtStatus.Select("statusname = '" + FileStatus + "' and IsClosed ='True'");
+                    if (dr1.Length > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
         }
     }
 }

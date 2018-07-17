@@ -115,7 +115,8 @@ namespace AutocadPlugIn
                                 true, new List<KeyValuePair<string, string>>
                                 {
                                         new KeyValuePair<string, string>("fileId", obj.ObjectId),
-                                                    new KeyValuePair<string, string>("source","Computer")
+                                        new KeyValuePair<string, string>("source","Computer"),
+                                        new KeyValuePair<string, string>("versionType",obj.VersionType)
 
                                 }, PreFix, true);
 
@@ -298,8 +299,9 @@ namespace AutocadPlugIn
 
                                     if (!IsFileSave)
                                     {
+                                        obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
                                         Helper.IncrementProgressBar(1, "Uploading layout properties." + Path.GetFileNameWithoutExtension(obj.FilePath));
-                                        List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId);
+                                        List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId, obj.ObjectNumber,obj.FilePath);
                                         // ResultSearchCriteria Drawing = GetDrawingInformation(obj.ObjectId);
 
                                         obj.ObjectName = Drawing.name;
@@ -315,7 +317,7 @@ namespace AutocadPlugIn
                                         obj.ObjectCreatedOn = Drawing.created0n;
                                         obj.ObjectModifiedById = Drawing.updatedby;
                                         obj.ObjectModifiedOn = Drawing.updatedon;
-                                        obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
+                                       
 
                                         obj.canDelete = Drawing.canDelete;
                                         obj.isowner = Drawing.isowner;
@@ -693,17 +695,19 @@ namespace AutocadPlugIn
 
         }
 
-        public List<LayoutInfo> SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid)
+        public List<LayoutInfo> SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid,string DrawingNO, string FilePath)
         {
             List<LayoutInfo> LayoutInfolst = new List<LayoutInfo>();
             try
             {
-
-
+                
+                int Count = -1;
                 foreach (DataRow dr in dtLayoutInfo.Rows)
                 {
+                    Count++;
                     if (Convert.ToString(dr["IsFile"]) == "1")
                     {
+                        
                         continue;
                     }
                     else if ((Convert.ToString(dr["ChangeVersion"]) == "False"))
@@ -747,8 +751,8 @@ namespace AutocadPlugIn
 
                     if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                     {
-
-
+                        string Sufix = Count + "_" + DrawingNO;
+                       // Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["LayoutName1"]).Trim(), Sufix);
                         restResponse = (RestResponse)ServiceHelper.PostData(
                   Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                   "/AutocadFiles/uploadLayoutACFiles", DataFormat.Json, null, true
@@ -782,7 +786,8 @@ namespace AutocadPlugIn
                                               new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
                                               new KeyValuePair<string, string>("layoutname",  Convert.ToString(dr["FileLayoutName"]).Trim()),
                                                new KeyValuePair<string, string>("project", ProjectID),
-                                                    new KeyValuePair<string, string>("isNew", "true")
+                                                    new KeyValuePair<string, string>("isNew", "true"),
+                                                new KeyValuePair<string, string>("versionType", Convert.ToString(dr["VersionType"]).Trim())
                                                  });
                     }
 
@@ -1117,6 +1122,14 @@ namespace AutocadPlugIn
                                 }
                             }
                             dataTableProjectInfo = Helper.ToDataTable(ObjFileInfo);
+                            if (ServiceName == "/AutocadFiles/fetchFileStatus") ;
+                            {
+                                if (dataTableProjectInfo.Rows.Count > 0 && dataTableProjectInfo.Columns.Contains("statusname"))
+                                {
+                                    Helper.FirstStatusName = Convert.ToString(dataTableProjectInfo.Rows[0]["statusname"]);
+                                    Helper.FirstStatusID = Convert.ToString(dataTableProjectInfo.Rows[0]["id"]);
+                                }
+                            }
                         }
                     }
                 }

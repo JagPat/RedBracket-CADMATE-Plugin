@@ -15,6 +15,7 @@ namespace AutocadPlugIn.UI_Forms
 {
     public partial class frmLayoutVersionUpdate : Form
     {
+        public bool LoadFlag = false;
         public string Fileid = "";
         public string FileName = "";
         public string FileType = "";
@@ -41,6 +42,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void frmLayoutVersionUpdate_Load(object sender, EventArgs e)
         {
+            LoadFlag = true;
             try
             {
                 Location = new Point(Location.X, Location.Y+10);
@@ -131,6 +133,7 @@ namespace AutocadPlugIn.UI_Forms
                                                         , rw["CreatedOn"]
                                                         , rw["UpdatedBy"]
                                                         , rw["UpdatedOn"]
+                                                        , rw["LayoutStatusOld"]
                                    );
                         }
                     }
@@ -172,12 +175,12 @@ namespace AutocadPlugIn.UI_Forms
                                        , Convert.ToString(tgvLayouts.Nodes[0].Cells["FileID1"].Value)
                                        , ""
                                        , ""
-                                       , ""
+                                       , Helper.FirstStatusName
 
                                        , "", "0.0"
                                        , "0"
                                        , ""
-                                       , ""
+                                       , Helper.FirstStatusID
                                        , key.Value.ToString()
                                        , LayoutName
                                      , ""
@@ -185,6 +188,7 @@ namespace AutocadPlugIn.UI_Forms
                                    , ""
                                      , ""
                                    , ""
+                                   , Helper.FirstStatusName
                                        );
 
                             node.Cells[0].ReadOnly = true;
@@ -205,6 +209,7 @@ namespace AutocadPlugIn.UI_Forms
                 ShowMessage.ErrorMess(E.Message);
             }
             Cursor.Current = Cursors.Default;
+            LoadFlag = false;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -256,6 +261,29 @@ namespace AutocadPlugIn.UI_Forms
                     count++;
                     foreach (TreeGridNode ChildNode in ParentNode.Nodes)
                     {
+
+
+                        bool IsOldStatusClosed = IsClosedStatus(ChildNode, true);
+                        bool IsNewStatusClosed = IsClosedStatus(ChildNode);
+                        if (IsOldStatusClosed && IsNewStatusClosed)//Both state are closed
+                        {
+                            ChildNode.Cells["VersionType"].Value = "Minor";
+                        }
+                        else if (!IsOldStatusClosed && IsNewStatusClosed)//old is open and new is closed
+                        {
+                            ChildNode.Cells["VersionType"].Value = "Minor";
+                        }
+                        else if (IsOldStatusClosed && !IsNewStatusClosed)//old is closed and new is open
+                        {
+                            ChildNode.Cells["VersionType"].Value = "Major";
+
+                        }
+                        else if (!IsOldStatusClosed && !IsNewStatusClosed)//None of them is closed
+                        {
+                            ChildNode.Cells["VersionType"].Value = "Minor";
+                        }
+
+
                         dt.Rows.Add();
 
                         for (int i = 0; i < ChildNode.Cells.Count; i++)
@@ -285,7 +313,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                if (e.RowIndex < 0 || e.ColumnIndex < 0)
+                if (e.RowIndex < 0 || e.ColumnIndex < 0|| LoadFlag)
                 {
                     return;
                 }
@@ -321,6 +349,33 @@ namespace AutocadPlugIn.UI_Forms
                 if (e.ColumnIndex == 5)//FileStatus
                 {
                     string FileStatusID = "";
+
+                    bool IsOldStatusClosed = IsClosedStatus(selectedTreeNode,true);
+                    bool IsNewStatusClosed =  IsClosedStatus(selectedTreeNode);
+                    if (IsOldStatusClosed && IsNewStatusClosed)//Both state are closed
+                    {
+                        
+                    }
+                    else if (!IsOldStatusClosed && IsNewStatusClosed)//old is open and new is closed
+                    {
+                         
+                    }
+                    else if (IsOldStatusClosed && !IsNewStatusClosed)//old is closed and new is open
+                    {
+                        if (ShowMessage.ValMessYN(  "Changing layout status from '" + GetFileStatus(selectedTreeNode, true) + "' to '" + GetFileStatus(selectedTreeNode) + "' will lead to creation of new revision, \n Do you want to proceeds anyway ?") == DialogResult.No)
+                        {
+                            selectedTreeNode.Cells["LayoutStatus"].Value = selectedTreeNode.Cells["LayoutStatusOld"].Value;
+                        }
+                        else
+                        {
+                             
+                        }
+                    }
+                    else if (!IsOldStatusClosed && !IsNewStatusClosed)//None of them is closed
+                    {
+                        
+                    }
+                     
                     try
                     {
                         //FileStatusID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
@@ -353,6 +408,66 @@ namespace AutocadPlugIn.UI_Forms
             {
                 tgvLayouts.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
+        }
+
+        
+        public bool IsClosedStatus(TreeGridNode CurrentNode, bool IsOld = false)
+        {
+            try
+            {
+                DataTable dtStatus = objRBC.GetFIleStatus();
+
+                string FileStatus = GetFileStatus(CurrentNode, IsOld);
+                if (dtStatus != null)
+                {
+
+                    DataRow[] dr1 = dtStatus.Select("statusname = '" + FileStatus + "' and IsClosed ='True'");
+                    if (dr1.Length > 0)
+                    { 
+                        return true; 
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
+        }
+
+        public string GetFileStatus(TreeGridNode selectedTreeNode, bool IsOld = false)
+        {
+            string FileStatus = "";
+            try
+            {
+                string CN = "LayoutStatus";
+                if (IsOld)
+                    CN = "LayoutStatusOld";
+                DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["LayoutStatus"];
+                try
+                {
+                    decimal d = Convert.ToDecimal(selectedTreeNode.Cells[CN].Value);
+                    //FileStatus = Convert.ToString(selectedTreeNode.Cells["State"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
+                    FileStatus = Helper.FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
+                }
+                catch
+                {
+                    //FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
+                    //FileStatus = Helper.FindIDInCMB((System.Data.DataTable)c.DataSource, "statusname", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
+                    FileStatus = Convert.ToString(selectedTreeNode.Cells[CN].Value);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return FileStatus;
         }
     }
 }
