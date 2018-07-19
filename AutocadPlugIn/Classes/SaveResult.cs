@@ -142,6 +142,8 @@ namespace AutocadPlugIn
 
         public clsFolderInfo folder { get; set; }
 
+        public string projectManager { get; set; }
+
     }
 
     public class SaveResultOwnPermissions

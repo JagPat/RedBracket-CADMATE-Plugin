@@ -212,6 +212,7 @@ namespace AutocadPlugIn
                                 , "true"//Always true
                                 , plmobj.PK//PK
                                 , plmobj.FK //FK
+                                ,plmobj.projectManager
                                 );
                         }
                     }

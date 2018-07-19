@@ -231,6 +231,12 @@ namespace AutocadPlugIn
                                             DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
                                             AttributeReference ar = obj as AttributeReference;
 
+                                            if (ar.Tag.ToUpper() == "COORDINATOR")
+                                            {
+                                                ar.UpgradeOpen();
+                                                ar.TextString = LayoutData["projectManager"] == null ? string.Empty : Convert.ToString(LayoutData["projectManager"]);//drawingAttrs["drawingnumber"].ToString();
+                                                ar.DowngradeOpen();
+                                            }
                                             if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
                                             {
                                                 ar.UpgradeOpen();
@@ -817,7 +823,11 @@ namespace AutocadPlugIn
                         }
                         else if (XrefStatus.Resolved == xgn.XrefStatus)
                         {
-
+                            if (xgn.IsNested && i > 0)
+                            {
+                                continue;
+                            }
+                                
 
                             Database xdb = xgn.Database;
 
@@ -1001,6 +1011,7 @@ namespace AutocadPlugIn
                                         {
                                             File.Move(OldChildPath, newpath);
                                             IsChildCopy = 2;
+                                            //Helper.CloseProgressBar();
                                         }
                                         else
                                         {
@@ -1071,6 +1082,48 @@ namespace AutocadPlugIn
                         }
                         else if (XrefStatus.FileNotFound == xgn.XrefStatus)
                         {
+                            Database xdb = mainDb;
+                            DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(ParentFilePath));
+                            FileInfo[] Files = di.GetFiles("*.dwg");
+                            foreach (var item in Files)
+                            {
+                                if (item.FullName.Contains(xgn.Name))
+                                {
+                                    newpath = item.FullName;
+                                    break;
+                                }
+                            }
+
+                            if (xdb != null)
+                            {
+
+
+
+
+                                Transaction tr = xdb.TransactionManager.StartTransaction();
+
+
+                                using (tr)
+                                {
+                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                                    mainDb.XrefEditEnabled = true; 
+                                    if (File.Exists(newpath))
+                                    {
+                                        string TnewPath = @".\" + Path.GetFileName(newpath);
+                                        btr.PathName = TnewPath;
+                                    }
+                                    else
+                                    {
+                                        ShowMessage.ErrorMess("File not found.\n" + newpath); return;
+                                    } 
+
+                                    tr.Commit();
+
+
+
+                                    UpdateExRefPathInfo2(ParentFilePath, newpath, ref plmObjs);
+                                }
+                            }
                         }
 
                         if (File.Exists(OldChildPath) && OldChildPath != newpath)
@@ -1487,7 +1540,7 @@ namespace AutocadPlugIn
                 ParentFilePath = Filepath;
             try
             {
-
+                // Helper.CloseProgressBar();
                 Database mainDb = new Database(false, true);
 
 
@@ -1513,21 +1566,24 @@ namespace AutocadPlugIn
                             case XrefStatus.Resolved:
                                 {
                                     Database xdb = xgn.Database;
-                                    if (ParentFilePath!= xdb.Filename)
+                                    if (ParentFilePath != xdb.Filename)
                                     {
                                         DirectoryInfo d = new DirectoryInfo(Path.GetDirectoryName(ParentFilePath));
 
                                         string newpath = "";
-                                        newpath = Path.Combine(Path.GetDirectoryName(ParentFilePath),Path.GetFileName( xdb.Filename));
+                                        newpath = Path.Combine(Path.GetDirectoryName(ParentFilePath), Path.GetFileName(xdb.Filename));
 
                                         foreach (var item in lstobjDownloadedFiles)
                                         {
-                                            item.XrefStatus =item.ParentFilePath== ParentFilePath && item.FilePath == newpath ? true : item.XrefStatus;
+                                            if (item.ParentFilePath == ParentFilePath && item.FilePath == newpath)
+                                            {
+                                                item.XrefStatus = true; break;
+                                            }
                                         }
-                                        
+                                        CheckXrefStatus(ParentFilePath, newpath, lstobjDownloadedFiles);
                                     }
-                                    
-                                    
+
+
                                     break;
                                 }
                             case XrefStatus.FileNotFound:
@@ -1560,7 +1616,11 @@ namespace AutocadPlugIn
 
                                                 foreach (var item in lstobjDownloadedFiles)
                                                 {
-                                                    item.XrefStatus = item.ParentFilePath == ParentFilePath && item.FilePath == newpath ? true : item.XrefStatus;
+
+                                                    if (item.ParentFilePath == ParentFilePath && item.FilePath == newpath)
+                                                    {
+                                                        item.XrefStatus = true; break;
+                                                    }
                                                 }
 
 
@@ -2894,9 +2954,9 @@ namespace AutocadPlugIn
             {
                 foreach (clsDownloadedFiles item in lstobjDownloadedFiles)
                 {
-                    if(Convert.ToBoolean(item.XrefStatus)==false)
+                    if (Convert.ToBoolean(item.XrefStatus) == false && !(item.MainFilePath == item.ParentFilePath && item.ParentFilePath == item.FilePath))
                     {
-                        AttachingExternalReference(item.ParentFilePath, item.FilePath);
+                        AttachingExternalReference(item.ParentFilePath, item.FilePath, item.Prefix);
                     }
                 }
             }
@@ -2909,7 +2969,7 @@ namespace AutocadPlugIn
 
 
         [CommandMethod("AttachingExternalReference")]
-        public void AttachingExternalReference(string ParentFilePath, string XrefFilePath)
+        public void AttachingExternalReference(string ParentFilePath, string XrefFilePath, string Prefix)
         {
             // Get the current database and start a transaction
             //Database acCurDb;
@@ -2923,7 +2983,7 @@ namespace AutocadPlugIn
                 {
                     // Create a reference to a DWG file
                     string PathName = XrefFilePath;
-                    ObjectId acXrefId = acCurDb.AttachXref(PathName, Path.GetFileNameWithoutExtension(XrefFilePath));
+                    ObjectId acXrefId = acCurDb.AttachXref(PathName, Helper.RemovePreFixFromFileName(Path.GetFileNameWithoutExtension(XrefFilePath), Prefix));
 
                     // If a valid reference is created then continue
                     if (!acXrefId.IsNull)
@@ -2955,54 +3015,67 @@ namespace AutocadPlugIn
 
         {
 
-
-            Database Db = new Database(false, true);
-            Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-            //get the Layout name
-
-            if (Db != null)
+            try
             {
 
 
+                Database Db = new Database(false, true);
+                Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                //get the Layout name
 
-                Transaction tr = Db.TransactionManager.StartTransaction();
-
-
-                using (tr)
+                if (Db != null)
                 {
 
-                    DBDictionary layoutDict = tr.GetObject(Db.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
-                    foreach (DBDictionaryEntry de in layoutDict)
+                    using (Db)
                     {
-                        String layoutName = de.Key;
-                        if (layoutName != "Model")
+
+                        Transaction tr = Db.TransactionManager.StartTransaction();
+
+
+                        using (tr)
                         {
 
-                            Layout layout = tr.GetObject(de.Value, OpenMode.ForWrite) as Layout;
-                            LayoutManager acLayoutMgr = LayoutManager.Current;
-                            if (acLayoutMgr == null)
+                            DBDictionary layoutDict = tr.GetObject(Db.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+                            foreach (DBDictionaryEntry de in layoutDict)
                             {
+                                String layoutName = de.Key;
+                                if (layoutName != "Model")
+                                {
 
+                                    Layout layout = tr.GetObject(de.Value, OpenMode.ForWrite) as Layout;
+                                    //LayoutManager acLayoutMgr = LayoutManager.Current;
+                                    //if (acLayoutMgr!= null)
+                                    //{
+                                    //    acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
+                                    //}
+
+                                    if (layout.LayoutName == OldLayoutName)
+                                    {
+                                        layout.LayoutName = layout.LayoutName + "_" + Suffix;
+
+                                        break;
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    continue;
+                                }
                             }
-                            acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
-                            //if (layout.LayoutName == OldLayoutName)
-                            //{
-                            //    layout.LayoutName = layout.LayoutName + "_" + Suffix;
-                            //    break;
-                            //}
 
+
+                            tr.Commit();
                         }
-                        else
-                        {
-                            continue;
-                        }
+                        Db.SaveAs(FilePath, DwgVersion.Current);
                     }
 
-
-                    tr.Commit();
                 }
             }
-
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
             //LayoutManager acLayoutMgr = LayoutManager.Current;
             //acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
 

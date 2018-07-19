@@ -300,7 +300,7 @@ namespace AutocadPlugIn
                                     if (!IsFileSave)
                                     {
                                         obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
-                                        Helper.IncrementProgressBar(1, "Uploading layout properties." + Path.GetFileNameWithoutExtension(obj.FilePath));
+                                        //Helper.IncrementProgressBar(1, "Uploading layout properties." + Path.GetFileNameWithoutExtension(obj.FilePath));
                                         List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId, obj.ObjectNumber,obj.FilePath);
                                         // ResultSearchCriteria Drawing = GetDrawingInformation(obj.ObjectId);
 
@@ -317,7 +317,7 @@ namespace AutocadPlugIn
                                         obj.ObjectCreatedOn = Drawing.created0n;
                                         obj.ObjectModifiedById = Drawing.updatedby;
                                         obj.ObjectModifiedOn = Drawing.updatedon;
-                                       
+                                        obj.ObjectDescription = Drawing.description;
 
                                         obj.canDelete = Drawing.canDelete;
                                         obj.isowner = Drawing.isowner;
@@ -752,14 +752,16 @@ namespace AutocadPlugIn
                     if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                     {
                         string Sufix = Count + "_" + DrawingNO;
-                       // Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["LayoutName1"]).Trim(), Sufix);
+                       
+                        Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["LayoutName1"]).Trim(), Sufix);
+                        string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim() +"_"+ Sufix;
                         restResponse = (RestResponse)ServiceHelper.PostData(
                   Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                   "/AutocadFiles/uploadLayoutACFiles", DataFormat.Json, null, true
                      , new List<KeyValuePair<string, string>> {
                                          new KeyValuePair<string, string>("fileId", Fileid),
                                               new KeyValuePair<string, string>("layoutId", Convert.ToString(dr["ACLayoutID"]).Trim()),
-                                                 new KeyValuePair<string, string>("layoutFileName",  Convert.ToString(dr["LayoutName1"]).Trim()),
+                                                 new KeyValuePair<string, string>("layoutFileName", NewLayoutName),
                                                       new KeyValuePair<string, string>("project",  ProjectID),
                                              new KeyValuePair<string, string>("status",  Convert.ToString(dr["StatusID"]).Trim()),
                                               new KeyValuePair<string, string>("type",  Convert.ToString(dr["TypeID"]).Trim()),
@@ -1395,7 +1397,7 @@ namespace AutocadPlugIn
                 //Helper.CloseProgressBar();
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    ShowMessage.ErrorMess("Some error occurred while fetching file information.");
+                    ShowMessage.ErrorMess("Some error occurred while fetching file information.", restResponse==null?string.Empty: restResponse.ResponseUri+Environment.NewLine+Environment.NewLine+ restResponse.Content);
                     return null;
                 }
                 else

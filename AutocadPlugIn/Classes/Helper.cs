@@ -65,13 +65,14 @@ namespace AutocadPlugIn
         }
         public static string FirstStatusName = "";
         public static string FirstStatusID = "";
-
-
+        public static bool IsPBHiden = false;
+        public static bool IsPBActive = false;
 
         public static void IncrementProgressBar(int IntcrementValue = 1, string Status = null)
         {
             try
             {
+                IsPBActive = true;
                 objfrmPB.TopMost = true;
                 objfrmPB.pbProcess.Increment(IntcrementValue);
                 objfrmPB.lblStatus.Text = Status;
@@ -88,6 +89,7 @@ namespace AutocadPlugIn
         {
             try
             {
+                IsPBActive = false;
                 objfrmPB.TopMost = true;
                 objfrmPB.pbProcess.Value = objfrmPB.pbProcess.Maximum;
                 objfrmPB.lblStatus.Text = string.Empty;
@@ -103,7 +105,11 @@ namespace AutocadPlugIn
         {
             try
             {
-                objfrmPB.Hide();
+                if(IsPBActive)
+                {
+                    objfrmPB.Hide();
+                }
+                
             }
             catch (Exception E)
             {
@@ -115,9 +121,13 @@ namespace AutocadPlugIn
         {
             try
             {
-                objfrmPB.Show();
-                objfrmPB.pbProcess.Refresh();
-                objfrmPB.Refresh();
+                if (IsPBActive)
+                {
+                    objfrmPB.Show();
+                    objfrmPB.pbProcess.Refresh();
+                    objfrmPB.Refresh();
+                }
+    
             }
             catch (Exception E)
             {
@@ -839,7 +849,7 @@ namespace AutocadPlugIn
 
                 dtDrawingProperty.Columns.Add("PK");
                 dtDrawingProperty.Columns.Add("FK");
-
+                dtDrawingProperty.Columns.Add("projectManager");
             }
             catch (Exception E)
             {
@@ -902,7 +912,7 @@ namespace AutocadPlugIn
             return FileName;
         }
 
-        public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false, List<string> DownloadedFiles = null, string ParentFilePath = "", List<clsDownloadedFiles> lstobjDownloadedFiles = null)
+        public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false, List<string> DownloadedFiles = null, string ParentFilePath = "", List<clsDownloadedFiles> lstobjDownloadedFiles = null, string ParentPreFix = "")
         {
 
             Hashtable DrawingProperty = new Hashtable();
@@ -934,7 +944,7 @@ namespace AutocadPlugIn
                         {
                             if (DownloadedFiles == null || !DownloadedFiles.Contains(FilePath))
                             {
-                                Helper.HideProgressBar();
+                                 
                                 if (ShowMessage.InfoYNMess("This file is already in working directory,\n Do you want to replace it ?\n" + FilePath) == DialogResult.Yes)
                                 {
                                     File.Delete(FilePath);
@@ -942,8 +952,7 @@ namespace AutocadPlugIn
                                 else
                                 {
                                     FileRename(FilePath);
-                                }
-                                Helper.ShowProgressBar();
+                                } 
                             }
                             else
                             {
@@ -968,27 +977,65 @@ namespace AutocadPlugIn
                 }
                 clsDownloadedFiles objDownloadedFile = new clsDownloadedFiles()
                 {
+                    FileName = Helper.RemovePreFixFromFileName(Path.GetFileName(FilePath), PreFix),
+
                     ParentFilePath = ParentFilePath,
                     FilePath = FilePath,
                     XrefStatus = false,
-                    Prefix= PreFix
+                    Prefix = PreFix
                 };
                 lstobjDownloadedFiles.Add(objDownloadedFile);
                 if (IsRoot == "true" && !IsTemp)
                 {
+                    List<clsDownloadedFiles> lstobjDownloadedFiles1 = new List<clsDownloadedFiles>();
+                    clsDownloadedFiles objDF = new clsDownloadedFiles()
+                    {
+                        FileName = Drawing.name,
+                        ParentFileName = Drawing.name,
+                        ParentPrefix = PreFix,
+                        Prefix = PreFix
+
+                    };
+                    lstobjDownloadedFiles1.Add(objDF);
+                    if (Drawing.filebean != null)
+                        GetTotalChild(Drawing.filebean, Drawing, lstobjDownloadedFiles1);
+
                     //Helper.CloseProgressBar();
                     foreach (var item in lstobjDownloadedFiles)
                     {
                         item.MainFilePath = FilePath;
-                        if(item.ParentFilePath==null|| item.ParentFilePath == string.Empty)
+                        if (item.ParentFilePath == null || item.ParentFilePath == string.Empty)
                         {
                             item.ParentFilePath = FilePath;
+                            item.ParentFileName = Helper.RemovePreFixFromFileName(Path.GetFileName(FilePath), PreFix);
                         }
                     }
 
-                     
-                    cadManager.CheckXrefStatus(FilePath, FilePath, lstobjDownloadedFiles);
-                    cadManager.AttachingExternalReference(FilePath, lstobjDownloadedFiles);
+                    foreach (var item1 in lstobjDownloadedFiles1)
+                    {
+                        foreach (var item in lstobjDownloadedFiles)
+                        {
+                            if(item1.ParentFileName==Helper.RemovePreFixFromFileName(Path.GetFileName(item.ParentFilePath),item1.ParentPrefix))
+                            {
+                                item1.MainFilePath = item.MainFilePath;
+                                item1.ParentFilePath = item.ParentFilePath;
+                            }
+                            if (item1.ParentFileName == Helper.RemovePreFixFromFileName(Path.GetFileName(item.FilePath), item1.ParentPrefix))
+                            {
+                                item1.MainFilePath = item.MainFilePath;
+                                item1.ParentFilePath = item.FilePath;
+                            }
+                            if (item1.FileName == Helper.RemovePreFixFromFileName(Path.GetFileName(item.FilePath), item1.Prefix))
+                            {
+                                item1.MainFilePath = item.MainFilePath;
+                                item1.FilePath = item.FilePath;
+                            }
+                        }
+
+                    }
+
+                    cadManager.CheckXrefStatus(FilePath, FilePath, lstobjDownloadedFiles1);
+                    cadManager.AttachingExternalReference(FilePath, lstobjDownloadedFiles1);
                     cadManager.OpenActiveDocument(FilePath, "View", DrawingProperty);
                 }
                 else
@@ -1002,6 +1049,31 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
             return FilePath;
+        }
+        public static void GetTotalChild(ResultSearchCriteria[] Children, ResultSearchCriteria father, List<clsDownloadedFiles> lstobjDownloadedFiles)
+        {
+            try
+            {
+                foreach (ResultSearchCriteria child in Children)
+                {
+                    clsDownloadedFiles objDF = new clsDownloadedFiles()
+                    {
+                        FileName = child.name,
+                        ParentFileName = father.name,
+                        Prefix = Helper.GetPreFix(child.versionno, child.projectNumber, child.fileNo, child.type == null ? string.Empty : child.type.name == null ? string.Empty : child.type.name),
+                        ParentPrefix= Helper.GetPreFix(father.versionno, father.projectNumber, father.fileNo, father.type == null ? string.Empty : father.type.name == null ? string.Empty : father.type.name)
+
+                };
+                    lstobjDownloadedFiles.Add(objDF);
+                    if (child.filebean != null)
+                        GetTotalChild(child.filebean, child, lstobjDownloadedFiles);
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
         }
         public static bool FileRename(string FilePath, int Count = 1)
         {
@@ -1091,6 +1163,9 @@ namespace AutocadPlugIn
                 dr["IsRBCFile"] = "true";//Always true.
                 dr["PK"] = "";// will be assign later
                 dr["FK"] = "";// will be assign later
+                dr["projectManager"] = Drawing.projectManager;
+
+
                 dtDrawing.Rows.Add(dr);
 
             }

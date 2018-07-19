@@ -90,14 +90,21 @@ namespace AutocadPlugIn
         public string folderpath { get; set; }
 
         public clsFolderInfo folder { get; set; }
+        public string projectManager { get; set; }
+
+        public ResultSearchCriteria[] filebean { get; set; }
 
     }
+ 
     public class clsDownloadedFiles
     {
         public string MainFilePath { set; get; }
         public string ParentFilePath { set; get; }
         public string FilePath { set; get; }
+        public string FileName { set; get; }
+        public string ParentFileName { set; get; }
         public string Prefix { set; get; }
+        public string ParentPrefix { set; get; }
         public bool XrefStatus { set; get; }
     }
     public class clsFolderInfo

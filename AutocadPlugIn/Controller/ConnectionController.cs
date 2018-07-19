@@ -46,29 +46,7 @@ namespace AutocadPlugIn
                 }
                 isConnect = restResponse.StatusCode == System.Net.HttpStatusCode.OK;
 
-                //DataTable dtUserDetail = new DataTable();
-                //dtUserDetail.Rows.Add();
-                //var list = restResponse.Content.Split(',');
-                //foreach(string s in list)
-                //{
-                //    string s2 = s.Replace('{',' ').Trim();
-                //    s2 = s2.Replace('{', ' ').Trim();
-                //    s2 = s2.Replace('"', ' ').Trim();
-                //    //string s1 = s2.Substring( s2.IndexOf(@":")+1 );
-                //    string ColumnName = s2.Substring(0, s2.IndexOf(@":") - 1);
-                //    string Value = s2.Substring(s2.IndexOf(@":") + 1);
-                //    dtUserDetail.Columns.Add(ColumnName);
-                //    dtUserDetail.Rows[0][ColumnName] = Value;
-
-                //}
-
-                //if(dtUserDetail.Rows.Count>0)
-                //{
-                //    Helper.UserFullName = Convert.ToString(dtUserDetail.Rows[0]["firstName"]) + " " + Convert.ToString(dtUserDetail.Rows[0]["lastName"]);
-                //    Helper.FirstName = Convert.ToString(dtUserDetail.Rows[0]["firstName"]);
-                //    Helper.LastName = Convert.ToString(dtUserDetail.Rows[0]["lastName"]);
-                //    Helper.UserID = Convert.ToString(dtUserDetail.Rows[0]["id"]);
-                //}
+                
 
                 if(isConnect)
                 {

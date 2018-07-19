@@ -192,6 +192,12 @@
     <Compile Include="UI Forms\frmDrawingInfo.Designer.cs">
       <DependentUpon>frmDrawingInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI Forms\frmError.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI Forms\frmError.Designer.cs">
+      <DependentUpon>frmError.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI Forms\frmFolderSelection.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -310,6 +316,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmDrawingInfo.resx">
       <DependentUpon>frmDrawingInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI Forms\frmError.resx">
+      <DependentUpon>frmError.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmFolderSelection.resx">
       <DependentUpon>frmFolderSelection.cs</DependentUpon>

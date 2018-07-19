@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Windows.Forms;
- 
+
 using Microsoft.Win32;
 using RedBracketConnector;
 using System.IO;
@@ -20,7 +20,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                
+
 
                 txt_username.Text = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "UserName"));
                 txt_url.Text = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "Url"));
@@ -43,7 +43,7 @@ namespace AutocadPlugIn
             {
                 if (e.KeyChar == 13)
                 {
-                    if ((this.txt_username.Text.Length > 0) && (this.txt_url.Text.Length > 0) && (this.txt_Password.Text.Length > 0)  )
+                    if ((this.txt_username.Text.Length > 0) && (this.txt_url.Text.Length > 0) && (this.txt_Password.Text.Length > 0))
                     {
                         ConnectToRB();
                     }
@@ -203,6 +203,7 @@ namespace AutocadPlugIn
                 {
                     try
                     {
+                        Helper.objRBC.GetFIleStatus();
                         string CurrentCheckoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
                         if (Directory.Exists(CurrentCheckoutPath))
                         {
@@ -215,7 +216,7 @@ namespace AutocadPlugIn
                             if (!Directory.Exists(WorkDir))
                             {
                                 Directory.CreateDirectory(WorkDir);
-                                
+
                             }
                             Helper.SetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath", WorkDir);
 

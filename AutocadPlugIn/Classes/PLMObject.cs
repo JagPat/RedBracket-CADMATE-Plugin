@@ -265,7 +265,8 @@ namespace AutocadPlugIn
         public String VersionType { get; set; }
         private List<Relationship> fromRelationships = new List<Relationship>();
         private List<Relationship> toRelationships = new List<Relationship>();
-
+        public String projectManager { get; set; }
+        
         public List<Relationship> FromRelationships
         {
             get { return this.fromRelationships; }

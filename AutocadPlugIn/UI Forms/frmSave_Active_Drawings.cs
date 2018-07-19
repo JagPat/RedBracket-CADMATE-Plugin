@@ -636,7 +636,8 @@ namespace AutocadPlugIn.UI_Forms
                     if (Is_Save)
                     {
                         //Helper.CloseProgressBar();
-
+                        //Helper.cadManager.ChecknCloseOpenedDoc(FilePath);
+                        //CloseFile(currentTreeGrdiNode);
 
                         #region Update File Properties 
 

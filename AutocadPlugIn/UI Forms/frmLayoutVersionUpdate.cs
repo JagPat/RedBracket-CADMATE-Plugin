@@ -45,12 +45,12 @@ namespace AutocadPlugIn.UI_Forms
             LoadFlag = true;
             try
             {
-                Location = new Point(Location.X, Location.Y+10);
+                Location = new Point(Location.X, Location.Y + 10);
                 tgvLayouts.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 tgvLayouts.RowsDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Regular);
                 Cursor.Current = Cursors.WaitCursor;
                 Helper.FIllCMB(LayoutType, objRBC.GetFIleType(), "name", "id", true);
-                Helper.FIllCMB(LayoutStatus, objRBC.GetFIleStatus(), "statusname", "id", true,IsSortByDisplayMember:false);
+                Helper.FIllCMB(LayoutStatus, objRBC.GetFIleStatus(), "statusname", "id", true, IsSortByDisplayMember: false);
 
                 TreeGridNode node = null;
 
@@ -78,72 +78,187 @@ namespace AutocadPlugIn.UI_Forms
                 node.Expand();
                 node.ReadOnly = true;
                 Hashtable htLayoutInfo = CadManager.GetLayoutInfo(FilePath);
-                if (dtLayoutInfo.Rows.Count > 0)
+                DataTable dtLI = new DataTable();
+                dtLI.Columns.Add("Name");
+                dtLI.Columns.Add("DrawingNo");
+                dtLI.Columns.Add("NO", typeof(decimal));
+                foreach (DictionaryEntry key in htLayoutInfo)
                 {
-
-
-                    foreach (DataRow rw in dtLayoutInfo.Rows)
+                    DataRow dr = dtLI.NewRow();
+                    string LayoutName = key.Key.ToString();
+                    string LayoutID1 = key.Value.ToString();
+                    dr["Name"] = LayoutName;
+                    string tempLN = LayoutName;
+                    if (tempLN.Contains("_"))
                     {
-                        if (Convert.ToString(rw["IsFile"]) == "1")
+                        string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                        tempLN = tempLN.Replace(DN, "");
+                        if (tempLN.Contains("_"))
+                        {
+                            string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                            dr["NO"] = LN.Substring(1);
+                            LN = LN + DN;
+
+                            dr["DrawingNo"] = LN.Substring(1);
+                            DataRow[] rw1 = dtLayoutInfo.Copy().Select("FileLayoutName like '%" + LN + "'");
+                            if (rw1.Length > 0)
+                            {
+
+                            }
+                        }
+                    }
+                    dtLI.Rows.Add(dr);
+
+                }
+                dtLI = Helper.SortTable(dtLI, "NO");
+                foreach (DataRow dr in dtLI.Rows)
+               
+                {
+                    string LayoutName = Convert.ToString(dr["Name"]);
+                    string LayoutNo = Convert.ToString(dr["NO"]);
+                    bool IsAvailable = false;
+                    DataRow rw = dtLayoutInfo.NewRow();
+                    foreach (DataRow rw2 in dtLayoutInfo.Rows)
+                    {
+                        if (Convert.ToString(rw2["IsFile"]) == "1")
                         {
                             continue;
                         }
 
 
-
-                        // string Layouts = CadManager.GetLayoutInfo();
-                        // var Layout = Layouts.Split('$');
-
-                        bool IsAvailable = false;
-                        foreach (DictionaryEntry key in htLayoutInfo)
+                        if (LayoutName.Trim().Length == 0)
                         {
-                            string LayoutName = key.Key.ToString();
-                            string LayoutID1 = key.Value.ToString();
-                            if (LayoutName.Trim().Length == 0)
-                            {
-                                continue;
-                            }
-
-
-                            //(140688313392624)
-                            if (LayoutName == Convert.ToString(rw["FileLayoutName"]))
-                            //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
-                            {
-                                IsAvailable = true; break;
-                            }
+                            continue;
                         }
 
-                        if (IsAvailable)
+
+                        //(140688313392624)
+                        if (LayoutName == Convert.ToString(rw2["FileLayoutName"]))
+                        //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
                         {
-                            node = tgvLayouts.Nodes[0].Nodes.Add(Convert.ToBoolean(rw["ChangeVersion"])
-                                                        , rw["FileLayoutName"]
-                                                        , rw["FileID1"]
-                                                        , rw["LayoutID"]
-                                                        , rw["LayoutType"]
-                                                        , rw["LayoutStatus"]
-                                                        , rw["Description"]
-                                                        , rw["Version"]
-                                                        , rw["IsFile"]
-                                                        , rw["TypeID"]
-                                                        , rw["StatusID"]
-                                                        , rw["ACLayoutID"]
-                                                        , rw["LayoutName1"]
-                                                        , rw["LayoutNo"]
-                                                        , rw["CreatedBy"]
-                                                        , rw["CreatedOn"]
-                                                        , rw["UpdatedBy"]
-                                                        , rw["UpdatedOn"]
-                                                        , rw["LayoutStatusOld"]
-                                   );
+                            rw = rw2;
+                            IsAvailable = true; break;
+
                         }
+
                     }
+                    if (!IsAvailable)
+                    {
+                        string tempLN = LayoutName;
+                        if (tempLN.Contains("_"))
+                        {
+                            string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                            tempLN = tempLN.Replace(DN, "");
+                            if (tempLN.Contains("_"))
+                            {
+                                string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                                LN = LN + DN;
+                                DataRow[] rw1 = dtLayoutInfo.Copy().Select("FileLayoutName like '%" + LN + "'");
+                                if (rw1.Length > 0)
+                                {
+                                    rw = rw1[0];
+                                    rw["ChangeVersion"] = IsAvailable = true;
+                                    rw["FileLayoutName"] = rw["LayoutName1"] = LayoutName;
+                                }
+                            }
+                        }
+
+
+                    }
+
+                    if (IsAvailable)
+                    {
+                        node = tgvLayouts.Nodes[0].Nodes.Add(Convert.ToBoolean(rw["ChangeVersion"])
+                                                    , rw["FileLayoutName"]
+                                                    , rw["FileID1"]
+                                                    , rw["LayoutID"]
+                                                    , rw["LayoutType"]
+                                                    , rw["LayoutStatus"]
+                                                    , rw["Description"]
+                                                    , rw["Version"]
+                                                    , rw["IsFile"]
+                                                    , rw["TypeID"]
+                                                    , rw["StatusID"]
+                                                    , rw["ACLayoutID"]
+                                                    , rw["LayoutName1"]
+                                                    , rw["LayoutNo"]
+                                                    , rw["CreatedBy"]
+                                                    , rw["CreatedOn"]
+                                                    , rw["UpdatedBy"]
+                                                    , rw["UpdatedOn"]
+                                                    , rw["LayoutStatusOld"]
+                               );
+                    }
+
                 }
+
+
+                //if (dtLayoutInfo.Rows.Count > 0)
+                //{
+
+
+                //    foreach (DataRow rw in dtLayoutInfo.Rows)
+                //    {
+                //        if (Convert.ToString(rw["IsFile"]) == "1")
+                //        {
+                //            continue;
+                //        }
+
+
+
+                //        // string Layouts = CadManager.GetLayoutInfo();
+                //        // var Layout = Layouts.Split('$');
+
+                //        bool IsAvailable = false;
+                //        foreach (DictionaryEntry key in htLayoutInfo)
+                //        {
+                //            string LayoutName = key.Key.ToString();
+                //            string LayoutID1 = key.Value.ToString();
+                //            if (LayoutName.Trim().Length == 0)
+                //            {
+                //                continue;
+                //            }
+
+
+                //            //(140688313392624)
+                //            if (LayoutName == Convert.ToString(rw["FileLayoutName"]))
+                //            //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
+                //            {
+                //                IsAvailable = true; break;
+                //            }
+                //        }
+
+                //        if (IsAvailable)
+                //        {
+                //            node = tgvLayouts.Nodes[0].Nodes.Add(Convert.ToBoolean(rw["ChangeVersion"])
+                //                                        , rw["FileLayoutName"]
+                //                                        , rw["FileID1"]
+                //                                        , rw["LayoutID"]
+                //                                        , rw["LayoutType"]
+                //                                        , rw["LayoutStatus"]
+                //                                        , rw["Description"]
+                //                                        , rw["Version"]
+                //                                        , rw["IsFile"]
+                //                                        , rw["TypeID"]
+                //                                        , rw["StatusID"]
+                //                                        , rw["ACLayoutID"]
+                //                                        , rw["LayoutName1"]
+                //                                        , rw["LayoutNo"]
+                //                                        , rw["CreatedBy"]
+                //                                        , rw["CreatedOn"]
+                //                                        , rw["UpdatedBy"]
+                //                                        , rw["UpdatedOn"]
+                //                                        , rw["LayoutStatusOld"]
+                //                   );
+                //        }
+                //    }
+                //}
                 // else
                 {
                     // write code to get layout data from RB and compare them with current layout
                     // if no data available at RB then load default data as follow
 
-                    DataTable dtLayoutInfoRB = new DataTable();
+                    //DataTable dtLayoutInfoRB = new DataTable();
 
                     //Hashtable htLayoutInfo = CadManager.GetLayoutInfo();
 
@@ -162,10 +277,33 @@ namespace AutocadPlugIn.UI_Forms
                             if (LayoutName == Convert.ToString(ChildNode.Cells[1].Value))
                             {
                                 IsAvailable = true;
+                                break;
                             }
                         }
 
+                        if (!IsAvailable)
+                        {
+                            string tempLN = LayoutName;
+                            if (tempLN.Contains("_"))
+                            {
+                                string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                                tempLN = tempLN.Replace(DN, "");
+                                if (tempLN.Contains("_"))
+                                {
+                                    string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                                    LN = LN + DN;
+                                    DataRow[] rw1 = dtLayoutInfo.Copy().Select("FileLayoutName like '%" + LN + "'");
+                                    if (rw1.Length > 0)
+                                    {
+                                        IsAvailable = true;
+                                    }
+                                }
+                            }
 
+
+
+
+                        }
 
 
                         if (!IsAvailable)
@@ -313,7 +451,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                if (e.RowIndex < 0 || e.ColumnIndex < 0|| LoadFlag)
+                if (e.RowIndex < 0 || e.ColumnIndex < 0 || LoadFlag)
                 {
                     return;
                 }
@@ -350,32 +488,32 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     string FileStatusID = "";
 
-                    bool IsOldStatusClosed = IsClosedStatus(selectedTreeNode,true);
-                    bool IsNewStatusClosed =  IsClosedStatus(selectedTreeNode);
+                    bool IsOldStatusClosed = IsClosedStatus(selectedTreeNode, true);
+                    bool IsNewStatusClosed = IsClosedStatus(selectedTreeNode);
                     if (IsOldStatusClosed && IsNewStatusClosed)//Both state are closed
                     {
-                        
+
                     }
                     else if (!IsOldStatusClosed && IsNewStatusClosed)//old is open and new is closed
                     {
-                         
+
                     }
                     else if (IsOldStatusClosed && !IsNewStatusClosed)//old is closed and new is open
                     {
-                        if (ShowMessage.ValMessYN(  "Changing layout status from '" + GetFileStatus(selectedTreeNode, true) + "' to '" + GetFileStatus(selectedTreeNode) + "' will lead to creation of new revision, \n Do you want to proceeds anyway ?") == DialogResult.No)
+                        if (ShowMessage.ValMessYN("Changing layout status from '" + GetFileStatus(selectedTreeNode, true) + "' to '" + GetFileStatus(selectedTreeNode) + "' will lead to creation of new revision, \n Do you want to proceeds anyway ?") == DialogResult.No)
                         {
                             selectedTreeNode.Cells["LayoutStatus"].Value = selectedTreeNode.Cells["LayoutStatusOld"].Value;
                         }
                         else
                         {
-                             
+
                         }
                     }
                     else if (!IsOldStatusClosed && !IsNewStatusClosed)//None of them is closed
                     {
-                        
+
                     }
-                     
+
                     try
                     {
                         //FileStatusID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
@@ -410,7 +548,7 @@ namespace AutocadPlugIn.UI_Forms
             }
         }
 
-        
+
         public bool IsClosedStatus(TreeGridNode CurrentNode, bool IsOld = false)
         {
             try
@@ -423,8 +561,8 @@ namespace AutocadPlugIn.UI_Forms
 
                     DataRow[] dr1 = dtStatus.Select("statusname = '" + FileStatus + "' and IsClosed ='True'");
                     if (dr1.Length > 0)
-                    { 
-                        return true; 
+                    {
+                        return true;
                     }
                     else
                     {
