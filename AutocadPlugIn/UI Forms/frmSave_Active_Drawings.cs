@@ -521,6 +521,8 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                Autodesk.AutoCAD.ApplicationServices.Document doc= Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Helper.cadManager.AddingAttributeToABlock(doc.Name, Helper.TestingAttributes, Path.GetFileName(doc.Name));
                 submit.Focus();
                 List<TreeGridNode> selectedTreeGridNodes = new List<TreeGridNode>();
                 this.Cursor = Cursors.WaitCursor;
@@ -528,7 +530,7 @@ namespace AutocadPlugIn.UI_Forms
                 bool Is_Save = false;
                 int PBValue = 7;
 
-
+                return;
                 //To check howmany file is selected.
                 foreach (TreeGridNode treeGridNode in savetreeGrid.Nodes)
                 {
@@ -616,7 +618,7 @@ namespace AutocadPlugIn.UI_Forms
 
                     Helper.GetProgressBar(PBValue, "File Save in Progress...", "Closing files to upload.");
 
-
+                    Helper.cadManager.InsertingBlockWithAnAttribute();
                     #region Close Files
 
                     Helper.cadManager.ChecknCloseOpenedDoc(FilePath);
@@ -640,12 +642,23 @@ namespace AutocadPlugIn.UI_Forms
                         //CloseFile(currentTreeGrdiNode);
 
                         #region Update File Properties 
+                        Helper.IncrementProgressBar(1, "Updating Title block Attributes.");
+                        foreach (PLMObject item in objController.plmObjs)
+                        {
+                            //Helper.cadManager.AddingAttributeToABlock(item.FilePath, Helper.TestingAttributes, item.ObjectName);
+                            DataTable dtLayoutInfo = item.dtLayoutInfo.Copy();
+                            foreach (DataRow dr in dtLayoutInfo.Rows)
+                            {
+
+                            }
+                        }
 
                         Helper.IncrementProgressBar(1, "Updating new properties to local file.");
 
                         // Update document info into document for future referance 
                         if (objController.dtDrawingProperty.Rows.Count > 0)
                         {
+
                             Helper.cadManager.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
                         }
 

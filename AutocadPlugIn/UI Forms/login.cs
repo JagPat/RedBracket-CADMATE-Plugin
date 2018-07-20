@@ -93,65 +93,7 @@ namespace AutocadPlugIn
         {
             ConnectToRB();
             this.Cursor = Cursors.Default;
-            /*try
-             {
-                 this.Cursor = Cursors.WaitCursor;
-                 ConnectionCommand connectionCmd = new ConnectionCommand();
-                 connectionCmd.DbName = txt_DataBase.Text;
-                 connectionCmd.Passwd = txt_Password.Text;
-                 connectionCmd.Url = txt_url.Text;
-                 connectionCmd.UserName = txt_username.Text;
-
-                 BaseController controller = null;
-
-                 controller = new MessageController();
-                 controller.Execute(connectionCmd);
-
-                 if (controller.infoMessage != null)
-                 {
-                     MessageBox.Show(controller.infoMessage, "Error");
-                     this.Cursor = Cursors.Default;
-                     return;
-                 }
-
-                 ConnectionController controller1 = new ConnectionController();
-                 controller1.Execute(connectionCmd);
-
-
-                 if (controller1.errorString != null)
-                 {
-                     MessageBox.Show(controller1.errorString);
-                     //Globals.Ribbons.ARASRibbon.IsConnected = false;
-                     this.Cursor = Cursors.Default;
-                     return;
-                 }
-
-                 if (controller1.isConnect)
-                 {
-                     AutocadPlugIn.UI_Forms.CheckoutUserSettings CheckOUT = AutocadPlugIn.UI_Forms.UserSettings.createUserSetting().getCheckoutUserSettings();
-                     CheckOUT.checkoutDirPath = ArasConnector.ArasConnector.sg_WorkingDir.ToString();
-                     CADRibbon cr = new CADRibbon();
-                     //ArasConnector.ArasConnector.Isconnected = true;
-                     CADRibbon.connect = controller1.isConnect;
-                     cr.browseDEnable = true;
-                     cr.createDEnable = true;
-                     cr.browseBEnable = true;
-                     cr.createBEnable = true;
-                     cr.SaveEnable = true;
-                     cr.MyRibbon();
-                 }
-
-                 //Globals.Ribbons.ARASRibbon.IsConnected = true;
-                 this.Cursor = Cursors.Default;
-                 //MessageBox.Show(controller.infoMessage);
-
-                 this.Close();
-
-                }
-             catch (Exception excep)
-             {
-                 MessageBox.Show(excep.ToString());
-             }*/
+            
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -185,7 +127,7 @@ namespace AutocadPlugIn
                     this.Cursor = Cursors.Default;
                     return;
                 }
-
+                Helper.GetProgressBar(4, "Login in Progress", "Connecting to Server.");
                 ConnectionController controller1 = new ConnectionController();
                 controller1.Execute(connectionCmd);
 
@@ -194,6 +136,7 @@ namespace AutocadPlugIn
                     ShowMessage.ErrorMess(controller1.errorString);
                     //Globals.Ribbons.ARASRibbon.IsConnected = false;
                     this.Cursor = Cursors.Default;
+                    Helper.CloseProgressBar();
                     return;
                 }
 
@@ -203,7 +146,8 @@ namespace AutocadPlugIn
                 {
                     try
                     {
-                        Helper.objRBC.GetFIleStatus();
+                        Helper.IncrementProgressBar(2, "Preparing Connector.");
+                        Helper.LoadMasterData();
                         string CurrentCheckoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
                         if (Directory.Exists(CurrentCheckoutPath))
                         {
@@ -225,6 +169,7 @@ namespace AutocadPlugIn
                         {
                             ShowMessage.InfoMess("Please select working directory from user setting.");
                         }
+                        Helper.IncrementProgressBar(1, "Preparing Connector.");
                     }
                     catch (Exception E)
                     {
@@ -245,7 +190,7 @@ namespace AutocadPlugIn
                     cr.SaveEnable = true;
                     cr.MyRibbon();
                 }
-
+                Helper.CloseProgressBar();
                 //Globals.Ribbons.ARASRibbon.IsConnected = true;
                 this.Cursor = Cursors.Default;
                 //MessageBox.Show(controller.infoMessage);

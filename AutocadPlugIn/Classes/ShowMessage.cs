@@ -32,7 +32,7 @@ namespace AutocadPlugIn
             Helper.HideProgressBar();
             MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             frmError objfrmError = new frmError(Message, Message);
-            objfrmError.ShowDialog();
+           // objfrmError.ShowDialog();
             Helper.ShowProgressBar();
 
         }

@@ -597,6 +597,7 @@
             this.OldState.HeaderText = "OldFileState";
             this.OldState.Name = "OldState";
             this.OldState.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.OldState.Visible = false;
             // 
             // FileStatus
             // 

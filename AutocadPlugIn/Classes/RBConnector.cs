@@ -309,7 +309,7 @@ namespace AutocadPlugIn
                                         obj.ObjectState = Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname;
                                         obj.ObjectRevision = Drawing.versionno.Contains("Ver ") ? Drawing.versionno.Substring(4) : Drawing.versionno;
                                         obj.LockStatus = Convert.ToString(Drawing.filelock);
-                                        obj.ObjectGeneration = "123";
+                                        obj.ObjectGeneration = obj.ObjectRevision;
                                         obj.ItemType = Drawing.coreType == null ? string.Empty : Drawing.coreType.name;
                                         obj.ObjectProjectName = Drawing.projectname == null ? obj.ObjectProjectName : Drawing.projectname;
                                         //obj.ObjectProjectId = "123";
@@ -1023,7 +1023,16 @@ namespace AutocadPlugIn
             DataTable dataTableProjectInfo = new DataTable();
             try
             {
-                dataTableProjectInfo = GetDataFromWS("/AutocadFiles/fetchFileType", "file type", "POST", typeof(List<ResultStatusData>));
+                if(Helper.dtFileType.Rows.Count>0)
+                {
+                    dataTableProjectInfo = Helper.dtFileType.Copy();
+                }
+                else
+                {
+                    dataTableProjectInfo = GetDataFromWS("/AutocadFiles/fetchFileType", "file type", "POST", typeof(List<ResultStatusData>));
+                    Helper.dtFileType = dataTableProjectInfo.Copy();
+                }
+                
             }
             catch (Exception E)
             {
@@ -1041,7 +1050,15 @@ namespace AutocadPlugIn
             DataTable dataTableFileStatus = new DataTable();
             try
             {
-                dataTableFileStatus = GetDataFromWS("/AutocadFiles/fetchFileStatus", "file status", "POST", typeof(List<ResultStatusData>));
+                if (Helper.dtFileStatus.Rows.Count > 0)
+                {
+                    dataTableFileStatus = Helper.dtFileStatus.Copy();
+                }
+                else
+                {
+                    dataTableFileStatus = GetDataFromWS("/AutocadFiles/fetchFileStatus", "file status", "POST", typeof(List<ResultStatusData>));
+                    Helper.dtFileStatus = dataTableFileStatus.Copy();
+                }
 
             }
             catch (Exception E)
@@ -1056,18 +1073,25 @@ namespace AutocadPlugIn
             DataTable dataTableProjectInfo = new DataTable();
             try
             {
-                dataTableProjectInfo = GetDataFromWS("/ProjectAutocad/fetchUserAutocadProjectsService", "project detail", "GET");
-
-                if (dataTableProjectInfo != null)
+                if (Helper.dtProjectDetail.Rows.Count > 0)
                 {
-                    dataTableProjectInfo.Columns.Add("PNAMENO");
-
-                    for (int i = 0; i < dataTableProjectInfo.Rows.Count; i++)
-                    {
-                        dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) + " (" + Convert.ToString(dataTableProjectInfo.Rows[i]["number"]) + ")";
-                    }
+                    dataTableProjectInfo = Helper.dtProjectDetail.Copy();
                 }
+                else
+                {
+                    dataTableProjectInfo = GetDataFromWS("/ProjectAutocad/fetchUserAutocadProjectsService", "project detail", "GET");
 
+                    if (dataTableProjectInfo != null)
+                    {
+                        dataTableProjectInfo.Columns.Add("PNAMENO");
+
+                        for (int i = 0; i < dataTableProjectInfo.Rows.Count; i++)
+                        {
+                            dataTableProjectInfo.Rows[i]["PNAMENO"] = Convert.ToString(dataTableProjectInfo.Rows[i]["name"]) + " (" + Convert.ToString(dataTableProjectInfo.Rows[i]["number"]) + ")";
+                        }
+                    }
+                    Helper.dtProjectDetail = dataTableProjectInfo.Copy();
+                }
             }
             catch (Exception E)
             {
@@ -1459,7 +1483,7 @@ namespace AutocadPlugIn
                     DrawingProperty.Add("DrawingState", Drawing.status == null ? string.Empty : Drawing.status.statusname == null ? string.Empty : Drawing.status.statusname);
                     DrawingProperty.Add("Revision", Drawing.versionno);
                     DrawingProperty.Add("LockStatus", Drawing.filelock);
-                    DrawingProperty.Add("Generation", "123");
+                    DrawingProperty.Add("Generation", Drawing.versionno);
                     DrawingProperty.Add("Type", Drawing.coreType.id);
                     //DrawingProperty.Add("ProjectName", Drawing.projectname );
                     if (Drawing.projectname.Trim().Length == 0)

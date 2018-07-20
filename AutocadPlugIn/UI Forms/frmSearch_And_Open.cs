@@ -94,7 +94,9 @@ namespace AutocadPlugIn.UI_Forms
             // If folder name is not null or empty then add the parameter to the URL.
             if (sg_SearchType.SelectedIndex > 0)
             {
-                urlParameters.Add(new KeyValuePair<string, string>("location", sg_SearchType.Text));
+                string Location = sg_SearchType.Text;
+                Location = Location == "Projects" ? "Project" : Location;
+                urlParameters.Add(new KeyValuePair<string, string>("location", Location));
             }
 
             dynamic searchCriteria = null;
@@ -717,6 +719,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     CDProjectName.Enabled = true;
                 }
+                CDProjectName_SelectedIndexChanged(null, null);
             }
             catch
             {
@@ -739,7 +742,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void CDProjectName_KeyUp(object sender, KeyEventArgs e)
         {
-            comboBoxSearch();
+            //comboBoxSearch();
         }
 
         private void comboBoxSearch()
@@ -776,6 +779,46 @@ namespace AutocadPlugIn.UI_Forms
         private void treeGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
 
+        }
+
+        private void CDProjectName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if((sg_SearchType.SelectedIndex == 0 || sg_SearchType.SelectedIndex == 2))
+                {
+                    if (CDProjectName.SelectedIndex == 0)
+                    {
+                        textBox_foldername.Enabled = false;
+                    }
+                    else if (CDProjectName.SelectedIndex > 0)
+                    {
+                        textBox_foldername.Enabled = true;
+                    }
+                    else
+                    {
+                        textBox_foldername.Enabled = true;
+                    }
+                }
+                else
+                {
+                    textBox_foldername.Enabled = true;
+                }
+
+            }
+            catch(Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+
+        }
+
+        private void textBox_foldername_EnabledChanged(object sender, EventArgs e)
+        {
+            if(!textBox_foldername.Enabled)
+            {
+                textBox_foldername.Clear();
+            }
         }
     }
 }

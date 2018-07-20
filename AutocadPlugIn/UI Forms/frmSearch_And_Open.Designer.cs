@@ -31,9 +31,9 @@ namespace AutocadPlugIn.UI_Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.DGName = new System.Windows.Forms.TextBox();
             this.SearchButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
@@ -213,8 +213,8 @@ namespace AutocadPlugIn.UI_Forms
             this.treeGridView1.Location = new System.Drawing.Point(3, 138);
             this.treeGridView1.Name = "treeGridView1";
             this.treeGridView1.RowHeadersVisible = false;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.treeGridView1.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle16.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.treeGridView1.RowsDefaultCellStyle = dataGridViewCellStyle16;
             this.treeGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.treeGridView1.Size = new System.Drawing.Size(947, 268);
             this.treeGridView1.TabIndex = 3;
@@ -244,8 +244,8 @@ namespace AutocadPlugIn.UI_Forms
             // DrawingName
             // 
             this.DrawingName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DrawingName.DefaultCellStyle = dataGridViewCellStyle12;
             this.DrawingName.DefaultNodeImage = null;
             this.DrawingName.FillWeight = 202.8797F;
             this.DrawingName.HeaderText = "Name";
@@ -257,11 +257,11 @@ namespace AutocadPlugIn.UI_Forms
             // IsXRefFile
             // 
             this.IsXRefFile.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.IsXRefFile.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle15.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.IsXRefFile.DefaultCellStyle = dataGridViewCellStyle15;
             this.IsXRefFile.FillWeight = 31.94505F;
             this.IsXRefFile.HeaderText = "XRef";
             this.IsXRefFile.Image = global::AutocadPlugIn.Properties.Resources.BG;
@@ -393,13 +393,13 @@ namespace AutocadPlugIn.UI_Forms
             this.CDProjectName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.CDProjectName.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.CDProjectName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CDProjectName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CDProjectName.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CDProjectName.FormattingEnabled = true;
             this.CDProjectName.Location = new System.Drawing.Point(754, 13);
             this.CDProjectName.Name = "CDProjectName";
             this.CDProjectName.Size = new System.Drawing.Size(177, 22);
             this.CDProjectName.TabIndex = 70;
+            this.CDProjectName.SelectedIndexChanged += new System.EventHandler(this.CDProjectName_SelectedIndexChanged);
             this.CDProjectName.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CDProjectName_KeyUp);
             // 
             // label5
@@ -458,8 +458,7 @@ namespace AutocadPlugIn.UI_Forms
             this.sg_SearchType.Items.AddRange(new object[] {
             "All",
             "My files",
-            "Project",
-            "Knowledge"});
+            "Projects"});
             this.sg_SearchType.Location = new System.Drawing.Point(113, 13);
             this.sg_SearchType.Name = "sg_SearchType";
             this.sg_SearchType.Size = new System.Drawing.Size(177, 22);
@@ -511,6 +510,7 @@ namespace AutocadPlugIn.UI_Forms
             this.textBox_foldername.Name = "textBox_foldername";
             this.textBox_foldername.Size = new System.Drawing.Size(179, 22);
             this.textBox_foldername.TabIndex = 104;
+            this.textBox_foldername.EnabledChanged += new System.EventHandler(this.textBox_foldername_EnabledChanged);
             // 
             // tableLayoutPanel1
             // 

@@ -56,6 +56,8 @@ namespace AutocadPlugIn
                 objfrmPB.pbProcess.Maximum = MaxValue;
                 objfrmPB.TopMost = true;
                 objfrmPB.Show();
+                objfrmPB.pbProcess.Refresh();
+                objfrmPB.Refresh();
             }
             catch (Exception E)
             {
@@ -67,6 +69,12 @@ namespace AutocadPlugIn
         public static string FirstStatusID = "";
         public static bool IsPBHiden = false;
         public static bool IsPBActive = false;
+        public static DataTable dtFileType = new DataTable();
+        public static DataTable dtFileStatus = new DataTable();
+        public static DataTable dtProjectDetail = new DataTable();
+        public static List<string> DrawingAttributes = new List<string>()  ;
+        public static List<string> LayoutAttributes = new List<string>();
+        public static List<string> TestingAttributes = new List<string>();
 
         public static void IncrementProgressBar(int IntcrementValue = 1, string Status = null)
         {
@@ -1036,6 +1044,7 @@ namespace AutocadPlugIn
 
                     cadManager.CheckXrefStatus(FilePath, FilePath, lstobjDownloadedFiles1);
                     cadManager.AttachingExternalReference(FilePath, lstobjDownloadedFiles1);
+                    //cadManager.AddingAttributeToABlock(FilePath);
                     cadManager.OpenActiveDocument(FilePath, "View", DrawingProperty);
                 }
                 else
@@ -1612,6 +1621,35 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
             return false;
+        }
+
+        public static void LoadMasterData()
+        {
+            try
+            {
+                objRBC.GetFIleType();
+                objRBC.GetFIleStatus();
+                objRBC.GetProjectDetail();
+                DrawingAttributes = new List<string>() {
+                    "DRAWINGNUMBER",  
+                    "DRAWINGNAME", "PROJECTNAME", "PROJECTNUMBER", "DRAWINGVER",
+                    "TYPE", "DRAWINGSTATE"  };
+
+                LayoutAttributes = new List<string>() {
+                      "LAYOUTNAME", "CREATEDBY",
+                    "MODIFIEDBY", "CREATEDON", "MODIFIEDON", "LAYOUTSTATE",
+                    "GOODNOT", "LAYOUTVER" };
+
+               TestingAttributes = new List<string>() {
+                      "LAYOUTNAME", };
+
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+           
         }
     }
 }

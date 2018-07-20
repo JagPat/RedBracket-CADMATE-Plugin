@@ -377,6 +377,7 @@
             this.LayoutStatusOld.HeaderText = "LayoutStatusOld";
             this.LayoutStatusOld.Name = "LayoutStatusOld";
             this.LayoutStatusOld.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.LayoutStatusOld.Visible = false;
             // 
             // VersionType
             // 
@@ -384,6 +385,7 @@
             this.VersionType.Name = "VersionType";
             this.VersionType.ReadOnly = true;
             this.VersionType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.VersionType.Visible = false;
             // 
             // frmLayoutVersionUpdate
             // 
