@@ -63,9 +63,13 @@ namespace AutocadPlugIn.UI_Forms
 
                 #endregion projectdetails
 
-                List<ResultSearchCriteria> resultSearchCriteriaResponseList = objRBC.SearchLatest5File();
-                if (resultSearchCriteriaResponseList != null)
-                    BindDataToGrid(resultSearchCriteriaResponseList);
+               
+                    List<ResultSearchCriteria> resultSearchCriteriaResponseList = objRBC.SearchLatest5File();
+                    if (resultSearchCriteriaResponseList != null)
+                        BindDataToGrid(resultSearchCriteriaResponseList);
+                
+
+               
             }
             catch (Exception E)
             {
@@ -138,10 +142,12 @@ namespace AutocadPlugIn.UI_Forms
             { 
                
             }
-            
 
+            if (objRBC.GetSearchFileCount() < 50)
+            {
+            }
 
-            var resultSearchCriteriaResponseList = objRBC.SearchFiles(searchCriteria, urlParameters);
+                var resultSearchCriteriaResponseList = objRBC.SearchFiles(searchCriteria, urlParameters);
             BindDataToGrid(resultSearchCriteriaResponseList, true);
             this.Cursor = Cursors.Default;
 

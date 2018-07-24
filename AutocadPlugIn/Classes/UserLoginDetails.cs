@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RedBracketConnector
+namespace AutocadPlugIn
 {
     public class UserLoginDetails
     {

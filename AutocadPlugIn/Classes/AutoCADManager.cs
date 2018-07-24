@@ -114,15 +114,15 @@ namespace AutocadPlugIn
                         {
                             case XrefStatus.Unresolved:
                                 //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                                ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                                ShowMessage.ErrorMessUD("Unresolved xref :" + xgn.Name);
                                 break;
                             case XrefStatus.Unloaded:
                                 //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                                ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                                ShowMessage.ErrorMessUD("Unloaded xref :" + xgn.Name);
                                 break;
                             case XrefStatus.Unreferenced:
                                 //ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                                ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                                ShowMessage.ErrorMessUD("Unreferenced xref :" + xgn.Name);
                                 break;
                             case XrefStatus.Resolved:
                                 {
@@ -169,10 +169,20 @@ namespace AutocadPlugIn
         {
             try
             {
+                bool IsDocOpend = false;
 
+                if (!CheckForCurruntlyOpenDoc(FilePath))
+                {
+                    Helper.CheckFileInfoFlag = false;
+                    acadApp.DocumentManager.Open(FilePath, false);
+                    IsDocOpend = true;
+                    Helper.CheckFileInfoFlag = true;
+                }
 
-                Database db = new Database(false, true); ;
-                db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                //Database db = new Database(false, true); ;
+                //db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Database db = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
 
                 Hashtable drawingAttrs = new Hashtable();
                 IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
@@ -195,245 +205,199 @@ namespace AutocadPlugIn
                 }
                 catch { }
                 if (drawingAttrs.Count < 0) return;
-                using (Transaction tr = db.TransactionManager.StartTransaction())
+
+                using (doc.LockDocument())
                 {
-                    #region "TraverseForLayout"
-                    DBDictionary layoutDict = tr.GetObject(db.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
-                    ObjectIdCollection layoutsToPlot = new ObjectIdCollection();
-                    foreach (DBDictionaryEntry de in layoutDict)
+                    using (Transaction tr = db.TransactionManager.StartTransaction())
                     {
-                        String layoutName = de.Key;
-                        if (layoutName != "Model")
+                        #region "TraverseForLayout"
+                        DBDictionary layoutDict = tr.GetObject(db.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
+                        ObjectIdCollection layoutsToPlot = new ObjectIdCollection();
+                        foreach (DBDictionaryEntry de in layoutDict)
                         {
-                            //LayoutManager.Current.CurrentLayout = layoutName;
-                            Hashtable LayoutData = documentProperties; //new Hashtable();
-                                                                       // ArasConnector.ArasConnector LayoutDetail = new ArasConnector.ArasConnector();
-                                                                       // LayoutData = LayoutDetail.GetLayoutDetail(drawingAttrs["drawingid"].ToString(), layoutName);
-
-                            #region "TraverseForTitleblock"
-
-                            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                            BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.PaperSpace], OpenMode.ForRead);
-                            layoutsToPlot.Add(btr.LayoutId);
-
-                            foreach (ObjectId objId in btr)
+                            String layoutName = de.Key;
+                            //if (layoutName != "Model")
                             {
-                                Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForRead);
-                                string blkName = ent.BlockName;
-                                if (LayoutData.Count < 1) continue;
-                                if (ent != null)
+                                //LayoutManager.Current.CurrentLayout = layoutName;
+                                Hashtable LayoutData = documentProperties; //new Hashtable();
+
+
+                                #region "TraverseForTitleblock"
+
+                                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                                string BTRT = "";
+                                if (layoutName != "Model")
                                 {
-                                    BlockReference br = ent as BlockReference;
-                                    if (br != null)
+                                    BTRT = BlockTableRecord.PaperSpace;
+                                }
+                                else
+                                {
+                                    BTRT = BlockTableRecord.ModelSpace;
+                                }
+
+                                //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BTRT], OpenMode.ForRead);
+                                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+                                //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(de.Value, OpenMode.ForRead);
+                                layoutsToPlot.Add(btr.LayoutId);
+
+                                foreach (ObjectId objId in btr)
+                                {
+                                    Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForRead);
+                                    string blkName = ent.BlockName;
+                                    if (LayoutData.Count < 1)
                                     {
-                                        BlockTableRecord bd = (BlockTableRecord)tr.GetObject(br.BlockTableRecord, OpenMode.ForRead);
-                                        //MessageBox.Show(bd.Name);//Block Name
-                                        foreach (ObjectId arId in br.AttributeCollection)
+                                        continue;
+                                    }
+                                    if (ent != null)
+                                    {
+                                        BlockReference br = ent as BlockReference;
+                                        if (br != null)
                                         {
-                                            DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
-                                            AttributeReference ar = obj as AttributeReference;
+                                            BlockTableRecord bd = (BlockTableRecord)tr.GetObject(br.BlockTableRecord, OpenMode.ForRead);
+                                            //MessageBox.Show(bd.Name);//Block Name
+                                            foreach (ObjectId arId in br.AttributeCollection)
+                                            {
+                                                DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
+                                                AttributeReference ar = obj as AttributeReference;
 
-                                            //if (ar.Tag.ToUpper() == "COORDINATOR")
-                                            //{
-                                            //    ar.UpgradeOpen();
-                                            //    ar.TextString = LayoutData["projectManager"] == null ? string.Empty : Convert.ToString(LayoutData["projectManager"]);//drawingAttrs["drawingnumber"].ToString();
-                                            //    ar.DowngradeOpen();
-                                            //}
-                                            if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["DrawingNumber"] == null ? string.Empty : Convert.ToString(LayoutData["DrawingNumber"]);//drawingAttrs["drawingnumber"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "DRAWINGNAME")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]);
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "PROJECTNAME")
-                                            {
-
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["ProjectName"] == null ? string.Empty : Convert.ToString(LayoutData["ProjectName"]); //drawingAttrs["projectname"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "PROJECTNUMBER")
-                                            {
-
-                                                ar.UpgradeOpen();
-                                                ar.TextString = LayoutData["projectno"] == null ? string.Empty : Convert.ToString(LayoutData["projectno"]); ;
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "DRAWINGVER")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]); //drawingAttrs["generation"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "TYPE")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]);
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "DRAWINGSTATE")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]);
-                                                ar.DowngradeOpen();
-                                            }
-
-                                            if (ar.Tag.ToUpper() == "LAYOUTNAME")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = layoutName;
-                                                ar.DowngradeOpen();
-                                            }
-                                            LayoutInfo objLI = Helper.FindLayoutDetail(LayoutData, layoutName);
-                                            if (ar.Tag.ToUpper() == "CREATEDBY")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = objLI.createdby == null ? string.Empty : objLI.createdby; //drawingAttrs["createdby"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "MODIFIEDBY")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = objLI.updatedby == null ? string.Empty : objLI.updatedby; //drawingAttrs["modifiedby"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "CREATEDON")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = objLI.createdon == null ? string.Empty : Helper.FormatDate(objLI.createdon); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "MODIFIEDON")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = objLI.updatedon == null ? string.Empty : Helper.FormatDate(objLI.updatedon);//drawingAttrs["modifiedon"].ToString().Substring(0,10);
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "LAYOUTSTATE")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = objLI.statusname == null ? string.Empty : objLI.statusname; //drawingAttrs["drawingstate"].ToString();
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "GOODNOT")
-                                            {
-                                                ar.UpgradeOpen();
-                                                if ((objLI == null ? string.Empty : objLI.status == null ? string.Empty : objLI.status.coretype == null ? string.Empty : objLI.status.coretype.name == null ? string.Empty : objLI.status.coretype.name.ToLower()) == "closed")
+                                                //if (ar.Tag.ToUpper() == "COORDINATOR")
+                                                //{
+                                                //    ar.UpgradeOpen();
+                                                //    ar.TextString = LayoutData["projectManager"] == null ? string.Empty : Convert.ToString(LayoutData["projectManager"]);//drawingAttrs["drawingnumber"].ToString();
+                                                //    ar.DowngradeOpen();
+                                                //}
+                                                if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
                                                 {
-                                                    ar.TextString = "GOOD";
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["DrawingNumber"] == null ? string.Empty : Convert.ToString(LayoutData["DrawingNumber"]);//drawingAttrs["drawingnumber"].ToString();
+                                                    ar.DowngradeOpen();
                                                 }
-                                                else
+                                                if (ar.Tag.ToUpper() == "DRAWINGNAME")
                                                 {
-                                                    ar.TextString = "NOT";
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]);
+                                                    ar.DowngradeOpen();
                                                 }
-                                                ar.DowngradeOpen();
-                                            }
-                                            if (ar.Tag.ToUpper() == "LAYOUTVER")
-                                            {
-                                                ar.UpgradeOpen();
-                                                ar.TextString = objLI.versionno == null ? string.Empty : objLI.versionno; //drawingAttrs["revision"].ToString();
-                                                ar.DowngradeOpen();
+                                                if (ar.Tag.ToUpper() == "PROJECTNAME")
+                                                {
+
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["ProjectName"] == null ? string.Empty : Convert.ToString(LayoutData["ProjectName"]); //drawingAttrs["projectname"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "PROJECTNUMBER")
+                                                {
+
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = LayoutData["projectno"] == null ? string.Empty : Convert.ToString(LayoutData["projectno"]); ;
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "DRAWINGVER")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]); //drawingAttrs["generation"].ToString();
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "TYPE")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]);
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (ar.Tag.ToUpper() == "DRAWINGSTATE")
+                                                {
+                                                    ar.UpgradeOpen();
+                                                    ar.TextString = drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]);
+                                                    ar.DowngradeOpen();
+                                                }
+                                                if (layoutName != "Model")
+                                                {
+                                                    if (ar.Tag.ToUpper() == "LAYOUTNAME")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        ar.TextString = layoutName;
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                    LayoutInfo objLI = Helper.FindLayoutDetail(LayoutData, layoutName);
+                                                    if (ar.Tag.ToUpper() == "CREATEDBY")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        ar.TextString = objLI.createdby == null ? string.Empty : objLI.createdby; //drawingAttrs["createdby"].ToString();
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                    if (ar.Tag.ToUpper() == "MODIFIEDBY")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        ar.TextString = objLI.updatedby == null ? string.Empty : objLI.updatedby; //drawingAttrs["modifiedby"].ToString();
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                    if (ar.Tag.ToUpper() == "CREATEDON")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        ar.TextString = objLI.created0n == null ? string.Empty : Helper.FormatDate(objLI.created0n); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                    if (ar.Tag.ToUpper() == "MODIFIEDON")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        ar.TextString = objLI.updatedon == null ? string.Empty : Helper.FormatDate(objLI.updatedon);//drawingAttrs["modifiedon"].ToString().Substring(0,10);
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                    if (ar.Tag.ToUpper() == "LAYOUTSTATE")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        ar.TextString = objLI.statusname == null ? string.Empty : objLI.statusname; //drawingAttrs["drawingstate"].ToString();
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                    if (ar.Tag.ToUpper() == "GOODNOT")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        if ((objLI == null ? string.Empty : objLI.status == null ? string.Empty : objLI.status.coretype == null ? string.Empty : objLI.status.coretype.name == null ? string.Empty : objLI.status.coretype.name.ToLower()) == "closed")
+                                                        {
+                                                            ar.TextString = "GOOD";
+                                                        }
+                                                        else
+                                                        {
+                                                            ar.TextString = "NOT";
+                                                        }
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                    if (ar.Tag.ToUpper() == "LAYOUTVER")
+                                                    {
+                                                        ar.UpgradeOpen();
+                                                        ar.TextString = objLI.versionno == null ? string.Empty : objLI.versionno; //drawingAttrs["revision"].ToString();
+                                                        ar.DowngradeOpen();
+                                                    }
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            } //end foreach Block
-                            #endregion "TraverseForTitleblock"                  
-                        }
-                        else
-                        {
-                            #region "if Model is there"
-                            /*
-                            BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                            BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead);
-                            PlotInfo pi = new PlotInfo();
-                            PlotInfoValidator piv = new PlotInfoValidator();
-                            piv.MediaMatchingPolicy = MatchingPolicy.MatchEnabled;
-
-                            if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
-                            {
-                                PlotEngine pe = PlotFactory.CreatePublishEngine();
-                                using (pe)
-                                {
-                                    PlotProgressDialog ppd = new PlotProgressDialog(false, 1, true);
-                                    using (ppd)
-                                    {  
-                                        Layout lo = (Layout)tr.GetObject(btr.LayoutId, OpenMode.ForRead);
-                                        PlotSettings ps = new PlotSettings(lo.ModelType);
-                                        ps.CopyFrom(lo);
-                                        PlotSettingsValidator psv = PlotSettingsValidator.Current;
-                                        psv.SetPlotType(ps, Autodesk.AutoCAD.DatabaseServices.PlotType.Extents);
-                                        psv.SetUseStandardScale(ps, true);
-                                        psv.SetStdScaleType(ps, StdScaleType.ScaleToFit);
-                                        psv.SetPlotCentered(ps, true);                                        
-                                        psv.SetPlotConfigurationName(ps, "PublishToWeb JPG.pc3", "Sun_Hi-Res_(1600.00_x_1280.00_Pixels)");//Plot to jpeg
-                                        pi.Layout = btr.LayoutId;
-                                        LayoutManager.Current.CurrentLayout = lo.LayoutName;
-                                        pi.OverrideSettings = ps;
-                                        piv.Validate(pi);
-                                        ppd.set_PlotMsgString(PlotMessageIndex.DialogTitle, "Custom Plot Progress");
-                                        ppd.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Cancel Job");
-                                        ppd.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Cancel Sheet");
-                                        ppd.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, "Sheet Set Progress");
-                                        ppd.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "Sheet Progress");
-                                        ppd.LowerPlotProgressRange = 0;
-                                        ppd.UpperPlotProgressRange = 100;
-                                        ppd.PlotProgressPos = 0;
-                                        ppd.OnBeginPlot();
-                                        ppd.IsVisible = false;
-                                        pe.BeginPlot(ppd, null);
-                                        pe.BeginDocument(pi, doc.Name, null, 1, true, "C:\\Test\\" + lo.LayoutName + ".jpg");////Plot to jpeg  
-                                        ppd.OnBeginSheet();
-                                        ppd.LowerSheetProgressRange = 0;
-                                        ppd.UpperSheetProgressRange = 100;
-                                        ppd.SheetProgressPos = 0;
-                                        PlotPageInfo ppi = new PlotPageInfo();
-                                        pe.BeginPage(ppi, pi, true, null);
-                                        pe.BeginGenerateGraphics(null);
-                                        ppd.SheetProgressPos = 50;
-                                        pe.EndGenerateGraphics(null);
-                                        pe.EndPage(null);
-                                        ppd.SheetProgressPos = 100;
-                                        ppd.OnEndSheet();                                        
-                                        ppd.PlotProgressPos += (100 / layoutsToPlot.Count);
-                                        pe.EndDocument(null);
-                                        ppd.PlotProgressPos = 100;
-                                        ppd.OnEndPlot();
-                                        pe.EndPlot(null);
-                                    }
-                                }
+                                } //end foreach Block
+                                #endregion "TraverseForTitleblock"                  
                             }
 
-                            else
-                            {
-                                MessageBox.Show("\nAnother plot is in progress.");
-                            }
-                            */
-                            #endregion "if Model is there"
                         }
-                    }
-                    #endregion "TraverseForLayout
+                        #endregion "TraverseForLayout
 
-                    #region "PlotLayouts"
-                    //PlotLayout(doc, tr, layoutsToPlot);
-                    #endregion "PlotLayouts"
-                    //db.Save();
-                    tr.Commit();
-                    tr.Dispose();
-                    db.SaveAs(FilePath, DwgVersion.Current);
-                }//end Transaction tr
-
+                        #region "PlotLayouts"
+                        //PlotLayout(doc, tr, layoutsToPlot);
+                        #endregion "PlotLayouts"
+                        //db.Save();
+                        tr.Commit();
+                        tr.Dispose();
+                        //db.SaveAs(FilePath, DwgVersion.Current);
+                    }//end Transaction tr
+                }
+                if (IsDocOpend)
+                {
+                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(FilePath);
+                }
             }
             catch (System.Exception ex)
             {
                 MessageBox.Show(ex.Message.ToString(), "Error");
             }
+
         }
         public void SetAttributesXrefFiles(Hashtable hashTable, string FilePath)
         {
@@ -811,17 +775,17 @@ namespace AutocadPlugIn
                         if (XrefStatus.Unresolved == xgn.XrefStatus)
                         {
 
-                            ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                            ShowMessage.ErrorMessUD("Unresolved xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unloaded == xgn.XrefStatus)
                         {
 
-                            ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
+                            ShowMessage.ErrorMessUD("Unloaded xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unreferenced == xgn.XrefStatus)
                         {
 
-                            ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
+                            ShowMessage.ErrorMessUD("Unreferenced xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Resolved == xgn.XrefStatus)
                         {
@@ -908,7 +872,7 @@ namespace AutocadPlugIn
                                         }
                                         if (IsFileNotFound && IsAlreadyAssign)
                                         {
-                                            ShowMessage.ErrorMess("File not found.\n" + xgn.Name); return;
+                                            ShowMessage.ErrorMessUD("File not found.\n" + xgn.Name); return;
                                         }
                                     }
 
@@ -1042,7 +1006,7 @@ namespace AutocadPlugIn
                                         }
                                         if (IsPathNotFound && IsAlreadyAssign)
                                         {
-                                            ShowMessage.ErrorMess("File not found.\n" + xgn.Name);
+                                            ShowMessage.ErrorMessUD("File not found.\n" + xgn.Name);
                                             return;
                                         }
 
@@ -1065,7 +1029,7 @@ namespace AutocadPlugIn
                                         }
                                         else
                                         {
-                                            ShowMessage.ErrorMess("File not found.\n" + newpath); return;
+                                            ShowMessage.ErrorMessUD("File not found.\n" + newpath); return;
                                         }
                                     }
 
@@ -1116,7 +1080,7 @@ namespace AutocadPlugIn
                                     }
                                     else
                                     {
-                                        ShowMessage.ErrorMess("File not found.\n" + newpath); return;
+                                        ShowMessage.ErrorMessUD("File not found.\n" + newpath); return;
                                     }
 
                                     tr.Commit();
@@ -1189,17 +1153,17 @@ namespace AutocadPlugIn
                         if (XrefStatus.Unresolved == xgn.XrefStatus)
                         {
 
-                            ShowMessage.ErrorMess("Unresolved xref :" + xgn.Name);
+                            ShowMessage.ErrorMessUD("Unresolved xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unloaded == xgn.XrefStatus)
                         {
 
-                            ShowMessage.ErrorMess("Unloaded xref :" + xgn.Name);
+                            ShowMessage.ErrorMessUD("Unloaded xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Unreferenced == xgn.XrefStatus)
                         {
 
-                            ShowMessage.ErrorMess("Unreferenced xref :" + xgn.Name);
+                            ShowMessage.ErrorMessUD("Unreferenced xref :" + xgn.Name);
                         }
                         else if (XrefStatus.Resolved == xgn.XrefStatus)
                         {
@@ -1282,7 +1246,7 @@ namespace AutocadPlugIn
                                         }
                                         if (IsFileNotFound && IsAlreadyAssign)
                                         {
-                                            ShowMessage.ErrorMess("File not found.\n" + xgn.Name); return;
+                                            ShowMessage.ErrorMessUD("File not found.\n" + xgn.Name); return;
                                         }
                                     }
 
@@ -1402,7 +1366,7 @@ namespace AutocadPlugIn
                                         }
                                         if (IsPathNotFound && IsAlreadyAssign)
                                         {
-                                            ShowMessage.ErrorMess("File not found.\n" + xgn.Name);
+                                            ShowMessage.ErrorMessUD("File not found.\n" + xgn.Name);
                                             return;
                                         }
 
@@ -1425,7 +1389,7 @@ namespace AutocadPlugIn
                                         }
                                         else
                                         {
-                                            ShowMessage.ErrorMess("File not found.\n" + newpath); return;
+                                            ShowMessage.ErrorMessUD("File not found.\n" + newpath); return;
                                         }
                                     }
 
@@ -2475,7 +2439,7 @@ namespace AutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                ShowMessage.ErrorMess("Error reading layout info from document " + FilePath + Environment.NewLine + ex.Message);
+                ShowMessage.ErrorMessUD("Error reading layout info from document " + FilePath + Environment.NewLine + ex.Message);
                 // ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
             }
 
@@ -2540,7 +2504,7 @@ namespace AutocadPlugIn
             }
             catch (System.Exception E)
             {
-                ShowMessage.ErrorMess("Error while setting layout owner id." + Environment.NewLine + E.Message); return false;
+                ShowMessage.ErrorMessUD("Error while setting layout owner id." + Environment.NewLine + E.Message); return false;
             }
             return true;
         }
@@ -3087,7 +3051,204 @@ namespace AutocadPlugIn
         }
 
         [CommandMethod("AddingAttributeToABlock")]
-        public void AddingAttributeToABlock(String FilePath, List<string> Attributes, string LayoutName)
+        public void AddingAttributeToABlock(String FilePath, List<string> Attributes, string LayoutName, bool IsLayout)
+        {
+            // Get the current database and start a transaction
+
+
+            try
+            {
+
+                ObjectId blkRecId = new ObjectId();
+                //Database acCurDb = new Database(false, true);
+                //acCurDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                //Document doc = acDocMgr.GetDocument(acCurDb);
+                Autodesk.AutoCAD.ApplicationServices.Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Database acCurDb = doc.Database;
+                if (acCurDb != null)
+                {
+
+                    using (acCurDb)
+                    {
+                        using (doc.LockDocument())
+                        {
+                            if (LayoutName != null)
+                            {
+                                if (IsLayout)
+                                {
+                                    LayoutManager.Current.CurrentLayout = LayoutName;
+                                }
+                                else
+                                {
+                                    LayoutManager.Current.CurrentLayout = "Model";
+                                }
+                            }
+
+                            using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
+                            {
+                                // Open the Block table for read
+                                BlockTable acBlkTbl;
+                                acBlkTbl = acTrans.GetObject(acCurDb.BlockTableId, OpenMode.ForRead) as BlockTable;
+                                string BlockName = "TitleBlockWithAttributes_" + LayoutName;
+                                if (!acBlkTbl.Has(BlockName))
+                                {
+                                    BlockTableRecord acBlkTblRec = new BlockTableRecord();
+                                    acBlkTblRec.Name = BlockName;
+
+                               
+
+                                    // Set the insertion point for the block
+                                    acBlkTblRec.Origin = new Point3d(0, 0, 0);
+
+
+                                    foreach (string Att in Attributes)
+                                    {
+
+
+                                        // Add an attribute definition to the block
+                                        AttributeDefinition acAttDef = new AttributeDefinition();
+                                        //using (AttributeDefinition acAttDef = new AttributeDefinition())
+                                        //{
+
+                                        acAttDef.Visible = false;
+                                        acAttDef.Position = new Point3d(0, 0, 0);
+                                        acAttDef.Verifiable = true;
+                                        acAttDef.Prompt = "ENTER VALUE";
+                                        acAttDef.Tag = Att;
+                                        acAttDef.TextString = Att + "_VALUE";
+                                        acAttDef.Height = 1;
+                                        acAttDef.Justify = AttachmentPoint.MiddleCenter;
+
+                                        acBlkTblRec.AppendEntity(acAttDef);
+                                        acBlkTbl.UpgradeOpen();
+
+
+                                        //}
+
+                                    }
+                                    acBlkTbl.Add(acBlkTblRec);
+                                    acTrans.AddNewlyCreatedDBObject(acBlkTblRec, true);
+
+                                    blkRecId = acBlkTblRec.Id;
+                                    //}
+
+                                }
+                                else
+                                {
+                                    blkRecId = acBlkTbl[BlockName];
+                                }
+                                //acTrans.Commit();
+                                //acTrans.Dispose();
+
+                                if (blkRecId != ObjectId.Null)
+                                {
+                                    //using (Transaction acTrans1 = acCurDb.TransactionManager.StartTransaction())
+                                    {
+                                        BlockTableRecord acBlkTblRec;
+                                        acBlkTblRec = acTrans.GetObject(blkRecId, OpenMode.ForRead) as BlockTableRecord;
+
+                                        string BlockRefName = BlockName + "_Ref";
+                                        // Create and insert the new block reference
+                                        using (BlockReference acBlkRef = new BlockReference(new Point3d(2, 2, 0), blkRecId))
+                                        {
+                                            BlockTableRecord acCurSpaceBlkTblRec;
+                                            acCurSpaceBlkTblRec = acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+
+                                            //acBlkRef.Name = BlockRefName;
+                                            acCurSpaceBlkTblRec.AppendEntity(acBlkRef);
+                                            acTrans.AddNewlyCreatedDBObject(acBlkRef, true);
+
+                                            // Verify block table record has attribute definitions associated with it
+                                            if (acBlkTblRec.HasAttributeDefinitions)
+                                            {
+                                                // Add attributes from the block table record
+                                                foreach (ObjectId objID in acBlkTblRec)
+                                                {
+                                                    DBObject dbObj = acTrans.GetObject(objID, OpenMode.ForRead) as DBObject;
+
+                                                    if (dbObj is AttributeDefinition)
+                                                    {
+                                                        AttributeDefinition acAtt = dbObj as AttributeDefinition;
+
+                                                        if (!acAtt.Constant)
+                                                        {
+                                                            using (AttributeReference acAttRef = new AttributeReference())
+                                                            {
+                                                                acAttRef.Visible = false;
+                                                                acAttRef.SetAttributeFromBlock(acAtt, acBlkRef.BlockTransform);
+                                                                acAttRef.Position = acAtt.Position.TransformBy(acBlkRef.BlockTransform);
+                                                                acAttRef.Tag = acAtt.Tag;
+                                                                acAttRef.TextString = acAtt.TextString;
+
+                                                                acBlkRef.AttributeCollection.AppendAttribute(acAttRef);
+
+                                                                acTrans.AddNewlyCreatedDBObject(acAttRef, true);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        //acTrans1.Commit();
+                                    }
+                                }
+                                acTrans.Commit();
+                            }
+
+
+
+                            // Save the new object to the database
+
+
+
+
+                            // Dispose of the transaction
+
+
+                        }
+
+                        //  acCurDb.SaveAs(FilePath, DwgVersion.Current);
+                    }
+                }
+
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public bool OpenDocSilently(string FilePath)
+        {
+            bool IsDocOpend = false;
+            try
+            {
+                if (!CheckForCurruntlyOpenDoc(FilePath))
+                {
+                    Helper.CheckFileInfoFlag = false;
+
+                    acadApp.DocumentManager.Open(FilePath, false);
+                    IsDocOpend = true;
+                    Helper.CheckFileInfoFlag = true;
+                }
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return IsDocOpend;
+        }
+        public void CloseDocSilently(string FilePath)
+        {
+            try
+            {
+                acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(FilePath);
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public void AddingAttributeToABlock1(String FilePath, List<string> Attributes, string LayoutName)
         {
             // Get the current database and start a transaction
 
@@ -3120,102 +3281,104 @@ namespace AutocadPlugIn
                                 if (!acBlkTbl.Has(BlockName))
                                 {
                                     BlockTableRecord acBlkTblRec = new BlockTableRecord();
-                                    using (acBlkTblRec)
+                                    //using (acBlkTblRec)
+                                    //{
+                                    acBlkTblRec.Name = BlockName;
+
+                                    // Set the insertion point for the block
+                                    acBlkTblRec.Origin = new Point3d(0, 0, 0);
+
+
+                                    foreach (string Att in Attributes)
                                     {
-                                        acBlkTblRec.Name = BlockName;
-
-                                        // Set the insertion point for the block
-                                        acBlkTblRec.Origin = new Point3d(0, 0, 0);
 
 
-                                        foreach (string Att in Attributes)
-                                        {
+                                        // Add an attribute definition to the block
+                                        AttributeDefinition acAttDef = new AttributeDefinition();
+                                        //using (AttributeDefinition acAttDef = new AttributeDefinition())
+                                        //{
 
 
-                                            // Add an attribute definition to the block
-                                            using (AttributeDefinition acAttDef = new AttributeDefinition())
-                                            {
+                                        acAttDef.Position = new Point3d(0, 0, 0);
+                                        acAttDef.Verifiable = true;
+                                        acAttDef.Prompt = "ENTER VALUE";
+                                        acAttDef.Tag = Att;
+                                        acAttDef.TextString = Att + "_DXX";
+                                        acAttDef.Height = 1;
+                                        acAttDef.Justify = AttachmentPoint.MiddleCenter;
+
+                                        acBlkTblRec.AppendEntity(acAttDef);
+                                        acBlkTbl.UpgradeOpen();
 
 
-                                                acAttDef.Position = new Point3d(0, 0, 0);
-                                                acAttDef.Verifiable = true;
-                                                acAttDef.Prompt = "ENTER VALUE";
-                                                acAttDef.Tag = Att;
-                                                acAttDef.TextString = Att + "_DXX";
-                                                acAttDef.Height = 1;
-                                                acAttDef.Justify = AttachmentPoint.MiddleCenter;
+                                        //}
 
-                                                acBlkTblRec.AppendEntity(acAttDef);
-                                                acBlkTbl.UpgradeOpen();
-                                                acBlkTbl.Add(acBlkTblRec);
-                                                acTrans.AddNewlyCreatedDBObject(acBlkTblRec, true);
-
-                                            }
-
-                                        }
-                                      
-                                        blkRecId = acBlkTblRec.Id;
                                     }
-                                    
+                                    acBlkTbl.Add(acBlkTblRec);
+                                    acTrans.AddNewlyCreatedDBObject(acBlkTblRec, true);
+
+                                    blkRecId = acBlkTblRec.Id;
+                                    //}
+
                                 }
                                 else
                                 {
                                     blkRecId = acBlkTbl[BlockName];
                                 }
-                                acTrans.Commit();
-                                acTrans.Dispose();
-                            }
-                            if (blkRecId != ObjectId.Null)
-                            {
-                                using (Transaction acTrans1 = acCurDb.TransactionManager.StartTransaction())
+                                //acTrans.Commit();
+                                //acTrans.Dispose();
+
+                                if (blkRecId != ObjectId.Null)
                                 {
-                                    BlockTableRecord acBlkTblRec;
-                                    acBlkTblRec = acTrans1.GetObject(blkRecId, OpenMode.ForRead) as BlockTableRecord;
-
-                                    // Create and insert the new block reference
-                                    using (BlockReference acBlkRef = new BlockReference(new Point3d(2, 2, 0), blkRecId))
+                                    //using (Transaction acTrans1 = acCurDb.TransactionManager.StartTransaction())
                                     {
-                                        BlockTableRecord acCurSpaceBlkTblRec;
-                                        acCurSpaceBlkTblRec = acTrans1.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                                        BlockTableRecord acBlkTblRec;
+                                        acBlkTblRec = acTrans.GetObject(blkRecId, OpenMode.ForRead) as BlockTableRecord;
 
-                                        acCurSpaceBlkTblRec.AppendEntity(acBlkRef);
-                                        acTrans1.AddNewlyCreatedDBObject(acBlkRef, true);
-
-                                        // Verify block table record has attribute definitions associated with it
-                                        if (acBlkTblRec.HasAttributeDefinitions)
+                                        // Create and insert the new block reference
+                                        using (BlockReference acBlkRef = new BlockReference(new Point3d(2, 2, 0), blkRecId))
                                         {
-                                            // Add attributes from the block table record
-                                            foreach (ObjectId objID in acBlkTblRec)
+                                            BlockTableRecord acCurSpaceBlkTblRec;
+                                            acCurSpaceBlkTblRec = acTrans.GetObject(acCurDb.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+
+                                            acCurSpaceBlkTblRec.AppendEntity(acBlkRef);
+                                            acTrans.AddNewlyCreatedDBObject(acBlkRef, true);
+
+                                            // Verify block table record has attribute definitions associated with it
+                                            if (acBlkTblRec.HasAttributeDefinitions)
                                             {
-                                                DBObject dbObj = acTrans1.GetObject(objID, OpenMode.ForRead) as DBObject;
-
-                                                if (dbObj is AttributeDefinition)
+                                                // Add attributes from the block table record
+                                                foreach (ObjectId objID in acBlkTblRec)
                                                 {
-                                                    AttributeDefinition acAtt = dbObj as AttributeDefinition;
+                                                    DBObject dbObj = acTrans.GetObject(objID, OpenMode.ForRead) as DBObject;
 
-                                                    if (!acAtt.Constant)
+                                                    if (dbObj is AttributeDefinition)
                                                     {
-                                                        using (AttributeReference acAttRef = new AttributeReference())
+                                                        AttributeDefinition acAtt = dbObj as AttributeDefinition;
+
+                                                        if (!acAtt.Constant)
                                                         {
-                                                            acAttRef.SetAttributeFromBlock(acAtt, acBlkRef.BlockTransform);
-                                                            acAttRef.Position = acAtt.Position.TransformBy(acBlkRef.BlockTransform);
-                                                            acAttRef.Tag = acAtt.Tag;
-                                                            acAttRef.TextString = acAtt.TextString;
+                                                            using (AttributeReference acAttRef = new AttributeReference())
+                                                            {
+                                                                acAttRef.SetAttributeFromBlock(acAtt, acBlkRef.BlockTransform);
+                                                                acAttRef.Position = acAtt.Position.TransformBy(acBlkRef.BlockTransform);
+                                                                acAttRef.Tag = acAtt.Tag;
+                                                                acAttRef.TextString = acAtt.TextString;
 
-                                                            acBlkRef.AttributeCollection.AppendAttribute(acAttRef);
+                                                                acBlkRef.AttributeCollection.AppendAttribute(acAttRef);
 
-                                                            acTrans1.AddNewlyCreatedDBObject(acAttRef, true);
+                                                                acTrans.AddNewlyCreatedDBObject(acAttRef, true);
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
                                         }
+                                        //acTrans1.Commit();
                                     }
-                                    acTrans1.Commit();
                                 }
+                                acTrans.Commit();
                             }
-
-
 
 
 
@@ -3226,10 +3389,10 @@ namespace AutocadPlugIn
 
                             // Dispose of the transaction
 
-                            
+
                         }
-                        
-                      //  acCurDb.SaveAs(FilePath, DwgVersion.Current);
+
+                        //  acCurDb.SaveAs(FilePath, DwgVersion.Current);
                     }
                 }
             }
@@ -3238,7 +3401,6 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
         }
-
         public void InsertingBlockWithAnAttribute()
         {
             // Get the current database and start a transaction
@@ -3350,6 +3512,61 @@ namespace AutocadPlugIn
                     acTrans.Commit();
                 }
                 // Dispose of the transaction
+            }
+        }
+
+
+        static public void InsertBlockReference(string blockName, Point3d insertionPoint)
+        {
+            Database db = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            using (DocumentLock docLock = doc.LockDocument())
+            {
+                using (Transaction myT = db.TransactionManager.StartTransaction())
+                {
+                    //Get the block definition "Check".
+
+                    BlockTable bt =
+                        db.BlockTableId.GetObject(OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord blockDef =
+                      bt[blockName].GetObject(OpenMode.ForRead) as BlockTableRecord;
+                    //Also open modelspace - we'll be adding our BlockReference to it
+                    BlockTableRecord ms =
+                      bt[BlockTableRecord.ModelSpace].GetObject(OpenMode.ForWrite)
+                                                              as BlockTableRecord;
+                    //Create new BlockReference, and link it to our block definition
+
+                    using (BlockReference blockRef =
+                            new BlockReference(insertionPoint, blockDef.ObjectId))
+                    {
+                        //Add the block reference to modelspace
+                        ms.AppendEntity(blockRef);
+                        myT.AddNewlyCreatedDBObject(blockRef, true);
+                        //Iterate block definition to find all non-constant
+                        // AttributeDefinitions
+                        foreach (ObjectId id in blockDef)
+                        {
+                            DBObject obj = id.GetObject(OpenMode.ForRead);
+                            AttributeDefinition attDef = obj as AttributeDefinition;
+                            if ((attDef != null) && (!attDef.Constant))
+                            {
+                                //This is a non-constant AttributeDefinition
+                                //Create a new AttributeReference
+                                using (AttributeReference attRef = new AttributeReference())
+                                {
+                                    attRef.SetAttributeFromBlock(attDef, blockRef.BlockTransform);
+                                    // not setting the attribute value to anything.
+
+                                    //Add the AttributeReference to the BlockReference
+                                    blockRef.AttributeCollection.AppendAttribute(attRef);
+                                    myT.AddNewlyCreatedDBObject(attRef, true);
+                                }
+                            }
+                        }
+                    }
+                    //Our work here is done
+                    myT.Commit();
+                }
             }
         }
     }

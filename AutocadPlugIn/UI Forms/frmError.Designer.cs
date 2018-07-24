@@ -35,18 +35,14 @@
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.lblUserMessage = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.btnShowMessage = new System.Windows.Forms.Button();
-            this.txtTechnicalMsg = new System.Windows.Forms.TextBox();
+            this.btnDetail = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.btnOK = new System.Windows.Forms.Button();
+            this.txtTechnicalMsg = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlTop.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -67,7 +63,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(436, 248);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(555, 390);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // pnlTop
@@ -79,7 +75,7 @@
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(436, 40);
+            this.pnlTop.Size = new System.Drawing.Size(555, 40);
             this.pnlTop.TabIndex = 0;
             // 
             // label1
@@ -100,7 +96,7 @@
             this.pnlLeft.Location = new System.Drawing.Point(0, 40);
             this.pnlLeft.Margin = new System.Windows.Forms.Padding(0);
             this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(10, 198);
+            this.pnlLeft.Size = new System.Drawing.Size(10, 340);
             this.pnlLeft.TabIndex = 0;
             // 
             // pnlBottom
@@ -108,123 +104,105 @@
             this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.tableLayoutPanel1.SetColumnSpan(this.pnlBottom, 3);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 238);
+            this.pnlBottom.Location = new System.Drawing.Point(0, 380);
             this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
             this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(436, 10);
+            this.pnlBottom.Size = new System.Drawing.Size(555, 10);
             this.pnlBottom.TabIndex = 0;
             // 
             // pnlRight
             // 
             this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlRight.Location = new System.Drawing.Point(426, 40);
+            this.pnlRight.Location = new System.Drawing.Point(545, 40);
             this.pnlRight.Margin = new System.Windows.Forms.Padding(0);
             this.pnlRight.Name = "pnlRight";
-            this.pnlRight.Size = new System.Drawing.Size(10, 198);
+            this.pnlRight.Size = new System.Drawing.Size(10, 340);
             this.pnlRight.TabIndex = 0;
             // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.4878F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 79.51219F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.52552F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 81.47448F));
+            this.tableLayoutPanel2.Controls.Add(this.lblUserMessage, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnDetail, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.panel1, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnOK, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtTechnicalMsg, 0, 2);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(13, 43);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 78.125F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 21.875F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(410, 192);
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(529, 334);
             this.tableLayoutPanel2.TabIndex = 1;
-            // 
-            // panel1
-            // 
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(77, 77);
-            this.panel1.TabIndex = 0;
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 1;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Controls.Add(this.lblUserMessage, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.panel2, 0, 1);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(86, 3);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 47.22222F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 52.77778F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(321, 144);
-            this.tableLayoutPanel3.TabIndex = 1;
             // 
             // lblUserMessage
             // 
             this.lblUserMessage.AutoSize = true;
             this.lblUserMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblUserMessage.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblUserMessage.Location = new System.Drawing.Point(3, 0);
+            this.lblUserMessage.Location = new System.Drawing.Point(101, 3);
+            this.lblUserMessage.Margin = new System.Windows.Forms.Padding(3);
             this.lblUserMessage.Name = "lblUserMessage";
-            this.lblUserMessage.Size = new System.Drawing.Size(315, 67);
+            this.lblUserMessage.Size = new System.Drawing.Size(425, 84);
             this.lblUserMessage.TabIndex = 0;
+            this.lblUserMessage.Text = "samir";
             // 
-            // panel2
+            // btnDetail
             // 
-            this.panel2.Controls.Add(this.btnShowMessage);
-            this.panel2.Controls.Add(this.txtTechnicalMsg);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 67);
-            this.panel2.Margin = new System.Windows.Forms.Padding(0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(321, 77);
-            this.panel2.TabIndex = 1;
+            this.btnDetail.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.btnDetail.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnDetail.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDetail.Location = new System.Drawing.Point(3, 93);
+            this.btnDetail.Name = "btnDetail";
+            this.btnDetail.Size = new System.Drawing.Size(92, 44);
+            this.btnDetail.TabIndex = 3;
+            this.btnDetail.Text = "Detail";
+            this.btnDetail.UseVisualStyleBackColor = true;
+            this.btnDetail.Click += new System.EventHandler(this.btnDetail_Click);
             // 
-            // btnShowMessage
+            // panel1
             // 
-            this.btnShowMessage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnShowMessage.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnShowMessage.Location = new System.Drawing.Point(0, 0);
-            this.btnShowMessage.Name = "btnShowMessage";
-            this.btnShowMessage.Size = new System.Drawing.Size(321, 77);
-            this.btnShowMessage.TabIndex = 2;
-            this.btnShowMessage.Text = "Show Technical Message";
-            this.btnShowMessage.UseVisualStyleBackColor = true;
-            this.btnShowMessage.Click += new System.EventHandler(this.btnShowMessage_Click);
-            // 
-            // txtTechnicalMsg
-            // 
-            this.txtTechnicalMsg.BackColor = System.Drawing.Color.White;
-            this.txtTechnicalMsg.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtTechnicalMsg.Location = new System.Drawing.Point(0, 0);
-            this.txtTechnicalMsg.Multiline = true;
-            this.txtTechnicalMsg.Name = "txtTechnicalMsg";
-            this.txtTechnicalMsg.ReadOnly = true;
-            this.txtTechnicalMsg.Size = new System.Drawing.Size(321, 77);
-            this.txtTechnicalMsg.TabIndex = 1;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(92, 84);
+            this.panel1.TabIndex = 0;
             // 
             // btnOK
             // 
             this.btnOK.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.btnOK.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnOK.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOK.Location = new System.Drawing.Point(284, 153);
+            this.btnOK.Location = new System.Drawing.Point(403, 93);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(123, 36);
+            this.btnOK.Size = new System.Drawing.Size(123, 44);
             this.btnOK.TabIndex = 2;
-            this.btnOK.Text = "OK";
+            this.btnOK.Text = "Continue";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            // 
+            // txtTechnicalMsg
+            // 
+            this.txtTechnicalMsg.BackColor = System.Drawing.Color.White;
+            this.tableLayoutPanel2.SetColumnSpan(this.txtTechnicalMsg, 2);
+            this.txtTechnicalMsg.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtTechnicalMsg.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTechnicalMsg.Location = new System.Drawing.Point(3, 143);
+            this.txtTechnicalMsg.Multiline = true;
+            this.txtTechnicalMsg.Name = "txtTechnicalMsg";
+            this.txtTechnicalMsg.ReadOnly = true;
+            this.txtTechnicalMsg.Size = new System.Drawing.Size(523, 194);
+            this.txtTechnicalMsg.TabIndex = 1;
             // 
             // frmError
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(436, 248);
+            this.ClientSize = new System.Drawing.Size(555, 390);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "frmError";
@@ -235,10 +213,7 @@
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -253,11 +228,9 @@
         private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Label lblUserMessage;
         private System.Windows.Forms.TextBox txtTechnicalMsg;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button btnShowMessage;
         private System.Windows.Forms.Button btnOK;
+        private System.Windows.Forms.Button btnDetail;
     }
 }

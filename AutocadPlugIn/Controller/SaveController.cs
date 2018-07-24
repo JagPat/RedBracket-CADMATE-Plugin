@@ -39,8 +39,10 @@ namespace AutocadPlugIn
                     {
                         PLMObject plmObj = new PLMObject();
                         String[] plmobjInfo = null;
-                        plmobjInfo = str.Split(';');
-
+                        string str1 = str.Substring(str.IndexOf(";")+1);
+                         
+                        plmobjInfo = str1.Split(';');
+                       
 
                         plmObj.ObjectId = plmobjInfo[5];
                         string fileName = System.IO.Path.GetFileName(plmobjInfo[6]);
@@ -106,7 +108,7 @@ namespace AutocadPlugIn
                         {
                             if (dt.Rows.Count > 0)
                             {
-                                if (plmObj.IsNew && Convert.ToString(dt.Rows[0]["FileID1"]) == plmObj.ObjectId)
+                                if (!plmObj.IsNew && Convert.ToString(dt.Rows[0]["FileID1"]) == plmObj.ObjectId)
                                 {
                                     IsNotFound = false;
                                 }

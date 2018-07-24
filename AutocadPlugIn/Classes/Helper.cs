@@ -58,6 +58,7 @@ namespace AutocadPlugIn
                 objfrmPB.Show();
                 objfrmPB.pbProcess.Refresh();
                 objfrmPB.Refresh();
+                IsPBActive = true;
             }
             catch (Exception E)
             {
@@ -432,7 +433,7 @@ namespace AutocadPlugIn
                             DrawingProperty.Add("Layout_" + Count + "_Status", objLI1.statusname);
                             DrawingProperty.Add("Layout_" + Count + "_VersionNote", objLI1.description);
                             DrawingProperty.Add("Layout_" + Count + "_CreatedBy", objLI1.createdby);
-                            DrawingProperty.Add("Layout_" + Count + "_CreatedOn", objLI1.createdon);
+                            DrawingProperty.Add("Layout_" + Count + "_CreatedOn", objLI1.created0n);
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedBy", objLI1.updatedby);
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedOn", objLI1.updatedon);
 
@@ -442,7 +443,7 @@ namespace AutocadPlugIn
                 }
                 else
                 {
-                    ShowMessage.ErrorMess("Specified index not found.");
+                    ShowMessage.ErrorMessUD("Specified index not found.");
                 }
             }
             catch (Exception E)
@@ -570,7 +571,7 @@ namespace AutocadPlugIn
 
 
                             dr["CreatedBy"] = obj.createdby;
-                            dr["CreatedOn"] = obj.createdon;
+                            dr["CreatedOn"] = obj.created0n;
                             dr["UpdatedBy"] = obj.updatedby;
                             dr["UpdatedOn"] = obj.updatedon;
                             dr["FileLayoutName"] = obj.name;
@@ -614,7 +615,7 @@ namespace AutocadPlugIn
                     }
 
                     objLI.createdby = Convert.ToString(dr["CreatedBy"]);
-                    objLI.createdon = Convert.ToString(dr["CreatedOn"]);
+                    objLI.created0n = Convert.ToString(dr["CreatedOn"]);
                     objLI.updatedby = Convert.ToString(dr["UpdatedBy"]);
                     objLI.updatedon = Convert.ToString(dr["UpdatedOn"]);
 
@@ -727,10 +728,10 @@ namespace AutocadPlugIn
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
-                        LayoutInfos += @"""createdon""";
+                        LayoutInfos += @"""created0n""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
-                        LayoutInfos += obj.createdon;
+                        LayoutInfos += obj.created0n;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
@@ -992,6 +993,10 @@ namespace AutocadPlugIn
                     XrefStatus = false,
                     Prefix = PreFix
                 };
+                if (lstobjDownloadedFiles==null)
+                {
+                    lstobjDownloadedFiles = new List<clsDownloadedFiles>();
+                }
                 lstobjDownloadedFiles.Add(objDownloadedFile);
                 if (IsRoot == "true" && !IsTemp)
                 {
@@ -1002,8 +1007,9 @@ namespace AutocadPlugIn
                         ParentFileName = Drawing.name,
                         ParentPrefix = PreFix,
                         Prefix = PreFix
-
+                        
                     };
+                  
                     lstobjDownloadedFiles1.Add(objDF);
                     if (Drawing.filebean != null)
                         GetTotalChild(Drawing.filebean, Drawing, lstobjDownloadedFiles1);
@@ -1049,8 +1055,11 @@ namespace AutocadPlugIn
                 }
                 else
                 {
-                    cadManager.SetAttributesXrefFiles(DrawingProperty, FilePath);
-                    cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath);
+                    if (!IsTemp)
+                    {
+                        cadManager.SetAttributesXrefFiles(DrawingProperty, FilePath);
+                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath);
+                    }
                 }
             }
             catch (Exception E)
@@ -1545,7 +1554,7 @@ namespace AutocadPlugIn
             {
                 foreach (TreeGridNode childNode in ParentNode.Nodes)
                 {
-                    if ((bool)childNode.Cells[0].FormattedValue)
+                    if ((bool)childNode.Cells["Check"].FormattedValue)
                     {
                         PBValue += IncrementValue;
 

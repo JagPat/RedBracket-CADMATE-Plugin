@@ -226,7 +226,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("Verdana", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(4, 1);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(123, 23);
@@ -237,7 +237,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Font = new System.Drawing.Font("Verdana", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(134, 1);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(281, 23);
@@ -248,7 +248,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Font = new System.Drawing.Font("Verdana", 11.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Verdana", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(422, 1);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(282, 23);
@@ -894,6 +894,7 @@
             this.cmbFileStatusC.Name = "cmbFileStatusC";
             this.cmbFileStatusC.Size = new System.Drawing.Size(287, 23);
             this.cmbFileStatusC.TabIndex = 3;
+            this.cmbFileStatusC.SelectedIndexChanged += new System.EventHandler(this.cmbFileStatusC_SelectedIndexChanged);
             this.cmbFileStatusC.SelectedValueChanged += new System.EventHandler(this.cmbFileTypeC_SelectedValueChanged);
             // 
             // label25

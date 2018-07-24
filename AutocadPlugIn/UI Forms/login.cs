@@ -2,8 +2,7 @@
 using System.Text;
 using System.Windows.Forms;
 
-using Microsoft.Win32;
-using RedBracketConnector;
+using Microsoft.Win32; 
 using System.IO;
 
 namespace AutocadPlugIn
@@ -210,7 +209,7 @@ namespace AutocadPlugIn
             {
                 if (loggedUserDetails == null)
                 {
-                    MessageBox.Show("Connection to RedBracket failed. Please try again. If the problem persists, please contact your administrator.");
+                    //MessageBox.Show("Connection to RedBracket failed. Please try again. If the problem persists, please contact your administrator.");
                     return;
                 }
 

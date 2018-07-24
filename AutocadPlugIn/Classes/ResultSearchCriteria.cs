@@ -106,6 +106,7 @@ namespace AutocadPlugIn
         public string Prefix { set; get; }
         public string ParentPrefix { set; get; }
         public bool XrefStatus { set; get; }
+        public bool A;
     }
     public class clsFolderInfo
     {
@@ -211,7 +212,7 @@ namespace AutocadPlugIn
 
         public string updatedon { set; get; }
 
-        public string createdon { set; get; }
+        public string created0n { set; get; }
 
         public ResultSearchCriteriaCoreType coreType { set; get; }
 

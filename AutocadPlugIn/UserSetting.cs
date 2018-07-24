@@ -2,8 +2,7 @@
 using System.Windows.Forms;
 using System.Xml;
 using System.IO; 
-using Microsoft.Win32;
-using RedBracketConnector;
+using Microsoft.Win32; 
 
 namespace AutocadPlugIn.UI_Forms
 {

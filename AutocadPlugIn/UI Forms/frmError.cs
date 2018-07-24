@@ -23,18 +23,35 @@ namespace AutocadPlugIn
 
         private void frmError_Load(object sender, EventArgs e)
         {
-            
+
+            Height = 198;
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void btnShowMessage_Click(object sender, EventArgs e)
         {
-            btnShowMessage.Visible = false;
+   
 
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnDetail_Click(object sender, EventArgs e)
+        {
+            if (Height == 198)
+            {
+                Height = 400;
+                this.StartPosition = FormStartPosition.CenterScreen;
+            }
+            else
+            {
+                Height = 198;
+                this.StartPosition = FormStartPosition.CenterScreen;
+            }
+            this.Refresh();
         }
     }
 }

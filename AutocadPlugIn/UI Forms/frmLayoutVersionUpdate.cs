@@ -6,8 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using RedBracketConnector;
+using System.Windows.Forms; 
 using AdvancedDataGridView;
 using System.Collections;
 
@@ -40,7 +39,7 @@ namespace AutocadPlugIn.UI_Forms
             pnlTop.BackColor = pnlRight.BackColor = pnlLeft.BackColor = pnlBottom.BackColor = Helper.clrChildPopupBorderColor;
         }
 
-        private void frmLayoutVersionUpdate_Load(object sender, EventArgs e)
+        public void frmLayoutVersionUpdate_Load(object sender, EventArgs e)
         {
             LoadFlag = true;
             try
@@ -355,7 +354,7 @@ namespace AutocadPlugIn.UI_Forms
             this.Close();
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        public void btnSave_Click(object sender, EventArgs e)
         {
             try
             {

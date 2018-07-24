@@ -30,9 +30,18 @@ namespace AutocadPlugIn
         public static void ErrorMess(string Message)
         {
             Helper.HideProgressBar();
+            //MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            frmError objfrmError = new frmError("Unknown Error", Message);
+            objfrmError.ShowDialog();
+            Helper.ShowProgressBar();
+
+        }
+        public static void ErrorMessUD(string Message)
+        {
+            Helper.HideProgressBar();
             MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             frmError objfrmError = new frmError(Message, Message);
-           // objfrmError.ShowDialog();
+            //// objfrmError.ShowDialog();
             Helper.ShowProgressBar();
 
         }
@@ -43,6 +52,22 @@ namespace AutocadPlugIn
             objfrmError.ShowDialog();
             Helper.ShowProgressBar();
             // MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        public static void ErrorMess(string Message, RestSharp.RestResponse restResponse)
+        {
+            string TMessage = restResponse.ErrorMessage + "\n\n" +
+                             restResponse.ResponseUri + "\n\n" +
+                             restResponse.Content;
+            if (restResponse.StatusCode == 0)
+            {
+                Message = "No internet.\n Please check your internet connection.";
+            }
+            else if (restResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                Message = "Unauthorize access.";
+            }
+            ErrorMess(Message, TMessage);
+
         }
         public static void ValMess(string Message)
         {

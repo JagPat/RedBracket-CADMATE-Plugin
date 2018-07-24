@@ -5,8 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using RedBracketConnector;
+using System.Windows.Forms; 
 
 namespace AutocadPlugIn.UI_Forms
 {
@@ -426,7 +425,7 @@ namespace AutocadPlugIn.UI_Forms
                     }
                 }
                 btnSave.Enabled = false;
-                if(System.IO.File.Exists(TempFilePath))
+                if (System.IO.File.Exists(TempFilePath))
                 {
                     Helper.IncrementProgressBar(1, "Comparing file info.");
                     string TempFilePath1 = Helper.CopyTempFile(FilePath);
@@ -452,7 +451,7 @@ namespace AutocadPlugIn.UI_Forms
                         }
                     }
                 }
-                
+
 
 
 
@@ -476,8 +475,8 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                
-                if (ctrlCurrent.Text != lblLatest.Text   )
+
+                if (ctrlCurrent.Text != lblLatest.Text)
                 {
                     if (ctrlCurrent.Text == "---Select---" && lblLatest.Text == string.Empty)
                     {
@@ -491,7 +490,7 @@ namespace AutocadPlugIn.UI_Forms
                         lblLabel.Margin = ctrlCurrent.Margin = lblLatest.Margin = new Padding(0);
                         lblLabel.BackColor = ctrlCurrent.BackColor = lblLatest.BackColor = Helper.clrDiffHighlighColor;
                     }
-                   
+
                 }
             }
             catch (Exception E)
@@ -504,7 +503,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                Control ctrlCurrent;Label lblLatest;Label lblLabel;
+                Control ctrlCurrent; Label lblLatest; Label lblLabel;
                 if (IsCombo)
                 {
                     ctrlCurrent = tlpMain.Controls.Find(ControlName + "C" + count, false).FirstOrDefault() as ComboBox;
@@ -657,6 +656,9 @@ namespace AutocadPlugIn.UI_Forms
                 if (LoadFlag)
                     return;
 
+                bool IsValueChanged1 = CheckStatusChange(((ComboBox)sender), false);
+                if (!IsValueChanged1)
+                    return;
                 bool IsValueChanged = false;
                 IsFilePropertiesChanged = false;
                 IsLayoutPropertiesChanged = false;
@@ -729,6 +731,208 @@ namespace AutocadPlugIn.UI_Forms
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void cmbFileStatusC_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public bool CheckStatusChange(ComboBox cmb, bool ShowFileName = false)
+        {
+            LoadFlag = true;
+            bool RetVal = true;
+            try
+            {
+                //if (cmb.Name != "cmbFileStatusC")
+                //{
+                //    // write code to check 
+
+                //    LoadFlag = false;
+                //    return true;
+                //}
+
+                bool OldStatusTypeClosed = IsClosedStatus(cmb, true);
+                bool NewStatusTypeCLosed = IsClosedStatus(cmb);
+                string FileName = "";
+
+                if (ShowFileName)
+                {
+                    FileName = lbDrawingNameC.Text + Environment.NewLine;
+                }
+
+
+
+                if (OldStatusTypeClosed && NewStatusTypeCLosed)
+                {
+
+                }
+                else if (OldStatusTypeClosed && !NewStatusTypeCLosed)
+                {
+                    ShowMessage.ValMess(FileName + "Changing status from '" + GetFileStatus(cmb, true) + "' to '" + cmb.Text + "' will lead to creation of new revision, \n So you can not change it.");
+                     
+                        cmb.SelectedValue = cmb.Tag;
+                        RetVal = false; 
+                }
+                if (!OldStatusTypeClosed && NewStatusTypeCLosed)
+                {
+                    if (cmb.Name == "cmbFileStatusC")
+                    {
+                        if (!IsAllLayoutClose())
+                        {
+                            ShowMessage.ValMess("You can not change status to '" + cmb.Text + "' unless all layouts are in Close state.");
+
+
+                            cmb.Text = Convert.ToString(cmb.Tag);
+
+                            LoadFlag = false;
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            LoadFlag = false;
+            return RetVal;
+        }
+        public bool IsAllLayoutClose()
+        {
+            try
+            {
+                bool IsControlNull = false;
+                bool IsAllLayoutClose = true;
+                int count = 1;
+                while (!IsControlNull)
+                {
+
+                    ComboBox cmbstatus = tlpMain.Controls.Find("cmbLayoutStatusC" + count, false).FirstOrDefault() as ComboBox;
+
+
+                    if (cmbstatus == null)
+                    {
+                        IsControlNull = true;
+                    }
+                    else
+                    {
+                        IsAllLayoutClose = IsClosedStatus(cmbstatus, true);
+                        if (!IsAllLayoutClose)
+                        {
+                            break;
+                        }
+                        count++;
+                    }
+
+                }
+
+                return IsAllLayoutClose;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
+        }
+        public bool IsClosedStatus(ComboBox cmb, bool IsOld = false)
+        {
+            try
+            {
+                DataTable dtStatus = objRBC.GetFIleStatus();
+
+                string FileStatus = "";
+                if (IsOld)
+                {
+                    FileStatus = Convert.ToString(cmb.Tag);
+                }
+                else
+                {
+                    FileStatus = Convert.ToString(cmb.Text);
+                }
+                if (dtStatus != null)
+                {
+                    DataRow[] dr1;
+                    try
+                    {
+                        if (IsOld)
+                        {
+                            dr1 = dtStatus.Select("id = '" + FileStatus + "' and IsClosed ='True'");
+                        }
+                        else
+                        {
+                            dr1 = dtStatus.Select("statusname = '" + FileStatus + "' and IsClosed ='True'");
+                        }
+                    }
+                    catch
+                    {
+                        dr1 = dtStatus.Select("statusname = '" + FileStatus + "' and IsClosed ='True'");
+                    }
+
+                    if (dr1.Length > 0)
+                    {
+
+
+                        return true;
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return false;
+        }
+
+        public string GetFileStatus(ComboBox cmb, bool IsOld = false)
+        {
+            string FileStatus = "";
+            try
+            {
+                DataTable dtStatus = objRBC.GetFIleStatus();
+
+
+                if (IsOld)
+                {
+                    FileStatus = Convert.ToString(cmb.Tag);
+                }
+                else
+                {
+                    FileStatus = Convert.ToString(cmb.SelectedValue);
+                }
+                if (dtStatus != null)
+                {
+
+                    DataRow[] dr1 = dtStatus.Select("id = " + FileStatus + "  ");
+                    if (dr1.Length > 0)
+                    {
+                        FileStatus = Convert.ToString(dr1[0]["statusname"]);
+                    }
+                    else
+                    {
+                        FileStatus = "";
+                    }
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return FileStatus;
         }
     }
 }
