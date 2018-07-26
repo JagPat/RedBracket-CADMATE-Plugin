@@ -39,7 +39,7 @@
             this.btnDetail = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnOK = new System.Windows.Forms.Button();
-            this.txtTechnicalMsg = new System.Windows.Forms.TextBox();
+            this.txtTechnicalMsg = new System.Windows.Forms.RichTextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlTop.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -188,16 +188,14 @@
             // 
             // txtTechnicalMsg
             // 
-            this.txtTechnicalMsg.BackColor = System.Drawing.Color.White;
             this.tableLayoutPanel2.SetColumnSpan(this.txtTechnicalMsg, 2);
             this.txtTechnicalMsg.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtTechnicalMsg.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTechnicalMsg.Location = new System.Drawing.Point(3, 143);
-            this.txtTechnicalMsg.Multiline = true;
             this.txtTechnicalMsg.Name = "txtTechnicalMsg";
             this.txtTechnicalMsg.ReadOnly = true;
             this.txtTechnicalMsg.Size = new System.Drawing.Size(523, 194);
-            this.txtTechnicalMsg.TabIndex = 1;
+            this.txtTechnicalMsg.TabIndex = 4;
+            this.txtTechnicalMsg.Text = "";
             // 
             // frmError
             // 
@@ -229,8 +227,8 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblUserMessage;
-        private System.Windows.Forms.TextBox txtTechnicalMsg;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnDetail;
+        private System.Windows.Forms.RichTextBox txtTechnicalMsg;
     }
 }

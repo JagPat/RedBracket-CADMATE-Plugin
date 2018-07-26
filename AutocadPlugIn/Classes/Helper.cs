@@ -42,7 +42,9 @@ namespace AutocadPlugIn
         public static string DateTimeFormat = "dd-MMM-yy hh:mm:ss tt";
         public static string TimeFormat = "hh:mm:ss tt";
         public static bool CheckFileInfoFlag = true;
-
+        public static bool TitleBlockFlag = false;
+        public static bool TitleBlockVisibilityFlag = false;
+        public static bool IsUpdateLayoutInfo = false;
         public static frmProgressBar objfrmPB = new frmProgressBar();
         public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
         {

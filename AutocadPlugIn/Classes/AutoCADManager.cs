@@ -169,6 +169,8 @@ namespace AutocadPlugIn
         {
             try
             {
+                if (!Helper.IsUpdateLayoutInfo)
+                    return;
                 bool IsDocOpend = false;
 
                 if (!CheckForCurruntlyOpenDoc(FilePath))
@@ -218,7 +220,7 @@ namespace AutocadPlugIn
                             String layoutName = de.Key;
                             //if (layoutName != "Model")
                             {
-                                //LayoutManager.Current.CurrentLayout = layoutName;
+                                LayoutManager.Current.CurrentLayout = layoutName;
                                 Hashtable LayoutData = documentProperties; //new Hashtable();
 
 
@@ -395,7 +397,7 @@ namespace AutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString(), "Error");
+                ShowMessage.ErrorMess(ex.Message.ToString());
             }
 
         }
@@ -794,12 +796,25 @@ namespace AutocadPlugIn
                                 continue;
                             }
 
-
-                            Database xdb = xgn.Database;
+                            
+                                Database xdb = xgn.Database;
 
 
                             if (xdb != null)
                             {
+                                bool IsSelected = false;
+                                foreach (PLMObject obj in plmObjs)
+                                {
+                                    if(obj.FilePath== xgn.Database.Filename)
+                                    {
+                                        IsSelected = true;break;
+                                    }
+                                }
+                                if(!IsSelected)
+                                {
+                                    // this file is not selected to save so no further action is required.
+                                    continue;
+                                }
                                 string ProjectName = "", PreFix = "", oldPreFix = "";
                                 System.Data.DataTable dtDrawing = Helper.cadManager.GetAttributes(xgn.Database.Filename);
 
@@ -912,7 +927,7 @@ namespace AutocadPlugIn
                                     File.Delete(newpath);
 
                                     OldChildPath = originalpath;
-                                    if (IsChildinSameFolder)
+                                    //if (IsChildinSameFolder)
                                     {
                                         FileInfo fi = new FileInfo(originalpath);
                                         OldChildPath = Path.Combine(fi.DirectoryName, Path.GetFileName(originalpath));
@@ -1041,8 +1056,8 @@ namespace AutocadPlugIn
                                         //File.Delete(Path.Combine(Path.GetDirectoryName(newpath), Path.GetFileName(OldChildPath)));
                                     }
 
-
-                                    UpdateExRefPathInfo2(ParentFilePath, newpath, ref plmObjs);
+                                    if (File.Exists(newpath))
+                                        UpdateExRefPathInfo2(ParentFilePath, newpath, ref plmObjs);
                                 }
                             }
                         }
@@ -1501,7 +1516,12 @@ namespace AutocadPlugIn
 
         public List<string> CheckXrefStatus(string ParentFilePath, string Filepath, List<clsDownloadedFiles> lstobjDownloadedFiles)
         {
+
             List<string> lstOldFiles = new List<string>();
+            if (ParentFilePath == "" && Filepath == "")
+            {
+                return lstOldFiles;
+            }
             if (ParentFilePath != Filepath)
                 ParentFilePath = Filepath;
             try
@@ -1566,8 +1586,10 @@ namespace AutocadPlugIn
 
                                         string originalpath = btr.PathName;
                                         string s = originalpath.Replace(btr.Name, "").Replace(Path.GetExtension(originalpath), "").Replace("#", "");
-                                        s = s.Remove(s.LastIndexOf('-'));
-                                        s = s.Substring(s.LastIndexOf('-') + 1);
+                                        if (s.Contains("_"))
+                                            s = s.Remove(s.LastIndexOf('-'));
+                                        if (s.Contains("_"))
+                                            s = s.Substring(s.LastIndexOf('-') + 1);
 
                                         DirectoryInfo d = new DirectoryInfo(Path.GetDirectoryName(ParentFilePath));
                                         FileInfo[] Files = d.GetFiles("*.dwg");
@@ -1593,7 +1615,8 @@ namespace AutocadPlugIn
                                                 break;
                                             }
                                         }
-                                        CheckXrefStatus(ParentFilePath, newpath, lstobjDownloadedFiles);
+                                        if (File.Exists(newpath))
+                                            CheckXrefStatus(ParentFilePath, newpath, lstobjDownloadedFiles);
                                     }
 
 
@@ -2922,7 +2945,8 @@ namespace AutocadPlugIn
                 {
                     if (Convert.ToBoolean(item.XrefStatus) == false && !(item.MainFilePath == item.ParentFilePath && item.ParentFilePath == item.FilePath))
                     {
-                        AttachingExternalReference(item.ParentFilePath, item.FilePath, item.Prefix);
+                        if (item.ParentFilePath != null && item.FilePath != null && item.ParentFilePath != string.Empty && item.FilePath != string.Empty)
+                            AttachingExternalReference(item.ParentFilePath, item.FilePath, item.Prefix);
                     }
                 }
             }
@@ -2977,7 +3001,7 @@ namespace AutocadPlugIn
 
         [CommandMethod("RenameLayout")]
 
-        public void renamelayoutName(String FilePath, string OldLayoutName, string Suffix)
+        public void renamelayoutName(String FilePath, string OldLayoutName, string NewLayoutName)
 
         {
 
@@ -3017,7 +3041,7 @@ namespace AutocadPlugIn
 
                                     if (layout.LayoutName == OldLayoutName)
                                     {
-                                        layout.LayoutName = layout.LayoutName + "_" + Suffix;
+                                        layout.LayoutName = NewLayoutName;
 
                                         break;
                                     }
@@ -3095,7 +3119,7 @@ namespace AutocadPlugIn
                                     BlockTableRecord acBlkTblRec = new BlockTableRecord();
                                     acBlkTblRec.Name = BlockName;
 
-                               
+
 
                                     // Set the insertion point for the block
                                     acBlkTblRec.Origin = new Point3d(0, 0, 0);
@@ -3110,7 +3134,7 @@ namespace AutocadPlugIn
                                         //using (AttributeDefinition acAttDef = new AttributeDefinition())
                                         //{
 
-                                        acAttDef.Visible = false;
+                                        acAttDef.Visible = Helper.TitleBlockVisibilityFlag;
                                         acAttDef.Position = new Point3d(0, 0, 0);
                                         acAttDef.Verifiable = true;
                                         acAttDef.Prompt = "ENTER VALUE";
@@ -3174,7 +3198,7 @@ namespace AutocadPlugIn
                                                         {
                                                             using (AttributeReference acAttRef = new AttributeReference())
                                                             {
-                                                                acAttRef.Visible = false;
+                                                                acAttRef.Visible = Helper.TitleBlockVisibilityFlag;
                                                                 acAttRef.SetAttributeFromBlock(acAtt, acBlkRef.BlockTransform);
                                                                 acAttRef.Position = acAtt.Position.TransformBy(acBlkRef.BlockTransform);
                                                                 acAttRef.Tag = acAtt.Tag;

@@ -51,7 +51,7 @@ namespace AutocadPlugIn
                     {
                         Helper.IncrementProgressBar(1, "Uploading file : " + Path.GetFileNameWithoutExtension(obj.FilePath));
 
-                        if (obj.IsNew)
+                        if (obj.IsNew|| obj.originalFileID==string.Empty)
                         {
                             List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
                             KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
@@ -309,7 +309,7 @@ namespace AutocadPlugIn
                                         obj.objectType = Drawing.type == null ? string.Empty : Convert.ToString(Drawing.type.name);
                                         obj.objectProjectNo = Drawing.projectno == null ? obj.objectProjectNo : Drawing.projectno;
                                         obj.IsSaved = true;
-
+                                        obj.originalFileID = Drawing.originalFileId;
                                         obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
                                     }
 
@@ -698,9 +698,9 @@ namespace AutocadPlugIn
                     if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                     {
                         string Sufix = Count + "_" + DrawingNO;
+                        string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim() + "_" + Sufix;
+                        Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["FileLayoutName"]).Trim(), NewLayoutName);
                        
-                        Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["LayoutName1"]).Trim(), Sufix);
-                        string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim() +"_"+ Sufix;
                         dr["LayoutName1"] = NewLayoutName;
                         dr["FileLayoutName"] = NewLayoutName;
                         restResponse = (RestResponse)ServiceHelper.PostData(
@@ -744,11 +744,8 @@ namespace AutocadPlugIn
 
                     //checking if service call was successful or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                    {
-                        //ShowMessage.InfoMess(restResponse.Content);
-                        //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
-                        ShowMessage.ErrorMess("Some error occurred while uploading layout info.", restResponse);
-
+                    { 
+                        ShowMessage.ErrorMess("Some error occurred while uploading layout info.", restResponse); 
                     }
                     else if (restResponse.Content.Trim().Length > 0)
                     {

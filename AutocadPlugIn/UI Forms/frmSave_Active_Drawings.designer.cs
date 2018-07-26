@@ -84,6 +84,7 @@
             this.OldFolderID1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OldState = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DrawingNumberOld = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BtnBrowseFolder = new System.Windows.Forms.DataGridViewImageColumn();
             ((System.ComponentModel.ISupportInitialize)(this.savetreeGrid)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -162,6 +163,7 @@
             this.OldFolderID1,
             this.OldState,
             this.FileStatus,
+            this.DrawingNumberOld,
             this.BtnBrowseFolder});
             this.savetreeGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.savetreeGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
@@ -621,6 +623,14 @@
             this.FileStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.FileStatus.Visible = false;
             // 
+            // DrawingNumberOld
+            // 
+            this.DrawingNumberOld.HeaderText = "DrawingNumberOld";
+            this.DrawingNumberOld.Name = "DrawingNumberOld";
+            this.DrawingNumberOld.ReadOnly = true;
+            this.DrawingNumberOld.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DrawingNumberOld.Visible = false;
+            // 
             // BtnBrowseFolder
             // 
             this.BtnBrowseFolder.HeaderText = "";
@@ -705,6 +715,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn OldFolderID1;
         private System.Windows.Forms.DataGridViewTextBoxColumn OldState;
         private System.Windows.Forms.DataGridViewTextBoxColumn FileStatus;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DrawingNumberOld;
         private System.Windows.Forms.DataGridViewImageColumn BtnBrowseFolder;
     }
 }

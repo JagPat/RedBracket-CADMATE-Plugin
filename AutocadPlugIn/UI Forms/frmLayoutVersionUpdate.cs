@@ -22,11 +22,13 @@ namespace AutocadPlugIn.UI_Forms
         public string FileVersion = "";
         public string ProjectID = "";
         public string FilePath = "";
+        public string OldDWGNo = "";
+        
         public DataTable dtLayoutInfo = new DataTable();
         RBConnector objRBC = new RBConnector();
         AutoCADManager CadManager = new AutoCADManager();
         public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "",
-            string ProjectID = "", string FilePath = "")
+            string ProjectID = "", string FilePath = "",string OldDWGNo="")
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
             this.Fileid = Fileid;
@@ -36,6 +38,7 @@ namespace AutocadPlugIn.UI_Forms
             this.FileVersion = FileVersion;
             this.ProjectID = ProjectID;
             this.FilePath = FilePath;
+            this.OldDWGNo = OldDWGNo;
             pnlTop.BackColor = pnlRight.BackColor = pnlLeft.BackColor = pnlBottom.BackColor = Helper.clrChildPopupBorderColor;
         }
 
@@ -81,12 +84,17 @@ namespace AutocadPlugIn.UI_Forms
                 dtLI.Columns.Add("Name");
                 dtLI.Columns.Add("DrawingNo");
                 dtLI.Columns.Add("NO", typeof(decimal));
+                dtLI.Columns.Add("ACLayoutID");
+                dtLI.Columns.Add("BasicLayoutName");
                 foreach (DictionaryEntry key in htLayoutInfo)
                 {
                     DataRow dr = dtLI.NewRow();
                     string LayoutName = key.Key.ToString();
                     string LayoutID1 = key.Value.ToString();
+                    string DrawingNO =  "";
                     dr["Name"] = LayoutName;
+                    dr["ACLayoutID"] = LayoutID1;
+                    dr["BasicLayoutName"] = LayoutName;
                     string tempLN = LayoutName;
                     if (tempLN.Contains("_"))
                     {
@@ -97,12 +105,12 @@ namespace AutocadPlugIn.UI_Forms
                             string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
                             dr["NO"] = LN.Substring(1);
                             LN = LN + DN;
-
-                            dr["DrawingNo"] = LN.Substring(1);
+                            DrawingNO = LN.Substring(1);
+                            dr["DrawingNo"] = DrawingNO;
                             DataRow[] rw1 = dtLayoutInfo.Copy().Select("FileLayoutName like '%" + LN + "'");
                             if (rw1.Length > 0)
                             {
-
+                                
                             }
                         }
                     }
@@ -113,12 +121,14 @@ namespace AutocadPlugIn.UI_Forms
                 foreach (DataRow dr in dtLI.Rows)
                
                 {
+                    string DrawingNO = Convert.ToString(dr["DrawingNo"]).Length>7? Convert.ToString(dr["DrawingNo"]).Substring(2):"";
                     string LayoutName = Convert.ToString(dr["Name"]);
-                    string LayoutNo = Convert.ToString(dr["NO"]);
+                    
                     bool IsAvailable = false;
                     DataRow rw = dtLayoutInfo.NewRow();
                     foreach (DataRow rw2 in dtLayoutInfo.Rows)
                     {
+                        string LayoutNo = Convert.ToString(dr["NO"]);
                         if (Convert.ToString(rw2["IsFile"]) == "1")
                         {
                             continue;
@@ -135,8 +145,21 @@ namespace AutocadPlugIn.UI_Forms
                         if (LayoutName == Convert.ToString(rw2["FileLayoutName"]))
                         //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
                         {
+                            string tempLN = LayoutName;
+                            string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                            tempLN = tempLN.Replace(DN, "");
+                            if (tempLN.Contains("_"))
+                            {
+                                string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                                if (DrawingNO == OldDWGNo)
+                                {
+                                      rw2["LayoutName1"]= LayoutName.Replace("_"+ Convert.ToString(dr["NO"]) + "_" +DrawingNO, "");
+                                }
+                            }
                             rw = rw2;
-                            IsAvailable = true; break;
+
+                            IsAvailable = true;
+                            break;
 
                         }
 
@@ -158,6 +181,11 @@ namespace AutocadPlugIn.UI_Forms
                                     rw = rw1[0];
                                     rw["ChangeVersion"] = IsAvailable = true;
                                     rw["FileLayoutName"] = rw["LayoutName1"] = LayoutName;
+                                    
+                                    if (DrawingNO != OldDWGNo)
+                                    {
+                                        dr["Name"] = LayoutName.Replace(LN, "");
+                                    }
                                 }
                             }
                         }
@@ -191,68 +219,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 }
 
-
-                //if (dtLayoutInfo.Rows.Count > 0)
-                //{
-
-
-                //    foreach (DataRow rw in dtLayoutInfo.Rows)
-                //    {
-                //        if (Convert.ToString(rw["IsFile"]) == "1")
-                //        {
-                //            continue;
-                //        }
-
-
-
-                //        // string Layouts = CadManager.GetLayoutInfo();
-                //        // var Layout = Layouts.Split('$');
-
-                //        bool IsAvailable = false;
-                //        foreach (DictionaryEntry key in htLayoutInfo)
-                //        {
-                //            string LayoutName = key.Key.ToString();
-                //            string LayoutID1 = key.Value.ToString();
-                //            if (LayoutName.Trim().Length == 0)
-                //            {
-                //                continue;
-                //            }
-
-
-                //            //(140688313392624)
-                //            if (LayoutName == Convert.ToString(rw["FileLayoutName"]))
-                //            //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
-                //            {
-                //                IsAvailable = true; break;
-                //            }
-                //        }
-
-                //        if (IsAvailable)
-                //        {
-                //            node = tgvLayouts.Nodes[0].Nodes.Add(Convert.ToBoolean(rw["ChangeVersion"])
-                //                                        , rw["FileLayoutName"]
-                //                                        , rw["FileID1"]
-                //                                        , rw["LayoutID"]
-                //                                        , rw["LayoutType"]
-                //                                        , rw["LayoutStatus"]
-                //                                        , rw["Description"]
-                //                                        , rw["Version"]
-                //                                        , rw["IsFile"]
-                //                                        , rw["TypeID"]
-                //                                        , rw["StatusID"]
-                //                                        , rw["ACLayoutID"]
-                //                                        , rw["LayoutName1"]
-                //                                        , rw["LayoutNo"]
-                //                                        , rw["CreatedBy"]
-                //                                        , rw["CreatedOn"]
-                //                                        , rw["UpdatedBy"]
-                //                                        , rw["UpdatedOn"]
-                //                                        , rw["LayoutStatusOld"]
-                //                   );
-                //        }
-                //    }
-                //}
-                // else
+ 
                 {
                     // write code to get layout data from RB and compare them with current layout
                     // if no data available at RB then load default data as follow
@@ -262,9 +229,9 @@ namespace AutocadPlugIn.UI_Forms
                     //Hashtable htLayoutInfo = CadManager.GetLayoutInfo();
 
 
-                    foreach (DictionaryEntry key in htLayoutInfo)
+                    foreach (DataRow dr in dtLI.Rows)
                     {
-                        string LayoutName = key.Key.ToString();
+                        string LayoutName = Convert.ToString(dr["Name"]);
                         if (LayoutName.Trim().Length == 0)
                         {
                             continue;
@@ -296,6 +263,11 @@ namespace AutocadPlugIn.UI_Forms
                                     {
                                         IsAvailable = true;
                                     }
+                                    string DrawingNO = DN.Substring(1);
+                                    if (DrawingNO == OldDWGNo)
+                                    {
+                                        dr["BasicLayoutName"] = LayoutName.Replace(LN, "");
+                                    }
                                 }
                             }
 
@@ -318,8 +290,8 @@ namespace AutocadPlugIn.UI_Forms
                                        , "0"
                                        , ""
                                        , Helper.FirstStatusID
-                                       , key.Value.ToString()
-                                       , LayoutName
+                                       , Convert.ToString(dr["ACLayoutID"])// key.Value.ToString()
+                                       , Convert.ToString(dr["BasicLayoutName"])
                                      , ""
                                    , ""
                                    , ""

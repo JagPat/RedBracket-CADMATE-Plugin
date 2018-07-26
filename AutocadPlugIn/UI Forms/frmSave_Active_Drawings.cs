@@ -71,14 +71,16 @@ namespace AutocadPlugIn.UI_Forms
                 dtTreeGridData = Helper.cadManager.GetExternalRefreces1(IsSaveAs);
 
 
-                string FoldID = "", FoldPath = "", ProJNmNo = "";
+                string FoldID = "", FoldPath = "", ProJNmNo = "",OldDWGNo = "";
                 for (int i = 0; i < dtTreeGridData.Rows.Count; i++)
                 {
                     if (Convert.ToString(dtTreeGridData.Rows[i]["DrawingId"]).Trim().Length == 0 || IsSaveAs)
                     {
                         dtTreeGridData.Rows[i]["drawingstate"] = Helper.FirstStatusName;
+                       
+                        
                     }
-
+                    OldDWGNo = Convert.ToString(dtTreeGridData.Rows[i]["drawingnumber"]);
 
                     if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true" &&
                         Convert.ToString(dtTreeGridData.Rows[i]["DrawingId"]).Trim().Length == 0)
@@ -207,9 +209,12 @@ namespace AutocadPlugIn.UI_Forms
                             BtnBrowseFolder.Visible = true;
                         }
                         string LIStatus = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 ? "Empty" : "Filled";
+                        if(LIStatus=="Empty")
+                        {
+                            dtLayoutInfo.Rows.Clear();
+                        }
 
-
-                        node = savetreeGrid.Nodes.Add(LIStatus, Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
+                        node = savetreeGrid.Nodes.Add(LIStatus, true , rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
                            rw["drawingstate"].ToString(),
                             rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString()
                             , rw["isroot"].ToString(), rw["Layouts"], rw["projectnameno"], rw["revision"].ToString()
@@ -234,8 +239,10 @@ namespace AutocadPlugIn.UI_Forms
                               , rw["folderid"]
                               , rw["drawingstate"].ToString()
                               , rw["drawingstate"].ToString()
+                              , rw["drawingnumber"].ToString()
                             );
-                        node.Cells["Check"].ReadOnly = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false;
+                        //node.Cells["Check"].ReadOnly = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false;
+                        node.Cells["Check"].ReadOnly = true;
 
                         if (rw["drawingid"].ToString() == "")
                         {
@@ -281,7 +288,7 @@ namespace AutocadPlugIn.UI_Forms
 
                         node.Tag = objTag;
                         AssigndtLayoutInfoToTag(node, dtLayoutInfo);
-                        AddNode(dtTreeGridData, rw, node);
+                        AddNode(dtTreeGridData, rw, node, OldDWGNo);
                     }
 
 
@@ -332,16 +339,14 @@ namespace AutocadPlugIn.UI_Forms
             Cursor.Current = Cursors.Default;
         }
 
-        public void AddNode(DataTable dtDrawing, DataRow rw1, TreeGridNode node = null)
+        public void AddNode(DataTable dtDrawing, DataRow rw1, TreeGridNode node = null,string OldDWGNo=null)
         {
             try
-            {
-
-                System.Data.DataTable dtLayoutInfo = GetdtLayoutInfo(rw1);
-
+            {  
                 DataTable dtChild = Helper.RowFilter(Helper.RowFilter(dtDrawing, "PK", "FK", "<>"), "FK", Convert.ToString(rw1["PK"]));
                 foreach (DataRow rw in dtChild.Rows)
                 {
+                    System.Data.DataTable dtLayoutInfo = GetdtLayoutInfo(rw);
                     string LIStatus = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 ? "Empty" : "Filled";
                     TreeGridNode node1 = node.Nodes.Add(LIStatus, Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
                           rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(),
@@ -367,6 +372,7 @@ namespace AutocadPlugIn.UI_Forms
                               , rw["folderid"]
                               , rw["drawingstate"].ToString()
                               , rw["drawingstate"].ToString()
+                              , rw["drawingnumber"].ToString()
                               );
 
 
@@ -404,7 +410,7 @@ namespace AutocadPlugIn.UI_Forms
                     node1.Tag = objTag;
                     AssigndtLayoutInfoToTag(node1, dtLayoutInfo);
 
-                    AddNode(dtTreeGridData, rw, node1);
+                    AddNode(dtTreeGridData, rw, node1, OldDWGNo);
                     node1.Expand();
                     node1.Cells["Check"].ReadOnly = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false;
                 }
@@ -523,8 +529,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                //Autodesk.AutoCAD.ApplicationServices.Document doc= Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                //Helper.cadManager.AddingAttributeToABlock(doc.Name, Helper.DrawingAttributes, Path.GetFileName(doc.Name),false);
+
                 submit.Focus();
                 List<TreeGridNode> selectedTreeGridNodes = new List<TreeGridNode>();
                 this.Cursor = Cursors.WaitCursor;
@@ -600,7 +605,7 @@ namespace AutocadPlugIn.UI_Forms
                     PBValue++;
                     Is_Delete = true;
                 }
-                //return;
+                 //return;
 
 
                 // to iterate selected file
@@ -644,31 +649,35 @@ namespace AutocadPlugIn.UI_Forms
                         //CloseFile(currentTreeGrdiNode);
 
                         #region Update File Properties 
-                        Helper.IncrementProgressBar(1, "Updating Title block Attributes.");
-                        foreach (PLMObject item in objController.plmObjs)
+                        if(Helper.TitleBlockFlag)
                         {
-                            bool IsDocOpend = Helper.cadManager.OpenDocSilently(item.FilePath);
+                            Helper.IncrementProgressBar(1, "Updating Title block Attributes.");
+                            foreach (PLMObject item in objController.plmObjs)
+                            {
+                                bool IsDocOpend = Helper.cadManager.OpenDocSilently(item.FilePath);
 
 
-                            Helper.cadManager.AddingAttributeToABlock(item.FilePath, Helper.DrawingAttributes, item.ObjectName, false);
-                            DataTable dtLayoutInfo = item.dtLayoutInfo.Copy();
-                            foreach (DataRow dr in dtLayoutInfo.Rows)
-                            {
-                                if (Convert.ToString(dr["IsFile"]) == "0")
-                                    Helper.cadManager.AddingAttributeToABlock(item.FilePath, Helper.LayoutAttributes, Convert.ToString(dr["FileLayoutName"]), true);
-                            }
-                            if (IsDocOpend)
-                            {
-                                Helper.cadManager.CloseDocSilently(item.FilePath);
+                                Helper.cadManager.AddingAttributeToABlock(item.FilePath, Helper.DrawingAttributes, item.ObjectName, false);
+                                DataTable dtLayoutInfo = item.dtLayoutInfo.Copy();
+                                foreach (DataRow dr in dtLayoutInfo.Rows)
+                                {
+                                    if (Convert.ToString(dr["IsFile"]) == "0")
+                                        Helper.cadManager.AddingAttributeToABlock(item.FilePath, Helper.LayoutAttributes, Convert.ToString(dr["FileLayoutName"]), true);
+                                }
+                                if (IsDocOpend)
+                                {
+                                    Helper.cadManager.CloseDocSilently(item.FilePath);
+                                }
                             }
                         }
+                       
 
                         Helper.IncrementProgressBar(1, "Updating new properties to local file.");
 
+                        
                         // Update document info into document for future referance 
-                        if (objController.dtDrawingProperty.Rows.Count > 0)
-                        {
-
+                        if (objController.dtDrawingProperty.Rows.Count > 0  )
+                        { 
                             Helper.cadManager.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
                         }
 
@@ -702,12 +711,14 @@ namespace AutocadPlugIn.UI_Forms
 
 
                     // To delete file
-                    if (Is_Delete && File.Exists(objCmd.FilePath) && Is_Save)
+                    if (Is_Delete &&   Is_Save)
                     {
                         Helper.IncrementProgressBar(1, "Deleting local files.");
-                        File.Delete(objCmd.FilePath);
+                        File.Delete(objController.plmObjs[0].Oldfilepath);
+                        File.Delete(objController.plmObjs[0].FilePath);
                         DeleteFile(currentTreeGrdiNode, objController.plmObjs);
 
+                        
                     }
                 }
                 Helper.IncrementProgressBar(PBValue, "");
@@ -1229,9 +1240,11 @@ namespace AutocadPlugIn.UI_Forms
 
                         foreach (PLMObject obj in plmObjs)
                         {
-                            if (obj.ObjectName == Convert.ToString(childNode.Cells["filepath"].Value))
+                            if (obj.Oldfilepath ==  Convert.ToString(childNode.Cells["filepath"].Value) )
                             {
                                 childNode.Cells["filepath"].Value = obj.FilePath;
+                                File.Delete(obj.FilePath);
+                                File.Delete(obj.Oldfilepath);
                                 break;
                             }
                         }
@@ -1240,6 +1253,7 @@ namespace AutocadPlugIn.UI_Forms
                         DeleteFile(childNode, plmObjs);
                     }
                 }
+                
             }
             catch (Exception E)
             {
@@ -1485,7 +1499,8 @@ namespace AutocadPlugIn.UI_Forms
                        Convert.ToString(selectedTreeNode.Cells["State"].FormattedValue),
                         Convert.ToString(selectedTreeNode.Cells["revision"].Value),
                         MyProjectId,
-                        Convert.ToString(selectedTreeNode.Cells["filepath"].Value));
+                        Convert.ToString(selectedTreeNode.Cells["filepath"].Value),
+                        Convert.ToString(selectedTreeNode.Cells["DrawingNumberOld"].Value));
                 objfrm.dtLayoutInfo = dtLayoutInfo.Copy();
                 if (IsShow)
                 {
@@ -1623,7 +1638,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                #region "Concate  infromation with ';' for Drawing presented in ARASInnovator"
+                #region "Concate  infromation with ';' for Drawing"
                 String id = (String)selectedTreeNode.Cells["drawingid"].Value;
                 String ItemType = (String)selectedTreeNode.Cells["itemtype"].Value;
                 String FilePath = (String)selectedTreeNode.Cells["filepath"].Value;
@@ -1646,6 +1661,8 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     FillLayoutInfoFromUser(selectedTreeNode, false);
                     dtLayoutInfo = GetdtLayoutInfoFromTag(selectedTreeNode);
+
+
                 }
 
                 lstdtLayoutInfo.Add(dtLayoutInfo);
