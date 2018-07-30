@@ -44,8 +44,9 @@ namespace AutocadPlugIn
         public static bool CheckFileInfoFlag = true;
         public static bool TitleBlockFlag = false;
         public static bool TitleBlockVisibilityFlag = false;
-        public static bool IsUpdateLayoutInfo = false;
+        public static bool IsUpdateLayoutInfo = true;
         public static frmProgressBar objfrmPB = new frmProgressBar();
+        public static Color FormBGColor = Color.Azure;
         public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
         {
             try
@@ -1060,7 +1061,7 @@ namespace AutocadPlugIn
                     if (!IsTemp)
                     {
                         cadManager.SetAttributesXrefFiles(DrawingProperty, FilePath);
-                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath);
+                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath,false);
                     }
                 }
             }
@@ -1454,6 +1455,10 @@ namespace AutocadPlugIn
                 if (Drawing != null)
                 {
                     VersionNo = Drawing.versionno == null ? string.Empty : Helper.VerTextAdjustment(Drawing.versionno);
+                }
+                else
+                {
+                    VersionNo = "0";
                 }
             }
             catch (Exception E)

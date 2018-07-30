@@ -47,6 +47,9 @@ namespace AutocadPlugIn.UI_Forms
             LoadFlag = true;
             try
             {
+                btnCancel.UseVisualStyleBackColor = btnSave.UseVisualStyleBackColor = false;
+                btnCancel.BackColor = btnSave.BackColor = this.BackColor = tgvLayouts.BackgroundColor = Helper.FormBGColor;
+                tgvLayouts.RowsDefaultCellStyle.BackColor = Helper.FormBGColor;
                 Location = new Point(Location.X, Location.Y + 10);
                 tgvLayouts.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 tgvLayouts.RowsDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Regular);
@@ -146,6 +149,10 @@ namespace AutocadPlugIn.UI_Forms
                         //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
                         {
                             string tempLN = LayoutName;
+                            if(tempLN.Contains("_"))
+                            {
+
+                            
                             string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
                             tempLN = tempLN.Replace(DN, "");
                             if (tempLN.Contains("_"))
@@ -155,6 +162,7 @@ namespace AutocadPlugIn.UI_Forms
                                 {
                                       rw2["LayoutName1"]= LayoutName.Replace("_"+ Convert.ToString(dr["NO"]) + "_" +DrawingNO, "");
                                 }
+                            }
                             }
                             rw = rw2;
 

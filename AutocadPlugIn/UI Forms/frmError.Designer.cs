@@ -188,6 +188,7 @@
             // 
             // txtTechnicalMsg
             // 
+            this.txtTechnicalMsg.BackColor = System.Drawing.Color.White;
             this.tableLayoutPanel2.SetColumnSpan(this.txtTechnicalMsg, 2);
             this.txtTechnicalMsg.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtTechnicalMsg.Location = new System.Drawing.Point(3, 143);

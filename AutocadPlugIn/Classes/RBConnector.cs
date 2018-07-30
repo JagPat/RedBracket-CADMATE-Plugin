@@ -16,7 +16,7 @@ namespace AutocadPlugIn
 {
     public class RBConnector
     {
- 
+
 
         public bool SaveObject(ref List<PLMObject> plmobjs, bool IsFileSave = false)
         {
@@ -32,7 +32,7 @@ namespace AutocadPlugIn
                 foreach (PLMObject obj in plmobjs)
                 {
 
-                    
+
                     RestResponse restResponse;
                     //service calling to upload document.
                     String PreFix = obj.PreFix;
@@ -51,7 +51,7 @@ namespace AutocadPlugIn
                     {
                         Helper.IncrementProgressBar(1, "Uploading file : " + Path.GetFileNameWithoutExtension(obj.FilePath));
 
-                        if (obj.IsNew|| obj.originalFileID==string.Empty)
+                        if (obj.IsNew || obj.originalFileID == string.Empty)
                         {
                             List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
                             KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
@@ -200,7 +200,7 @@ namespace AutocadPlugIn
                     {
                         //ShowMessage.InfoMess(restResponse.Content);
                         //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
-                        ShowMessage.ErrorMess("Some error occurred while uploading file.",restResponse);
+                        ShowMessage.ErrorMess("Some error occurred while uploading file.", restResponse);
                         return false;
                     }
                     else if (restResponse.Content.Trim().Length > 0)
@@ -280,7 +280,7 @@ namespace AutocadPlugIn
                                     {
                                         obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
                                         //Helper.IncrementProgressBar(1, "Uploading layout properties." + Path.GetFileNameWithoutExtension(obj.FilePath));
-                                        List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId, obj.ObjectNumber,obj.FilePath);
+                                        List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId, obj.ObjectNumber, obj.FilePath);
                                         // ResultSearchCriteria Drawing = GetDrawingInformation(obj.ObjectId);
 
                                         obj.ObjectName = Drawing.name;
@@ -343,18 +343,18 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
                 return false;
             }
-        
+
 
         }
         public bool SaveXref(string parentFileId, string childFileId)
         {
             try
             {
-                if ( IsXrefNew(parentFileId, childFileId))
+                if (IsXrefNew(parentFileId, childFileId))
                 {
                     return false;
                 }
-                    List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
+                List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
                 KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
 
 
@@ -544,8 +544,8 @@ namespace AutocadPlugIn
         public bool UpdateLayoutInfo(string ProjectID, string Fileid, string LayoutID, string StatusID, string TypeID, string LayoutName, string LayoutDesc)
         {
             try
-            { 
-                 
+            {
+
                 RestResponse restResponse;
                 //service calling 
 
@@ -578,8 +578,8 @@ namespace AutocadPlugIn
                     return false;
                 }
                 else if (restResponse.Content.Trim().Length > 0)
-                { 
-                } 
+                {
+                }
                 return true;
             }
             catch (Exception E)
@@ -594,7 +594,7 @@ namespace AutocadPlugIn
         public bool CheckFileExistance(string ProjectID, string FileName)
         {
             try
-            { 
+            {
                 ProjectID = ProjectID == string.Empty ? "0" : ProjectID;
                 RestResponse restResponse;
                 //service calling to Check File Existance.
@@ -609,7 +609,7 @@ namespace AutocadPlugIn
                      , new List<KeyValuePair<string, string>> {
                                          new KeyValuePair<string, string>("fileName", FileName),
                                               new KeyValuePair<string, string>("userName", Helper.UserName),
-                                                      new KeyValuePair<string, string>("projectId",  ProjectID)   }); 
+                                                      new KeyValuePair<string, string>("projectId",  ProjectID)   });
 
                 //checking if service call was successful or not.
                 if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
@@ -633,33 +633,33 @@ namespace AutocadPlugIn
                         ShowMessage.ValMess(FileName + Environment.NewLine + "File with the same name exist in this peoject, please change file name.");
                         return false;
                     }
-                } 
+                }
                 return true;
             }
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
                 return false;
-            } 
+            }
         }
 
-        public List<LayoutInfo> SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid,string DrawingNO, string FilePath)
+        public List<LayoutInfo> SaveUpdateLayoutInfo(DataTable dtLayoutInfo, string ProjectID, string Fileid, string DrawingNO, string FilePath)
         {
             List<LayoutInfo> LayoutInfolst = new List<LayoutInfo>();
             try
             {
-                
+
                 int Count = -1;
                 foreach (DataRow dr in dtLayoutInfo.Rows)
                 {
                     Count++;
                     if (Convert.ToString(dr["IsFile"]) == "1")
                     {
-                        
+
                         continue;
                     }
                     else if ((Convert.ToString(dr["ChangeVersion"]) == "False"))
-                    { 
+                    {
                         LayoutInfo objLI = new LayoutInfo();
 
                         objLI.id = Convert.ToString(dr["LayoutID"]).Trim();
@@ -691,7 +691,7 @@ namespace AutocadPlugIn
                         continue;
                     }
 
-                     
+
                     RestResponse restResponse;
                     //service calling to upload document.
 
@@ -700,7 +700,7 @@ namespace AutocadPlugIn
                         string Sufix = Count + "_" + DrawingNO;
                         string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim() + "_" + Sufix;
                         Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["FileLayoutName"]).Trim(), NewLayoutName);
-                       
+
                         dr["LayoutName1"] = NewLayoutName;
                         dr["FileLayoutName"] = NewLayoutName;
                         restResponse = (RestResponse)ServiceHelper.PostData(
@@ -744,8 +744,8 @@ namespace AutocadPlugIn
 
                     //checking if service call was successful or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                    { 
-                        ShowMessage.ErrorMess("Some error occurred while uploading layout info.", restResponse); 
+                    {
+                        ShowMessage.ErrorMess("Some error occurred while uploading layout info.", restResponse);
                     }
                     else if (restResponse.Content.Trim().Length > 0)
                     {
@@ -806,7 +806,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                 
+
                 RestResponse restResponse;
                 //service calling to Check File Existance.
 
@@ -831,7 +831,7 @@ namespace AutocadPlugIn
 
                 //checking if service call was successful or not.
                 if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
-                { 
+                {
                     ShowMessage.ErrorMess("Some error occurred while checking for file duplication.", restResponse);
                     return false;
                 }
@@ -849,7 +849,7 @@ namespace AutocadPlugIn
                         ShowMessage.ValMess(LayoutName + Environment.NewLine + "This layout is already exist in this file, please change layout name.");
                         return false;
                     }
-                } 
+                }
                 return true;
             }
             catch (Exception E)
@@ -866,7 +866,7 @@ namespace AutocadPlugIn
         /// </summary>
         /// <param name="FileID"></param>
         /// <returns></returns>
-      
+
         public List<PLMObject> GetPLMObjectInformation(List<PLMObject> plmobjs)
         {
             List<PLMObject> newplmobjs = new List<PLMObject>();
@@ -926,7 +926,7 @@ namespace AutocadPlugIn
             DataTable dataTableProjectInfo = new DataTable();
             try
             {
-                if(Helper.dtFileType.Rows.Count>0)
+                if (Helper.dtFileType.Rows.Count > 0)
                 {
                     dataTableProjectInfo = Helper.dtFileType.Copy();
                 }
@@ -935,7 +935,7 @@ namespace AutocadPlugIn
                     dataTableProjectInfo = GetDataFromWS("/AutocadFiles/fetchFileType", "file type", "POST", typeof(List<ResultStatusData>));
                     Helper.dtFileType = dataTableProjectInfo.Copy();
                 }
-                
+
             }
             catch (Exception E)
             {
@@ -976,7 +976,7 @@ namespace AutocadPlugIn
             DataTable dataTableProjectInfo = new DataTable();
             try
             {
-                if (Helper.dtProjectDetail.Rows.Count > 0)
+                if (Helper.dtProjectDetail.Rows.Count > 1)
                 {
                     dataTableProjectInfo = Helper.dtProjectDetail.Copy();
                 }
@@ -1039,9 +1039,9 @@ namespace AutocadPlugIn
                         {
                             List<ResultStatusData> ObjFileInfo = JsonConvert.DeserializeObject<List<ResultStatusData>>(restResponse.Content);
 
-                            foreach(ResultStatusData obj in ObjFileInfo)
+                            foreach (ResultStatusData obj in ObjFileInfo)
                             {
-                                if((obj.coretype==null?string.Empty:obj.coretype.name==null?string.Empty:obj.coretype.name).ToLower()=="closed")
+                                if ((obj.coretype == null ? string.Empty : obj.coretype.name == null ? string.Empty : obj.coretype.name).ToLower() == "closed")
                                 {
                                     obj.IsClosed = true;
                                 }
@@ -1100,7 +1100,7 @@ namespace AutocadPlugIn
                 {
                     if (rw["drawingid"].ToString() != "")
                     {
-                        
+
 
                         KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", rw["drawingid"].ToString());
                         // KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
@@ -1168,7 +1168,7 @@ namespace AutocadPlugIn
                 bool IsUpdated = true;
                 foreach (PLMObject plmObj in plmObjs)
                 {
-                    
+
 
                     List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
                     KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", plmObj.ObjectId);
@@ -1198,7 +1198,7 @@ namespace AutocadPlugIn
             {
                 foreach (PLMObject plmObj in plmObjs)
                 {
-                     
+
 
                     List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
                     //KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileid", "11760c31-d3fb-4acb-9675-551915493fd5");
@@ -1212,21 +1212,21 @@ namespace AutocadPlugIn
                         null, false, urlParameters);
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
-                        ShowMessage.ErrorMess("Some error occurred while unlocking file.",restResponse);
+                        ShowMessage.ErrorMess("Some error occurred while unlocking file.", restResponse);
                         return true;
                     }
 
                 }
             }
             catch (Exception ex)
-            { 
+            {
                 ShowMessage.ErrorMess(ex.Message);
                 return false;
             }
             return false;
         }
 
-        
+
         public ResultSearchCriteria GetDrawingInformation(String drawingid)
         {
             ResultSearchCriteria ObjFileInfo = null;
@@ -1245,7 +1245,7 @@ namespace AutocadPlugIn
                 //Helper.CloseProgressBar();
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    ShowMessage.ErrorMess("Some error occurred while fetching file information." ,restResponse);
+                    ShowMessage.ErrorMess("Some error occurred while fetching file information.", restResponse);
                     return null;
                 }
                 else
@@ -1559,22 +1559,23 @@ namespace AutocadPlugIn
             }
         }
 
-        public int GetSearchFileCount()
+        public int GetSearchFileCount(SearchCriteria searchCriteria, List<KeyValuePair<string, string>> urlParameters)
         {
             try
             {
-                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/searchAutocadFilesCount", true, null);
+                //RestResponse restResponse = (RestResponse)ServiceHelper.GetData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/searchAutocadFilesCount", true, urlParameters);
+                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/AutocadFiles/searchAutocadFilesCount", DataFormat.Json, searchCriteria, true, urlParameters);
 
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    ShowMessage.ErrorMess("Some error occurred while fetching latest records.", restResponse);
-                    return 0;
+                    //ShowMessage.ErrorMess("Some error occurred while fetching latest records.", restResponse);
+                    return 51;
                 }
                 else
                 {
 
                     //return JsonConvert.DeserializeObject<List<ResultSearchCriteria>>(restResponse.Content);
-                    return 1;
+                    return Convert.ToInt32(restResponse.Content);
                 }
             }
             catch (Exception E)
@@ -1584,15 +1585,15 @@ namespace AutocadPlugIn
             }
         }
 
-        public System.Net.HttpStatusCode LoginValidation(string UserName,string Passwd,out UserDetails loggedUserDetails)
+        public System.Net.HttpStatusCode LoginValidation(string UserName, string Passwd, out UserDetails loggedUserDetails)
         {
             try
             {
-                
+
                 RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(), "/Login/login", DataFormat.Json, new UserLoginDetails
                 {
-                    email =  UserName,
-                    password =  Passwd
+                    email = UserName,
+                    password = Passwd
                 }, false);
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
@@ -1614,6 +1615,42 @@ namespace AutocadPlugIn
                 return 0;
             }
         }
+
+        public bool CheckFileExistance(String drawingid)
+        {
+            ResultSearchCriteria ObjFileInfo = null;
+            try
+            {
+                KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
+
+                List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+                urlParameters.Add(L);
+                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                    "/AutocadFiles/fetchFileInfo", DataFormat.Json,
+                    null, true, urlParameters);
+
+
+                //Helper.CloseProgressBar();
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.InternalServerError)
+                        ShowMessage.ErrorMess("Some error occurred while fetching file information.", restResponse);
+                    return false;
+                }
+                else
+                {
+                    ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                    return ObjFileInfo == null || ObjFileInfo.id == null || ObjFileInfo.id.Trim().Length == 0 ? false : true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ShowMessage.ErrorMess(ex.Message);
+            }
+            return false;
+        }
     }
-     
+
 }

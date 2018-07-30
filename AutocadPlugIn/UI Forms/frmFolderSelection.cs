@@ -43,6 +43,7 @@ namespace AutocadPlugIn.UI_Forms
             LoadFlag = true;
             try
             {
+                dgvFolderSelection.RowsDefaultCellStyle.BackColor = Helper.FormBGColor;
                 Location = new Point(Location.X, Location.Y + 25);
                 dgvFolderSelection.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 btnSelect.Enabled = false;

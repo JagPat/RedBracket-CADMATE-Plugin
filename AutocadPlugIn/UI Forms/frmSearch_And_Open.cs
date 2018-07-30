@@ -37,8 +37,17 @@ namespace AutocadPlugIn.UI_Forms
             {
 
                 treeGridView1.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
-
+                treeGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+                treeGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+                IsXRefFile.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                IsXRefFile.FillWeight = 1;
+                IsXRefFile.Width = 40;
+                treeGridView1.BackgroundColor = Color.Azure;
+                CancelButton.UseVisualStyleBackColor = SearchButton.UseVisualStyleBackColor = FormCancelButton.UseVisualStyleBackColor = OpenDrawingButton.UseVisualStyleBackColor = false;
+                this.BackColor = Color.Azure;
+                treeGridView1.RowsDefaultCellStyle.BackColor = Color.Azure;
                 sg_SearchType.SelectedIndex = 0;
+                DGName.BackColor= textBox_foldername.BackColor= CDProjectName.BackColor = Color.Azure;
 
                 //Read the keys from the user registry and load it to the UI.
 
@@ -54,7 +63,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 #region filestatus
 
-                Helper.FIllCMB(CDState, objRBC.GetFIleStatus(), "statusname", "statusname", false,false);
+                Helper.FIllCMB(CDState, objRBC.GetFIleStatus(), "statusname", "statusname", false, false);
 
                 #endregion filestatus
 
@@ -63,13 +72,13 @@ namespace AutocadPlugIn.UI_Forms
 
                 #endregion projectdetails
 
-               
-                    List<ResultSearchCriteria> resultSearchCriteriaResponseList = objRBC.SearchLatest5File();
-                    if (resultSearchCriteriaResponseList != null)
-                        BindDataToGrid(resultSearchCriteriaResponseList);
-                
 
-               
+                List<ResultSearchCriteria> resultSearchCriteriaResponseList = objRBC.SearchLatest5File();
+                if (resultSearchCriteriaResponseList != null)
+                    BindDataToGrid(resultSearchCriteriaResponseList);
+
+
+
             }
             catch (Exception E)
             {
@@ -138,16 +147,18 @@ namespace AutocadPlugIn.UI_Forms
                     name = textBox_foldername.Text
                 };
             }
-            if (CDProjectName.SelectedIndex>0)
-            { 
-               
-            }
-
-            if (objRBC.GetSearchFileCount() < 50)
+            if (CDProjectName.SelectedIndex > 0)
             {
+
             }
 
-                var resultSearchCriteriaResponseList = objRBC.SearchFiles(searchCriteria, urlParameters);
+            if (objRBC.GetSearchFileCount(searchCriteria,urlParameters) > 50)
+            {
+                ShowMessage.ErrorMessUD("Search yields more than 50 records. Please add specific search criteria.");
+                return;
+            }
+
+            var resultSearchCriteriaResponseList = objRBC.SearchFiles(searchCriteria, urlParameters);
             BindDataToGrid(resultSearchCriteriaResponseList, true);
             this.Cursor = Cursors.Default;
 
@@ -248,9 +259,10 @@ namespace AutocadPlugIn.UI_Forms
         private void AddChildNode(ResultSearchCriteria resultSearchCriteriaRecord, ref TreeGridNode parentTreeGridNode)
         {
 
-            var childRecords = objRBC.GetXrefFIleInfo(resultSearchCriteriaRecord.id);
+            //var childRecords = objRBC.GetXrefFIleInfo(resultSearchCriteriaRecord.id);
+            var childRecords = resultSearchCriteriaRecord.filebean;
 
-            if (childRecords == null || childRecords.Count <= 0)
+            if (childRecords == null || childRecords.Length <= 0)
             {
                 return;
             }
@@ -524,7 +536,7 @@ namespace AutocadPlugIn.UI_Forms
             this.Cursor = Cursors.Default;
         }
 
-        public void DownloadChild(TreeGridNode ParentNode,string ParentFilePath="")
+        public void DownloadChild(TreeGridNode ParentNode, string ParentFilePath = "")
         {
             try
             {
@@ -533,13 +545,13 @@ namespace AutocadPlugIn.UI_Forms
                     if ((bool)childNode.Cells[0].FormattedValue)
                     {
                         Helper.IncrementProgressBar(1, "Downloading file." + System.IO.Path.GetFileNameWithoutExtension(Convert.ToString(childNode.Cells["DrawingName"].FormattedValue)));
-                        string FP = Helper.DownloadFile(Convert.ToString(childNode.Cells["DrawingID"].FormattedValue), DownloadedFiles: DownloadedFiles, ParentFilePath: ParentFilePath,lstobjDownloadedFiles:lstobjDownloadedFiles);
+                        string FP = Helper.DownloadFile(Convert.ToString(childNode.Cells["DrawingID"].FormattedValue), DownloadedFiles: DownloadedFiles, ParentFilePath: ParentFilePath, lstobjDownloadedFiles: lstobjDownloadedFiles);
                         if (FP != null)
                         {
                             DownloadedFiles.Add(FP);
                             DownloadChild(childNode, FP);
                         }
-                       
+
                         // pLMObjects.Add(new PLMObject() { ObjectId = childNode.Cells["DrawingID"].FormattedValue.ToString() });
                     }
                 }
@@ -791,7 +803,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                if((sg_SearchType.SelectedIndex == 0 || sg_SearchType.SelectedIndex == 2))
+                if ((sg_SearchType.SelectedIndex == 0 || sg_SearchType.SelectedIndex == 2))
                 {
                     if (CDProjectName.SelectedIndex == 0)
                     {
@@ -812,7 +824,7 @@ namespace AutocadPlugIn.UI_Forms
                 }
 
             }
-            catch(Exception E)
+            catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
@@ -821,7 +833,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void textBox_foldername_EnabledChanged(object sender, EventArgs e)
         {
-            if(!textBox_foldername.Enabled)
+            if (!textBox_foldername.Enabled)
             {
                 textBox_foldername.Clear();
             }

@@ -38,13 +38,13 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.lblSelectedPath = new System.Windows.Forms.Label();
             this.btnSelect = new System.Windows.Forms.Button();
             this.lblParentFolder = new System.Windows.Forms.Label();
             this.dgvFolderSelection = new System.Windows.Forms.DataGridView();
             this.FolderName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasFolder = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FolderID1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lblSelectedPath = new System.Windows.Forms.Label();
             this.tableLayoutPanel3.SuspendLayout();
             this.pnlTop.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -172,8 +172,24 @@
             this.btnCancel.Size = new System.Drawing.Size(144, 38);
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // lblSelectedPath
+            // 
+            this.lblSelectedPath.AutoSize = true;
+            this.tableLayoutPanel2.SetColumnSpan(this.lblSelectedPath, 2);
+            this.lblSelectedPath.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblSelectedPath.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSelectedPath.ForeColor = System.Drawing.Color.Black;
+            this.lblSelectedPath.Location = new System.Drawing.Point(3, 3);
+            this.lblSelectedPath.Margin = new System.Windows.Forms.Padding(3);
+            this.lblSelectedPath.Name = "lblSelectedPath";
+            this.lblSelectedPath.Size = new System.Drawing.Size(451, 38);
+            this.lblSelectedPath.TabIndex = 9;
+            this.lblSelectedPath.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblSelectedPath.UseMnemonic = false;
+            this.lblSelectedPath.TextChanged += new System.EventHandler(this.lblSelectedPath_TextChanged);
             // 
             // btnSelect
             // 
@@ -184,7 +200,7 @@
             this.btnSelect.Size = new System.Drawing.Size(144, 38);
             this.btnSelect.TabIndex = 4;
             this.btnSelect.Text = "Select";
-            this.btnSelect.UseVisualStyleBackColor = true;
+            this.btnSelect.UseVisualStyleBackColor = false;
             this.btnSelect.Click += new System.EventHandler(this.btnSelect_Click);
             // 
             // lblParentFolder
@@ -204,6 +220,7 @@
             this.dgvFolderSelection.AllowUserToAddRows = false;
             this.dgvFolderSelection.AllowUserToDeleteRows = false;
             this.dgvFolderSelection.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dgvFolderSelection.BackgroundColor = System.Drawing.Color.Azure;
             this.dgvFolderSelection.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFolderSelection.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.FolderName,
@@ -245,25 +262,10 @@
             this.FolderID1.ReadOnly = true;
             this.FolderID1.Visible = false;
             // 
-            // lblSelectedPath
-            // 
-            this.lblSelectedPath.AutoSize = true;
-            this.tableLayoutPanel2.SetColumnSpan(this.lblSelectedPath, 2);
-            this.lblSelectedPath.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSelectedPath.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSelectedPath.ForeColor = System.Drawing.Color.Black;
-            this.lblSelectedPath.Location = new System.Drawing.Point(3, 3);
-            this.lblSelectedPath.Margin = new System.Windows.Forms.Padding(3);
-            this.lblSelectedPath.Name = "lblSelectedPath";
-            this.lblSelectedPath.Size = new System.Drawing.Size(451, 38);
-            this.lblSelectedPath.TabIndex = 9;
-            this.lblSelectedPath.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblSelectedPath.UseMnemonic = false;
-            this.lblSelectedPath.TextChanged += new System.EventHandler(this.lblSelectedPath_TextChanged);
-            // 
             // frmFolderSelection
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.BackColor = System.Drawing.Color.Azure;
             this.ClientSize = new System.Drawing.Size(800, 416);
             this.Controls.Add(this.tableLayoutPanel3);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

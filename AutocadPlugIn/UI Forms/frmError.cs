@@ -19,13 +19,13 @@ namespace AutocadPlugIn
             lblUserMessage.Text = UserMessage;
             panel1.BackgroundImage = SystemIcons.Error.ToBitmap();
             panel1.BackgroundImageLayout = ImageLayout.Center;
+            this.TopMost = true;
+            Height = 198;
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void frmError_Load(object sender, EventArgs e)
-        {
-
-            Height = 198;
-            this.StartPosition = FormStartPosition.CenterScreen;
+        { 
         }
 
         private void btnShowMessage_Click(object sender, EventArgs e)

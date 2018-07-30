@@ -156,9 +156,9 @@ namespace AutocadPlugIn.UI_Forms
                                 tlpMain.SetColumnSpan(pnl, 3);
 
                                 CRC -= 6;
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNameC" + count, Tag = objLI1.id }, 1, CRC++);
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNoC" + count, Tag = objLI1.description }, 1, CRC++);
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNameC" + count, Tag = objLI1.id, AutoEllipsis = true }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNoC" + count, Tag = objLI1.description, AutoEllipsis = true }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 1, CRC++);
                                 tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutStatusC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
                                 tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutTypeC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
 
@@ -324,11 +324,11 @@ namespace AutocadPlugIn.UI_Forms
                                 CRC -= 6;
                             }
 
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutStatusL" + count1 }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutTypeL" + count1 }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutStatusL" + count1, AutoEllipsis = true }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutTypeL" + count1, AutoEllipsis = true }, 2, CRC++);
 
 
                             //tlpMain.Controls.Add(new ComboBox() { Font = font, Name = "cmbLayoutStatusC" + count1, Dock = DockStyle.Fill }, 2, CRC++);
