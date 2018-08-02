@@ -78,7 +78,7 @@
             this.btn_Connect.Size = new System.Drawing.Size(111, 38);
             this.btn_Connect.TabIndex = 4;
             this.btn_Connect.Text = "Connect";
-            this.btn_Connect.UseVisualStyleBackColor = true;
+            this.btn_Connect.UseVisualStyleBackColor = false;
             this.btn_Connect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // txt_url
@@ -139,7 +139,7 @@
             this.btn_Cancel.Size = new System.Drawing.Size(111, 38);
             this.btn_Cancel.TabIndex = 5;
             this.btn_Cancel.Text = "Cancel";
-            this.btn_Cancel.UseVisualStyleBackColor = true;
+            this.btn_Cancel.UseVisualStyleBackColor = false;
             this.btn_Cancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // tableLayoutPanel1
@@ -271,6 +271,7 @@
             // 
             // panel1
             // 
+            this.panel1.BackgroundImage = global::AutocadPlugIn.Properties.Resources.Login;
             this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(13, 13);

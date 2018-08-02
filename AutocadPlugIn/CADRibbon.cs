@@ -92,90 +92,12 @@ namespace AutocadPlugIn
         public string LatestVersion = "";
 
 
-        [CommandMethod("AddDocEvent")]
-        //[CommandMethod("AddDwgEvent")]
-        [CommandMethod("StartEventHandling")]
-        public void AddDocEvent()
-        {
-            // Get the current document
-            Document acDoc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            //  var v = Autodesk.AutoCAD.ApplicationServices.Application.MainWindow.
-
-            // acDoc.SendStringToExecute("EXPORT", false, false, false);
-
-            acDoc.BeginDocumentClose += new DocumentBeginCloseEventHandler(docBeginDocClose);
-            acDoc.EndDwgOpen += new DrawingOpenEventHandler(docEndDwgOpen);
-
-            acDoc.BeginDwgOpen += new DrawingOpenEventHandler(docBeginDwgOpen);
-            acDoc.LayoutSwitched += new LayoutSwitchedEventHandler(docLayoutSwitched);
 
 
 
 
-        }
-
-        public void docLayoutSwitched(object senderObj,
-                           LayoutSwitchedEventArgs docBegClsEvtArgs)
-        {
-            // Display a message box prompting to continue closing the document
-            //if (System.Windows.Forms.MessageBox.Show(
-            //                     "The document is about to be closed." +
-            //                     "\nDo you want to continue?",
-            //                     "Close Document",
-            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
-            //                     System.Windows.Forms.DialogResult.No)
-            //{
-            //    docBegClsEvtArgs.Veto();
-            //}
-        }
-        public void docEndDwgOpen(object senderObj,
-                             DrawingOpenEventArgs docBegClsEvtArgs)
-        {
-            // Display a message box prompting to continue closing the document
-            //if (System.Windows.Forms.MessageBox.Show(
-            //                     "The document is about to be closed." +
-            //                     "\nDo you want to continue?",
-            //                     "Close Document",
-            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
-            //                     System.Windows.Forms.DialogResult.No)
-            //{
-            //    docBegClsEvtArgs.Veto();
-            //}
-        }
-        public void docBeginDwgOpen(object senderObj,
-                             DrawingOpenEventArgs docBegClsEvtArgs)
-        {
-            // Display a message box prompting to continue closing the document
-            //if (System.Windows.Forms.MessageBox.Show(
-            //                     "The document is about to be closed." +
-            //                     "\nDo you want to continue?",
-            //                     "Close Document",
-            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
-            //                     System.Windows.Forms.DialogResult.No)
-            //{
-            //    docBegClsEvtArgs.Veto();
-            //}
-        }
-        public void docBeginDocClose(object senderObj,
-                             DocumentBeginCloseEventArgs docBegClsEvtArgs)
-        {
-            // Display a message box prompting to continue closing the document
-            //if (System.Windows.Forms.MessageBox.Show(
-            //                     "The document is about to be closed." +
-            //                     "\nDo you want to continue?",
-            //                     "Close Document",
-            //                     System.Windows.Forms.MessageBoxButtons.YesNo) ==
-            //                     System.Windows.Forms.DialogResult.No)
-            //{
-            //    docBegClsEvtArgs.Veto();
-            //}
-        }
-
-
-
-
-        [assembly: CommandClass(typeof(DocumentActevatedEvent.MyCommands))]
-        [assembly: ExtensionApplication(typeof(DocumentActevatedEvent.MyCommands))]
+        //[assembly: CommandClass(typeof(DocumentActevatedEvent.MyCommands))]
+        //[assembly: ExtensionApplication(typeof(DocumentActevatedEvent.MyCommands))]
 
 
         public class MyCommands : IExtensionApplication
@@ -184,22 +106,38 @@ namespace AutocadPlugIn
 
             public void Initialize()
             {
-                Document dwg = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-                Editor ed = dwg.Editor;
 
-                try
+                DocumentCollection DC = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
+                if (DC != null)
                 {
-                    ed.WriteMessage("\nInitializing...");
+                    Document dwg = DC.MdiActiveDocument;
+                    if (dwg != null)
+                    {
+                        Editor ed = dwg.Editor;
 
-                    Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+                        if (ed != null)
+                        {
+                            try
+                            {
+                                ed.WriteMessage("\nInitializing...");
 
-                    ed.WriteMessage("completed.");
+                                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+
+                                ed.WriteMessage("completed.");
+                            }
+                            catch (System.Exception ex)
+                            {
+                                ed.WriteMessage("failed:\n");
+                                ed.WriteMessage(ex.Message);
+                            }
+                        }
+                    }
                 }
-                catch (System.Exception ex)
-                {
-                    ed.WriteMessage("failed:\n");
-                    ed.WriteMessage(ex.Message);
-                }
+
+
+
+
+
 
                 Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
             }
@@ -208,19 +146,41 @@ namespace AutocadPlugIn
             {
                 if (!Helper.CheckFileInfoFlag)
                     return;
-                Cursor.Current = Cursors.WaitCursor;
-                e.Document.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
-                CADRibbon objcr = new CADRibbon();
 
-                objcr.MyRibbon();
-                if (Helper.CurrentVersion != Helper.LatestVersion)
+                if (e != null)
                 {
-                    Refresh objrfs = new Refresh();
-                    objrfs.Execute(null);
+                    if (e.Document != null)
+                    {
+                        Document doc = e.Document;
+
+                        if (doc != null)
+                        {
+                            Cursor.Current = Cursors.WaitCursor;
+                            doc.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
+                            CADRibbon objcr = new CADRibbon();
+
+                            objcr.MyRibbon();
+                            if (Helper.CurrentVersion != Helper.LatestVersion)
+                            {
+                                Refresh objrfs = new Refresh();
+                                objrfs.Execute(null);
+                            }
+                            Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
+                            Cursor.Current = Cursors.Default;
+                        }
+                    }
+
+
                 }
 
-                Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
-                Cursor.Current = Cursors.Default;
+                //if(e!=null)
+                //{
+           
+                //}
+
+
+
+
             }
 
             public void Terminate()
@@ -286,20 +246,16 @@ namespace AutocadPlugIn
         [CommandMethod("MyRibbon")]
         public void MyRibbon()
         {
-            //string CurrentVersion = null, string LatestVersion = null
+
             //if (!RedBracketConnector.Helper.IsEventAssign)
             {
-                AddDocEvent();
+
                 timerVersion.Tick += new System.EventHandler(timerVersion_Tick);
                 timerVersion.Interval = 1000;
                 timerVersion.Start();
                 AutocadPlugIn.Helper.IsEventAssign = true;
             }
-            //if (CurrentVersion != null && LatestVersion != null)
-            //{
-            //    txtCurrentFileVersion.Tag = txtCurrentFileVersion.Text = CurrentVersion;
-            //    txtCurrentFileVersionRB.Text = LatestVersion;
-            //}
+
             Tab.Title = "Redbracket";
             Tab.Id = "RibbonSample_TAB_ID";
 
@@ -323,7 +279,7 @@ namespace AutocadPlugIn
             Btn_Connection.Orientation = System.Windows.Controls.Orientation.Vertical;
             Btn_Connection.Size = RibbonItemSize.Large;
 
-            //if (ArasConnector.ArasConnector.Isconnected == false)
+
             ConnectionController connController = new ConnectionController();
             if (!connect)
             {
@@ -374,7 +330,6 @@ namespace AutocadPlugIn
 
             RibbonRowPanel pan2row1 = new RibbonRowPanel();
             pan2row1.Items.Add(Btn_BrowseDrawing);
-            //  pan2row1.Items.Add(Btn_CreateDrawing);
             panel2Panel.Items.Add(pan2row1);
 
 
@@ -382,25 +337,10 @@ namespace AutocadPlugIn
 
             //Lock, Unlock, and Save
 
-            //rpsSave.Title = "Save to redbracket";
-            //rpSave.Source = rpsSave;
-            //Tab.Panels.Add(rpSave);
-
-            //panel4Panel.Title = "Status";
-            //panel4.Source = panel4Panel;
-            //Tab.Panels.Add(panel4);
 
 
 
-            Btn_Lock.Text = "Lock";
-            Btn_Lock.ShowText = true;
-            Btn_Lock.ShowImage = true;
-            Btn_Lock.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Lock);
-            Btn_Lock.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Lock);
-            Btn_Lock.Size = RibbonItemSize.Large;
-            Btn_Lock.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_Lock.CommandHandler = new Lock();
-            Btn_Lock.IsEnabled = LockEnable;
+
 
 
             Btn_Unlock.Text = "Lock & Unlock";
@@ -603,10 +543,6 @@ namespace AutocadPlugIn
             rpCurrentDI.Source = rpsCurrentDI;
             Tab.Panels.Add(rpCurrentDI);
 
-            //RibbonPanel rplblCurrentFileVersion = new RibbonPanel();
-            //RibbonPanel rpCurrentFileVersionRB = new RibbonPanel();
-            //RibbonPanel rptxtCurrentFileVersion = new RibbonPanel();
-            //RibbonPanel rpltxtCurrentFileVersionRB = new RibbonPanel();
 
 
 
@@ -772,21 +708,6 @@ namespace AutocadPlugIn
         }
     }
 
-    public class DrawingUsingTemplate : System.Windows.Input.ICommand
-    {
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-
-
-        }
-    }
 
     public class Save : System.Windows.Input.ICommand
     {
@@ -823,9 +744,12 @@ namespace AutocadPlugIn
             }
             try
             {
-                AutocadPlugIn.UI_Forms.frmSave_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.frmSave_Active_Drawings(IsSaveAs);
+                bool FormOpen = true;
+                AutocadPlugIn.UI_Forms.frmSave_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.frmSave_Active_Drawings(ref FormOpen, IsSaveAs);
                 //Save_Active_Drawings objSave = new Save_Active_Drawings();
-                objSave.ShowDialog();
+                FormOpen = FormOpen ? objSave.FormLoad() : FormOpen;
+                if (FormOpen)
+                    objSave.ShowDialog();
 
             }
             catch (System.Exception ex)
@@ -957,97 +881,9 @@ namespace AutocadPlugIn
         }
     }
 
-    public class AddBlock : System.Windows.Input.ICommand
-    {
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-            /*
-
-                */
-        }
-    }
-
-    public class Lock : System.Windows.Input.ICommand
-    {
-        /* lock status 0: not locked,
-            *             1: Locked by logged-in User
-            *             2: locked by other user.
-            */
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-            /*
-            Connector cn = new Connector();
-            cn.UpdateDocPropert();
-            String lockstatus = cn.getLockStatus();
-
-            if (lockstatus == "0")
-            {
-                cn.LockDocument();
-                cn.UpdateDocPropert();
-                acadApp.ShowAlertDialog("Document Locked");
-                acadApp.ShowAlertDialog(cn.getLockStatus());
-            }
-            else if (lockstatus == "1")
-            {
-                acadApp.ShowAlertDialog("Already lock by you only");
-                cn.UpdateDocPropert();
-                acadApp.ShowAlertDialog(cn.getLockStatus());
-            }
-            else
-            {
-                acadApp.ShowAlertDialog("Already lock by other user");
-                cn.UpdateDocPropert();
-                acadApp.ShowAlertDialog(cn.getLockStatus());
-            }
-
-            */
-            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
-
-            //PromptStringOptions pso = new PromptStringOptions("\nEnter path to root drawing file: ");
-            //pso.AllowSpaces = true;
-            // PromptResult pr = ed.GetString(pso);
 
 
 
-            if (!File.Exists(doc.Name))
-            {
-                ed.WriteMessage("\nFile does not exist.");
-                return;
-            }
-            try
-            {
-                //AutocadPlugIn.UI_Forms.frmLock lockForm= new AutocadPlugIn.UI_Forms.frmLock();
-                //lockForm.ShowDialog();
-
-                frmLock obj = new frmLock();
-                //frmRefresh obj = new frmRefresh();
-                obj.ShowDialog();
-
-            }
-
-            catch (System.Exception ex)
-            {
-                //ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", doc.Name, ex.Message);
-            }
-
-        }
-    }
 
     public class Unlock : System.Windows.Input.ICommand
     {
@@ -1125,23 +961,6 @@ namespace AutocadPlugIn
         }
     }
 
-    public class RibbonCommandHandler : System.Windows.Input.ICommand
-    {
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-
-
-        }
-
-
-    }
 
     public class Refresh : System.Windows.Input.ICommand
     {
@@ -1242,7 +1061,7 @@ namespace AutocadPlugIn
                 //    RedBracketConnector.ShowMessage.InfoMess("File is no longer available in RedBracket.");
                 //    return;
                 //}
-                if (Convert.ToDateTime(Drawing.updatedon) != Convert.ToDateTime(updatedon))
+                if ((Drawing.versionno) != (Rev))
                 {
                     if (ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes  in current file will be lost.") == DialogResult.Yes)
                     {
@@ -1272,8 +1091,12 @@ namespace AutocadPlugIn
                 {
                     if (Rev == Drawing.versionno)
                     {
-                        AutoCADManager cadManager = new AutoCADManager();
-                        cadManager.UpdateFileProperties(drawingid, db.Filename);
+                        if (Convert.ToDateTime(Drawing.updatedon) != Convert.ToDateTime(updatedon))
+                        {
+                            AutoCADManager cadManager = new AutoCADManager();
+                            cadManager.UpdateFileProperties(drawingid, db.Filename);
+                        }
+
                     }
                     Cursor.Current = Cursors.Default;
                     if (parameter != null)

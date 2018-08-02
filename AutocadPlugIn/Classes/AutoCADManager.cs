@@ -57,7 +57,7 @@ namespace AutocadPlugIn
                 currentDocumentProperties = hashTable;
                 Document Doc = acadApp.DocumentManager.MdiActiveDocument;
                 Database Db = Doc.Database;
-                DocumentLock dl = Doc.LockDocument(DocumentLockMode.Write, null, null, true);
+                 DocumentLock dl = Doc.LockDocument(DocumentLockMode.Write, null, null, true);
                 DatabaseSummaryInfoBuilder DbSib = new DatabaseSummaryInfoBuilder();
 
                 using (dl)
@@ -69,16 +69,15 @@ namespace AutocadPlugIn
                         {
                             DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
                             // DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString( entry.Value));
-
-
                         }
                         Db.SummaryInfo = DbSib.ToDatabaseSummaryInfo();
                         aTran.Commit();
                         if (Doc.IsReadOnly)
                             Doc.UpgradeDocOpen();
+                        //Db.SaveAs(Db.Filename, DwgVersion.Current);
                     }
                 }
-                Db.SaveAs(Db.Filename, DwgVersion.Current);
+                //Db.SaveAs(Db.Filename, DwgVersion.Current);
 
 
             }
@@ -142,9 +141,10 @@ namespace AutocadPlugIn
                                             {
 
                                                 Hashtable ht = Helper.Table2HashTable(dtFileInfo, j);
-                                                SetAttributesXrefFiles(ht, xgn.Database.Filename);
+
                                                 UpdateLayoutAttributeArefFile(ht, xgn.Database.Filename, false);
                                                 Helper.cadManager.CloseDocSilently(xgn.Database.Filename);
+                                                SetAttributesXrefFiles(ht, xgn.Database.Filename);
                                                 break;
                                             }
 
@@ -188,25 +188,26 @@ namespace AutocadPlugIn
                 Database db = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
 
                 Hashtable drawingAttrs = new Hashtable();
-                IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
-                try
-                {
+                drawingAttrs = documentProperties;
+                //IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
+                //try
+                //{
 
 
-                    while (en.MoveNext())
-                    {
-                        // if(documentProperties==null)
-                        {
-                            drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : en.Value);
-                        }
-                        // else
-                        {
+                //    while (en.MoveNext())
+                //    {
+                //        // if(documentProperties==null)
+                //        {
+                //            drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : en.Value);
+                //        }
+                //        // else
+                //        {
 
-                        }
+                //        }
 
-                    }
-                }
-                catch { }
+                //    }
+                //}
+                //catch { }
                 if (drawingAttrs.Count < 0) return;
                 //  using (db)
                 {
@@ -219,6 +220,7 @@ namespace AutocadPlugIn
                             ObjectIdCollection layoutsToPlot = new ObjectIdCollection();
                             foreach (DBDictionaryEntry de in layoutDict)
                             {
+                                //Helper.CloseProgressBar();
                                 String layoutName = de.Key;
                                 //if (layoutName != "Model")
                                 {
@@ -243,7 +245,7 @@ namespace AutocadPlugIn
                                     {
                                         BTRT = BlockTableRecord.ModelSpace;
                                     }
-
+                                    //Helper.CloseProgressBar();
                                     //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BTRT], OpenMode.ForRead);
                                     BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
                                     //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(de.Value, OpenMode.ForRead);
@@ -405,7 +407,7 @@ namespace AutocadPlugIn
                 {
                     if (IsDocOpend)
                     {
-                        if (FilePath != null)
+                        if (FilePath != null && FilePath.Trim().Length > 0 && File.Exists(FilePath))
                         {
                             try
                             {
@@ -413,7 +415,7 @@ namespace AutocadPlugIn
                             }
                             catch
                             {
-                                doc.CloseAndSave(FilePath);
+                                //doc.CloseAndSave(FilePath);
                             }
                         }
 
@@ -3867,6 +3869,32 @@ namespace AutocadPlugIn
                     myT.Commit();
                 }
             }
+        }
+
+        public bool SaveAllOpenDoc()
+        {
+            try
+            {
+                var doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Editor ed = doc.Editor;
+
+
+                foreach (Document Doc in acadApp.DocumentManager)
+                {
+                    if (File.Exists(Doc.Database.Filename))
+                    {
+
+                        doc.Database.SaveAs(Doc.Database.Filename, DwgVersion.Current);
+                    }
+                }
+                return false;
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+                return true;
+            }
+
         }
     }
 }

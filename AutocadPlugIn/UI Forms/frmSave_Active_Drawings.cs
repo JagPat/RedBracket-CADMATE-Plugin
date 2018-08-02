@@ -30,27 +30,40 @@ namespace AutocadPlugIn.UI_Forms
         public List<String> AllDrawing = new List<String>();
         public List<String> UnqDrawing = new List<String>();
         public List<object> objTag = new List<Object>() { new DataTable(), new Stack<List<clsFolderSearchReasult>>() };
-        public frmSave_Active_Drawings(bool IsSaveAs = false)
+        public frmSave_Active_Drawings(ref bool OpenForm, bool IsSaveAs = false)
         {
 
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
             this.IsSaveAs = IsSaveAs;
-            //ICADManager objCadMgr = CADFactory.getCADManager();
-            Helper.cadManager.SaveActiveDrawing();
+
+            object obj = Autodesk.AutoCAD.ApplicationServices.Application.GetSystemVariable("DBMOD");
+            if (System.Convert.ToInt16(obj) != 0)
+            {
+                OpenForm = false;
+                ShowMessage.ValMess("Please save all documents to process further.");
+                return;
+            }
+            //Helper.cadManager.SaveActiveDrawing();
 
         }
 
 
         private void Save_Active_Drawings_Load(object sender, EventArgs e)
         {
+            // do not write any code here
+        }
+        public bool FormLoad()
+        {
             LoadFlag = true;
             try
             {
+
+                // Helper.cadManager.SaveAllOpenDoc();
                 Cursor.Current = Cursors.WaitCursor;
                 this.BackColor = Helper.FormBGColor;
-                CADDescription.BackColor= submit.BackColor=cancel.BackColor= savetreeGrid.BackgroundColor = Helper.FormBGColor;
-                
+                CADDescription.BackColor = submit.BackColor = cancel.BackColor = savetreeGrid.BackgroundColor = Helper.FormBGColor;
+
                 savetreeGrid.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
                 this.imageStrip.TransparentColor = System.Drawing.Color.Magenta;
@@ -146,9 +159,21 @@ namespace AutocadPlugIn.UI_Forms
 
                             if (LatestVersion == 0)
                             {
-                                if (ShowMessage.InfoYNMess("Following file no longer exist on server. do you want to update it as new ?\n" + Convert.ToString(dtTreeGridData.Rows[i]["filepath"]).Trim()) == DialogResult.No)
+                                if (!IsSaveAs)
                                 {
-                                    return;
+                                    if (ShowMessage.InfoYNMess("Following file no longer exist on server. do you want to update it as new ?\n" + Convert.ToString(dtTreeGridData.Rows[i]["filepath"]).Trim()) == DialogResult.No || IsSaveAs)
+                                    {
+                                        return false;
+                                    }
+                                    else
+                                    {
+
+                                        dtTreeGridData.Rows[i]["DrawingId"] = "";
+                                        dtTreeGridData.Rows[i]["folderid"] = "";
+                                        dtTreeGridData.Rows[i]["folderpath"] = "";
+                                        //dtTreeGridData.Rows[i]["ProjectNameNo"] = "";
+                                        dtTreeGridData.Rows[i]["revision"] = "";
+                                    }
                                 }
                                 else
                                 {
@@ -159,6 +184,7 @@ namespace AutocadPlugIn.UI_Forms
                                     //dtTreeGridData.Rows[i]["ProjectNameNo"] = "";
                                     dtTreeGridData.Rows[i]["revision"] = "";
                                 }
+
                             }
                             else if (CurrentVersion < LatestVersion)
                             {
@@ -168,7 +194,7 @@ namespace AutocadPlugIn.UI_Forms
                                     if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true")
                                     {
                                         this.Close();
-                                        return;
+                                        return false;
                                     }
                                 }
 
@@ -190,7 +216,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     ShowMessage.ErrorMess(lockStatusCon.errorString);
                     this.Close();
-                    return;
+                    return false;
                 }
 
                 #region CreateTreeGrid
@@ -352,9 +378,13 @@ namespace AutocadPlugIn.UI_Forms
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
+                LoadFlag = false;
+                Cursor.Current = Cursors.Default;
+                return false;
             }
             LoadFlag = false;
             Cursor.Current = Cursors.Default;
+            return true;
         }
 
         public void AddNode(DataTable dtDrawing, DataRow rw1, TreeGridNode node = null, string OldDWGNo = null)
@@ -597,13 +627,13 @@ namespace AutocadPlugIn.UI_Forms
                 #region Check for File existance in server
                 if (!CheckFileExistance1(selectedTreeGridNodes[0]) || !CheckFileExistance(selectedTreeGridNodes[0]))
                 {
-                    Helper.CloseProgressBar();Cursor.Current = Cursors.Default;
+                    Helper.CloseProgressBar(); Cursor.Current = Cursors.Default;
                     return;
-                } 
+                }
                 #endregion
 
 
- 
+
                 SaveController objController = new SaveController();
 
                 SaveCommand objCmd = new SaveCommand();
@@ -641,23 +671,18 @@ namespace AutocadPlugIn.UI_Forms
                         if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
                         {
                             ShowMessage.InfoMess("You dont have edit permission for this file.");
-                            Helper.CloseProgressBar(); 
+                            Helper.CloseProgressBar();
                             this.Cursor = Cursors.Default;
                             return;
                         }
                     }
                     String FilePath = objCmd.FilePath = Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value);
 
-                 
-                    Helper.IncrementProgressBar(1, "Closing open files.");
 
-      
-                    #region Close Files
 
-                    Helper.cadManager.ChecknCloseOpenedDoc(FilePath);
-                    CloseFile(currentTreeGrdiNode);
 
-                    #endregion
+
+
 
 
 
@@ -671,7 +696,7 @@ namespace AutocadPlugIn.UI_Forms
                     if (Is_Save)
                     {
                         //Helper.CloseProgressBar();
-           
+
 
                         #region Add Title Block 
                         if (Helper.TitleBlockFlag)
@@ -689,14 +714,14 @@ namespace AutocadPlugIn.UI_Forms
                                 {
                                     if (Convert.ToString(dr["IsFile"]) == "0")
                                         Helper.cadManager.AddingAttributeToABlock(item.FilePath, Helper.LayoutAttributes, Convert.ToString(dr["FileLayoutName"]), true);
-                                } 
+                                }
                                 if (IsDocOpend)
                                 {
                                     Helper.cadManager.CloseDocSilently(item.FilePath);
                                 }
                             }
                         }
-
+                        #endregion
 
                         Helper.IncrementProgressBar(1, "Updating new properties to local file.");
                         //Helper.CloseProgressBar();
@@ -707,10 +732,39 @@ namespace AutocadPlugIn.UI_Forms
                             Helper.cadManager.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
                         }
 
-                      
+
+
+                        #region Close Files
+                        Helper.IncrementProgressBar(1, "Closing open files.");
+                        Helper.cadManager.ChecknCloseOpenedDoc(FilePath);
+                        CloseFile(currentTreeGrdiNode);
 
                         #endregion
 
+                        #region Uploading Layout Name
+                        Helper.IncrementProgressBar(1, "Updating layout names.");
+                        foreach (PLMObject objplmo in objController.plmObjs)
+                        {
+                            //Helper.CloseProgressBar();
+                            int Count = -1;
+
+                            foreach (DataRow dr in objplmo.dtLayoutInfo.Rows)
+                            {
+                                Count++;
+                                if (Convert.ToString(dr["IsFile"]) == "1")
+                                {
+                                    continue;
+                                }
+                                if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
+                                {
+                                    string Sufix = "_"+Count + "_" + objplmo.ObjectNumber;
+                                    string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim();
+                                    Helper.cadManager.renamelayoutName(objplmo.FilePath, Convert.ToString(dr["FileLayoutName"]).Trim().Replace(Sufix,""), NewLayoutName);
+                                }
+                            }
+
+                        }
+                        #endregion
                         Helper.IncrementProgressBar(1, "Updating file names.");
                         //Helper.CloseProgressBar();
 
@@ -721,7 +775,7 @@ namespace AutocadPlugIn.UI_Forms
 
                         // save File in RB
                         Is_Save = objController.ExecuteSave(objCmd, true);
-                         
+
 
 
 
@@ -1657,12 +1711,12 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                
+
                 foreach (TreeGridNode tgnChild in tgnParent.Nodes)
                 {
                     if ((bool)tgnChild.Cells["Check"].Value)
-                    { 
-                        if(!CheckFileExistance1(tgnChild))
+                    {
+                        if (!CheckFileExistance1(tgnChild))
                         {
                             return false;
                         }
@@ -1673,7 +1727,7 @@ namespace AutocadPlugIn.UI_Forms
                                 return false;
                             }
                         }
-                         
+
                     }
                 }
             }

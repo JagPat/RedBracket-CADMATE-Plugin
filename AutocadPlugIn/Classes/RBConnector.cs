@@ -699,7 +699,7 @@ namespace AutocadPlugIn
                     {
                         string Sufix = Count + "_" + DrawingNO;
                         string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim() + "_" + Sufix;
-                        Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["FileLayoutName"]).Trim(), NewLayoutName);
+                        //Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["FileLayoutName"]).Trim(), NewLayoutName);
 
                         dr["LayoutName1"] = NewLayoutName;
                         dr["FileLayoutName"] = NewLayoutName;

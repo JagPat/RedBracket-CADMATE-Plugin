@@ -20,9 +20,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            frmSave_Active_Drawings objsave = new frmSave_Active_Drawings();
-            DrawingDetail = txtDrawingNumber.Text + ";" + cmbType.SelectedValue.ToString() + ";" + cmbType.Text.ToString();
-            this.Close();
+             
         }
         private void GetDrawinDetail_Load(object sender, EventArgs e)
         {
