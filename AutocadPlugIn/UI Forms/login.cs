@@ -187,7 +187,7 @@ namespace AutocadPlugIn
                     cr.browseBEnable = true;
                     cr.createBEnable = true;
                     cr.SaveEnable = true;
-                    cr.MyRibbon();
+                    cr.RBRibbon();
                 }
                 Helper.CloseProgressBar();
                 //Globals.Ribbons.ARASRibbon.IsConnected = true;
@@ -221,7 +221,7 @@ namespace AutocadPlugIn
                 registryKey.SetValue("firstName", loggedUserDetails.firstName);
                 registryKey.SetValue("lastName", loggedUserDetails.lastName);
                 registryKey.SetValue("companyId", loggedUserDetails.companyId);
-                registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin);
+                registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin==null ?"": loggedUserDetails.isCompanyAdmin);
                 registryKey.SetValue("mobile", loggedUserDetails.mobile == null ? string.Empty : loggedUserDetails.mobile);
                 registryKey.SetValue("status", loggedUserDetails.status);
                 registryKey.SetValue("active", loggedUserDetails.active);

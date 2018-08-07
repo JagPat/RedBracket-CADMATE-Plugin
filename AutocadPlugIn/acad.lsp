@@ -1,5 +1,5 @@
 (SETQ  ACADLSPASDOC  1)
 (Command "_Ribbon")
 (Command "COMMANDLINE")
-(Command "NETLOAD" "C:\\Program Files\\Autodesk\\ApplicationPlugins\\RedBracketConnector.bundle\\Contents\\AutocadPlugIn.dll")
-(Command "MYRIBBON")
+(Command "NETLOAD" "C:\\Program Files\\Autodesk\\ApplicationPlugins\\RedBracketConnector.bundle\\Contents\\RBAutocadPlugIn.dll")
+(Command "RBRIBBON")

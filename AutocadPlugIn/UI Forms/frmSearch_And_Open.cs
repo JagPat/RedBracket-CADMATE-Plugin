@@ -520,7 +520,7 @@ namespace AutocadPlugIn.UI_Forms
                 ribbon.SaveEnable = true;
                 ribbon.UnlockEnable = true;
                 ribbon.DrawingInfoEnable = true;
-                ribbon.MyRibbon();
+                ribbon.RBRibbon();
                 Helper.CloseProgressBar();
                 this.Cursor = Cursors.Default;
                 this.Close();

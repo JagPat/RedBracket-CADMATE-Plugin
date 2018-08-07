@@ -1,4 +1,4 @@
-netload "./AutocadPlugIn.dll"
+netload "./RBAutocadPlugIn.dll"
 _Ribbon 
 CoMMANDLINE 
-myribbon 
+rbribbon 

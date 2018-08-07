@@ -615,6 +615,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     if (Name_Length_Duplication_Check(selectedTreeGridNodes[0]))
                     {
+                        this.Cursor = Cursors.Default;
                         return;
                     }
 
@@ -659,7 +660,8 @@ namespace AutocadPlugIn.UI_Forms
                     PBValue++;
                     Is_Delete = true;
                 }
-                //return;
+                //Helper.CloseProgressBar();
+                // return;
 
 
                 // to iterate selected file
@@ -936,13 +938,21 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                        if (LN.Length < Helper.FileLayoutNameLength)
+                        if(Helper.FileNameCheckForSpecialCharacter(LN))
                         {
+                            if (LN.Length < Helper.FileLayoutNameLength)
+                            {
 
+                            }
+                            else
+                            {
+                                ShowMessage.ErrorMessUD(LN + "\n Layout name length exceeds maximum limit. of file " + Environment.NewLine + FN);
+                                this.Cursor = Cursors.Default;
+                                return true;
+                            }
                         }
                         else
                         {
-                            ShowMessage.ErrorMessUD(LN + "\n Layout name length exceeds maximum limit. of file " + Environment.NewLine + FN);
                             this.Cursor = Cursors.Default;
                             return true;
                         }
@@ -1285,9 +1295,16 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
 
-                        if (!objRBC.CheckFileExistance(MyProjectId, FN))
+                        if(Helper.FileNameCheckForSpecialCharacter(FN))
                         {
-                            this.Cursor = Cursors.Default;
+                            if (!objRBC.CheckFileExistance(MyProjectId, FN))
+                            {
+                                this.Cursor = Cursors.Default;
+                                return true;
+                            }
+                        }
+                        else
+                        {
                             return true;
                         }
 
@@ -1890,8 +1907,52 @@ namespace AutocadPlugIn.UI_Forms
             }
         }
 
+        public void AssignLayoutInfo(TreeGridNode CurrentNode)
+        {
+            try
+            {
+                AssignLayoutInfo1(CurrentNode);
+                foreach (TreeGridNode Child in CurrentNode.Nodes)
+                {
+                    AssignLayoutInfo1(Child);
+                    AssignLayoutInfo(Child);
+                }
+            }
+            catch(Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
+        public void AssignLayoutInfo1(TreeGridNode CurrentNode)
+        {
+            try
+            {
+                foreach (TreeGridNode Child in CurrentNode.Nodes)
+                {
+                    System.Data.DataTable dtLayoutInfo = GetdtLayoutInfoFromTag(Child);
 
+                    if (dtLayoutInfo == null)
+                    {
+                        dtLayoutInfo = new System.Data.DataTable();
+                    }
+                    if (dtLayoutInfo.Rows.Count == 0)
+                    {
+                        FillLayoutInfoFromUser(Child, false);
+                        dtLayoutInfo = GetdtLayoutInfoFromTag(Child);
+                    }
+                    else
+                    {
+                        Child.Cells["LayoutInfoStatus"].Value = "Filled";
+                    }
 
+                    lstdtLayoutInfo.Add(dtLayoutInfo);
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+        }
         private void Save_Active_Drawings_Resize(object sender, EventArgs e)
         {
             //int f_height=this.Height;

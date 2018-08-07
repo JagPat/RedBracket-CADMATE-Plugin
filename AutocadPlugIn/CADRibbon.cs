@@ -106,76 +106,86 @@ namespace AutocadPlugIn
 
             public void Initialize()
             {
-
-                DocumentCollection DC = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
-                if (DC != null)
+                try
                 {
-                    Document dwg = DC.MdiActiveDocument;
-                    if (dwg != null)
+                    RunMyCommand();
+                    DocumentCollection DC = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
+                    if (DC != null)
                     {
-                        Editor ed = dwg.Editor;
-
-                        if (ed != null)
+                        Document dwg = DC.MdiActiveDocument;
+                        if (dwg != null)
                         {
-                            try
-                            {
-                                ed.WriteMessage("\nInitializing...");
+                            Editor ed = dwg.Editor;
 
-                                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
-
-                                ed.WriteMessage("completed.");
-                            }
-                            catch (System.Exception ex)
+                            if (ed != null)
                             {
-                                ed.WriteMessage("failed:\n");
-                                ed.WriteMessage(ex.Message);
+                                try
+                                {
+                                    ed.WriteMessage("\nInitializing...");
+
+                                    Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.DocumentActivated += DocumentManager_DocumentActivated;
+
+                                    ed.WriteMessage("completed.");
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    ed.WriteMessage("failed:\n");
+                                    ed.WriteMessage(ex.Message);
+                                }
                             }
                         }
                     }
+
+
+
+
+
+
+                    Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
                 }
-
-
-
-
-
-
-                Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
+                catch { }
             }
 
             private void DocumentManager_DocumentActivated(object sender, DocumentCollectionEventArgs e)
             {
-                if (!Helper.CheckFileInfoFlag)
-                    return;
-
-                if (e != null)
+                try
                 {
-                    if (e.Document != null)
+                    if (!Helper.CheckFileInfoFlag)
+                        return;
+
+                    if (e != null)
                     {
-                        Document doc = e.Document;
-
-                        if (doc != null)
+                        if (e.Document != null)
                         {
-                            Cursor.Current = Cursors.WaitCursor;
-                            doc.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
-                            CADRibbon objcr = new CADRibbon();
+                            Document doc = e.Document;
 
-                            objcr.MyRibbon();
-                            if (Helper.CurrentVersion != Helper.LatestVersion)
+                            if (doc != null)
                             {
-                                Refresh objrfs = new Refresh();
-                                objrfs.Execute(null);
-                            }
-                            Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
-                            Cursor.Current = Cursors.Default;
-                        }
-                    }
+                                Cursor.Current = Cursors.WaitCursor;
+                                doc.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
+                                CADRibbon objcr = new CADRibbon();
 
+                                objcr.RBRibbon();
+                                if (Helper.CurrentVersion != Helper.LatestVersion)
+                                {
+                                    Refresh objrfs = new Refresh();
+                                    objrfs.Execute(null);
+                                }
+                                Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
+                                Cursor.Current = Cursors.Default;
+                            }
+                        }
+
+
+                    }
+                }
+                catch
+                {
 
                 }
-
                 //if(e!=null)
                 //{
-           
+
                 //}
 
 
@@ -193,8 +203,25 @@ namespace AutocadPlugIn
             [CommandMethod("AddNewDoc", CommandFlags.Session)]
             public static void RunMyCommand()
             {
-                Document dwg = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Add(null);
-                Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument = dwg;
+                try
+                {
+                    if (Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Count > 0)
+                    {
+
+                    }
+                    else
+                    {
+                        Document dwg = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Add(null);
+                        Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument = dwg;
+                    }
+
+                }
+                catch
+                {
+                    Document dwg = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.Add(null);
+                    Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument = dwg;
+                }
+
 
             }
         }
@@ -243,319 +270,332 @@ namespace AutocadPlugIn
 
         //AutoCAD Command
 
-        [CommandMethod("MyRibbon")]
-        public void MyRibbon()
+        [CommandMethod("RBRibbon")]
+        public void RBRibbon()
         {
-
-            //if (!RedBracketConnector.Helper.IsEventAssign)
+            try
             {
 
-                timerVersion.Tick += new System.EventHandler(timerVersion_Tick);
-                timerVersion.Interval = 1000;
-                timerVersion.Start();
-                AutocadPlugIn.Helper.IsEventAssign = true;
+
+                //if (!RedBracketConnector.Helper.IsEventAssign)
+                {
+
+                    timerVersion.Tick += new System.EventHandler(timerVersion_Tick);
+                    timerVersion.Interval = 1000;
+                    timerVersion.Start();
+                    AutocadPlugIn.Helper.IsEventAssign = true;
+                }
+
+                Tab.Title = "Redbracket";
+                Tab.Id = "Redbracket_TAB_ID";
+
+                if (ribbonStatus)
+                {
+                    Tab = ribbonControl.FindTab("Redbracket_TAB_ID");
+                    Tab.Panels.Clear();
+                    ribbonControl.Tabs.Remove(Tab);
+                }
+
+                if(ribbonControl==null)
+                {
+                    return;
+                }
+                ribbonControl.Tabs.Add(Tab);
+
+                ribbonStatus = true;
+
+                //Connect Functionality
+                panel1Panel.Title = "Connection";
+                Panel1.Source = panel1Panel;
+                Tab.Panels.Add(Panel1);
+
+                Btn_Connection.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_Connection.Size = RibbonItemSize.Large;
+
+
+                ConnectionController connController = new ConnectionController();
+                if (!connect)
+                {
+                    Btn_Connection.Text = "Log-in";
+                    Btn_Connection.ShowText = true;
+                    Btn_Connection.ShowImage = true;
+                    Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
+                    Btn_Connection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
+                    Btn_Connection.CommandHandler = new Connect();
+                }
+                else
+                {
+                    Btn_Connection.Text = "Log-out";
+                    Btn_Connection.ShowText = true;
+                    Btn_Connection.ShowImage = true;
+                    Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
+                    Btn_Connection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
+                    Btn_Connection.CommandHandler = new Disconnect();
+                    browseDEnable = true;
+                    createDEnable = true;
+                    browseBEnable = true;
+                    createBEnable = true;
+                    LockEnable = true;
+                    UnlockEnable = true;
+                    SaveEnable = true;
+                    DrawingInfoEnable = true;
+                }
+
+                panel1Panel.Items.Add(Btn_Connection);
+
+
+
+                panel2Panel.Title = "File Operations";
+                panel2.Source = panel2Panel;
+                Tab.Panels.Add(panel2);
+
+                Btn_BrowseDrawing.Text = "Open File";
+                Btn_BrowseDrawing.ShowText = true;
+                Btn_BrowseDrawing.ShowImage = true;
+                Btn_BrowseDrawing.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Open);
+                Btn_BrowseDrawing.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Open);
+                Btn_BrowseDrawing.Size = RibbonItemSize.Large;
+                Btn_BrowseDrawing.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_BrowseDrawing.CommandHandler = new BrowseDrawing();
+                Btn_BrowseDrawing.IsEnabled = browseDEnable;
+
+
+
+                RibbonRowPanel pan2row1 = new RibbonRowPanel();
+                pan2row1.Items.Add(Btn_BrowseDrawing);
+                panel2Panel.Items.Add(pan2row1);
+
+
+
+
+                //Lock, Unlock, and Save
+
+
+
+
+
+
+
+                Btn_Unlock.Text = "Lock & Unlock";
+                Btn_Unlock.ShowText = true;
+                Btn_Unlock.ShowImage = true;
+                Btn_Unlock.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
+                Btn_Unlock.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
+                Btn_Unlock.Size = RibbonItemSize.Large;
+                Btn_Unlock.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_Unlock.CommandHandler = new Unlock();
+                Btn_Unlock.IsEnabled = UnlockEnable;
+
+
+                Btn_Save.Text = "Save to redbracket";
+                Btn_Save.Name = "Save";
+                Btn_Save.ShowText = true;
+                Btn_Save.ShowImage = true;
+                Btn_Save.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
+                Btn_Save.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
+                Btn_Save.Size = RibbonItemSize.Large;
+                Btn_Save.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_Save.CommandHandler = new Save();
+                Btn_Save.IsEnabled = SaveEnable;
+
+                Btn_SaveAS.Text = "Save As New";
+                Btn_Save.Name = "SaveAs";
+                Btn_SaveAS.ShowText = true;
+                Btn_SaveAS.ShowImage = true;
+                Btn_SaveAS.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
+                Btn_SaveAS.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
+                Btn_SaveAS.Size = RibbonItemSize.Large;
+                Btn_SaveAS.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_SaveAS.CommandHandler = new Save();
+                Btn_SaveAS.IsEnabled = SaveEnable;
+
+                RibbonRowPanel rrpSave = new RibbonRowPanel();
+                rrpSave.Items.Add(Btn_Save);
+
+                RibbonRowPanel rrpSaveAS = new RibbonRowPanel();
+                rrpSaveAS.Items.Add(Btn_SaveAS);
+                //rpsSave.Items.Add(rrpSave);
+
+                RibbonRowPanel pan4row1 = new RibbonRowPanel();
+                //pan4row1.Items.Add(Btn_Lock);
+
+                pan4row1.Items.Add(Btn_Unlock);
+                //panel4Panel.Items.Add(pan4row1);
+
+                panel2Panel.Items.Add(rrpSave);
+                panel2Panel.Items.Add(rrpSaveAS);
+                panel2Panel.Items.Add(pan4row1);
+
+
+                //Drawing Info
+                //panel7Panel.Title = "Drawing Info";
+                //panel7.Source = panel7Panel;
+                //Tab.Panels.Add(panel7);
+
+
+                Btn_DrawingInfo.Text = "Drawing \n Info";
+                Btn_DrawingInfo.ShowText = true;
+                Btn_DrawingInfo.ShowImage = true;
+                Btn_DrawingInfo.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.DrawingInfo);
+                Btn_DrawingInfo.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.DrawingInfo);
+                Btn_DrawingInfo.Size = RibbonItemSize.Large;
+                Btn_DrawingInfo.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_DrawingInfo.CommandHandler = new DrawingInfo();
+                Btn_DrawingInfo.IsEnabled = DrawingInfoEnable;
+
+                RibbonRowPanel pan7row1 = new RibbonRowPanel();
+                pan7row1.Items.Add(Btn_DrawingInfo);
+                //panel7Panel.Items.Add(pan7row1);
+                panel2Panel.Items.Add(pan7row1);
+
+
+                //Help and About
+                panel5Panel.Title = "Help & About";
+                panel5.Source = panel5Panel;
+                Tab.Panels.Add(panel5);
+
+
+                Btn_Help.Text = "Help";
+                Btn_Help.ShowText = true;
+                Btn_Help.ShowImage = true;
+                Btn_Help.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
+                Btn_Help.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
+                Btn_Help.Size = RibbonItemSize.Large;
+                Btn_Help.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_Help.CommandHandler = new Help();
+
+
+
+                Btn_About.Text = "About";
+                Btn_About.ShowText = true;
+                Btn_About.ShowImage = true;
+                Btn_About.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.About);
+                Btn_About.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.About);
+                Btn_About.Size = RibbonItemSize.Large;
+                Btn_About.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_About.CommandHandler = new About();
+
+
+                RibbonRowPanel pan5row1 = new RibbonRowPanel();
+                pan5row1.Items.Add(Btn_Help);
+                //pan5row1.Items.Add(new RibbonRowBreak());
+                pan5row1.Items.Add(Btn_About);
+                panel5Panel.Items.Add(pan5row1);
+
+
+
+                //Setting
+                panel6Panel.Title = "Setting";
+                panel6.Source = panel6Panel;
+                Tab.Panels.Add(panel6);
+
+
+                Btn_Setting.Text = "Setting";
+                Btn_Setting.ShowText = true;
+                Btn_Setting.ShowImage = true;
+                Btn_Setting.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Setting);
+                Btn_Setting.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Setting);
+                Btn_Setting.Size = RibbonItemSize.Large;
+                Btn_Setting.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_Setting.CommandHandler = new UserSetting();
+
+                RibbonRowPanel pan6row1 = new RibbonRowPanel();
+                pan6row1.Items.Add(Btn_Setting);
+                panel6Panel.Items.Add(pan6row1);
+
+                Btn_Refresh.Text = "Refresh";
+                Btn_Refresh.ShowText = true;
+                Btn_Refresh.ShowImage = true;
+                Btn_Refresh.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh.Size = RibbonItemSize.Large;
+                Btn_Refresh.Orientation = System.Windows.Controls.Orientation.Vertical;
+                Btn_Refresh.CommandHandler = new Refresh();
+                Btn_Refresh.IsEnabled = LockEnable;
+
+                Btn_Refresh_H.Text = "Refresh";
+                Btn_Refresh_H.ShowText = true;
+                Btn_Refresh_H.ShowImage = true;
+                Btn_Refresh_H.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh_H.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh_H.Size = RibbonItemSize.Large;
+                Btn_Refresh_H.Orientation = System.Windows.Controls.Orientation.Horizontal;
+                Btn_Refresh_H.Width = 300;
+                Btn_Refresh_H.CommandHandler = new Refresh();
+                Btn_Refresh_H.IsEnabled = LockEnable;
+                //pan7row1.Items.Add(Btn_Refresh);
+
+
+
+
+
+
+
+
+
+
+
+
+
+                lblCurrentFileVersion.Text = "  Current  ";
+                lblCurrentFileVersion1.Text = "  Version  ";
+                lblCurrentFileVersionRB.Text = "   Latest  ";
+                lblCurrentFileVersionRB1.Text = "  Version  ";
+                GetVersion(ref CurrentVersion, ref LatestVersion);
+                txtCurrentFileVersion.Text = CurrentVersion;//"        0.1       ";
+                txtCurrentFileVersion.Tag = CurrentVersion;// "        0.1       ";
+                txtCurrentFileVersionRB.Text = LatestVersion;// "        0.2       ";
+
+                RibbonRowPanel rrpCurrentDI = new RibbonRowPanel();
+
+
+                rrpCurrentDI.Items.Add(lblCurrentFileVersion);
+                rrpCurrentDI.Items.Add(new RibbonRowBreak());
+                rrpCurrentDI.Items.Add(lblCurrentFileVersion1);
+                rrpCurrentDI.Items.Add(new RibbonRowBreak());
+                rrpCurrentDI.Items.Add(txtCurrentFileVersion);
+
+                rpsCurrentDI.Items.Add(rrpCurrentDI);
+
+                RibbonRowPanel rrpCurrentDIV = new RibbonRowPanel();
+
+
+                rrpCurrentDIV.Items.Add(lblCurrentFileVersionRB);
+                rrpCurrentDIV.Items.Add(new RibbonRowBreak());
+                rrpCurrentDIV.Items.Add(lblCurrentFileVersionRB1);
+                rrpCurrentDIV.Items.Add(new RibbonRowBreak());
+                rrpCurrentDIV.Items.Add(txtCurrentFileVersionRB);
+
+
+
+                rpsCurrentDI.Items.Add(rrpCurrentDIV);
+                rpsCurrentDI.Items.Add(new RibbonRowBreak());
+                rpsCurrentDI.Items.Add(Btn_Refresh_H);
+                //Compare Drawing Info
+                rpsCurrentDI.Title = "Compare Drawing Info";
+                rpCurrentDI.Source = rpsCurrentDI;
+                Tab.Panels.Add(rpCurrentDI);
+
+
+
+
+                Tab.IsActive = true;
             }
+            catch { }
 
-            Tab.Title = "Redbracket";
-            Tab.Id = "RibbonSample_TAB_ID";
-
-            if (ribbonStatus)
-            {
-                Tab = ribbonControl.FindTab("RibbonSample_TAB_ID");
-                Tab.Panels.Clear();
-                ribbonControl.Tabs.Remove(Tab);
-            }
-
-
-            ribbonControl.Tabs.Add(Tab);
-
-            ribbonStatus = true;
-
-            //Connect Functionality
-            panel1Panel.Title = "Connection";
-            Panel1.Source = panel1Panel;
-            Tab.Panels.Add(Panel1);
-
-            Btn_Connection.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_Connection.Size = RibbonItemSize.Large;
-
-
-            ConnectionController connController = new ConnectionController();
-            if (!connect)
-            {
-                Btn_Connection.Text = "Log-in";
-                Btn_Connection.ShowText = true;
-                Btn_Connection.ShowImage = true;
-                Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
-                Btn_Connection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
-                Btn_Connection.CommandHandler = new Connect();
-            }
-            else
-            {
-                Btn_Connection.Text = "Log-out";
-                Btn_Connection.ShowText = true;
-                Btn_Connection.ShowImage = true;
-                Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
-                Btn_Connection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
-                Btn_Connection.CommandHandler = new Disconnect();
-                browseDEnable = true;
-                createDEnable = true;
-                browseBEnable = true;
-                createBEnable = true;
-                LockEnable = true;
-                UnlockEnable = true;
-                SaveEnable = true;
-                DrawingInfoEnable = true;
-            }
-
-            panel1Panel.Items.Add(Btn_Connection);
-
-
-
-            panel2Panel.Title = "File Operations";
-            panel2.Source = panel2Panel;
-            Tab.Panels.Add(panel2);
-
-            Btn_BrowseDrawing.Text = "Open File";
-            Btn_BrowseDrawing.ShowText = true;
-            Btn_BrowseDrawing.ShowImage = true;
-            Btn_BrowseDrawing.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Open);
-            Btn_BrowseDrawing.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Open);
-            Btn_BrowseDrawing.Size = RibbonItemSize.Large;
-            Btn_BrowseDrawing.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_BrowseDrawing.CommandHandler = new BrowseDrawing();
-            Btn_BrowseDrawing.IsEnabled = browseDEnable;
-
-
-
-            RibbonRowPanel pan2row1 = new RibbonRowPanel();
-            pan2row1.Items.Add(Btn_BrowseDrawing);
-            panel2Panel.Items.Add(pan2row1);
-
-
-
-
-            //Lock, Unlock, and Save
-
-
-
-
-
-
-
-            Btn_Unlock.Text = "Lock & Unlock";
-            Btn_Unlock.ShowText = true;
-            Btn_Unlock.ShowImage = true;
-            Btn_Unlock.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
-            Btn_Unlock.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
-            Btn_Unlock.Size = RibbonItemSize.Large;
-            Btn_Unlock.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_Unlock.CommandHandler = new Unlock();
-            Btn_Unlock.IsEnabled = UnlockEnable;
-
-
-            Btn_Save.Text = "Save to redbracket";
-            Btn_Save.Name = "Save";
-            Btn_Save.ShowText = true;
-            Btn_Save.ShowImage = true;
-            Btn_Save.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
-            Btn_Save.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
-            Btn_Save.Size = RibbonItemSize.Large;
-            Btn_Save.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_Save.CommandHandler = new Save();
-            Btn_Save.IsEnabled = SaveEnable;
-
-            Btn_SaveAS.Text = "Save As New";
-            Btn_Save.Name = "SaveAs";
-            Btn_SaveAS.ShowText = true;
-            Btn_SaveAS.ShowImage = true;
-            Btn_SaveAS.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
-            Btn_SaveAS.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
-            Btn_SaveAS.Size = RibbonItemSize.Large;
-            Btn_SaveAS.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_SaveAS.CommandHandler = new Save();
-            Btn_SaveAS.IsEnabled = SaveEnable;
-
-            RibbonRowPanel rrpSave = new RibbonRowPanel();
-            rrpSave.Items.Add(Btn_Save);
-
-            RibbonRowPanel rrpSaveAS = new RibbonRowPanel();
-            rrpSaveAS.Items.Add(Btn_SaveAS);
-            //rpsSave.Items.Add(rrpSave);
-
-            RibbonRowPanel pan4row1 = new RibbonRowPanel();
-            //pan4row1.Items.Add(Btn_Lock);
-
-            pan4row1.Items.Add(Btn_Unlock);
-            //panel4Panel.Items.Add(pan4row1);
-
-            panel2Panel.Items.Add(rrpSave);
-            panel2Panel.Items.Add(rrpSaveAS);
-            panel2Panel.Items.Add(pan4row1);
-
-
-            //Drawing Info
-            //panel7Panel.Title = "Drawing Info";
-            //panel7.Source = panel7Panel;
-            //Tab.Panels.Add(panel7);
-
-
-            Btn_DrawingInfo.Text = "Drawing \n Info";
-            Btn_DrawingInfo.ShowText = true;
-            Btn_DrawingInfo.ShowImage = true;
-            Btn_DrawingInfo.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.DrawingInfo);
-            Btn_DrawingInfo.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.DrawingInfo);
-            Btn_DrawingInfo.Size = RibbonItemSize.Large;
-            Btn_DrawingInfo.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_DrawingInfo.CommandHandler = new DrawingInfo();
-            Btn_DrawingInfo.IsEnabled = DrawingInfoEnable;
-
-            RibbonRowPanel pan7row1 = new RibbonRowPanel();
-            pan7row1.Items.Add(Btn_DrawingInfo);
-            //panel7Panel.Items.Add(pan7row1);
-            panel2Panel.Items.Add(pan7row1);
-
-
-            //Help and About
-            panel5Panel.Title = "Help & About";
-            panel5.Source = panel5Panel;
-            Tab.Panels.Add(panel5);
-
-
-            Btn_Help.Text = "Help";
-            Btn_Help.ShowText = true;
-            Btn_Help.ShowImage = true;
-            Btn_Help.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
-            Btn_Help.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
-            Btn_Help.Size = RibbonItemSize.Large;
-            Btn_Help.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_Help.CommandHandler = new Help();
-
-
-
-            Btn_About.Text = "About";
-            Btn_About.ShowText = true;
-            Btn_About.ShowImage = true;
-            Btn_About.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.about);
-            Btn_About.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.about);
-            Btn_About.Size = RibbonItemSize.Large;
-            Btn_About.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_About.CommandHandler = new About();
-
-
-            RibbonRowPanel pan5row1 = new RibbonRowPanel();
-            pan5row1.Items.Add(Btn_Help);
-            //pan5row1.Items.Add(new RibbonRowBreak());
-            pan5row1.Items.Add(Btn_About);
-            panel5Panel.Items.Add(pan5row1);
-
-
-
-            //Setting
-            panel6Panel.Title = "Setting";
-            panel6.Source = panel6Panel;
-            Tab.Panels.Add(panel6);
-
-
-            Btn_Setting.Text = "Setting";
-            Btn_Setting.ShowText = true;
-            Btn_Setting.ShowImage = true;
-            Btn_Setting.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Setting);
-            Btn_Setting.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Setting);
-            Btn_Setting.Size = RibbonItemSize.Large;
-            Btn_Setting.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_Setting.CommandHandler = new UserSetting();
-
-            RibbonRowPanel pan6row1 = new RibbonRowPanel();
-            pan6row1.Items.Add(Btn_Setting);
-            panel6Panel.Items.Add(pan6row1);
-
-            Btn_Refresh.Text = "Refresh";
-            Btn_Refresh.ShowText = true;
-            Btn_Refresh.ShowImage = true;
-            Btn_Refresh.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
-            Btn_Refresh.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
-            Btn_Refresh.Size = RibbonItemSize.Large;
-            Btn_Refresh.Orientation = System.Windows.Controls.Orientation.Vertical;
-            Btn_Refresh.CommandHandler = new Refresh();
-            Btn_Refresh.IsEnabled = LockEnable;
-
-            Btn_Refresh_H.Text = "Refresh";
-            Btn_Refresh_H.ShowText = true;
-            Btn_Refresh_H.ShowImage = true;
-            Btn_Refresh_H.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
-            Btn_Refresh_H.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
-            Btn_Refresh_H.Size = RibbonItemSize.Large;
-            Btn_Refresh_H.Orientation = System.Windows.Controls.Orientation.Horizontal;
-            Btn_Refresh_H.Width = 300;
-            Btn_Refresh_H.CommandHandler = new Refresh();
-            Btn_Refresh_H.IsEnabled = LockEnable;
-            //pan7row1.Items.Add(Btn_Refresh);
-
-
-
-
-
-
-
-
-
-
-
-
-
-            lblCurrentFileVersion.Text = "  Current  ";
-            lblCurrentFileVersion1.Text = "  Version  ";
-            lblCurrentFileVersionRB.Text = "   Latest  ";
-            lblCurrentFileVersionRB1.Text = "  Version  ";
-            GetVersion(ref CurrentVersion, ref LatestVersion);
-            txtCurrentFileVersion.Text = CurrentVersion;//"        0.1       ";
-            txtCurrentFileVersion.Tag = CurrentVersion;// "        0.1       ";
-            txtCurrentFileVersionRB.Text = LatestVersion;// "        0.2       ";
-
-            RibbonRowPanel rrpCurrentDI = new RibbonRowPanel();
-
-
-            rrpCurrentDI.Items.Add(lblCurrentFileVersion);
-            rrpCurrentDI.Items.Add(new RibbonRowBreak());
-            rrpCurrentDI.Items.Add(lblCurrentFileVersion1);
-            rrpCurrentDI.Items.Add(new RibbonRowBreak());
-            rrpCurrentDI.Items.Add(txtCurrentFileVersion);
-
-            rpsCurrentDI.Items.Add(rrpCurrentDI);
-
-            RibbonRowPanel rrpCurrentDIV = new RibbonRowPanel();
-
-
-            rrpCurrentDIV.Items.Add(lblCurrentFileVersionRB);
-            rrpCurrentDIV.Items.Add(new RibbonRowBreak());
-            rrpCurrentDIV.Items.Add(lblCurrentFileVersionRB1);
-            rrpCurrentDIV.Items.Add(new RibbonRowBreak());
-            rrpCurrentDIV.Items.Add(txtCurrentFileVersionRB);
-
-
-
-            rpsCurrentDI.Items.Add(rrpCurrentDIV);
-            rpsCurrentDI.Items.Add(new RibbonRowBreak());
-            rpsCurrentDI.Items.Add(Btn_Refresh_H);
-            //Compare Drawing Info
-            rpsCurrentDI.Title = "Compare Drawing Info";
-            rpCurrentDI.Source = rpsCurrentDI;
-            Tab.Panels.Add(rpCurrentDI);
-
-
-
-
-            Tab.IsActive = true;
         }
 
         public void AssignVersion(string CurrentVersion = null, string LatestVersion = null)
         {
-            if (CurrentVersion != null && LatestVersion != null)
+            try
             {
-                txtCurrentFileVersion.Tag = txtCurrentFileVersion.Text = CurrentVersion;
-                txtCurrentFileVersionRB.Text = LatestVersion;
+                if (CurrentVersion != null && LatestVersion != null)
+                {
+                    txtCurrentFileVersion.Tag = txtCurrentFileVersion.Text = CurrentVersion;
+                    txtCurrentFileVersionRB.Text = LatestVersion;
+                }
             }
+            catch { }
         }
 
         private void timerVersion_Tick(object sender, EventArgs e)
@@ -580,7 +620,7 @@ namespace AutocadPlugIn
                     {
                         txtCurrentFileVersion.Text = Helper.CurrentVersion;
                     }
-                    // MyRibbon();
+
                     //Btn_Save.IsEnabled = false;
                     Btn_Save.IsEnabled = SaveEnable;
                     if (SaveEnable)
@@ -669,7 +709,7 @@ namespace AutocadPlugIn
                     cr.UnlockEnable = false;
                     cr.SaveEnable = false;
                     cr.DrawingInfoEnable = false;
-                    cr.MyRibbon();
+                    cr.RBRibbon();
                     //  MessageBox.Show("Logged Out Successfully");
                 }
 

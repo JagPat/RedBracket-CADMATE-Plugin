@@ -52,6 +52,7 @@
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.LoginPictureBox = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox_Checkout.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBox_Login.SuspendLayout();
@@ -374,6 +375,7 @@
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.Controls.Add(this.userSettingsCancelbutton, 2, 0);
             this.tableLayoutPanel5.Controls.Add(this.userSettingsSavebtn, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.panel1, 0, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 291);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
@@ -410,6 +412,13 @@
             this.LoginPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.LoginPictureBox.TabIndex = 9;
             this.LoginPictureBox.TabStop = false;
+            // 
+            // panel1
+            // 
+            this.panel1.Location = new System.Drawing.Point(3, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(81, 36);
+            this.panel1.TabIndex = 13;
             // 
             // UserSettings
             // 
@@ -472,5 +481,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.Panel panel1;
     }
 }

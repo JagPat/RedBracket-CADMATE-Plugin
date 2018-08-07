@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AutocadPlugIn</RootNamespace>
-    <AssemblyName>AutocadPlugIn</AssemblyName>
+    <AssemblyName>RBAutocadPlugIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
@@ -163,8 +163,8 @@
     <Compile Include="Controller\UnlockController.cs" />
     <Compile Include="Controller\ViewDocumentController.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="UI Forms\About.cs">
@@ -390,29 +390,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Xref1.png" />
-    <Content Include="Resources\About.png" />
+    <None Include="Resources\About.ico" />
     <None Include="Resources\BG.png" />
     <None Include="Resources\bracket.jpg" />
     <Content Include="Resources\CheckoutUserSettings.png" />
     <Content Include="Resources\Connect.png" />
     <Content Include="Resources\Disconnect.png" />
     <None Include="Resources\download.png" />
-    <Content Include="Resources\DrawingInfo.png" />
+    <None Include="Resources\DrawingInfo.ico" />
     <Content Include="Resources\FolderBrowse.png" />
+    <None Include="Resources\Help.ico" />
     <Content Include="Resources\Help.png" />
     <Content Include="Resources\lock.png" />
     <Content Include="Resources\LocknewStrip.png" />
     <None Include="Resources\Login.png" />
     <None Include="Resources\LockUnlock.png" />
+    <Content Include="Resources\LockUnlock.ico" />
+    <None Include="Resources\Open.ico" />
     <Content Include="Resources\Open.png" />
     <None Include="Resources\LoginUserSettings.png" />
     <None Include="Resources\CheckinUserSettings.png" />
     <None Include="Resources\RedBracket.png" />
     <None Include="Resources\ReferenceImage.jpg" />
     <None Include="Resources\RBName.png" />
+    <None Include="Resources\Refresh.ico" />
     <Content Include="Resources\Refresh.png" />
     <Content Include="Resources\save.png" />
     <None Include="Resources\SaveAs.png" />
+    <None Include="Resources\Setting.ico" />
     <Content Include="Resources\Setting.png" />
     <Content Include="Resources\unlock.png" />
   </ItemGroup>

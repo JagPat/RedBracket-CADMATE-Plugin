@@ -21,20 +21,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0F1CF0D6335B1FD37747FF3B05ACEAEC"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0F48504DE9D41A41B9A31A353D2310F7"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_12EC5D3022D6401792DAF63E2252C30C"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1F03DA57D74D426AA480ABDC0AB157F8"
+        "OwnerKey" = "8:_A777E67EF1E24059A4C0F08E45667DA4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -47,18 +41,6 @@
         {
         "MsmKey" = "8:_2F16E11811DD4C278199F0ABD2DA044C"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_349D18933797F760D6146FD5DC931FC7"
-        "OwnerKey" = "8:_942DCD7AC3E8E1F064A6B284CDC1F097"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_349D18933797F760D6146FD5DC931FC7"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -76,7 +58,7 @@
         "Entry"
         {
         "MsmKey" = "8:_70A65DE371ADBAB2D1118E7E6A56362A"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
+        "OwnerKey" = "8:_A777E67EF1E24059A4C0F08E45667DA4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -111,38 +93,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_942DCD7AC3E8E1F064A6B284CDC1F097"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
+        "MsmKey" = "8:_9E05B5577FDBFABB586D8DEE7470BCD0"
+        "OwnerKey" = "8:_A777E67EF1E24059A4C0F08E45667DA4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A96856E7D8D0CB6905F2CDA44D2CD6D0"
-        "OwnerKey" = "8:_B510B74419FE8DA4FCCDDACC570FD8F1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A96856E7D8D0CB6905F2CDA44D2CD6D0"
-        "OwnerKey" = "8:_942DCD7AC3E8E1F064A6B284CDC1F097"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A96856E7D8D0CB6905F2CDA44D2CD6D0"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B510B74419FE8DA4FCCDDACC570FD8F1"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B510B74419FE8DA4FCCDDACC570FD8F1"
-        "OwnerKey" = "8:_942DCD7AC3E8E1F064A6B284CDC1F097"
+        "MsmKey" = "8:_A777E67EF1E24059A4C0F08E45667DA4"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -153,56 +111,26 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EC88569A7C514B789462190EE0639202"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A777E67EF1E24059A4C0F08E45667DA4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_EC88569A7C514B789462190EE0639202"
+        "OwnerKey" = "8:_9E05B5577FDBFABB586D8DEE7470BCD0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0F1CF0D6335B1FD37747FF3B05ACEAEC"
+        "OwnerKey" = "8:_1F03DA57D74D426AA480ABDC0AB157F8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_70A65DE371ADBAB2D1118E7E6A56362A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0F48504DE9D41A41B9A31A353D2310F7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_942DCD7AC3E8E1F064A6B284CDC1F097"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_349D18933797F760D6146FD5DC931FC7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B510B74419FE8DA4FCCDDACC570FD8F1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A96856E7D8D0CB6905F2CDA44D2CD6D0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -350,21 +278,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0F1CF0D6335B1FD37747FF3B05ACEAEC"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_12EC5D3022D6401792DAF63E2252C30C"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:RestSharp, Version=104.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_0F1CF0D6335B1FD37747FF3B05ACEAEC"
-                    {
-                    "Name" = "8:RestSharp.DLL"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:RestSharp.DLL"
-            "TargetName" = "8:"
+            "SourcePath" = "8:..\\RedBracketConnector.bundle\\Contents\\RedBracketLogo.ico"
+            "TargetName" = "8:RedBracketLogo.ico"
             "Tag" = "8:"
             "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
             "Condition" = "8:"
@@ -378,17 +295,17 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0F48504DE9D41A41B9A31A353D2310F7"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1F03DA57D74D426AA480ABDC0AB157F8"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:ExpandableGridView, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_0F48504DE9D41A41B9A31A353D2310F7"
+                    "_1F03DA57D74D426AA480ABDC0AB157F8"
                     {
                     "Name" = "8:ExpandableGridView.DLL"
                     "Attributes" = "3:512"
@@ -410,26 +327,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_12EC5D3022D6401792DAF63E2252C30C"
-            {
-            "SourcePath" = "8:..\\RedBracketConnector.bundle\\Contents\\RedBracketLogo.ico"
-            "TargetName" = "8:RedBracketLogo.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_22761860C1B043AD98D056485D9ED230"
@@ -481,37 +378,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_349D18933797F760D6146FD5DC931FC7"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AdWindows, Version=3.5.21.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_349D18933797F760D6146FD5DC931FC7"
-                    {
-                    "Name" = "8:AdWindows.DLL"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:AdWindows.DLL"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3FC5A2BCCE0A473195B516CDDF94281D"
@@ -729,20 +595,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_942DCD7AC3E8E1F064A6B284CDC1F097"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9E05B5577FDBFABB586D8DEE7470BCD0"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Acmgd, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:RestSharp, Version=104.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_942DCD7AC3E8E1F064A6B284CDC1F097"
+                    "_9E05B5577FDBFABB586D8DEE7470BCD0"
                     {
-                    "Name" = "8:Acmgd.DLL"
+                    "Name" = "8:RestSharp.DLL"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Acmgd.DLL"
+            "SourcePath" = "8:RestSharp.DLL"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
@@ -756,76 +622,25 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:TRUE"
+            "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A96856E7D8D0CB6905F2CDA44D2CD6D0"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A777E67EF1E24059A4C0F08E45667DA4"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Acdbmgd, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:RBAutocadPlugIn, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_A96856E7D8D0CB6905F2CDA44D2CD6D0"
+                    "_A777E67EF1E24059A4C0F08E45667DA4"
                     {
-                    "Name" = "8:Acdbmgd.DLL"
+                    "Name" = "8:RBAutocadPlugIn.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Acdbmgd.DLL"
+            "SourcePath" = "8:..\\AutocadPlugIn\\bin\\Debug\\RBAutocadPlugIn.dll"
             "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B510B74419FE8DA4FCCDDACC570FD8F1"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:accoremgd, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_B510B74419FE8DA4FCCDDACC570FD8F1"
-                    {
-                    "Name" = "8:accoremgd.DLL"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:accoremgd.DLL"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C80183DF034B4FDAAA8280B1A9C9EA38"
-            {
-            "SourcePath" = "8:..\\RedBracketConnector.bundle\\Contents\\acad.lsp"
-            "TargetName" = "8:acad.lsp"
             "Tag" = "8:"
             "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
             "Condition" = "8:"
@@ -842,21 +657,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EC88569A7C514B789462190EE0639202"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C80183DF034B4FDAAA8280B1A9C9EA38"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AutocadPlugIn, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_EC88569A7C514B789462190EE0639202"
-                    {
-                    "Name" = "8:AutocadPlugIn.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:..\\RedBracketConnector.bundle\\Contents\\AutocadPlugIn.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:..\\RedBracketConnector.bundle\\Contents\\acad.lsp"
+            "TargetName" = "8:acad.lsp"
             "Tag" = "8:"
             "Folder" = "8:_F6171BEC00DE41B19665DD3AA95FDF17"
             "Condition" = "8:"
@@ -963,7 +767,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Redbracket-AutoCAD"
         "ProductCode" = "8:{96427274-D969-4082-BC74-3CA2136A48DD}"
-        "PackageCode" = "8:{AA5A038C-4FE2-438E-8B40-4C573FE14907}"
+        "PackageCode" = "8:{BCBE05CF-E5B1-4327-8644-1478B5934DEA}"
         "UpgradeCode" = "8:{D8532830-7196-4D77-9681-3502B1527AD9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1065,7 +869,7 @@
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
                                             "ValueTypes" = "3:1"
-                                            "Value" = "8:https://test.redbracket.in:8090"
+                                            "Value" = "8:https://pro.redbracket.in:8090"
                                             }
                                         }
                                     }

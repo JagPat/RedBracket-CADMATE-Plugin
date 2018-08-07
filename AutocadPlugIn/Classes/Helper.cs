@@ -47,6 +47,9 @@ namespace AutocadPlugIn
         public static bool IsUpdateLayoutInfo = true;
         public static frmProgressBar objfrmPB = new frmProgressBar();
         public static Color FormBGColor = Color.Azure;
+
+        public static List<string> InvalidCharacter = new List<string>() { "?", "`", "^", "{", "}", "|", @"\", @"&", "/", "'","#" };
+        public static string InvalidCharacterString = "";
         public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
         {
             try
@@ -1660,12 +1663,53 @@ namespace AutocadPlugIn
                       "LAYOUTNAME", };
 
 
+                GenerateInvalidCharacterString();
+
             }
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
            
+        }
+
+        public static bool FileNameCheckForSpecialCharacter(string FileName)
+        {
+            try
+            {
+                GenerateInvalidCharacterString();
+                foreach (string character in InvalidCharacter)
+                {
+                    if(FileName.Contains(character))
+                    {
+                        ShowMessage.ValMess("File name must not contain following character.\n" + @InvalidCharacterString);
+                        return false;
+                    }
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return false;
+            }
+            return true;
+        }
+        public static bool GenerateInvalidCharacterString( )
+        {
+            try
+            {
+                InvalidCharacterString = "";
+                foreach (string character in InvalidCharacter)
+                {
+                    @InvalidCharacterString = @InvalidCharacterString+ @character;
+                }
+                //@InvalidCharacterString = @InvalidCharacterString.Substring(0, @InvalidCharacterString.Length - 1);
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return true;
         }
     }
 }

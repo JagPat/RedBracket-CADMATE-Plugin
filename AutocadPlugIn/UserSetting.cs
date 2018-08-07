@@ -472,12 +472,19 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
                     registryKey = registryKey.OpenSubKey("RedBracketConnector", true);
-                    registryKey = registryKey.OpenSubKey("LoginSettings", true);
-                    if(registryKey.GetValue("firstName").ToString().Length>0)
+                    if(registryKey!=null)
                     {
-                        Username =Convert.ToString(registryKey.GetValue("firstName"));
-                        Helper.UserID = Convert.ToString(registryKey.GetValue("id"));
+                        registryKey = registryKey.OpenSubKey("LoginSettings", true);
+                        if (registryKey != null)
+                        {
+                            if (registryKey.GetValue("firstName").ToString().Length > 0)
+                            {
+                                Username = Convert.ToString(registryKey.GetValue("firstName"));
+                                Helper.UserID = Convert.ToString(registryKey.GetValue("id"));
+                            }
+                        }
                     }
+                    
                     
                 }
 
