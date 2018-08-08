@@ -23,8 +23,8 @@ namespace AutocadPlugIn
         public static string FirstName = "";// Like X
         public static string LastName = "";// Like User
         public static string UserID = ""; // Like 1
-        public static string FileNamePrefix = "RB-";
-        public static string CompanyName = "RedBracket";
+   
+        public static string CompanyName = "redbracket";
         public static bool IsEventAssign = false;
         public static bool IsSavePassword = true;
         public static decimal FileLayoutNameLength = 255;
@@ -466,15 +466,23 @@ namespace AutocadPlugIn
             try
             {
                 string LayoutInfo1 = Convert.ToString(ht["layoutinfo"]);
-                List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
-                foreach (LayoutInfo objLI1 in objLI)
+                if(LayoutInfo1.Trim().Length>0)
                 {
-                    if (objLI1.name == LayoutName)
+                    List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
+                    if(objLI!=null)
                     {
-                        objLayoutInfo = objLI1;
-                        break;
+                        foreach (LayoutInfo objLI1 in objLI)
+                        {
+                            if (objLI1.name == LayoutName)
+                            {
+                                objLayoutInfo = objLI1;
+                                break;
+                            }
+                        }
                     }
+                    
                 }
+                
             }
             catch (Exception E)
             {

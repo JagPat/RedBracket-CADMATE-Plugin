@@ -170,6 +170,7 @@ namespace AutocadPlugIn
         {
             try
             {
+                 // Helper.CloseProgressBar();
                 if (!Helper.IsUpdateLayoutInfo)
                     return;
                 bool IsDocOpend = false;
@@ -182,32 +183,13 @@ namespace AutocadPlugIn
                     Helper.CheckFileInfoFlag = true;
                 }
 
-                //Database db = new Database(false, true); ;
-                //db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+               
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Database db = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
 
                 Hashtable drawingAttrs = new Hashtable();
                 drawingAttrs = documentProperties;
-                //IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
-                //try
-                //{
-
-
-                //    while (en.MoveNext())
-                //    {
-                //        // if(documentProperties==null)
-                //        {
-                //            drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : en.Value);
-                //        }
-                //        // else
-                //        {
-
-                //        }
-
-                //    }
-                //}
-                //catch { }
+               
                 if (drawingAttrs.Count < 0) return;
                 //  using (db)
                 {
@@ -228,7 +210,7 @@ namespace AutocadPlugIn
                                     Hashtable LayoutData = documentProperties; //new Hashtable();
 
 
-                                    //ObjectId ModelSpaceId =SymbolUtilityServices.Get(db);
+                               
 
 
 
@@ -286,7 +268,8 @@ namespace AutocadPlugIn
                                                     if (ar.Tag.ToUpper() == "DRAWINGNAME")
                                                     {
                                                         ar.UpgradeOpen();
-                                                        ar.TextString = drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]);
+                                                        ar.TextString = drawingAttrs["DrawingName"] == null ? string.Empty : Convert.ToString(drawingAttrs["DrawingName"]);
+                                                        ar.TextString = ar.TextString == null || ar.TextString==string.Empty ? drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]) : ar.TextString;
                                                         ar.DowngradeOpen();
                                                     }
                                                     if (ar.Tag.ToUpper() == "PROJECTNAME")
@@ -306,7 +289,8 @@ namespace AutocadPlugIn
                                                     if (ar.Tag.ToUpper() == "DRAWINGVER")
                                                     {
                                                         ar.UpgradeOpen();
-                                                        ar.TextString = drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]); //drawingAttrs["generation"].ToString();
+                                                        ar.TextString = drawingAttrs["Generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["Generation"]); //drawingAttrs["generation"].ToString();
+                                                        ar.TextString = ar.TextString==null || ar.TextString==string.Empty? drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]): ar.TextString;
                                                         ar.DowngradeOpen();
                                                     }
                                                     if (ar.Tag.ToUpper() == "TYPE")
@@ -318,7 +302,8 @@ namespace AutocadPlugIn
                                                     if (ar.Tag.ToUpper() == "DRAWINGSTATE")
                                                     {
                                                         ar.UpgradeOpen();
-                                                        ar.TextString = drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]);
+                                                        ar.TextString = drawingAttrs["DrawingState"] == null ? string.Empty : Convert.ToString(drawingAttrs["DrawingState"]);
+                                                        ar.TextString = ar.TextString == null || ar.TextString == string.Empty ? drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]): ar.TextString;
                                                         ar.DowngradeOpen();
                                                     }
                                                     if (layoutName != "Model")
@@ -330,55 +315,71 @@ namespace AutocadPlugIn
                                                             ar.DowngradeOpen();
                                                         }
                                                         LayoutInfo objLI = Helper.FindLayoutDetail(LayoutData, layoutName);
-                                                        if (ar.Tag.ToUpper() == "CREATEDBY")
+                                                        if(objLI!=null)
                                                         {
-                                                            ar.UpgradeOpen();
-                                                            ar.TextString = objLI.createdby == null ? string.Empty : objLI.createdby; //drawingAttrs["createdby"].ToString();
-                                                            ar.DowngradeOpen();
-                                                        }
-                                                        if (ar.Tag.ToUpper() == "MODIFIEDBY")
-                                                        {
-                                                            ar.UpgradeOpen();
-                                                            ar.TextString = objLI.updatedby == null ? string.Empty : objLI.updatedby; //drawingAttrs["modifiedby"].ToString();
-                                                            ar.DowngradeOpen();
-                                                        }
-                                                        if (ar.Tag.ToUpper() == "CREATEDON")
-                                                        {
-                                                            ar.UpgradeOpen();
-                                                            ar.TextString = objLI.created0n == null ? string.Empty : Helper.FormatDate(objLI.created0n); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
-                                                            ar.DowngradeOpen();
-                                                        }
-                                                        if (ar.Tag.ToUpper() == "MODIFIEDON")
-                                                        {
-                                                            ar.UpgradeOpen();
-                                                            ar.TextString = objLI.updatedon == null ? string.Empty : Helper.FormatDate(objLI.updatedon);//drawingAttrs["modifiedon"].ToString().Substring(0,10);
-                                                            ar.DowngradeOpen();
-                                                        }
-                                                        if (ar.Tag.ToUpper() == "LAYOUTSTATE")
-                                                        {
-                                                            ar.UpgradeOpen();
-                                                            ar.TextString = objLI.statusname == null ? string.Empty : objLI.statusname; //drawingAttrs["drawingstate"].ToString();
-                                                            ar.DowngradeOpen();
-                                                        }
-                                                        if (ar.Tag.ToUpper() == "GOODNOT")
-                                                        {
-                                                            ar.UpgradeOpen();
-                                                            if ((objLI == null ? string.Empty : objLI.status == null ? string.Empty : objLI.status.coretype == null ? string.Empty : objLI.status.coretype.name == null ? string.Empty : objLI.status.coretype.name.ToLower()) == "closed")
+                                                            if (ar.Tag.ToUpper() == "CREATEDBY")
                                                             {
-                                                                ar.TextString = "GOOD";
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.createdby == null ? string.Empty : objLI.createdby; //drawingAttrs["createdby"].ToString();
+                                                                ar.DowngradeOpen();
                                                             }
-                                                            else
+                                                            if (ar.Tag.ToUpper() == "MODIFIEDBY")
                                                             {
-                                                                ar.TextString = "NOT";
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.updatedby == null ? string.Empty : objLI.updatedby; //drawingAttrs["modifiedby"].ToString();
+                                                                ar.DowngradeOpen();
                                                             }
-                                                            ar.DowngradeOpen();
+                                                            if (ar.Tag.ToUpper() == "CREATEDON")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.created0n == null ? string.Empty : Helper.FormatDate(objLI.created0n); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
+                                                                ar.DowngradeOpen();
+                                                            }
+                                                            if (ar.Tag.ToUpper() == "MODIFIEDON")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.updatedon == null ? string.Empty : Helper.FormatDate(objLI.updatedon);//drawingAttrs["modifiedon"].ToString().Substring(0,10);
+                                                                ar.DowngradeOpen();
+                                                            }
+                                                            if (ar.Tag.ToUpper() == "LAYOUTSTATE")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.statusname == null ? string.Empty : objLI.statusname; //drawingAttrs["drawingstate"].ToString();
+                                                                ar.DowngradeOpen();
+                                                            }
+                                                            if (ar.Tag.ToUpper() == "LAYOUTSTATECAPS")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.statusname == null ? string.Empty : objLI.statusname.ToUpper(); //drawingAttrs["drawingstate"].ToString();
+                                                                ar.DowngradeOpen();
+                                                            }
+                                                            if (ar.Tag.ToUpper() == "LAYOUTDISCIPLINE")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.typename == null ? string.Empty : objLI.typename; //drawingAttrs["drawingstate"].ToString();
+                                                                ar.DowngradeOpen();
+                                                            }
+                                                            if (ar.Tag.ToUpper() == "GOODNOT")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                if ((objLI == null ? string.Empty : objLI.status == null ? string.Empty : objLI.status.coretype == null ? string.Empty : objLI.status.coretype.name == null ? string.Empty : objLI.status.coretype.name.ToLower()) == "closed")
+                                                                {
+                                                                    ar.TextString = "GOOD";
+                                                                }
+                                                                else
+                                                                {
+                                                                    ar.TextString = "NOT";
+                                                                }
+                                                                ar.DowngradeOpen();
+                                                            }
+                                                            if (ar.Tag.ToUpper() == "LAYOUTVER")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.versionno == null ? string.Empty : objLI.versionno; //drawingAttrs["revision"].ToString();
+                                                                ar.DowngradeOpen();
+                                                            }
                                                         }
-                                                        if (ar.Tag.ToUpper() == "LAYOUTVER")
-                                                        {
-                                                            ar.UpgradeOpen();
-                                                            ar.TextString = objLI.versionno == null ? string.Empty : objLI.versionno; //drawingAttrs["revision"].ToString();
-                                                            ar.DowngradeOpen();
-                                                        }
+                                                       
                                                     }
                                                 }
                                             }
@@ -2708,13 +2709,13 @@ namespace AutocadPlugIn
 
                                                     string LayoutUnqID = "";
 
-                                                    if (Convert.ToString(OwnID) != Convert.ToString(de.Key))
+                                                    //if (Convert.ToString(OwnID) != Convert.ToString(de.Key))
+                                                    //{
+                                                    //    LayoutUnqID = "";
+                                                    //}
+                                                    //else
                                                     {
-                                                        LayoutUnqID = "";
-                                                    }
-                                                    else
-                                                    {
-                                                        LayoutUnqID = Convert.ToString(de.Key);
+                                                        LayoutUnqID = Convert.ToString(de.Value);
                                                     }
 
 

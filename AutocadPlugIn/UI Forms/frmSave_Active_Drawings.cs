@@ -575,6 +575,7 @@ namespace AutocadPlugIn.UI_Forms
 
         private void submit_Click(object sender, EventArgs e)
         {
+            Helper.CheckFileInfoFlag = true;
             try
             {
 
@@ -602,6 +603,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     ShowMessage.ValMess("Please select at least one file to save.");
                     this.Cursor = Cursors.Default;
+                    Helper.CheckFileInfoFlag = false;
                     return;
                 }
                 #region LayoutTable Settlement
@@ -615,7 +617,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     if (Name_Length_Duplication_Check(selectedTreeGridNodes[0]))
                     {
-                        this.Cursor = Cursors.Default;
+                        this.Cursor = Cursors.Default; Helper.CheckFileInfoFlag = true;
                         return;
                     }
 
@@ -628,7 +630,7 @@ namespace AutocadPlugIn.UI_Forms
                 #region Check for File existance in server
                 if (!CheckFileExistance1(selectedTreeGridNodes[0]) || !CheckFileExistance(selectedTreeGridNodes[0]))
                 {
-                    Helper.CloseProgressBar(); Cursor.Current = Cursors.Default;
+                    Helper.CloseProgressBar(); Cursor.Current = Cursors.Default; Helper.CheckFileInfoFlag = true;
                     return;
                 }
                 #endregion
@@ -674,7 +676,7 @@ namespace AutocadPlugIn.UI_Forms
                         {
                             ShowMessage.InfoMess("You dont have edit permission for this file.");
                             Helper.CloseProgressBar();
-                            this.Cursor = Cursors.Default;
+                            this.Cursor = Cursors.Default; Helper.CheckFileInfoFlag = true;
                             return;
                         }
                     }
@@ -808,13 +810,13 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     Helper.CloseProgressBar();
                     ShowMessage.InfoMess("Save operation successfully completed.");
-                    this.Close();
+                    this.Close(); Helper.CheckFileInfoFlag = true;
                     return;
                 }
                 else
                 {
                     Helper.CloseProgressBar();
-                    ShowMessage.ErrorMessUD("Save operation unsuccessfully completed.");
+                    ShowMessage.ErrorMessUD("Save operation unsuccessfully completed."); Helper.CheckFileInfoFlag = true;
                     return;
                 }
 
@@ -826,6 +828,7 @@ namespace AutocadPlugIn.UI_Forms
                 this.Cursor = Cursors.Default;
             }
             this.Cursor = Cursors.Default;
+            Helper.CheckFileInfoFlag = true;
         }
 
 
@@ -2029,7 +2032,7 @@ namespace AutocadPlugIn.UI_Forms
                     ProjectName = ProjectName == string.Empty ? "My Files" : ProjectName;
                     ProjectNameNo = ProjectNameNo == string.Empty ? "My Files" : ProjectNameNo;
 
-
+                    MyProjectId = MyProjectId == "-1" ? "0" : MyProjectId;
                     AssignValuetoGridCell(selectedTreeNode, "FolderID", "0");
                     AssignValuetoGridCell(selectedTreeNode, "FolderPath", "");
                     AssignValuetoGridCell(selectedTreeNode, "projectname", ProjectNameNo);

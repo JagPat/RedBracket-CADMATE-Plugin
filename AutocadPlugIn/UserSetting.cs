@@ -361,7 +361,7 @@ namespace AutocadPlugIn.UI_Forms
             DriveInfo[] allDrives = DriveInfo.GetDrives();
             foreach (DriveInfo d in allDrives)
             {
-                if (d.DriveType == DriveType.Fixed)
+                if (d.DriveType == DriveType.Fixed || d.DriveType==DriveType.Network)
                     lbDriveList.Items.Add(d.Name);
             }
             txtWorkingDirectory.Text = checkoutUserSettings.checkoutDirPath;

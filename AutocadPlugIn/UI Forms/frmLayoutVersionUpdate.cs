@@ -317,7 +317,6 @@ namespace AutocadPlugIn.UI_Forms
                 foreach (TreeGridNode ChildNode in tgvLayouts.Nodes[0].Nodes)
                 {
                     ChildNode.Cells["LayoutType"].ReadOnly = ChildNode.Cells["LayoutStatus"].ReadOnly = ChildNode.Cells["Description"].ReadOnly = !(bool)ChildNode.Cells[0].Value;
-
                 }
 
             }
