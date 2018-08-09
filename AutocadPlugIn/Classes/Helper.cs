@@ -26,7 +26,7 @@ namespace AutocadPlugIn
    
         public static string CompanyName = "redbracket";
         public static bool IsEventAssign = false;
-        public static bool IsSavePassword = true;
+        public static bool IsSavePassword = false;
         public static decimal FileLayoutNameLength = 255;
 
         public static string CurrentVersion = "";

@@ -108,6 +108,7 @@ namespace AutocadPlugIn
             {
                 try
                 {
+
                     RunMyCommand();
                     DocumentCollection DC = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager;
                     if (DC != null)
@@ -150,6 +151,14 @@ namespace AutocadPlugIn
             {
                 try
                 {
+                    CADRibbon objcr = new CADRibbon();
+                    if (!connect)
+                    {
+                        //objcr.GetVersion(ref objcr.CurrentVersion,ref objcr.LatestVersion);
+                        objcr.RBRibbon();
+                        return;
+                    }
+
                     if (!Helper.CheckFileInfoFlag)
                         return;
 
@@ -163,7 +172,7 @@ namespace AutocadPlugIn
                             {
                                 Cursor.Current = Cursors.WaitCursor;
                                 doc.Editor.WriteMessage("\n{0} activated.", e.Document.Name);
-                                CADRibbon objcr = new CADRibbon();
+
 
                                 objcr.RBRibbon();
                                 if (Helper.CurrentVersion != Helper.LatestVersion)
@@ -228,6 +237,14 @@ namespace AutocadPlugIn
         public void GetVersion(ref string CurrentVersion, ref string LatestVersion)
         {
             //return;
+
+            if (!connect)
+            {
+                Helper.CurrentVersion = CurrentVersion = "";
+                Helper.LatestVersion = LatestVersion = "";
+                return;
+            }
+
             if (!Helper.CheckFileInfoFlag)
                 return;
             Cursor.Current = Cursors.WaitCursor;
@@ -276,6 +293,40 @@ namespace AutocadPlugIn
             try
             {
 
+                Tab = new RibbonTab();
+                panel1Panel = new RibbonPanelSource();
+                Panel1 = new RibbonPanel();
+
+                panel2 = new RibbonPanel();
+                panel2Panel = new RibbonPanelSource();
+
+                Panel3 = new RibbonPanel();
+                pan3Panel = new RibbonPanelSource(); 
+
+                panel4Panel = new RibbonPanelSource();
+                panel4 = new RibbonPanel();
+
+                rpsSave = new RibbonPanelSource();
+                rpSave = new RibbonPanel(); 
+
+                panel5 = new RibbonPanel();
+                panel5Panel = new RibbonPanelSource(); 
+
+                panel6 = new RibbonPanel();
+                panel6Panel = new RibbonPanelSource(); 
+
+                panel7 = new RibbonPanel();
+                panel7Panel = new RibbonPanelSource();
+
+
+                rpCurrentDI = new RibbonPanel();
+                rpsCurrentDI = new RibbonPanelSource();
+
+
+
+
+
+
 
                 //if (!RedBracketConnector.Helper.IsEventAssign)
                 {
@@ -291,12 +342,28 @@ namespace AutocadPlugIn
 
                 if (ribbonStatus)
                 {
-                    Tab = ribbonControl.FindTab("Redbracket_TAB_ID");
-                    Tab.Panels.Clear();
-                    ribbonControl.Tabs.Remove(Tab);
+                    RibbonTab Tab1;
+                    do
+                    {
+                        try
+                        {
+                            Tab1 = ribbonControl.FindTab("Redbracket_TAB_ID");
+                            if (Tab1 != null)
+                            {
+                                Tab1.Panels.Clear();
+                                ribbonControl.Tabs.Remove(Tab1);
+                            }
+
+                        }
+                        catch (System.Exception E)
+                        {
+                            Tab1 = new RibbonTab();
+                        }
+                    } while (Tab1 != null);
+
                 }
 
-                if(ribbonControl==null)
+                if (ribbonControl == null)
                 {
                     return;
                 }
@@ -322,6 +389,9 @@ namespace AutocadPlugIn
                     Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
                     Btn_Connection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
                     Btn_Connection.CommandHandler = new Connect();
+
+                    Helper.CurrentVersion = "";
+                    Helper.LatestVersion = "";
                 }
                 else
                 {
@@ -348,6 +418,8 @@ namespace AutocadPlugIn
                 panel2Panel.Title = "File Operations";
                 panel2.Source = panel2Panel;
                 Tab.Panels.Add(panel2);
+
+                
 
                 Btn_BrowseDrawing.Text = "Open File";
                 Btn_BrowseDrawing.ShowText = true;
@@ -581,7 +653,8 @@ namespace AutocadPlugIn
 
                 Tab.IsActive = true;
             }
-            catch { }
+            catch (System.Exception E)
+            { }
 
         }
 
