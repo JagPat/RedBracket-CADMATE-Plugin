@@ -899,13 +899,13 @@ namespace AutocadPlugIn
                 }
                 else
                 {
-                    ShowMessage.ValMess("Please save this drawing to RedBracket.");
+                    ShowMessage.ValMess("Please save this drawing to "+Helper.CompanyName+".");
                     return;
                 }
             }
             else
             {
-                ShowMessage.ValMess("Please save this drawing to RedBracket.");
+                ShowMessage.ValMess("Please save this drawing to " + Helper.CompanyName + ".");
                 return;
             }
         }

@@ -252,7 +252,8 @@ namespace AutocadPlugIn.UI_Forms
                         {
                             BtnBrowseFolder.Visible = true;
                         }
-                        string LIStatus = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 ? "Empty" : "Filled";
+                        //string LIStatus = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 && !IsSaveAs? "Empty" : "Filled";
+                        string LIStatus = IsSaveAs? dtLayoutInfo==null || dtLayoutInfo.Rows.Count==0 ? "Empty" : "Filled" : Convert.ToString(rw["DrawingId"]).Trim().Length == 0  ? "Empty" : "Filled";
                         if (LIStatus == "Empty")
                         {
                             dtLayoutInfo.Rows.Clear();
@@ -663,7 +664,7 @@ namespace AutocadPlugIn.UI_Forms
                     Is_Delete = true;
                 }
                 //Helper.CloseProgressBar();
-                // return;
+                //return;
 
 
                 // to iterate selected file
@@ -1807,7 +1808,7 @@ namespace AutocadPlugIn.UI_Forms
                 {
                     dtLayoutInfo = new System.Data.DataTable();
                 }
-                if (dtLayoutInfo.Rows.Count == 0)
+                if (dtLayoutInfo.Rows.Count == 0 || IsSaveAs)
                 {
                     FillLayoutInfoFromUser(selectedTreeNode, false);
                     dtLayoutInfo = GetdtLayoutInfoFromTag(selectedTreeNode);

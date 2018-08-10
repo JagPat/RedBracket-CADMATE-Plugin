@@ -317,6 +317,12 @@ namespace AutocadPlugIn
                                                         LayoutInfo objLI = Helper.FindLayoutDetail(LayoutData, layoutName);
                                                         if(objLI!=null)
                                                         {
+                                                            if (ar.Tag.ToUpper() == "LAYOUTNUMBER")
+                                                            {
+                                                                ar.UpgradeOpen();
+                                                                ar.TextString = objLI.fileNo == null ? string.Empty : objLI.fileNo;  
+                                                                ar.DowngradeOpen();
+                                                            }
                                                             if (ar.Tag.ToUpper() == "CREATEDBY")
                                                             {
                                                                 ar.UpgradeOpen();
@@ -362,7 +368,7 @@ namespace AutocadPlugIn
                                                             if (ar.Tag.ToUpper() == "GOODNOT")
                                                             {
                                                                 ar.UpgradeOpen();
-                                                                if ((objLI == null ? string.Empty : objLI.status == null ? string.Empty : objLI.status.coretype == null ? string.Empty : objLI.status.coretype.name == null ? string.Empty : objLI.status.coretype.name.ToLower()) == "closed")
+                                                                if ((objLI.CoreStatus == null ? string.Empty : objLI.CoreStatus.ToLower()) == "closed")
                                                                 {
                                                                     ar.TextString = "GOOD";
                                                                 }
@@ -3316,7 +3322,7 @@ namespace AutocadPlugIn
                                     //    acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
                                     //}
 
-                                    if (layout.LayoutName == OldLayoutName)
+                                    if (layout.LayoutName == OldLayoutName || layout.LayoutName.Contains(OldLayoutName))
                                     {
                                         layout.LayoutName = NewLayoutName;
 

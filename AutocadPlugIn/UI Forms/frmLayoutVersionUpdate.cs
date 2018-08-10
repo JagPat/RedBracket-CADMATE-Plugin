@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms; 
+using System.Windows.Forms;
 using AdvancedDataGridView;
 using System.Collections;
 
@@ -23,12 +23,12 @@ namespace AutocadPlugIn.UI_Forms
         public string ProjectID = "";
         public string FilePath = "";
         public string OldDWGNo = "";
-        
+
         public DataTable dtLayoutInfo = new DataTable();
         RBConnector objRBC = new RBConnector();
         AutoCADManager CadManager = new AutoCADManager();
         public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "",
-            string ProjectID = "", string FilePath = "",string OldDWGNo="")
+            string ProjectID = "", string FilePath = "", string OldDWGNo = "")
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
             this.Fileid = Fileid;
@@ -94,11 +94,21 @@ namespace AutocadPlugIn.UI_Forms
                     DataRow dr = dtLI.NewRow();
                     string LayoutName = key.Key.ToString();
                     string LayoutID1 = key.Value.ToString();
-                    string DrawingNO =  "";
+                    string DrawingNO = "";
                     dr["Name"] = LayoutName;
                     dr["ACLayoutID"] = LayoutID1;
-                    dr["BasicLayoutName"] = LayoutName;
                     string tempLN = LayoutName;
+                    if (LayoutName.Contains("_") && LayoutName.Contains(OldDWGNo))
+                    {
+                        LayoutName = LayoutName.Substring(0, LayoutName.LastIndexOf("_"));
+                        if (LayoutName.Contains("_"))
+                        {
+                            LayoutName = LayoutName.Substring(0, LayoutName.LastIndexOf("_"));
+                        }
+                    }
+
+                    dr["BasicLayoutName"] = LayoutName;
+                    
                     if (tempLN.Contains("_"))
                     {
                         string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
@@ -113,7 +123,7 @@ namespace AutocadPlugIn.UI_Forms
                             DataRow[] rw1 = dtLayoutInfo.Copy().Select("FileLayoutName like '%" + LN + "'");
                             if (rw1.Length > 0)
                             {
-                                
+
                             }
                         }
                     }
@@ -122,11 +132,11 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 dtLI = Helper.SortTable(dtLI, "NO");
                 foreach (DataRow dr in dtLI.Rows)
-               
+
                 {
-                    string DrawingNO = Convert.ToString(dr["DrawingNo"]).Length>7? Convert.ToString(dr["DrawingNo"]).Substring(2):"";
+                    string DrawingNO = Convert.ToString(dr["DrawingNo"]).Length > 7 ? Convert.ToString(dr["DrawingNo"]).Substring(2) : "";
                     string LayoutName = Convert.ToString(dr["Name"]);
-                    
+                    //Helper.CloseProgressBar();
                     bool IsAvailable = false;
                     DataRow rw = dtLayoutInfo.NewRow();
                     foreach (DataRow rw2 in dtLayoutInfo.Rows)
@@ -149,20 +159,20 @@ namespace AutocadPlugIn.UI_Forms
                         //if (LayoutID1 == Convert.ToString(rw["ACLayoutID"]))
                         {
                             string tempLN = LayoutName;
-                            if(tempLN.Contains("_"))
-                            {
-
-                            
-                            string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
-                            tempLN = tempLN.Replace(DN, "");
                             if (tempLN.Contains("_"))
                             {
-                                string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
-                                if (DrawingNO == OldDWGNo)
+
+
+                                string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                                tempLN = tempLN.Replace(DN, "");
+                                if (tempLN.Contains("_"))
                                 {
-                                      rw2["LayoutName1"]= LayoutName.Replace("_"+ Convert.ToString(dr["NO"]) + "_" +DrawingNO, "");
+                                    string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                                    if (DrawingNO == OldDWGNo)
+                                    {
+                                        rw2["LayoutName1"] = LayoutName.Replace("_" + Convert.ToString(dr["NO"]) + "_" + DrawingNO, "");
+                                    }
                                 }
-                            }
                             }
                             rw = rw2;
 
@@ -189,7 +199,7 @@ namespace AutocadPlugIn.UI_Forms
                                     rw = rw1[0];
                                     rw["ChangeVersion"] = IsAvailable = true;
                                     rw["FileLayoutName"] = rw["LayoutName1"] = LayoutName;
-                                    
+
                                     if (DrawingNO != OldDWGNo)
                                     {
                                         dr["Name"] = LayoutName.Replace(LN, "");
@@ -227,7 +237,7 @@ namespace AutocadPlugIn.UI_Forms
 
                 }
 
- 
+
                 {
                     // write code to get layout data from RB and compare them with current layout
                     // if no data available at RB then load default data as follow

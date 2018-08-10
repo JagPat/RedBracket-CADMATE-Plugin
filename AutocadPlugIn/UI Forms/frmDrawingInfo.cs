@@ -206,7 +206,7 @@ namespace AutocadPlugIn.UI_Forms
                 string TempFilePath = "";
                 if (objRSC != null)
                 {
-                    TempFilePath = Helper.DownloadFile(LatestDrawingID, "true", true);
+                    //TempFilePath = Helper.DownloadFile(LatestDrawingID, "true", true);
                     Helper.IncrementProgressBar(1, "Filling Latest file info.");
                     lbDrawingNameL.Text = Convert.ToString(objRSC.name);
 
@@ -425,33 +425,33 @@ namespace AutocadPlugIn.UI_Forms
                     }
                 }
                 btnSave.Enabled = false;
-                if (System.IO.File.Exists(TempFilePath))
+                //if (System.IO.File.Exists(TempFilePath))
+                //{
+                //    Helper.IncrementProgressBar(1, "Comparing file info.");
+                //    string TempFilePath1 = Helper.CopyTempFile(FilePath);
+                //    //Comparing Files
+                //    bool IsSame = Helper.FileCompare(TempFilePath, TempFilePath1);
+                //    long LocalFile = Helper.GetFileSizeOnDisk(TempFilePath1);
+                //    long ServerFile = Helper.GetFileSizeOnDisk(TempFilePath);
+                //    if (LocalFile != ServerFile)
+                //    {
+                //        lbVersionC.Text = lbVersionC.Text + "+";
+                //    }
+
+                    
+                //}
+                for (int i = 1; i < tlpMain.RowCount; i++)
                 {
-                    Helper.IncrementProgressBar(1, "Comparing file info.");
-                    string TempFilePath1 = Helper.CopyTempFile(FilePath);
-                    //Comparing Files
-                    bool IsSame = Helper.FileCompare(TempFilePath, TempFilePath1);
-                    long LocalFile = Helper.GetFileSizeOnDisk(TempFilePath1);
-                    long ServerFile = Helper.GetFileSizeOnDisk(TempFilePath);
-                    if (LocalFile != ServerFile)
+                    Control lblLabel = tlpMain.GetControlFromPosition(0, i);
+                    Control ctrlCurrent = tlpMain.GetControlFromPosition(1, i);
+                    Control lblLatest = tlpMain.GetControlFromPosition(2, i);
+
+
+                    if (ctrlCurrent != null && lblLatest != null && lblLabel != null && lblLabel is Label)
                     {
-                        lbVersionC.Text = lbVersionC.Text + "+";
-                    }
-
-                    for (int i = 1; i < tlpMain.RowCount; i++)
-                    {
-                        Control lblLabel = tlpMain.GetControlFromPosition(0, i);
-                        Control ctrlCurrent = tlpMain.GetControlFromPosition(1, i);
-                        Control lblLatest = tlpMain.GetControlFromPosition(2, i);
-
-
-                        if (ctrlCurrent != null && lblLatest != null && lblLabel != null && lblLabel is Label)
-                        {
-                            CompareProperties(ctrlCurrent, lblLatest, lblLabel);
-                        }
+                        CompareProperties(ctrlCurrent, lblLatest, lblLabel);
                     }
                 }
-
 
 
 
@@ -811,13 +811,14 @@ namespace AutocadPlugIn.UI_Forms
                 bool IsControlNull = false;
                 bool IsAllLayoutClose = true;
                 int count = 1;
+
                 while (!IsControlNull)
                 {
-
+                    
                     ComboBox cmbstatus = tlpMain.Controls.Find("cmbLayoutStatusC" + count, false).FirstOrDefault() as ComboBox;
 
-
-                    if (cmbstatus == null)
+                    Label Name = tlpMain.Controls.Find("lbLayoutNameC" + count, false).FirstOrDefault() as Label;
+                    if (cmbstatus == null || Convert.ToString(Name.Tag).Trim().Length==0)
                     {
                         IsControlNull = true;
                     }
@@ -845,6 +846,10 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
+                if(cmb==null)
+                {
+                    return false;
+                }
                 DataTable dtStatus = objRBC.GetFIleStatus();
 
                 string FileStatus = "";

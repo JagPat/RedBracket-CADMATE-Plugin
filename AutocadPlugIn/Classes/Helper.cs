@@ -23,7 +23,7 @@ namespace AutocadPlugIn
         public static string FirstName = "";// Like X
         public static string LastName = "";// Like User
         public static string UserID = ""; // Like 1
-   
+
         public static string CompanyName = "redbracket";
         public static bool IsEventAssign = false;
         public static bool IsSavePassword = false;
@@ -48,13 +48,12 @@ namespace AutocadPlugIn
         public static frmProgressBar objfrmPB = new frmProgressBar();
         public static Color FormBGColor = Color.Azure;
 
-        public static List<string> InvalidCharacter = new List<string>() { "?", "`", "^", "{", "}", "|", @"\", @"&", "/", "'","#" };
+        public static List<string> InvalidCharacter = new List<string>() { "?", "`", "^", "{", "}", "|", @"\", @"&", "/", "'", "#" };
         public static string InvalidCharacterString = "";
         public static void GetProgressBar(int MaxValue, string Title = null, string Status = null)
         {
             try
             {
-
                 objfrmPB = new frmProgressBar();
                 objfrmPB.lblTitle.Text = Title;
                 objfrmPB.lblStatus.Text = Status;
@@ -79,7 +78,7 @@ namespace AutocadPlugIn
         public static DataTable dtFileType = new DataTable();
         public static DataTable dtFileStatus = new DataTable();
         public static DataTable dtProjectDetail = new DataTable();
-        public static List<string> DrawingAttributes = new List<string>()  ;
+        public static List<string> DrawingAttributes = new List<string>();
         public static List<string> LayoutAttributes = new List<string>();
         public static List<string> TestingAttributes = new List<string>();
 
@@ -120,11 +119,11 @@ namespace AutocadPlugIn
         {
             try
             {
-                if(IsPBActive)
+                if (IsPBActive)
                 {
                     objfrmPB.Hide();
                 }
-                
+
             }
             catch (Exception E)
             {
@@ -142,7 +141,7 @@ namespace AutocadPlugIn
                     objfrmPB.pbProcess.Refresh();
                     objfrmPB.Refresh();
                 }
-    
+
             }
             catch (Exception E)
             {
@@ -329,12 +328,18 @@ namespace AutocadPlugIn
             string RValue = "";
             try
             {
-                DataRow[] dr = dt.Select(ValueMember + " = '" + Value + "'");
-
-                if (dr.Length > 0)
+                if(dt.Columns.Contains(ValueMember))
                 {
-                    RValue = Convert.ToString(dr[0][DisplayMember]);
+                    DataRow[] dr = dt.Select(ValueMember + " = '" + Value + "'");
+
+                    if (dr.Length > 0)
+                    {
+                        
+                        if (dr.CopyToDataTable().Columns.Contains(DisplayMember))
+                            RValue = Convert.ToString(dr[0][DisplayMember]);
+                    }
                 }
+                
             }
             catch (Exception E)
             {
@@ -443,6 +448,7 @@ namespace AutocadPlugIn
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedBy", objLI1.updatedby);
                             DrawingProperty.Add("Layout_" + Count + "_UpdatedOn", objLI1.updatedon);
 
+
                             // Count++;
                         }
                     }
@@ -466,10 +472,10 @@ namespace AutocadPlugIn
             try
             {
                 string LayoutInfo1 = Convert.ToString(ht["layoutinfo"]);
-                if(LayoutInfo1.Trim().Length>0)
+                if (LayoutInfo1.Trim().Length > 0)
                 {
                     List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
-                    if(objLI!=null)
+                    if (objLI != null)
                     {
                         foreach (LayoutInfo objLI1 in objLI)
                         {
@@ -480,9 +486,9 @@ namespace AutocadPlugIn
                             }
                         }
                     }
-                    
+
                 }
-                
+
             }
             catch (Exception E)
             {
@@ -563,6 +569,7 @@ namespace AutocadPlugIn
                     dtLayoutInfo.Columns.Add("CreatedOn");
                     dtLayoutInfo.Columns.Add("UpdatedBy");
                     dtLayoutInfo.Columns.Add("UpdatedOn");
+                    dtLayoutInfo.Columns.Add("CoreStatus");
                     if (fileLayout != null)
                     {
                         foreach (LayoutInfo obj in fileLayout)
@@ -589,6 +596,7 @@ namespace AutocadPlugIn
                             dr["UpdatedBy"] = obj.updatedby;
                             dr["UpdatedOn"] = obj.updatedon;
                             dr["FileLayoutName"] = obj.name;
+                            dr["CoreStatus"] = obj.status != null ? obj.status.coretype != null ? obj.status.coretype.name != null ? obj.status.coretype.name : string.Empty : string.Empty : string.Empty; ;
                             dtLayoutInfo.Rows.Add(dr);
                         }
                         dtLayoutInfo = Helper.SortTable(dtLayoutInfo.Copy(), "Seq");
@@ -632,7 +640,7 @@ namespace AutocadPlugIn
                     objLI.created0n = Convert.ToString(dr["CreatedOn"]);
                     objLI.updatedby = Convert.ToString(dr["UpdatedBy"]);
                     objLI.updatedon = Convert.ToString(dr["UpdatedOn"]);
-
+                    objLI.CoreStatus = Convert.ToString(dr["CoreStatus"]);
 
 
 
@@ -770,6 +778,12 @@ namespace AutocadPlugIn
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
+                        LayoutInfos += @"""CoreStatus""";
+                        LayoutInfos += @":";
+                        LayoutInfos += @"""";
+                        LayoutInfos += obj.CoreStatus != null ? obj.CoreStatus : string.Empty;
+                        LayoutInfos += @"""";
+                        LayoutInfos += @",";
 
 
 
@@ -967,7 +981,7 @@ namespace AutocadPlugIn
                         {
                             if (DownloadedFiles == null || !DownloadedFiles.Contains(FilePath))
                             {
-                                 
+
                                 if (ShowMessage.InfoYNMess("This file is already in working directory,\n Do you want to replace it ?\n" + FilePath) == DialogResult.Yes)
                                 {
                                     File.Delete(FilePath);
@@ -975,7 +989,7 @@ namespace AutocadPlugIn
                                 else
                                 {
                                     FileRename(FilePath);
-                                } 
+                                }
                             }
                             else
                             {
@@ -1007,7 +1021,7 @@ namespace AutocadPlugIn
                     XrefStatus = false,
                     Prefix = PreFix
                 };
-                if (lstobjDownloadedFiles==null)
+                if (lstobjDownloadedFiles == null)
                 {
                     lstobjDownloadedFiles = new List<clsDownloadedFiles>();
                 }
@@ -1021,9 +1035,9 @@ namespace AutocadPlugIn
                         ParentFileName = Drawing.name,
                         ParentPrefix = PreFix,
                         Prefix = PreFix
-                        
+
                     };
-                  
+
                     lstobjDownloadedFiles1.Add(objDF);
                     if (Drawing.filebean != null)
                         GetTotalChild(Drawing.filebean, Drawing, lstobjDownloadedFiles1);
@@ -1043,7 +1057,7 @@ namespace AutocadPlugIn
                     {
                         foreach (var item in lstobjDownloadedFiles)
                         {
-                            if(item1.ParentFileName==Helper.RemovePreFixFromFileName(Path.GetFileName(item.ParentFilePath),item1.ParentPrefix))
+                            if (item1.ParentFileName == Helper.RemovePreFixFromFileName(Path.GetFileName(item.ParentFilePath), item1.ParentPrefix))
                             {
                                 item1.MainFilePath = item.MainFilePath;
                                 item1.ParentFilePath = item.ParentFilePath;
@@ -1072,7 +1086,7 @@ namespace AutocadPlugIn
                     if (!IsTemp)
                     {
                         cadManager.SetAttributesXrefFiles(DrawingProperty, FilePath);
-                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath,false);
+                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath, false);
                     }
                 }
             }
@@ -1093,9 +1107,9 @@ namespace AutocadPlugIn
                         FileName = child.name,
                         ParentFileName = father.name,
                         Prefix = Helper.GetPreFix(child.versionno, child.projectNumber, child.fileNo, child.type == null ? string.Empty : child.type.name == null ? string.Empty : child.type.name),
-                        ParentPrefix= Helper.GetPreFix(father.versionno, father.projectNumber, father.fileNo, father.type == null ? string.Empty : father.type.name == null ? string.Empty : father.type.name)
+                        ParentPrefix = Helper.GetPreFix(father.versionno, father.projectNumber, father.fileNo, father.type == null ? string.Empty : father.type.name == null ? string.Empty : father.type.name)
 
-                };
+                    };
                     lstobjDownloadedFiles.Add(objDF);
                     if (child.filebean != null)
                         GetTotalChild(child.filebean, child, lstobjDownloadedFiles);
@@ -1658,7 +1672,7 @@ namespace AutocadPlugIn
                 objRBC.GetFIleStatus();
                 objRBC.GetProjectDetail();
                 DrawingAttributes = new List<string>() {
-                    "DRAWINGNUMBER",  
+                    "DRAWINGNUMBER",
                     "DRAWINGNAME", "PROJECTNAME", "PROJECTNUMBER", "DRAWINGVER",
                     "TYPE", "DRAWINGSTATE"  };
 
@@ -1667,7 +1681,7 @@ namespace AutocadPlugIn
                     "MODIFIEDBY", "CREATEDON", "MODIFIEDON", "LAYOUTSTATE",
                     "GOODNOT", "LAYOUTVER" };
 
-               TestingAttributes = new List<string>() {
+                TestingAttributes = new List<string>() {
                       "LAYOUTNAME", };
 
 
@@ -1678,7 +1692,7 @@ namespace AutocadPlugIn
             {
                 ShowMessage.ErrorMess(E.Message);
             }
-           
+
         }
 
         public static bool FileNameCheckForSpecialCharacter(string FileName)
@@ -1688,7 +1702,7 @@ namespace AutocadPlugIn
                 GenerateInvalidCharacterString();
                 foreach (string character in InvalidCharacter)
                 {
-                    if(FileName.Contains(character))
+                    if (FileName.Contains(character))
                     {
                         ShowMessage.ValMess("File name must not contain following character.\n" + @InvalidCharacterString);
                         return false;
@@ -1702,14 +1716,14 @@ namespace AutocadPlugIn
             }
             return true;
         }
-        public static bool GenerateInvalidCharacterString( )
+        public static bool GenerateInvalidCharacterString()
         {
             try
             {
                 InvalidCharacterString = "";
                 foreach (string character in InvalidCharacter)
                 {
-                    @InvalidCharacterString = @InvalidCharacterString+ @character;
+                    @InvalidCharacterString = @InvalidCharacterString + @character;
                 }
                 //@InvalidCharacterString = @InvalidCharacterString.Substring(0, @InvalidCharacterString.Length - 1);
             }

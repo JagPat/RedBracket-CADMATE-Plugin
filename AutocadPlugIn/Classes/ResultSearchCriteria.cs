@@ -292,6 +292,7 @@ namespace AutocadPlugIn
 
         //public string versionNo { set; get; }
         public string layoutId { set; get; }
+        public string CoreStatus { set; get; }
 
     }
 }
