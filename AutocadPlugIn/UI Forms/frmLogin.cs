@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Text;
-using System.Windows.Forms;
-
-using Microsoft.Win32; 
+using System.Windows.Forms; 
+using Microsoft.Win32;
 using System.IO;
 
 namespace AutocadPlugIn
 {
-    public partial class login : Form
+    public partial class frmLogin : Form
     {
-        public login()
+        public frmLogin()
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
         }
 
-        private void LoginInformation_Load(object sender, EventArgs e)
+        private void frmLogin_Load(object sender, EventArgs e)
         {
             try
             {
@@ -92,7 +91,7 @@ namespace AutocadPlugIn
         {
             ConnectToRB();
             this.Cursor = Cursors.Default;
-            
+
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -122,7 +121,6 @@ namespace AutocadPlugIn
                 if (controller.infoMessage != null)
                 {
                     ShowMessage.ValMess(controller.infoMessage);
-                    //MessageBox.Show(controller.infoMessage, "Error");
                     this.Cursor = Cursors.Default;
                     return;
                 }
@@ -133,7 +131,6 @@ namespace AutocadPlugIn
                 if (controller1.errorString != null)
                 {
                     ShowMessage.ErrorMess(controller1.errorString);
-                    //Globals.Ribbons.ARASRibbon.IsConnected = false;
                     this.Cursor = Cursors.Default;
                     Helper.CloseProgressBar();
                     return;
@@ -175,12 +172,11 @@ namespace AutocadPlugIn
                         ShowMessage.ErrorMess(E.Message);
                     }
 
-                    //Helper.UserName = txt_username.Text;
-                    //Helper.UserID = "1";
+
                     AutocadPlugIn.UI_Forms.CheckoutUserSettings CheckOUT = AutocadPlugIn.UI_Forms.UserSettings.createUserSetting().getCheckoutUserSettings();
-                    //CheckOUT.checkoutDirPath = ArasConnector.ArasConnector.sg_WorkingDir.ToString();
+
                     CADRibbon cr = new CADRibbon();
-                    //ArasConnector.ArasConnector.Isconnected = true;
+
                     CADRibbon.connect = controller1.isConnect;
                     cr.browseDEnable = true;
                     cr.createDEnable = true;
@@ -189,13 +185,9 @@ namespace AutocadPlugIn
                     cr.SaveEnable = true;
                     cr.RBRibbon();
                 }
-                Helper.CloseProgressBar();
-                //Globals.Ribbons.ARASRibbon.IsConnected = true;
-                this.Cursor = Cursors.Default;
-                //MessageBox.Show(controller.infoMessage);
-
-                this.Close();
-
+                Helper.CloseProgressBar(); 
+                this.Cursor = Cursors.Default; 
+                this.Close(); 
             }
             catch (Exception E)
             {
@@ -208,8 +200,7 @@ namespace AutocadPlugIn
             try
             {
                 if (loggedUserDetails == null)
-                {
-                    //MessageBox.Show("Connection to RedBracket failed. Please try again. If the problem persists, please contact your administrator.");
+                { 
                     return;
                 }
 
@@ -221,9 +212,9 @@ namespace AutocadPlugIn
                 registryKey.SetValue("firstName", loggedUserDetails.firstName);
                 registryKey.SetValue("lastName", loggedUserDetails.lastName);
                 registryKey.SetValue("companyId", loggedUserDetails.companyId);
-                registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin==null ?"": loggedUserDetails.isCompanyAdmin);
+                registryKey.SetValue("isCompanyAdmin", loggedUserDetails.isCompanyAdmin == null ? "" : loggedUserDetails.isCompanyAdmin);
                 registryKey.SetValue("mobile", loggedUserDetails.mobile == null ? string.Empty : loggedUserDetails.mobile);
-                registryKey.SetValue("status", loggedUserDetails.status==null ? string.Empty: loggedUserDetails.status);
+                registryKey.SetValue("status", loggedUserDetails.status == null ? string.Empty : loggedUserDetails.status);
                 registryKey.SetValue("active", loggedUserDetails.active);
                 registryKey.SetValue("deleted", loggedUserDetails.deleted);
             }

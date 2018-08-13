@@ -11,7 +11,7 @@ namespace AutocadPlugIn.UI_Forms
     public partial class frmLockUnLock : Form
     {
         public ArrayList drawings = new ArrayList();
-        ICADManager cadManager = new AutoCADManager();
+     
 
         public frmLockUnLock()
         {
@@ -41,7 +41,7 @@ namespace AutocadPlugIn.UI_Forms
                 int counter = 0;
                 
 
-                dtTreeGridData = cadManager.GetExternalRefreces();
+                dtTreeGridData = Helper.cadManager.GetDrawingExternalRefreces();
 
                 TreeGridNode node = new TreeGridNode();
 

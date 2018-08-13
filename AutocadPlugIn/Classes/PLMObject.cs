@@ -46,7 +46,7 @@ namespace AutocadPlugIn
         private String lockStatus;
         private String lockBy;
         private String objectStatus; //New OR 'Exists in ARAS'
-        private UIData uiData;
+       
         private bool isCreateNewRevision;
         private bool isManualVersion;
 
@@ -231,12 +231,7 @@ namespace AutocadPlugIn
             get { return this.objectStatus; }
             set { this.objectStatus = value; }
         }
-        public UIData UIData
-        {
-            get { return this.uiData; }
-            set { this.uiData = value; }
-        }
-
+       
         public bool canDelete { get; set; }
         public bool isowner { get; set; }
         public bool hasViewPermission { get; set; }

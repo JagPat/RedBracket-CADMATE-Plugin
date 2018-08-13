@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections; 
+using System.Collections;
 namespace AutocadPlugIn
 {
     public class LockController : BaseController
@@ -9,7 +9,7 @@ namespace AutocadPlugIn
         public override void Execute(Command command)
         {
             LockCommand cmd = (LockCommand)command;
-            LockUnLockUpdater lockUnLockUpdater = new LockUnLockUpdater();
+             
             try
             {
                 List<PLMObject> drawingObjects = new List<PLMObject>();
@@ -22,8 +22,7 @@ namespace AutocadPlugIn
 
                     drawingObjects.Add(drawing);
                 }
-                lockUnLockUpdater.LockObject(drawingObjects);
-                // objConnector.LockObject(drawingObjects);
+                Helper.objRBC.LockObject(drawingObjects);
             }
             catch (Exception ex)
             {
@@ -36,14 +35,14 @@ namespace AutocadPlugIn
         {
             try
             {
-                LockUnLockUpdater lockUnLockUpdater = new LockUnLockUpdater();
+                 
                 LockCommand cmd = (LockCommand)command;
                 dtNewPlmObjInfomation = cmd.DrawingInfo;
-                //objConnector.LockStatus(ref dtNewPlmObjInfomation);
-                lockUnLockUpdater.LockStatus(ref dtNewPlmObjInfomation);
+                
+                Helper.objRBC.LockStatus(ref dtNewPlmObjInfomation);
                 return dtNewPlmObjInfomation;
             }
-            catch ( Exception ex)
+            catch (Exception ex)
             {
                 errorString = ex.Message.ToString();
                 return null;

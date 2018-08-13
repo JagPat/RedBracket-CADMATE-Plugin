@@ -549,7 +549,10 @@ namespace AutocadPlugIn
                 RestResponse restResponse;
                 //service calling 
 
-
+                if (LayoutID ==null|| LayoutID.Trim().Length==0)
+                {
+                    return false;
+                }
 
                 restResponse = (RestResponse)ServiceHelper.PostData(
               Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
@@ -1161,7 +1164,7 @@ namespace AutocadPlugIn
             }
         }
 
-        public void LockObject(List<PLMObject> plmObjs)
+        public bool LockObject(List<PLMObject> plmObjs)
         {
             try
             {
@@ -1183,13 +1186,15 @@ namespace AutocadPlugIn
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
                         ShowMessage.ErrorMess("Some error occurred while locking file.", restResponse);
+                        return false;
                     }
                 }
             }
             catch (Exception ex)
             {
-                ShowMessage.ErrorMess(ex.Message);
+                ShowMessage.ErrorMess(ex.Message); return false;
             }
+            return true;
         }
 
         public bool UnlockObject(List<PLMObject> plmObjs)

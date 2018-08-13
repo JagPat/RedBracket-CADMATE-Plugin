@@ -109,13 +109,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CADFactory.cs" />
     <Compile Include="CADRibbon.cs" />
-    <Compile Include="Classes\AutoCADManager.cs" />
+    <Compile Include="Classes\ACManager.cs" />
     <Compile Include="Classes\clsFolderSearchReasult.cs" />
     <Compile Include="Classes\Helper.cs" />
-    <Compile Include="Classes\ICADManager.cs" />
-    <Compile Include="Classes\LockUnLockUpdater.cs" />
     <Compile Include="Classes\PLMObject.cs" />
     <Compile Include="Classes\RBConnector.cs" />
     <Compile Include="Classes\Relationship.cs" />
@@ -126,64 +123,33 @@
     <Compile Include="Classes\SearchCriteria.cs" />
     <Compile Include="Classes\ServiceHelper.cs" />
     <Compile Include="Classes\ShowMessage.cs" />
-    <Compile Include="Classes\UIData.cs" />
     <Compile Include="Classes\UserLoginDetails.cs" />
-    <Compile Include="Commands\AddCommand.cs" />
-    <Compile Include="Commands\BackGroundCheckInCommand.cs" />
-    <Compile Include="Commands\CADIntegrationConfiguration.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ConnectionCommand.cs" />
-    <Compile Include="Commands\DisconnectCommand.cs" />
-    <Compile Include="Commands\DocumentInformationDisplayCommand.cs" />
-    <Compile Include="Commands\ExpandAllCommand.cs" />
     <Compile Include="Commands\ExpandObjectCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\LockCommand.cs" />
-    <Compile Include="Commands\OpenCommand.cs" />
     <Compile Include="Commands\SaveCommand.cs" />
-    <Compile Include="Commands\SearchCommand.cs" />
-    <Compile Include="Commands\SelectAllCommand.cs" />
     <Compile Include="Commands\UnlockCommand.cs" />
-    <Compile Include="Commands\ViewDocumentCommand.cs" />
-    <Compile Include="Controller\AddController.cs" />
-    <Compile Include="Controller\BackGroundCheckInControllers.cs" />
     <Compile Include="Controller\BaseController.cs" />
     <Compile Include="Controller\ConnectionController.cs" />
     <Compile Include="Controller\DisconnectController.cs" />
-    <Compile Include="Controller\DocumentInformationDisplayController.cs" />
-    <Compile Include="Controller\ExpandAllController.cs" />
     <Compile Include="Controller\ExpandObjectController.cs" />
     <Compile Include="Controller\HelpController.cs" />
     <Compile Include="Controller\LockController.cs" />
     <Compile Include="Controller\MessageController.cs" />
-    <Compile Include="Controller\OpenController.cs" />
     <Compile Include="Controller\SaveController.cs" />
-    <Compile Include="Controller\SearchController.cs" />
-    <Compile Include="Controller\SelectAllController.cs" />
     <Compile Include="Controller\UnlockController.cs" />
-    <Compile Include="Controller\ViewDocumentController.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UI Forms\About.cs">
+    <Compile Include="UI Forms\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI Forms\About.Designer.cs">
-      <DependentUpon>About.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI Forms\Add_Block_To_Aras.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\Add_Block_To_Aras.Designer.cs">
-      <DependentUpon>Add_Block_To_Aras.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI Forms\DocumentInformationDisplay.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\DocumentInformationDisplay.designer.cs">
-      <DependentUpon>DocumentInformationDisplay.cs</DependentUpon>
+    <Compile Include="UI Forms\frmAbout.Designer.cs">
+      <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="UI Forms\frmBorder.cs">
       <SubType>Form</SubType>
@@ -215,12 +181,6 @@
     <Compile Include="UI Forms\frmLayoutVersionUpdate.Designer.cs">
       <DependentUpon>frmLayoutVersionUpdate.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI Forms\frmLock.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\frmLock.Designer.cs">
-      <DependentUpon>frmLock.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI Forms\frmLockUnLock.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -233,49 +193,13 @@
     <Compile Include="UI Forms\frmProgressBar.Designer.cs">
       <DependentUpon>frmProgressBar.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI Forms\frmRefresh.cs">
+    <Compile Include="UI Forms\frmLogin.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI Forms\frmRefresh.Designer.cs">
-      <DependentUpon>frmRefresh.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI Forms\GetDrawinDetail.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\GetDrawinDetail.Designer.cs">
-      <DependentUpon>GetDrawinDetail.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI Forms\frmLock1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\frmLock1.Designer.cs">
-      <DependentUpon>frmLock1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI Forms\Lock.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\Lock.Designer.cs">
-      <DependentUpon>Lock.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI Forms\login.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\login.Designer.cs">
-      <DependentUpon>login.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI Forms\OpenDocument.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\OpenDocument.Designer.cs">
-      <DependentUpon>OpenDocument.cs</DependentUpon>
+    <Compile Include="UI Forms\frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI Forms\Add Document.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\Add Document.Designer.cs">
-      <DependentUpon>Add Document.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI Forms\frmSave_Active_Drawings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -288,12 +212,6 @@
     <Compile Include="UI Forms\frmSearch_And_Open.Designer.cs">
       <DependentUpon>frmSearch_And_Open.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI Forms\UnLock.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI Forms\UnLock.Designer.cs">
-      <DependentUpon>UnLock.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserSetting.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -302,14 +220,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="UI Forms\About.resx">
-      <DependentUpon>About.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\Add_Block_To_Aras.resx">
-      <DependentUpon>Add_Block_To_Aras.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\DocumentInformationDisplay.resx">
-      <DependentUpon>DocumentInformationDisplay.cs</DependentUpon>
+    <EmbeddedResource Include="UI Forms\frmAbout.resx">
+      <DependentUpon>frmAbout.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmBorder.resx">
       <DependentUpon>frmBorder.cs</DependentUpon>
@@ -326,41 +238,19 @@
     <EmbeddedResource Include="UI Forms\frmLayoutVersionUpdate.resx">
       <DependentUpon>frmLayoutVersionUpdate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\frmLock.resx">
-      <DependentUpon>frmLock.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmLockUnLock.resx">
       <DependentUpon>frmLockUnLock.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmProgressBar.resx">
       <DependentUpon>frmProgressBar.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\frmRefresh.resx">
-      <DependentUpon>frmRefresh.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\GetDrawinDetail.resx">
-      <DependentUpon>GetDrawinDetail.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\frmLock1.resx">
-      <DependentUpon>frmLock1.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\Lock.resx">
-      <DependentUpon>Lock.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\login.resx">
-      <DependentUpon>login.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\OpenDocument.resx">
-      <DependentUpon>OpenDocument.cs</DependentUpon>
+    <EmbeddedResource Include="UI Forms\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\Add Document.resx">
-      <DependentUpon>Add Document.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmSave_Active_Drawings.resx">
       <DependentUpon>frmSave_Active_Drawings.cs</DependentUpon>
@@ -368,10 +258,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI Forms\frmSearch_And_Open.resx">
       <DependentUpon>frmSearch_And_Open.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI Forms\UnLock.resx">
-      <DependentUpon>UnLock.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UserSetting.resx">
       <DependentUpon>UserSetting.cs</DependentUpon>
@@ -400,25 +286,18 @@
     <None Include="Resources\DrawingInfo.ico" />
     <Content Include="Resources\FolderBrowse.png" />
     <None Include="Resources\Help.ico" />
-    <Content Include="Resources\Help.png" />
     <Content Include="Resources\lock.png" />
     <Content Include="Resources\LocknewStrip.png" />
     <None Include="Resources\Login.png" />
-    <None Include="Resources\LockUnlock.png" />
     <Content Include="Resources\LockUnlock.ico" />
     <None Include="Resources\Open.ico" />
-    <Content Include="Resources\Open.png" />
     <None Include="Resources\LoginUserSettings.png" />
     <None Include="Resources\CheckinUserSettings.png" />
-    <None Include="Resources\RedBracket.png" />
-    <None Include="Resources\ReferenceImage.jpg" />
     <None Include="Resources\RBName.png" />
     <None Include="Resources\Refresh.ico" />
-    <Content Include="Resources\Refresh.png" />
     <Content Include="Resources\save.png" />
     <None Include="Resources\SaveAs.png" />
     <None Include="Resources\Setting.ico" />
-    <Content Include="Resources\Setting.png" />
     <Content Include="Resources\unlock.png" />
   </ItemGroup>
   <ItemGroup>

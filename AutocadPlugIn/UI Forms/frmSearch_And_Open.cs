@@ -17,11 +17,11 @@ namespace AutocadPlugIn.UI_Forms
         public ArrayList drawingsOpen = new ArrayList();
         public ArrayList OpenMode = new ArrayList();
         public ArrayList OpenMode1 = new ArrayList();
-        AutoCADManager cadManager = new AutoCADManager();
+    
         public Dictionary<string, string> projectNameNumberKeyValiuePairList = new Dictionary<string, string>();
         string CheckoutExpandAllEnabled = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutExpandAllEnabled"));
         string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
-        ////RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software", true);
+      
         RBConnector objRBC = new RBConnector();
         public List<string> DownloadedFiles = new List<string>();
         public List<clsDownloadedFiles> lstobjDownloadedFiles = new List<clsDownloadedFiles>();
@@ -99,9 +99,7 @@ namespace AutocadPlugIn.UI_Forms
 
             if (CDProjectName.SelectedIndex > 0)
             {
-                //string s = Helper.FindIDInCMB((System.Data.DataTable)CDProjectName.DataSource, "id", CDProjectName.Text, "PNAMENO");
-                //urlParameters.Add(new KeyValuePair<string, string>("projno", Helper.FindIDInCMB((System.Data.DataTable)CDProjectName.DataSource, "number", CDProjectName.Text, "PNAMENO")));
-                urlParameters.Add(new KeyValuePair<string, string>("projid", Convert.ToString(CDProjectName.SelectedValue)));
+                 urlParameters.Add(new KeyValuePair<string, string>("projid", Convert.ToString(CDProjectName.SelectedValue)));
             }
 
             // If folder name is not null or empty then add the parameter to the URL.

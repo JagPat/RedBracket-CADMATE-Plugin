@@ -14,7 +14,7 @@ namespace AutocadPlugIn
         public override void Execute(Command command)
         {
             UnlockCommand cmd = (UnlockCommand)command;
-            LockUnLockUpdater lockUnLockUpdater = new LockUnLockUpdater();
+           
             try
             {
                 List<PLMObject> drawingObjects = new List<PLMObject>();
@@ -29,7 +29,7 @@ namespace AutocadPlugIn
                 }
 
                 // objConnector.UnlockObject(drawingObjects);
-                lockUnLockUpdater.UnlockObject(drawingObjects);
+                Helper.objRBC.UnlockObject(drawingObjects);
             }
             catch ( Exception ex)
             {
@@ -41,11 +41,11 @@ namespace AutocadPlugIn
         {
             try
             {
-                LockUnLockUpdater lockUnLockUpdater = new LockUnLockUpdater();
+                 
                 UnlockCommand cmd = (UnlockCommand)command;
                 dtNewPlmObjInfomation = cmd.DrawingInfo;
                 //objConnector.LockStatus(ref dtNewPlmObjInfomation);
-                lockUnLockUpdater.LockStatus(ref dtNewPlmObjInfomation);
+                Helper.objRBC.LockStatus(ref dtNewPlmObjInfomation);
                 return dtNewPlmObjInfomation;
             }
             catch ( Exception ex)

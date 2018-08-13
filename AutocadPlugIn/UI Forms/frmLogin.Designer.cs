@@ -1,6 +1,6 @@
 ﻿namespace AutocadPlugIn
 {
-    partial class login
+    partial class frmLogin
     {
         /// <summary>
         /// Required designer variable.
@@ -291,7 +291,7 @@
             this.Name = "login";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "login";
-            this.Load += new System.EventHandler(this.LoginInformation_Load);
+            this.Load += new System.EventHandler(this.frmLogin_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();

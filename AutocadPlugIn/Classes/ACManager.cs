@@ -1,63 +1,30 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Windows.Media.Imaging;
-using System.Reflection;
+﻿using System; 
+using System.IO; 
 using System.Collections;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Collections.Specialized;
-using Autodesk.AutoCAD.EditorInput;
-//using Autodesk.Windows;
-//using Autodesk.AutoCAD.Runtime;
+using System.Windows.Forms; 
+using Autodesk.AutoCAD.EditorInput; 
 using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-//using Autodesk.AutoCAD.PlottingServices;
-//using Autodesk.AutoCAD.Publishing;
-//using Autodesk.AutoCAD.Geometry;
-using acadApp = Autodesk.AutoCAD.ApplicationServices.Application;
-using System.ComponentModel;
-using System.Data;
-using Autodesk.AutoCAD.Runtime;
+using Autodesk.AutoCAD.DatabaseServices; 
+using ACAPP = Autodesk.AutoCAD.ApplicationServices.Application; 
+using System.Data; 
 using Autodesk.AutoCAD.Geometry;
 
 namespace AutocadPlugIn
 {
-    public class AutoCADManager : ICADManager
+    public class ACManager
     {
 
-        Hashtable currentDocumentProperties;
-        public void SaveActiveDrawing()
-        {
-            SaveActiveDrawing(false);
-        }
+        Hashtable DocProperties;
 
-        public void SaveActiveDrawing(bool isOpenInReadOnly = false)
+        public void SetDrawingAttributes(Hashtable hashTable)
         {
             try
             {
-                //Helper.CheckFileInfoFlag = false;
-                //String filePath = acadApp.DocumentManager.MdiActiveDocument.Database.Filename;
-                //acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(filePath);
-
-                //acadApp.DocumentManager.Open(filePath,false);
-                //Helper.CheckFileInfoFlag = true;
-            }
-            catch (Autodesk.AutoCAD.Runtime.Exception ex)
-            {
-                // throw (new CADController.Exception.CADManagerException("CADController Exception : " + ex.Message.ToString()));
-            }
-        }
-
-        public void SetAttributes(Hashtable hashTable)
-        {
-            try
-            {
-                currentDocumentProperties = hashTable;
-                Document Doc = acadApp.DocumentManager.MdiActiveDocument;
+                DocProperties = hashTable;
+                Document Doc = ACAPP.DocumentManager.MdiActiveDocument;
                 Database Db = Doc.Database;
-                 DocumentLock dl = Doc.LockDocument(DocumentLockMode.Write, null, null, true);
+                DocumentLock dl = Doc.LockDocument(DocumentLockMode.Write, null, null, true);
                 DatabaseSummaryInfoBuilder DbSib = new DatabaseSummaryInfoBuilder();
 
                 using (dl)
@@ -65,7 +32,7 @@ namespace AutocadPlugIn
                     Autodesk.AutoCAD.DatabaseServices.TransactionManager tm = Db.TransactionManager;
                     using (Transaction aTran = tm.StartTransaction())
                     {
-                        foreach (DictionaryEntry entry in currentDocumentProperties)
+                        foreach (DictionaryEntry entry in DocProperties)
                         {
                             DbSib.CustomProperties.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString(entry.Value));
                             // DbSib.CustomPropertyTable.Add(entry.Key.ToString(), entry.Value == null ? string.Empty : Convert.ToString( entry.Value));
@@ -142,7 +109,7 @@ namespace AutocadPlugIn
 
                                                 Hashtable ht = Helper.Table2HashTable(dtFileInfo, j);
 
-                                                UpdateLayoutAttributeArefFile(ht, xgn.Database.Filename, false);
+                                                UpdateLayoutAttributeXrefFile(ht, xgn.Database.Filename, false);
                                                 Helper.cadManager.CloseDocSilently(xgn.Database.Filename);
                                                 SetAttributesXrefFiles(ht, xgn.Database.Filename);
                                                 break;
@@ -166,11 +133,12 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(ex.Message);
             }
         }
-        public void UpdateLayoutAttributeArefFile(Hashtable documentProperties, string FilePath, bool KeepFileOpen)
+
+        public void UpdateLayoutAttributeXrefFile(Hashtable documentProperties, string FilePath, bool KeepFileOpen)
         {
             try
             {
-                 // Helper.CloseProgressBar();
+                // Helper.CloseProgressBar();
                 if (!Helper.IsUpdateLayoutInfo)
                     return;
                 bool IsDocOpend = false;
@@ -178,18 +146,18 @@ namespace AutocadPlugIn
                 if (!CheckForCurruntlyOpenDoc(FilePath))
                 {
                     Helper.CheckFileInfoFlag = false;
-                    acadApp.DocumentManager.Open(FilePath, false);
+                    ACAPP.DocumentManager.Open(FilePath, false);
                     IsDocOpend = true;
                     Helper.CheckFileInfoFlag = true;
                 }
 
-               
+
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 Database db = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
 
                 Hashtable drawingAttrs = new Hashtable();
                 drawingAttrs = documentProperties;
-               
+
                 if (drawingAttrs.Count < 0) return;
                 //  using (db)
                 {
@@ -210,7 +178,7 @@ namespace AutocadPlugIn
                                     Hashtable LayoutData = documentProperties; //new Hashtable();
 
 
-                               
+
 
 
 
@@ -269,7 +237,7 @@ namespace AutocadPlugIn
                                                     {
                                                         ar.UpgradeOpen();
                                                         ar.TextString = drawingAttrs["DrawingName"] == null ? string.Empty : Convert.ToString(drawingAttrs["DrawingName"]);
-                                                        ar.TextString = ar.TextString == null || ar.TextString==string.Empty ? drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]) : ar.TextString;
+                                                        ar.TextString = ar.TextString == null || ar.TextString == string.Empty ? drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]) : ar.TextString;
                                                         ar.DowngradeOpen();
                                                     }
                                                     if (ar.Tag.ToUpper() == "PROJECTNAME")
@@ -290,7 +258,7 @@ namespace AutocadPlugIn
                                                     {
                                                         ar.UpgradeOpen();
                                                         ar.TextString = drawingAttrs["Generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["Generation"]); //drawingAttrs["generation"].ToString();
-                                                        ar.TextString = ar.TextString==null || ar.TextString==string.Empty? drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]): ar.TextString;
+                                                        ar.TextString = ar.TextString == null || ar.TextString == string.Empty ? drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]) : ar.TextString;
                                                         ar.DowngradeOpen();
                                                     }
                                                     if (ar.Tag.ToUpper() == "TYPE")
@@ -303,7 +271,7 @@ namespace AutocadPlugIn
                                                     {
                                                         ar.UpgradeOpen();
                                                         ar.TextString = drawingAttrs["DrawingState"] == null ? string.Empty : Convert.ToString(drawingAttrs["DrawingState"]);
-                                                        ar.TextString = ar.TextString == null || ar.TextString == string.Empty ? drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]): ar.TextString;
+                                                        ar.TextString = ar.TextString == null || ar.TextString == string.Empty ? drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]) : ar.TextString;
                                                         ar.DowngradeOpen();
                                                     }
                                                     if (layoutName != "Model")
@@ -315,12 +283,12 @@ namespace AutocadPlugIn
                                                             ar.DowngradeOpen();
                                                         }
                                                         LayoutInfo objLI = Helper.FindLayoutDetail(LayoutData, layoutName);
-                                                        if(objLI!=null)
+                                                        if (objLI != null)
                                                         {
                                                             if (ar.Tag.ToUpper() == "LAYOUTNUMBER")
                                                             {
                                                                 ar.UpgradeOpen();
-                                                                ar.TextString = objLI.fileNo == null ? string.Empty : objLI.fileNo;  
+                                                                ar.TextString = objLI.fileNo == null ? string.Empty : objLI.fileNo;
                                                                 ar.DowngradeOpen();
                                                             }
                                                             if (ar.Tag.ToUpper() == "CREATEDBY")
@@ -385,7 +353,7 @@ namespace AutocadPlugIn
                                                                 ar.DowngradeOpen();
                                                             }
                                                         }
-                                                       
+
                                                     }
                                                 }
                                             }
@@ -418,7 +386,7 @@ namespace AutocadPlugIn
                         {
                             try
                             {
-                                acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(FilePath);
+                                ACAPP.DocumentManager.MdiActiveDocument.CloseAndSave(FilePath);
                             }
                             catch
                             {
@@ -436,239 +404,12 @@ namespace AutocadPlugIn
             }
 
         }
-        public void UpdateLayoutAttributeArefFile111(Hashtable documentProperties, string FilePath)
-        {
-            try
-            {
-                ///UpdateLayoutAttributeArefFile111(documentProperties, FilePath);
-                ///return;
-                if (!Helper.IsUpdateLayoutInfo)
-                    return;
 
-
-
-
-                Database db = new Database(false, true); ;
-                db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-
-                Hashtable drawingAttrs = new Hashtable();
-                IDictionaryEnumerator en = db.SummaryInfo.CustomProperties;
-                try
-                {
-
-
-                    while (en.MoveNext())
-                    {
-                        // if(documentProperties==null)
-                        {
-                            drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : en.Value);
-                        }
-                        // else
-                        {
-
-                        }
-
-                    }
-                }
-                catch { }
-                if (drawingAttrs.Count < 0) return;
-
-                using (db)
-                {
-                    using (Transaction tr = db.TransactionManager.StartTransaction())
-                    {
-                        #region "TraverseForLayout"
-                        DBDictionary layoutDict = tr.GetObject(db.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
-                        ObjectIdCollection layoutsToPlot = new ObjectIdCollection();
-                        foreach (DBDictionaryEntry de in layoutDict)
-                        {
-                            String layoutName = de.Key;
-                            //if (layoutName != "Model")
-                            {
-                                //LayoutManager.Current.CurrentLayout = layoutName;
-                                Hashtable LayoutData = documentProperties; //new Hashtable();
-
-
-                                #region "TraverseForTitleblock"
-
-                                BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-                                string BTRT = "";
-                                if (layoutName != "Model")
-                                {
-                                    BTRT = BlockTableRecord.PaperSpace;
-                                }
-                                else
-                                {
-                                    BTRT = BlockTableRecord.ModelSpace;
-                                }
-
-                                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BTRT], OpenMode.ForRead);
-                                //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
-                                //BlockTableRecord btr = (BlockTableRecord)tr.GetObject(de.Value, OpenMode.ForRead);
-                                layoutsToPlot.Add(btr.LayoutId);
-
-                                foreach (ObjectId objId in btr)
-                                {
-                                    Entity ent = (Entity)tr.GetObject(objId, OpenMode.ForRead);
-                                    string blkName = ent.BlockName;
-                                    if (LayoutData.Count < 1)
-                                    {
-                                        continue;
-                                    }
-                                    if (ent != null)
-                                    {
-                                        BlockReference br = ent as BlockReference;
-                                        if (br != null)
-                                        {
-                                            BlockTableRecord bd = (BlockTableRecord)tr.GetObject(br.BlockTableRecord, OpenMode.ForRead);
-                                            //MessageBox.Show(bd.Name);//Block Name
-                                            foreach (ObjectId arId in br.AttributeCollection)
-                                            {
-                                                DBObject obj = tr.GetObject(arId, OpenMode.ForRead);
-                                                AttributeReference ar = obj as AttributeReference;
-
-                                                //if (ar.Tag.ToUpper() == "COORDINATOR")
-                                                //{
-                                                //    ar.UpgradeOpen();
-                                                //    ar.TextString = LayoutData["projectManager"] == null ? string.Empty : Convert.ToString(LayoutData["projectManager"]);//drawingAttrs["drawingnumber"].ToString();
-                                                //    ar.DowngradeOpen();
-                                                //}
-                                                if (ar.Tag.ToUpper() == "DRAWINGNUMBER")
-                                                {
-                                                    ar.UpgradeOpen();
-                                                    ar.TextString = LayoutData["DrawingNumber"] == null ? string.Empty : Convert.ToString(LayoutData["DrawingNumber"]);//drawingAttrs["drawingnumber"].ToString();
-                                                    ar.DowngradeOpen();
-                                                }
-                                                if (ar.Tag.ToUpper() == "DRAWINGNAME")
-                                                {
-                                                    ar.UpgradeOpen();
-                                                    ar.TextString = drawingAttrs["drawingname"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingname"]);
-                                                    ar.DowngradeOpen();
-                                                }
-                                                if (ar.Tag.ToUpper() == "PROJECTNAME")
-                                                {
-
-                                                    ar.UpgradeOpen();
-                                                    ar.TextString = LayoutData["ProjectName"] == null ? string.Empty : Convert.ToString(LayoutData["ProjectName"]); //drawingAttrs["projectname"].ToString();
-                                                    ar.DowngradeOpen();
-                                                }
-                                                if (ar.Tag.ToUpper() == "PROJECTNUMBER")
-                                                {
-
-                                                    ar.UpgradeOpen();
-                                                    ar.TextString = LayoutData["projectno"] == null ? string.Empty : Convert.ToString(LayoutData["projectno"]); ;
-                                                    ar.DowngradeOpen();
-                                                }
-                                                if (ar.Tag.ToUpper() == "DRAWINGVER")
-                                                {
-                                                    ar.UpgradeOpen();
-                                                    ar.TextString = drawingAttrs["generation"] == null ? string.Empty : Convert.ToString(drawingAttrs["generation"]); //drawingAttrs["generation"].ToString();
-                                                    ar.DowngradeOpen();
-                                                }
-                                                if (ar.Tag.ToUpper() == "TYPE")
-                                                {
-                                                    ar.UpgradeOpen();
-                                                    ar.TextString = drawingAttrs["classification"] == null ? string.Empty : Convert.ToString(drawingAttrs["classification"]);
-                                                    ar.DowngradeOpen();
-                                                }
-                                                if (ar.Tag.ToUpper() == "DRAWINGSTATE")
-                                                {
-                                                    ar.UpgradeOpen();
-                                                    ar.TextString = drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]);
-                                                    ar.DowngradeOpen();
-                                                }
-                                                if (layoutName != "Model")
-                                                {
-                                                    if (ar.Tag.ToUpper() == "LAYOUTNAME")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        ar.TextString = layoutName;
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                    LayoutInfo objLI = Helper.FindLayoutDetail(LayoutData, layoutName);
-                                                    if (ar.Tag.ToUpper() == "CREATEDBY")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        ar.TextString = objLI.createdby == null ? string.Empty : objLI.createdby; //drawingAttrs["createdby"].ToString();
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                    if (ar.Tag.ToUpper() == "MODIFIEDBY")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        ar.TextString = objLI.updatedby == null ? string.Empty : objLI.updatedby; //drawingAttrs["modifiedby"].ToString();
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                    if (ar.Tag.ToUpper() == "CREATEDON")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        ar.TextString = objLI.created0n == null ? string.Empty : Helper.FormatDate(objLI.created0n); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                    if (ar.Tag.ToUpper() == "MODIFIEDON")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        ar.TextString = objLI.updatedon == null ? string.Empty : Helper.FormatDate(objLI.updatedon);//drawingAttrs["modifiedon"].ToString().Substring(0,10);
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                    if (ar.Tag.ToUpper() == "LAYOUTSTATE")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        ar.TextString = objLI.statusname == null ? string.Empty : objLI.statusname; //drawingAttrs["drawingstate"].ToString();
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                    if (ar.Tag.ToUpper() == "GOODNOT")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        if ((objLI == null ? string.Empty : objLI.status == null ? string.Empty : objLI.status.coretype == null ? string.Empty : objLI.status.coretype.name == null ? string.Empty : objLI.status.coretype.name.ToLower()) == "closed")
-                                                        {
-                                                            ar.TextString = "GOOD";
-                                                        }
-                                                        else
-                                                        {
-                                                            ar.TextString = "NOT";
-                                                        }
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                    if (ar.Tag.ToUpper() == "LAYOUTVER")
-                                                    {
-                                                        ar.UpgradeOpen();
-                                                        ar.TextString = objLI.versionno == null ? string.Empty : objLI.versionno; //drawingAttrs["revision"].ToString();
-                                                        ar.DowngradeOpen();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                } //end foreach Block
-                                #endregion "TraverseForTitleblock"                  
-                            }
-
-                        }
-                        #endregion "TraverseForLayout
-
-                        #region "PlotLayouts"
-                        //PlotLayout(doc, tr, layoutsToPlot);
-                        #endregion "PlotLayouts"
-                        //db.Save();
-                        tr.Commit();
-                        tr.Dispose();
-
-                    }//end Transaction tr
-                    db.SaveAs(FilePath, DwgVersion.Current);
-                }
-
-            }
-            catch (System.Exception ex)
-            {
-                ShowMessage.ErrorMess(ex.Message.ToString());
-            }
-
-        }
         public void SetAttributesXrefFiles(Hashtable hashTable, string FilePath)
         {
             try
             {
-                currentDocumentProperties = hashTable;
+                DocProperties = hashTable;
 
                 DatabaseSummaryInfoBuilder DbSib = new DatabaseSummaryInfoBuilder();
 
@@ -686,7 +427,7 @@ namespace AutocadPlugIn
                         Autodesk.AutoCAD.DatabaseServices.TransactionManager tm = mainDb.TransactionManager;
                         using (Transaction aTran = tm.StartTransaction())
                         {
-                            foreach (DictionaryEntry entry in currentDocumentProperties)
+                            foreach (DictionaryEntry entry in DocProperties)
                             {
                                 try
                                 {
@@ -723,10 +464,11 @@ namespace AutocadPlugIn
             }
             catch (System.Exception ex) { throw (new System.Exception("AutoCAD getting problem: AutoCADManager.cs setAttributes" + ex.Message)); }
         }
-        public Hashtable GetAttributes()
+
+        public Hashtable GetDrawingAttributes()
         {
             Hashtable hastable = new Hashtable();
-            Document Doc = acadApp.DocumentManager.MdiActiveDocument;
+            Document Doc = ACAPP.DocumentManager.MdiActiveDocument;
             Database Db = Doc.Database;
             //DocumentLock dl = Doc.LockDocument(DocumentLockMode.Read, null, null, true);          
             IDictionaryEnumerator en = Db.SummaryInfo.CustomProperties;
@@ -743,7 +485,7 @@ namespace AutocadPlugIn
             return hastable;
         }
 
-        public System.Data.DataTable GetAttributes(string FilePath)
+        public System.Data.DataTable GetDrawingAttributes(string FilePath)
         {
             System.Data.DataTable dtDrawingInfo = Helper.GetDrawingPropertiesTableStructure();
             try
@@ -768,7 +510,8 @@ namespace AutocadPlugIn
 
             return dtDrawingInfo;
         }
-        public Hashtable GetAttributesht(string FilePath)
+
+        public Hashtable GetDrawingAttributesht(string FilePath)
         {
             Hashtable hastable = new Hashtable();
             try
@@ -794,7 +537,7 @@ namespace AutocadPlugIn
             return hastable;
         }
 
-        public void UpdateAttributes(Hashtable hashTable)
+        public void UpdateDrawingAttributes(Hashtable hashTable)
         {
 
             /*   Hashtable hastable = new Hashtable();
@@ -831,7 +574,7 @@ namespace AutocadPlugIn
                }
              */
 
-            Document Doc = acadApp.DocumentManager.MdiActiveDocument;
+            Document Doc = ACAPP.DocumentManager.MdiActiveDocument;
 
             Database Db = Doc.Database;
 
@@ -865,22 +608,21 @@ namespace AutocadPlugIn
 
 
         }
-
-        //public void UpdateFileProperties(  string FileType = null, string FileStatus = null, string FileTypeID = null, string FileStatusID = null)
+         
         public void UpdateFileProperties(string FileID, string FilePath)
         {
             try
             {
                 RBConnector objRBC = new RBConnector();
                 ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(FileID);
-                Hashtable htFileProperties = GetAttributes();
+                Hashtable htFileProperties = GetDrawingAttributes();
                 System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
 
                 System.Data.DataTable dtDrawingProperty = Helper.FillDrawingPropertiesTable(Drawing, FilePath, "1", Convert.ToString(dtFileProperties.Rows[0]["prefix"]));
 
                 htFileProperties = Helper.Table2HashTable(dtDrawingProperty, 0);
-                SetAttributes(htFileProperties);
-                UpdateLayoutAttributeArefFile(htFileProperties, FilePath, false);
+                SetDrawingAttributes(htFileProperties);
+                UpdateLayoutAttributeXrefFile(htFileProperties, FilePath, false);
             }
             catch (System.Exception E)
             {
@@ -892,7 +634,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                Hashtable htFileProperties = GetAttributes();
+                Hashtable htFileProperties = GetDrawingAttributes();
                 System.Data.DataTable dtFileProperties = Helper.HashTable2Table(htFileProperties);
                 bool IsdtChanged = false;
 
@@ -915,7 +657,7 @@ namespace AutocadPlugIn
 
                 if (IsdtChanged)
                 {
-                    SetAttributes(Helper.Table2HashTable(dtFileProperties, 0));
+                    SetDrawingAttributes(Helper.Table2HashTable(dtFileProperties, 0));
                 }
             }
             catch (System.Exception E)
@@ -924,99 +666,53 @@ namespace AutocadPlugIn
             }
         }
 
-        [CommandMethod("OpenActiveDocument", CommandFlags.Session)]
         public void OpenActiveDocument(String fileName, String openMode, Hashtable properties = null)
         {
-            currentDocumentProperties = properties;
+            DocProperties = properties;
             try
             {
                 if (openMode == "Checkout")
                 {
-                    acadApp.DocumentManager.Open(fileName, false);
-                    this.SetAttributes(currentDocumentProperties);
-                    UpdateLayoutAttribute(currentDocumentProperties);
-                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
+                    ACAPP.DocumentManager.Open(fileName, false);
+                    this.SetDrawingAttributes(DocProperties);
+                    UpdateDrawingLayoutAttribute(DocProperties);
+                    ACAPP.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
                 }
                 else if (openMode == "View")
                 {
-                    SetAttributesXrefFiles(currentDocumentProperties, fileName);
-                    UpdateLayoutAttributeArefFile(currentDocumentProperties, fileName, true);
-                    acadApp.DocumentManager.Open(fileName, false);
-
-                    //this.SetAttributes(currentDocumentProperties);
-                    //UpdateLayoutAttribute(currentDocumentProperties);
+                    SetAttributesXrefFiles(DocProperties, fileName);
+                    UpdateLayoutAttributeXrefFile(DocProperties, fileName, true);
+                    ACAPP.DocumentManager.Open(fileName, false);
+                     
                 }
                 else if (openMode == "Edit")
                 {
-                    acadApp.DocumentManager.Open(fileName, false);
-                    this.SetAttributes(currentDocumentProperties);
-                    UpdateLayoutAttribute(currentDocumentProperties);
+                    ACAPP.DocumentManager.Open(fileName, false);
+                    this.SetDrawingAttributes(DocProperties);
+                    UpdateDrawingLayoutAttribute(DocProperties);
                 }
                 else if (openMode == "updtMainDrawing")
                 {
-                    this.SetAttributes(currentDocumentProperties);
-                    UpdateLayoutAttribute(currentDocumentProperties);
-                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
-                    acadApp.DocumentManager.Open(fileName, false);
+                    this.SetDrawingAttributes(DocProperties);
+                    UpdateDrawingLayoutAttribute(DocProperties);
+                    ACAPP.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
+                    ACAPP.DocumentManager.Open(fileName, false);
                 }
                 else if (openMode == "updtXRDrawing")
                 {
-                    acadApp.DocumentManager.Open(fileName, false);
-                    this.SetAttributes(currentDocumentProperties);
-                    UpdateLayoutAttribute(currentDocumentProperties);
-                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
+                    ACAPP.DocumentManager.Open(fileName, false);
+                    this.SetDrawingAttributes(DocProperties);
+                    UpdateDrawingLayoutAttribute(DocProperties);
+                    ACAPP.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
                 }
             }
             catch (System.Exception ex)
             {
-                //throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
                 ShowMessage.ErrorMess(ex.Message);
             }
-        }
+        } 
 
-        public void CloseActiveDocument(String fileName)
-        {
-            //acadApp.DocumentManager.CloseAll();// MdiActiveDocument.CloseAndSave(fileName);
-            //this.SetAttributes(properties);     
-            acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(fileName);
-        }
-
-        public void DeleteActiveDocument(String fileName)
-        {
-            FileInfo file = new FileInfo(fileName);
-            if (file.Exists)
-            {
-                file.Delete();
-            }
-        }
-
-        public void LockActiveDocument()
-        {
-            try
-            {
-                Document doc = acadApp.DocumentManager.MdiActiveDocument;
-                doc.UpgradeDocOpen();
-            }
-            catch (System.Exception ex)
-            {
-                throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
-            }
-        }
-
-        public void UnLockActiveDocument()
-        {
-            Document doc = acadApp.DocumentManager.MdiActiveDocument;
-            try
-            {
-                doc.DowngradeDocOpen(true);
-            }
-            catch (System.Exception ex)
-            {
-                throw (new System.Exception("AutoCAD getting problem: " + ex.Message));
-            }
-        }
-
-        public void UpdateExRefPathInfo2(string ParentFilePath, string FilePath, ref List<PLMObject> plmObjs)
+        public void UpdateExRefFileName(string ParentFilePath, string FilePath, ref List<PLMObject> plmObjs)
         {
             try
             {
@@ -1084,7 +780,7 @@ namespace AutocadPlugIn
                                     continue;
                                 }
                                 string ProjectName = "", PreFix = "", oldPreFix = "";
-                                System.Data.DataTable dtDrawing = Helper.cadManager.GetAttributes(xgn.Database.Filename);
+                                System.Data.DataTable dtDrawing = Helper.cadManager.GetDrawingAttributes(xgn.Database.Filename);
 
                                 if (dtDrawing.Rows.Count > 0)
                                 {
@@ -1325,7 +1021,7 @@ namespace AutocadPlugIn
                                     }
 
                                     if (File.Exists(newpath))
-                                        UpdateExRefPathInfo2(ParentFilePath, newpath, ref plmObjs);
+                                        UpdateExRefFileName(ParentFilePath, newpath, ref plmObjs);
                                 }
                             }
                         }
@@ -1370,7 +1066,7 @@ namespace AutocadPlugIn
 
 
 
-                                    UpdateExRefPathInfo2(ParentFilePath, newpath, ref plmObjs);
+                                    UpdateExRefFileName(ParentFilePath, newpath, ref plmObjs);
                                 }
                             }
                         }
@@ -1410,313 +1106,6 @@ namespace AutocadPlugIn
             }
         }
 
-        public void UpdateExRefPathInfo21(string FilePath, ref List<PLMObject> plmObjs)
-        {
-            try
-            {
-                //this method has some loop holes
-
-                string ParentNewPath = "";
-                bool IsMove = false;
-
-                Database mainDb = new Database(false, true);
-                using (mainDb)
-                {
-
-                    mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-                    mainDb.ResolveXrefs(false, false);
-                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
-                    for (int i = 0; i < xg.NumNodes; i++)
-                    {
-                        XrefGraphNode xgn = xg.GetXrefNode(i);
-                        GraphNode root = xg.RootNode;
-                        string OldChildPath = "";
-                        string newpath = "";
-
-                        if (XrefStatus.Unresolved == xgn.XrefStatus)
-                        {
-
-                            ShowMessage.ErrorMessUD("Unresolved xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Unloaded == xgn.XrefStatus)
-                        {
-
-                            ShowMessage.ErrorMessUD("Unloaded xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Unreferenced == xgn.XrefStatus)
-                        {
-
-                            ShowMessage.ErrorMessUD("Unreferenced xref :" + xgn.Name);
-                        }
-                        else if (XrefStatus.Resolved == xgn.XrefStatus)
-                        {
-
-
-                            Database xdb = xgn.Database;
-
-
-                            if (xdb != null)
-                            {
-                                string ProjectName = "", PreFix = "", oldPreFix = "";
-                                System.Data.DataTable dtDrawing = Helper.cadManager.GetAttributes(xgn.Database.Filename);
-
-                                if (dtDrawing.Rows.Count > 0)
-                                {
-
-                                    ProjectName = Convert.ToString(dtDrawing.Rows[0]["ProjectName"]);
-                                    PreFix = Convert.ToString(dtDrawing.Rows[0]["PreFix"]);
-                                    oldPreFix = Convert.ToString(dtDrawing.Rows[0]["oldPreFix"]);
-                                }
-
-
-                                string FN = Path.GetFileNameWithoutExtension(xgn.Name);
-
-
-                                string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
-
-
-                                if (ProjectName.Trim().Length == 0)
-                                {
-                                    ProjectName = "My Files";
-                                }
-                                checkoutPath = Path.Combine(checkoutPath, ProjectName);
-                                if (!Directory.Exists(checkoutPath))
-                                {
-                                    Directory.CreateDirectory(checkoutPath);
-                                }
-                                string path = checkoutPath;
-
-                                path += @"\" + PreFix;
-
-
-                                if (xgn.Name == FilePath)
-                                {
-
-                                    string PName = Path.GetFileName(FilePath);
-                                    PName = Helper.RemovePreFixFromFileName(PName, oldPreFix);
-                                    PName = Helper.RemovePreFixFromFileName(PName, PreFix);
-
-
-
-                                    string NewFilePath = path + PName;
-                                    if (NewFilePath != FilePath)
-                                    {
-                                        File.Delete(NewFilePath);
-                                        ParentNewPath = NewFilePath;
-                                        if (FilePath.Contains(checkoutPath))
-                                        {
-                                            IsMove = true;
-                                        }
-                                        else
-                                        {
-                                            CopyXrefs(FilePath, NewFilePath, ref plmObjs);
-                                        }
-                                        bool IsFileNotFound = true;
-                                        bool IsAlreadyAssign = true;
-                                        foreach (PLMObject obj in plmObjs)
-                                        {
-
-                                            if (obj.FilePath == xgn.Name)
-                                            {
-                                                IsFileNotFound = false;
-                                                obj.FilePath = NewFilePath;
-                                                break;
-                                            }
-                                            if (obj.FilePath == NewFilePath)
-                                            {
-                                                IsAlreadyAssign = false;
-                                            }
-                                        }
-                                        if (IsFileNotFound && IsAlreadyAssign)
-                                        {
-                                            ShowMessage.ErrorMessUD("File not found.\n" + xgn.Name); return;
-                                        }
-                                    }
-
-
-                                    continue;
-                                }
-
-
-                                Transaction tr = xdb.TransactionManager.StartTransaction();
-
-
-                                using (tr)
-                                {
-                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
-                                    mainDb.XrefEditEnabled = true;
-
-
-                                    string originalpath = btr.PathName;
-                                    string childname = Path.GetFileName(originalpath);
-                                    bool IsRelativePath = false;
-                                    //if(originalpath.Contains(Path.))
-
-                                    bool IsChildinSameFolder = false;
-                                    string ParentPath = Path.GetDirectoryName(FilePath);
-                                    int L = originalpath.Length;
-                                    int L1 = childname.Length;
-                                    if (L == L1 + 2)
-                                    {
-                                        IsChildinSameFolder = true;
-                                    }
-
-                                    childname = Helper.RemovePreFixFromFileName(childname, oldPreFix);
-                                    childname = Helper.RemovePreFixFromFileName(childname, PreFix);
-
-
-                                    newpath = path + childname;
-                                    File.Delete(newpath);
-                                    OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), oldPreFix + childname);
-                                    if (File.Exists(OldChildPath))
-                                    {
-
-                                    }
-                                    else
-                                    {
-                                        OldChildPath = Path.Combine(Path.GetDirectoryName(FilePath), childname);
-                                        if (File.Exists(OldChildPath))
-                                        {
-
-                                        }
-                                        else
-                                        {
-                                            OldChildPath = Path.Combine(Path.GetDirectoryName(path), oldPreFix + childname);
-
-                                            if (File.Exists(OldChildPath))
-                                            {
-
-                                            }
-                                            else
-                                            {
-                                                string OP = "";
-                                                if (File.Exists(originalpath))
-                                                {
-                                                    FileInfo fi = new FileInfo(originalpath);
-                                                    OP = fi.DirectoryName;
-                                                    OldChildPath = Path.Combine(OP, childname);
-                                                }
-                                                else
-                                                {
-                                                    //ShowMessage.ErrorMess("File not found.\n" + originalpath);
-                                                    //return;
-                                                }
-                                                if (File.Exists(OldChildPath))
-                                                {
-
-                                                }
-                                                else
-                                                {
-                                                    OldChildPath = Path.Combine(OP, oldPreFix + childname);
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    int IsChildCopy = 0;
-                                    if (File.Exists(OldChildPath) && OldChildPath != newpath)
-                                    {
-
-                                        if (OldChildPath.Contains(checkoutPath))
-                                        {
-                                            File.Move(OldChildPath, newpath);
-                                            IsChildCopy = 2;
-                                        }
-                                        else
-                                        {
-                                            IsChildCopy = 1;
-
-                                        }
-                                        bool IsPathNotFound = true;
-                                        bool IsAlreadyAssign = true;
-                                        foreach (PLMObject obj in plmObjs)
-                                        {
-                                            string name = Path.GetFileNameWithoutExtension(obj.FilePath);
-
-                                            name = Helper.RemovePreFixFromFileName(name, oldPreFix);
-
-                                            string XrefName = Path.GetFileNameWithoutExtension(Helper.RemovePreFixFromFileName(xgn.Name, oldPreFix));
-                                            if (name == XrefName)
-                                            {
-                                                IsPathNotFound = false;
-                                                obj.FilePath = newpath;
-                                                break;
-                                            }
-                                            if (obj.FilePath == newpath)
-                                            {
-                                                IsAlreadyAssign = false;
-                                            }
-                                        }
-                                        if (IsPathNotFound && IsAlreadyAssign)
-                                        {
-                                            ShowMessage.ErrorMessUD("File not found.\n" + xgn.Name);
-                                            return;
-                                        }
-
-                                    }
-                                    if (IsChildCopy == 0)
-                                    {
-
-                                    }
-                                    else if (IsChildCopy == 1)
-                                    {
-                                        string TnewPath = @".\" + Path.GetFileName(newpath);
-                                        btr.PathName = TnewPath;
-                                    }
-                                    else if (IsChildCopy == 2)
-                                    {
-                                        if (File.Exists(newpath))
-                                        {
-                                            string TnewPath = @".\" + Path.GetFileName(newpath);
-                                            btr.PathName = TnewPath;
-                                        }
-                                        else
-                                        {
-                                            ShowMessage.ErrorMessUD("File not found.\n" + newpath); return;
-                                        }
-                                    }
-
-
-                                    tr.Commit();
-                                    if (IsChildCopy == 1)
-                                    {
-                                        File.Copy(OldChildPath, newpath);
-                                        File.Delete(Path.Combine(Path.GetDirectoryName(newpath), Path.GetFileName(OldChildPath)));
-                                    }
-
-
-                                    UpdateExRefPathInfo21(newpath, ref plmObjs);
-                                }
-                            }
-                        }
-                        else if (XrefStatus.FileNotFound == xgn.XrefStatus)
-                        {
-                        }
-
-                        if (File.Exists(OldChildPath) && OldChildPath != newpath)
-                        {
-                            //File.Delete(OldChildPath);
-                        }
-                        //}//Switch Complete
-                    }//For Complete          
-                    mainDb.SaveAs(FilePath, DwgVersion.Current);
-                }//using db complete
-                if (IsMove)
-                {
-                    if (ParentNewPath.Trim().Length > 0 && File.Exists(FilePath))
-                        File.Move(FilePath, ParentNewPath);
-                }
-                else
-                {
-                    if (ParentNewPath.Trim().Length > 0 && File.Exists(FilePath))
-                        File.Copy(FilePath, ParentNewPath);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                ShowMessage.ErrorMess(ex.Message);
-            }
-        }
         public List<string> CopyXrefs(string OldParentFilePath, string NewParentFilepath, ref List<PLMObject> plmObjs)
         {
             List<string> lstOldFiles = new List<string>();
@@ -1917,7 +1306,8 @@ namespace AutocadPlugIn
             }
             return lstOldFiles;
         }
-        public System.Data.DataTable GetExternalRefreces(bool IsSaveAsNew = false)
+
+        public System.Data.DataTable GetDrawingExternalRefreces(bool IsSaveAsNew = false)
         {
             System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
             dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
@@ -1991,14 +1381,14 @@ namespace AutocadPlugIn
 
                                             if (i == 0)
                                             {
-                                                ICADManager cadManager = CADFactory.getCADManager();
+
                                                 Hashtable rootdrawingAttrs = new Hashtable();
-                                                rootdrawingAttrs = (Hashtable)cadManager.GetAttributes();
+                                                rootdrawingAttrs = (Hashtable)Helper.cadManager.GetDrawingAttributes();
                                                 rootid = "";
                                                 String childrens = "";
                                                 for (int j = 0; j < xgn.NumIn; j++)
                                                 {
-                                                    int tempInt = IsXrNodeEqual(xg, xgn.In(j));
+                                                    int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
                                                     if (tempInt.Equals(-1))
                                                         continue;
                                                     String MyName = xg.GetXrefNode(tempInt).Name;
@@ -2067,7 +1457,7 @@ namespace AutocadPlugIn
                                                 String childrens = "";
                                                 for (int j = 0; j < xgn.NumIn; j++)
                                                 {
-                                                    int tempInt = IsXrNodeEqual(xg, xgn.In(j));
+                                                    int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
                                                     if (tempInt.Equals(-1))
                                                         continue;
                                                     String MyName = xg.GetXrefNode(tempInt).Name;
@@ -2147,29 +1537,29 @@ namespace AutocadPlugIn
             return dtTreeGrid;
         }
 
-        public System.Data.DataTable GetExternalRefreces1(bool IsSaveAsNew = false)
+        public System.Data.DataTable GetDrawingExternalRefreces1(bool IsSaveAsNew = false)
         {
-            System.Data.DataTable dtTreeGrid = new System.Data.DataTable();
-            dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
+            System.Data.DataTable dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
+            try
+            {
 
-
-
-            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            int RefCount = 2;
-            GetExternalRefreces(doc.Name, "0", ref dtTreeGrid, ref RefCount, IsSaveAsNew);
-
+                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                int RefCount = 2;
+                GetDrawingExternalRefreces(doc.Name, "0", ref dtTreeGrid, ref RefCount, IsSaveAsNew);
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
             return dtTreeGrid;
         }
-        public System.Data.DataTable GetExternalRefreces(string FilePath, String Parent, ref System.Data.DataTable dtTreeGrid, ref int RefCount, bool IsSaveAsNew = false)
+
+        public System.Data.DataTable GetDrawingExternalRefreces(string FilePath, String Parent, ref System.Data.DataTable dtTreeGrid, ref int RefCount, bool IsSaveAsNew = false)
         {
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
-            //try
-            //{
-            //    RefCount = Convert.ToInt32(Parent);
-            //}
-            //catch { }
+
             Database Db = new Database(false, true);
             Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
             Editor ed = doc.Editor;
@@ -2242,7 +1632,7 @@ namespace AutocadPlugIn
                                                 {
                                                     continue;
                                                 }
-                                                ICADManager cadManager = CADFactory.getCADManager();
+
                                                 Hashtable rootdrawingAttrs = new Hashtable();
 
                                                 IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
@@ -2254,7 +1644,7 @@ namespace AutocadPlugIn
                                                 String childrens = "";
                                                 for (int j = 0; j < xgn.NumIn; j++)
                                                 {
-                                                    int tempInt = IsXrNodeEqual(xg, xgn.In(j));
+                                                    int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
                                                     if (tempInt.Equals(-1))
                                                         continue;
                                                     String MyName = xg.GetXrefNode(tempInt).Name;
@@ -2343,7 +1733,7 @@ namespace AutocadPlugIn
                                                 }
                                                 for (int j = 0; j < xgn.NumIn; j++)
                                                 {
-                                                    int tempInt = IsXrNodeEqual(xg, xgn.In(j));
+                                                    int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
                                                     if (tempInt.Equals(-1))
                                                         continue;
                                                     String MyName = xg.GetXrefNode(tempInt).Name;
@@ -2416,7 +1806,7 @@ namespace AutocadPlugIn
                                                     dtTreeGrid.Rows.Add(dr);
                                                 }
 
-                                                GetExternalRefreces(xgn.Database.Filename, PK, ref dtTreeGrid, ref RefCount, IsSaveAsNew);
+                                                GetDrawingExternalRefreces(xgn.Database.Filename, PK, ref dtTreeGrid, ref RefCount, IsSaveAsNew);
 
                                             }
                                             tr.Commit();
@@ -2431,229 +1821,11 @@ namespace AutocadPlugIn
             catch (System.Exception ex)
             {
                 ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", Db.Filename, ex.Message);
-            }
-            return dtTreeGrid;
-        }
-        public System.Data.DataTable GetExternalRefreces11(string FilePath, String Parent, ref System.Data.DataTable dtTreeGrid, bool IsSaveAsNew = false)
-        {
-
-
-            int RefCount = 0;
-            try
-            {
-                RefCount = Convert.ToInt32(Parent);
-            }
-            catch { }
-            Database Db = new Database(false, true);
-            Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-
-            try
-            {
-                Database mainDb = new Database(false, true);
-                String rootid = "";
-                using (mainDb)
-                {
-                    mainDb.ReadDwgFile(Db.Filename, FileOpenMode.OpenForReadAndAllShare, true, null);
-                    mainDb.ResolveXrefs(false, false);
-                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
-                    for (int i = 0; i < xg.NumNodes; i++)
-                    {
-
-                        XrefGraphNode xgn = xg.GetXrefNode(i);
-                        GetNodeInfo(xgn);
-                        if (xgn.IsNested && i > 0)
-                        {
-                            continue;
-                        }
-                        switch (xgn.XrefStatus)
-                        {
-
-                            case XrefStatus.Resolved:
-                                {
-                                    Database xdb = xgn.Database;
-                                    if (xdb != null)
-                                    {
-
-                                        String drawingName = Path.GetFileName(xgn.Name);
-
-                                        if (i == 0)
-                                        {
-                                            if (Parent != "0")
-                                            {
-                                                continue;
-                                            }
-                                            ICADManager cadManager = CADFactory.getCADManager();
-                                            Hashtable rootdrawingAttrs = new Hashtable();
-
-
-                                            rootdrawingAttrs = GetAttributesht(xgn.Database.Filename);
-                                            rootid = "";
-
-                                            if (rootdrawingAttrs.Count != 0)
-                                            {
-                                                try
-                                                {
-                                                    rootid = rootdrawingAttrs["drawingid"].ToString();
-
-
-                                                    dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
-
-                                                    int RowIndex = dtTreeGrid.Rows.Count - 1;
-                                                    if (RowIndex < 0)
-                                                    {
-                                                        DataRow dr = dtTreeGrid.NewRow();
-                                                        dr["DrawingName"] = drawingName;
-                                                        dr["filepath"] = xgn.Database.Filename.ToString();
-
-                                                        dr["isroot"] = "true";
-
-                                                        dtTreeGrid.Rows.Add(dr);
-                                                        RowIndex = dtTreeGrid.Rows.Count - 1;
-                                                    }
-                                                    dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Name;
-                                                    dtTreeGrid.Rows[RowIndex]["isroot"] = "true";
-
-                                                    if (IsSaveAsNew)
-                                                    {
-                                                        dtTreeGrid.Rows[RowIndex]["DrawingName"] = Helper.RemovePreFixFromFileName(Path.GetFileName(xgn.Name), Convert.ToString(dtTreeGrid.Rows[RowIndex]["prefix"]));
-                                                        dtTreeGrid.Rows[RowIndex]["DrawingId"] = "";
-                                                    }
-                                                    if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim().Length == 0)
-                                                    {
-                                                        Parent = "1";
-                                                    }
-                                                    else
-                                                    {
-                                                        Parent = Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim();
-                                                    }
-                                                    dtTreeGrid.Rows[RowIndex]["PK"] = Parent;
-                                                    dtTreeGrid.Rows[RowIndex]["FK"] = Parent;
-                                                }
-                                                catch (System.Exception E)
-                                                {
-
-                                                }
-                                            }
-                                            else
-                                            {
-                                                Parent = "1";
-                                                DataRow dr = dtTreeGrid.NewRow();
-                                                dr["DrawingName"] = drawingName;
-                                                dr["filepath"] = xgn.Database.Filename.ToString();
-
-                                                dr["isroot"] = "true";
-
-                                                dr["PK"] = Parent;
-                                                dr["FK"] = Parent;
-                                                dtTreeGrid.Rows.Add(dr);
-
-                                            }
-                                        }
-                                        else
-                                        {
-
-                                            string PK = "";
-                                            try
-                                            {
-                                                PK = Convert.ToString(RefCount + i + 1);
-                                            }
-                                            catch
-                                            {
-                                                PK = Convert.ToString(i + 1);
-                                            }
-
-                                            Hashtable drawingAttrs = new Hashtable();
-
-                                            drawingAttrs = GetAttributesht(xgn.Database.Filename);
-                                            if (drawingAttrs.Count != 0)
-                                            {
-                                                int RowDiff = dtTreeGrid.Rows.Count;
-                                                dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
-                                                RowDiff = dtTreeGrid.Rows.Count - RowDiff;
-                                                int RowIndex = dtTreeGrid.Rows.Count - 1;
-
-                                                if (RowDiff == 0)
-                                                {
-                                                    DataRow dr = dtTreeGrid.NewRow();
-                                                    dr["DrawingName"] = drawingName;
-                                                    dr["filepath"] = xgn.Database.Filename.ToString();
-
-                                                    dr["isroot"] = "true";
-
-                                                    dtTreeGrid.Rows.Add(dr);
-                                                    RowIndex = dtTreeGrid.Rows.Count - 1;
-                                                }
-                                                dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Database.Filename;
-
-                                                if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["isroot"]).ToLower() == "true")
-                                                {
-                                                    dtTreeGrid.Rows[RowIndex]["IsNewXref"] = "true";
-                                                }
-                                                dtTreeGrid.Rows[RowIndex]["isroot"] = "false";
-
-                                                if (IsSaveAsNew)
-                                                    dtTreeGrid.Rows[RowIndex]["DrawingName"] = Helper.RemovePreFixFromFileName(Path.GetFileName(xgn.Name), Convert.ToString(dtTreeGrid.Rows[RowIndex]["prefix"]));
-
-
-                                                if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim().Length != 0)
-                                                {
-                                                    PK = Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim();
-                                                }
-                                                dtTreeGrid.Rows[RowIndex]["PK"] = PK;
-                                                dtTreeGrid.Rows[RowIndex]["FK"] = Parent;
-                                            }
-
-                                            else
-                                            {
-                                                DataRow dr = dtTreeGrid.NewRow();
-                                                dr["DrawingName"] = xgn.Name;
-                                                dr["filepath"] = xgn.Database.Filename.ToString();
-
-                                                dr["isroot"] = "false";
-
-                                                dr["IsNewXref"] = "true";
-                                                dr["PK"] = PK;
-                                                dr["FK"] = Parent;
-                                                dtTreeGrid.Rows.Add(dr);
-                                            }
-
-                                            GetExternalRefreces11(xgn.Database.Filename, PK, ref dtTreeGrid, IsSaveAsNew);
-
-                                        }
-
-
-                                    }
-                                    break;
-                                }
-                        }//Switch Complete
-                    }//For Complete                    
-                }//Complete MainDB
-            }
-            catch (System.Exception ex)
-            {
                 ShowMessage.ErrorMess(ex.Message);
             }
             return dtTreeGrid;
         }
-        public void GetNodeInfo(GraphNode GN)
-        {
-            try
-            {
-                for (int i = 0; i < GN.NumIn; i++)
-                {
-                    GraphNode GN1 = GN.In(i);
-
-                    GetNodeInfo(GN1);
-                }
-                {
-
-                }
-            }
-            catch (System.Exception ex)
-            {
-                ShowMessage.ErrorMess(ex.Message);
-            }
-        }
+        
         public Hashtable GetLayoutInfo(string FilePath)
         {
             string Layouts = "";
@@ -2761,60 +1933,8 @@ namespace AutocadPlugIn
             catch { }
             return LayoutInfo;
         }
-        public bool SetLayoutOwnerID(System.Data.DataTable dtLayoutInfo, string FilePath)
-        {
-            try
-            {
-                Database mainDb = new Database(false, true);
-                mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-                mainDb.ResolveXrefs(false, false);
-                Transaction tr = mainDb.TransactionManager.StartTransaction();
-
-
-                using (tr)
-                {
-
-                    DBDictionary layoutDict = tr.GetObject(mainDb.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
-                    foreach (DBDictionaryEntry de in layoutDict)
-                    {
-                        String layoutName = de.Key;
-                        if (layoutName != "Model")
-                        {
-                            Layout layout = tr.GetObject(de.Value, OpenMode.ForRead) as Layout;
-
-                            string LayoutUnqID = "";
-
-                            for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
-                            {
-                                if (Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"]) == de.Key)
-                                {
-                                    layout.OwnerId = (Autodesk.AutoCAD.DatabaseServices.ObjectId)dtLayoutInfo.Rows[i]["ACLayoutID"];
-
-                                    break;
-                                }
-
-                            }
-
-
-
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-
-
-                    tr.Commit();
-                }
-            }
-            catch (System.Exception E)
-            {
-                ShowMessage.ErrorMessUD("Error while setting layout owner id." + Environment.NewLine + E.Message); return false;
-            }
-            return true;
-        }
-        public int IsXrNodeEqual(XrefGraph xrGraph, GraphNode grNode)
+         
+        public int IsXRefNodeEqual(XrefGraph xrGraph, GraphNode grNode)
         {
             for (int i = 0; i < xrGraph.NumNodes; i++)
             {
@@ -2822,10 +1942,9 @@ namespace AutocadPlugIn
                     return i;
             }
             return -1;
-        }
-
-        [Autodesk.AutoCAD.Runtime.CommandMethod("TITLEBLOCK")]
-        public void UpdateLayoutAttribute(Hashtable documentProperties = null)
+        } 
+        
+        public void UpdateDrawingLayoutAttribute(Hashtable documentProperties = null)
         {
             try
             {
@@ -3069,108 +2188,19 @@ namespace AutocadPlugIn
             {
                 MessageBox.Show(ex.Message.ToString(), "Error");
             }
-        }
-
-        //[Autodesk.AutoCAD.Runtime.CommandMethod("DWGPROPS")]
-        //[Autodesk.AutoCAD.Runtime.CommandMethod("EATTEDIT")]
-        //[Autodesk.AutoCAD.Runtime.CommandMethod("ATTEDIT")]
-        //[Autodesk.AutoCAD.Runtime.CommandMethod("-BEDIT")]
-
-        public void DisableCommand()
-        {
-            // MessageBox.Show("Sorry!!! AutoCAD does not allow you to run this Command!!!");
-        }
-
-        #region "Plot Layout to PDF"
-        /*
-        public void PlotLayout(Document doc, Transaction tr, ObjectIdCollection layoutsToPlot)
-        {
-            PlotInfo pi = new PlotInfo();
-            PlotInfoValidator piv = new PlotInfoValidator();
-            piv.MediaMatchingPolicy = MatchingPolicy.MatchEnabled;
-
-            if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
-            {
-                PlotEngine pe = PlotFactory.CreatePublishEngine();
-                using (pe)
-                {
-                    PlotProgressDialog ppd = new PlotProgressDialog(false, layoutsToPlot.Count, true);
-                    using (ppd)
-                    {
-                        int numSheet = 1;
-                        foreach (ObjectId layoutId in layoutsToPlot)
-                        {
-                            Layout lo = (Layout)tr.GetObject(layoutId, OpenMode.ForRead);
-                            PlotSettings ps = new PlotSettings(lo.ModelType);
-                            ps.CopyFrom(lo);
-                            PlotSettingsValidator psv = PlotSettingsValidator.Current;
-                            psv.SetPlotType(ps, Autodesk.AutoCAD.DatabaseServices.PlotType.Extents);
-                            psv.SetUseStandardScale(ps, true);
-                            psv.SetStdScaleType(ps, StdScaleType.ScaleToFit);
-                            psv.SetPlotCentered(ps, true);
-                            psv.SetPlotConfigurationName(ps, "DWG To PDF.pc3", "ANSI_A_(11.00_x_8.50_Inches)");//Plot to Pdf                            
-                            pi.Layout = layoutId;
-                            LayoutManager.Current.CurrentLayout = lo.LayoutName;
-                            pi.OverrideSettings = ps;
-                            piv.Validate(pi);
-                            if (numSheet == 1)
-                            {
-                                ppd.set_PlotMsgString(PlotMessageIndex.DialogTitle, "Custom Plot Progress");
-                                ppd.set_PlotMsgString(PlotMessageIndex.CancelJobButtonMessage, "Cancel Job");
-                                ppd.set_PlotMsgString(PlotMessageIndex.CancelSheetButtonMessage, "Cancel Sheet");
-                                ppd.set_PlotMsgString(PlotMessageIndex.SheetSetProgressCaption, "Sheet Set Progress");
-                                ppd.set_PlotMsgString(PlotMessageIndex.SheetProgressCaption, "Sheet Progress");
-                                ppd.LowerPlotProgressRange = 0;
-                                ppd.UpperPlotProgressRange = 100;
-                                ppd.PlotProgressPos = 0;
-                                ppd.OnBeginPlot();
-                                ppd.IsVisible = false;
-                                pe.BeginPlot(ppd, null);
-                                pe.BeginDocument(pi, doc.Name, null, 1, true, "C:\\Test\\" + lo.LayoutName + ".pdf");//plot to pdf                                
-                            }                            
-                            ppd.set_PlotMsgString(PlotMessageIndex.SheetName, doc.Name.Substring(doc.Name.LastIndexOf("\\") + 1) + " - sheet " + numSheet.ToString() + " of " + layoutsToPlot.Count.ToString());
-                            ppd.OnBeginSheet();
-                            ppd.LowerSheetProgressRange = 0;
-                            ppd.UpperSheetProgressRange = 100;
-                            ppd.SheetProgressPos = 0;
-                            PlotPageInfo ppi = new PlotPageInfo();
-                            pe.BeginPage(ppi, pi, (numSheet == layoutsToPlot.Count), null);
-                            pe.BeginGenerateGraphics(null);
-                            ppd.SheetProgressPos = 50;
-                            pe.EndGenerateGraphics(null);
-                            pe.EndPage(null);
-                            ppd.SheetProgressPos = 100;
-                            ppd.OnEndSheet();
-                            numSheet++;
-                            ppd.PlotProgressPos += (100 / layoutsToPlot.Count);
-                        }
-                        pe.EndDocument(null);
-                        ppd.PlotProgressPos = 100;
-                        ppd.OnEndPlot();
-                        pe.EndPlot(null);
-                    }
-                }
-            }
-
-            else
-            {
-                MessageBox.Show("\nAnother plot is in progress.");
-            }
-        }
-         */
-        #endregion "Plot Layout to PDF"
+        } 
 
         public bool CheckForCurruntlyOpenDoc(string FilePath, bool MakeActive = true)
         {
             try
             {
-                foreach (Document Doc in acadApp.DocumentManager)
+                foreach (Document Doc in ACAPP.DocumentManager)
                 {
                     if (Doc.Database.Filename.ToLower() == FilePath.ToLower())
                     {
                         if (MakeActive)
                         {
-                            acadApp.DocumentManager.MdiActiveDocument = Doc;
+                            ACAPP.DocumentManager.MdiActiveDocument = Doc;
                         }
 
                         return true;
@@ -3190,7 +2220,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                foreach (Document Doc in acadApp.DocumentManager)
+                foreach (Document Doc in ACAPP.DocumentManager)
                 {
                     if (Doc.Database.Filename == FilePath)
                     {
@@ -3207,18 +2237,6 @@ namespace AutocadPlugIn
                 return true;
             }
         }
-        public void OpenDoc(string FilePath)
-        {
-            try
-            {
-                acadApp.DocumentManager.Open(FilePath, false);
-            }
-            catch (System.Exception E)
-            {
-                ShowMessage.ErrorMess(E.Message);
-            }
-        }
-
 
         public void AttachingExternalReference(string ParentFilePath, List<clsDownloadedFiles> lstobjDownloadedFiles)
         {
@@ -3237,11 +2255,8 @@ namespace AutocadPlugIn
             {
                 ShowMessage.ErrorMess(E.Message);
             }
-        }
-
-
-
-        [CommandMethod("AttachingExternalReference")]
+        } 
+       
         public void AttachingExternalReference(string ParentFilePath, string XrefFilePath, string Prefix)
         {
             // Get the current database and start a transaction
@@ -3280,34 +2295,23 @@ namespace AutocadPlugIn
                 }
                 acCurDb.SaveAs(ParentFilePath, DwgVersion.Current);
             }
-        }
-
-        [CommandMethod("RenameLayout")]
+        } 
 
         public void renamelayoutName(String FilePath, string OldLayoutName, string NewLayoutName)
-
-        {
-
+        { 
             try
-            {
-
-
+            { 
                 Database Db = new Database(false, true);
                 Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                 //get the Layout name
 
                 if (Db != null)
-                {
-
+                { 
                     using (Db)
-                    {
-
-                        Transaction tr = Db.TransactionManager.StartTransaction();
-
-
+                    { 
+                        Transaction tr = Db.TransactionManager.StartTransaction(); 
                         using (tr)
-                        {
-
+                        { 
                             DBDictionary layoutDict = tr.GetObject(Db.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
                             foreach (DBDictionaryEntry de in layoutDict)
                             {
@@ -3315,29 +2319,20 @@ namespace AutocadPlugIn
                                 if (layoutName != "Model")
                                 {
 
-                                    Layout layout = tr.GetObject(de.Value, OpenMode.ForWrite) as Layout;
-                                    //LayoutManager acLayoutMgr = LayoutManager.Current;
-                                    //if (acLayoutMgr!= null)
-                                    //{
-                                    //    acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
-                                    //}
+                                    Layout layout = tr.GetObject(de.Value, OpenMode.ForWrite) as Layout; 
 
                                     if (layout.LayoutName == OldLayoutName || layout.LayoutName.Contains(OldLayoutName))
                                     {
                                         layout.LayoutName = NewLayoutName;
 
                                         break;
-                                    }
-
-
+                                    } 
                                 }
                                 else
                                 {
                                     continue;
                                 }
-                            }
-
-
+                            } 
                             tr.Commit();
                         }
                         Db.SaveAs(FilePath, DwgVersion.Current);
@@ -3348,16 +2343,9 @@ namespace AutocadPlugIn
             catch (System.Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
-            }
-            //LayoutManager acLayoutMgr = LayoutManager.Current;
-            //acLayoutMgr.RenameLayout(OldLayoutName, OldLayoutName + "_" + Suffix);
-
-
-
-
+            }  
         }
-
-        [CommandMethod("AddingAttributeToABlock")]
+      
         public void AddingAttributeToABlock(String FilePath, List<string> Attributes, string LayoutName, bool IsLayout)
         {
             // Get the current database and start a transaction
@@ -3524,6 +2512,7 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
         }
+
         public bool OpenDocSilently(string FilePath)
         {
             bool IsDocOpend = false;
@@ -3533,7 +2522,7 @@ namespace AutocadPlugIn
                 {
                     Helper.CheckFileInfoFlag = false;
 
-                    acadApp.DocumentManager.Open(FilePath, false);
+                    ACAPP.DocumentManager.Open(FilePath, false);
                     IsDocOpend = true;
                     Helper.CheckFileInfoFlag = true;
                 }
@@ -3544,18 +2533,20 @@ namespace AutocadPlugIn
             }
             return IsDocOpend;
         }
+
         public void CloseDocSilently(string FilePath)
         {
             try
             {
                 if (CheckForCurruntlyOpenDoc(FilePath, false))
-                    acadApp.DocumentManager.MdiActiveDocument.CloseAndSave(FilePath);
+                    ACAPP.DocumentManager.MdiActiveDocument.CloseAndSave(FilePath);
             }
             catch (System.Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
         }
+
         public void AddingAttributeToABlock1(String FilePath, List<string> Attributes, string LayoutName)
         {
             // Get the current database and start a transaction
@@ -3709,6 +2700,7 @@ namespace AutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
         }
+
         public void InsertingBlockWithAnAttribute()
         {
             // Get the current database and start a transaction
@@ -3823,7 +2815,6 @@ namespace AutocadPlugIn
             }
         }
 
-
         static public void InsertBlockReference(string blockName, Point3d insertionPoint)
         {
             Database db = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
@@ -3886,7 +2877,7 @@ namespace AutocadPlugIn
                 Editor ed = doc.Editor;
 
 
-                foreach (Document Doc in acadApp.DocumentManager)
+                foreach (Document Doc in ACAPP.DocumentManager)
                 {
                     if (File.Exists(Doc.Database.Filename))
                     {

@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 namespace RibbonSample.UI_Forms
 {
-    partial class About
+    partial class frmAbout
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@ namespace RibbonSample.UI_Forms
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(About));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAbout));
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.labelProductName = new System.Windows.Forms.Label();
             this.labelVersion = new System.Windows.Forms.Label();
@@ -240,7 +240,7 @@ namespace RibbonSample.UI_Forms
             this.pnlRight.Size = new System.Drawing.Size(12, 307);
             this.pnlRight.TabIndex = 0;
             // 
-            // About
+            // frmAbout
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -252,7 +252,7 @@ namespace RibbonSample.UI_Forms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "About";
+            this.Name = "frmAbout";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

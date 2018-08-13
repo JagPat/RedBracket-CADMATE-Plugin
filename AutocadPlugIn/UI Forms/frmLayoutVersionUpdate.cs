@@ -26,7 +26,7 @@ namespace AutocadPlugIn.UI_Forms
 
         public DataTable dtLayoutInfo = new DataTable();
         RBConnector objRBC = new RBConnector();
-        AutoCADManager CadManager = new AutoCADManager();
+         
         public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "",
             string ProjectID = "", string FilePath = "", string OldDWGNo = "")
         {
@@ -82,7 +82,7 @@ namespace AutocadPlugIn.UI_Forms
                                    );
                 node.Expand();
                 node.ReadOnly = true;
-                Hashtable htLayoutInfo = CadManager.GetLayoutInfo(FilePath);
+                Hashtable htLayoutInfo =Helper.cadManager.GetLayoutInfo(FilePath);
                 DataTable dtLI = new DataTable();
                 dtLI.Columns.Add("Name");
                 dtLI.Columns.Add("DrawingNo");

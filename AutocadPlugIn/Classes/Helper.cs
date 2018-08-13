@@ -10,8 +10,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
-using System.Runtime.InteropServices;
-using System.Management;
+using System.Runtime.InteropServices; 
 using AdvancedDataGridView;
 
 namespace AutocadPlugIn
@@ -34,7 +33,7 @@ namespace AutocadPlugIn
 
         public static bool IsRenameChild = true;
         public static RBConnector objRBC = new RBConnector();
-        public static AutoCADManager cadManager = new AutoCADManager();
+        public static ACManager cadManager = new ACManager();
         public static Color clrChildPopupBorderColor = Color.FromArgb(130, 130, 156);
         public static Color clrParentPopupBorderColor = Color.FromArgb(46, 49, 50);
         public static Color clrDiffHighlighColor = Color.FromArgb(255, 180, 180);
@@ -1086,7 +1085,7 @@ namespace AutocadPlugIn
                     if (!IsTemp)
                     {
                         cadManager.SetAttributesXrefFiles(DrawingProperty, FilePath);
-                        cadManager.UpdateLayoutAttributeArefFile(DrawingProperty, FilePath, false);
+                        cadManager.UpdateLayoutAttributeXrefFile(DrawingProperty, FilePath, false);
                     }
                 }
             }

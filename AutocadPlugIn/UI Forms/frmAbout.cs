@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace RibbonSample.UI_Forms
 {
-    public partial class About : Form
+    public partial class frmAbout : Form
     {
-        public About()
+        public frmAbout()
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
         }

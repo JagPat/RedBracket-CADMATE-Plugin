@@ -5,14 +5,13 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms; 
+using System.Windows.Forms;
 
 namespace AutocadPlugIn.UI_Forms
 {
     public partial class frmDrawingInfo : Form
     {
-        public string DrawingID1 = "";
-        AutoCADManager cadManager = new AutoCADManager();
+        public string DrawingID1 = ""; 
         RBConnector objRBC = new RBConnector();
         bool IsFilePropertiesChanged = false;
         bool IsLayoutPropertiesChanged = false;
@@ -37,15 +36,11 @@ namespace AutocadPlugIn.UI_Forms
                 int LocalFileLayoutCount = 0;
                 int FileInfoRowCount = 0;
 
-                //if (DrawingID.Trim().Length == 0)
-                //{
-                //    ShowMessage.ValMess("Please save this drawing to RedBracket.");
-                //    return;
-                //}
+ 
                 Helper.GetProgressBar(5, "Fetching File Info in Progress...", "Fetching local file info.");
                 Panel pnlSaperator = new Panel() { BackColor = Helper.clrParentPopupBorderColor, Margin = new Padding(3), Dock = DockStyle.Fill };
                 // Get Current File Info from Custum Properties and Display
-                DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=true");
+                DataRow[] dtCurrentData =Helper.cadManager.GetDrawingExternalRefreces().Select("isroot=true");
                 if (dtCurrentData.Length > 0)
                 {
                     Helper.IncrementProgressBar(1, "Filling local file info.");
@@ -438,21 +433,10 @@ namespace AutocadPlugIn.UI_Forms
                 //        lbVersionC.Text = lbVersionC.Text + "+";
                 //    }
 
-                    
+
                 //}
-                for (int i = 1; i < tlpMain.RowCount; i++)
-                {
-                    Control lblLabel = tlpMain.GetControlFromPosition(0, i);
-                    Control ctrlCurrent = tlpMain.GetControlFromPosition(1, i);
-                    Control lblLatest = tlpMain.GetControlFromPosition(2, i);
 
-
-                    if (ctrlCurrent != null && lblLatest != null && lblLabel != null && lblLabel is Label)
-                    {
-                        CompareProperties(ctrlCurrent, lblLatest, lblLabel);
-                    }
-                }
-
+                CompareProperties();
 
 
 
@@ -470,6 +454,28 @@ namespace AutocadPlugIn.UI_Forms
             this.Show();
             Cursor.Current = Cursors.Default;
             Helper.CloseProgressBar();
+        }
+        public void CompareProperties()
+        {
+            try
+            {
+                for (int i = 1; i < tlpMain.RowCount; i++)
+                {
+                    Control lblLabel = tlpMain.GetControlFromPosition(0, i);
+                    Control ctrlCurrent = tlpMain.GetControlFromPosition(1, i);
+                    Control lblLatest = tlpMain.GetControlFromPosition(2, i);
+
+
+                    if (ctrlCurrent != null && lblLatest != null && lblLabel != null && lblLabel is Label)
+                    {
+                        CompareProperties(ctrlCurrent, lblLatest, lblLabel);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); this.Close(); return;
+            }
         }
         public void CompareProperties(Control ctrlCurrent, Control lblLatest, Control lblLabel)
         {
@@ -499,37 +505,7 @@ namespace AutocadPlugIn.UI_Forms
             }
         }
 
-        public void CompareProperties(String ControlName, bool IsCombo = false, string count = "")
-        {
-            try
-            {
-                Control ctrlCurrent; Label lblLatest; Label lblLabel;
-                if (IsCombo)
-                {
-                    ctrlCurrent = tlpMain.Controls.Find(ControlName + "C" + count, false).FirstOrDefault() as ComboBox;
-                }
-                else
-                {
-                    ctrlCurrent = tlpMain.Controls.Find(ControlName + "C" + count, false).FirstOrDefault() as Label;
-                }
 
-                lblLatest = tlpMain.Controls.Find(ControlName + "L" + count, false).FirstOrDefault() as Label;
-                lblLabel = tlpMain.Controls.Find(ControlName + "" + count, false).FirstOrDefault() as Label;
-
-                if (ctrlCurrent.Text != lblLatest.Text)
-                {
-                    lblLabel.Text = " " + lblLabel.Text;
-                    ctrlCurrent.Text = " " + ctrlCurrent.Text;
-                    lblLatest.Text = " " + lblLatest.Text;
-                    lblLabel.Margin = ctrlCurrent.Margin = lblLatest.Margin = new Padding(0);
-                    lblLabel.BackColor = ctrlCurrent.BackColor = lblLatest.BackColor = Helper.clrDiffHighlighColor;
-                }
-            }
-            catch (Exception E)
-            {
-                ShowMessage.ErrorMess(E.Message);
-            }
-        }
 
         private void tlpMain_Paint(object sender, PaintEventArgs e)
         {
@@ -637,7 +613,7 @@ namespace AutocadPlugIn.UI_Forms
                 }
                 if (IsDrawingPropertiesChanged)
                 {
-                    cadManager.UpdateFileProperties(DrawingID1, FilePath);
+                    Helper.cadManager.UpdateFileProperties(DrawingID1, FilePath);
                 }
 
                 cmbFileTypeC_SelectedValueChanged(null, null);
@@ -646,6 +622,7 @@ namespace AutocadPlugIn.UI_Forms
             {
                 ShowMessage.ErrorMess(E.Message);
             }
+            CompareProperties();
             Cursor.Current = Cursors.Default;
         }
 
@@ -776,9 +753,9 @@ namespace AutocadPlugIn.UI_Forms
                 else if (OldStatusTypeClosed && !NewStatusTypeCLosed)
                 {
                     ShowMessage.ValMess(FileName + "Changing status from '" + GetFileStatus(cmb, true) + "' to '" + cmb.Text + "' will lead to creation of new revision, \n So you can not change it.");
-                     
-                        cmb.SelectedValue = cmb.Tag;
-                        RetVal = false; 
+
+                    cmb.SelectedValue = cmb.Tag;
+                    RetVal = false;
                 }
                 if (!OldStatusTypeClosed && NewStatusTypeCLosed)
                 {
@@ -814,11 +791,11 @@ namespace AutocadPlugIn.UI_Forms
 
                 while (!IsControlNull)
                 {
-                    
+
                     ComboBox cmbstatus = tlpMain.Controls.Find("cmbLayoutStatusC" + count, false).FirstOrDefault() as ComboBox;
 
                     Label Name = tlpMain.Controls.Find("lbLayoutNameC" + count, false).FirstOrDefault() as Label;
-                    if (cmbstatus == null || Convert.ToString(Name.Tag).Trim().Length==0)
+                    if (cmbstatus == null || Convert.ToString(Name.Tag).Trim().Length == 0)
                     {
                         IsControlNull = true;
                     }
@@ -846,7 +823,7 @@ namespace AutocadPlugIn.UI_Forms
         {
             try
             {
-                if(cmb==null)
+                if (cmb == null)
                 {
                     return false;
                 }

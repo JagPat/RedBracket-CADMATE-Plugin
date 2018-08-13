@@ -32,9 +32,9 @@ namespace AutocadPlugIn
         public RibbonTab Tab = new RibbonTab();
 
 
-        public RibbonPanel Panel1 = new RibbonPanel();
-        public Autodesk.Windows.RibbonPanelSource panel1Panel = new RibbonPanelSource();
-        public RibbonButton Btn_Connection = new RibbonButton();
+        public RibbonPanel rpMain = new RibbonPanel();
+        public Autodesk.Windows.RibbonPanelSource rpsConnection = new RibbonPanelSource();
+        public RibbonButton btnConnection = new RibbonButton();
 
 
         public RibbonPanel panel2 = new RibbonPanel();
@@ -256,7 +256,7 @@ namespace AutocadPlugIn
             try
             {
 
-                System.Data.DataTable dtDrawing = Helper.cadManager.GetAttributes(Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.Filename);
+                System.Data.DataTable dtDrawing = Helper.cadManager.GetDrawingAttributes(Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.Filename);
 
                 if (dtDrawing.Rows.Count > 0)
                 {
@@ -294,26 +294,26 @@ namespace AutocadPlugIn
             {
 
                 Tab = new RibbonTab();
-                panel1Panel = new RibbonPanelSource();
-                Panel1 = new RibbonPanel();
+                rpsConnection = new RibbonPanelSource();
+                rpMain = new RibbonPanel();
 
                 panel2 = new RibbonPanel();
                 panel2Panel = new RibbonPanelSource();
 
                 Panel3 = new RibbonPanel();
-                pan3Panel = new RibbonPanelSource(); 
+                pan3Panel = new RibbonPanelSource();
 
                 panel4Panel = new RibbonPanelSource();
                 panel4 = new RibbonPanel();
 
                 rpsSave = new RibbonPanelSource();
-                rpSave = new RibbonPanel(); 
+                rpSave = new RibbonPanel();
 
                 panel5 = new RibbonPanel();
-                panel5Panel = new RibbonPanelSource(); 
+                panel5Panel = new RibbonPanelSource();
 
                 panel6 = new RibbonPanel();
-                panel6Panel = new RibbonPanelSource(); 
+                panel6Panel = new RibbonPanelSource();
 
                 panel7 = new RibbonPanel();
                 panel7Panel = new RibbonPanelSource();
@@ -372,35 +372,35 @@ namespace AutocadPlugIn
                 ribbonStatus = true;
 
                 //Connect Functionality
-                panel1Panel.Title = "Connection";
-                Panel1.Source = panel1Panel;
-                Tab.Panels.Add(Panel1);
+                rpsConnection.Title = "Connection";
+                rpMain.Source = rpsConnection;
+                Tab.Panels.Add(rpMain);
 
-                Btn_Connection.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_Connection.Size = RibbonItemSize.Large;
+                btnConnection.Orientation = System.Windows.Controls.Orientation.Vertical;
+                btnConnection.Size = RibbonItemSize.Large;
 
 
                 ConnectionController connController = new ConnectionController();
                 if (!connect)
                 {
-                    Btn_Connection.Text = "Log-in";
-                    Btn_Connection.ShowText = true;
-                    Btn_Connection.ShowImage = true;
-                    Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
-                    Btn_Connection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
-                    Btn_Connection.CommandHandler = new Connect();
+                    btnConnection.Text = "Log-in";
+                    btnConnection.ShowText = true;
+                    btnConnection.ShowImage = true;
+                    btnConnection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
+                    btnConnection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
+                    btnConnection.CommandHandler = new Connect();
 
                     Helper.CurrentVersion = "";
                     Helper.LatestVersion = "";
                 }
                 else
                 {
-                    Btn_Connection.Text = "Log-out";
-                    Btn_Connection.ShowText = true;
-                    Btn_Connection.ShowImage = true;
-                    Btn_Connection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
-                    Btn_Connection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
-                    Btn_Connection.CommandHandler = new Disconnect();
+                    btnConnection.Text = "Log-out";
+                    btnConnection.ShowText = true;
+                    btnConnection.ShowImage = true;
+                    btnConnection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
+                    btnConnection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
+                    btnConnection.CommandHandler = new Disconnect();
                     browseDEnable = true;
                     createDEnable = true;
                     browseBEnable = true;
@@ -411,7 +411,7 @@ namespace AutocadPlugIn
                     DrawingInfoEnable = true;
                 }
 
-                panel1Panel.Items.Add(Btn_Connection);
+                rpsConnection.Items.Add(btnConnection);
 
 
 
@@ -419,7 +419,7 @@ namespace AutocadPlugIn
                 panel2.Source = panel2Panel;
                 Tab.Panels.Add(panel2);
 
-                
+
 
                 Btn_BrowseDrawing.Text = "Open File";
                 Btn_BrowseDrawing.ShowText = true;
@@ -740,7 +740,7 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-            AutocadPlugIn.login mylogin = new AutocadPlugIn.login();
+            AutocadPlugIn.frmLogin mylogin = new AutocadPlugIn.frmLogin();
             mylogin.ShowDialog();
         }
     }
@@ -886,8 +886,8 @@ namespace AutocadPlugIn
         public void Execute(object parameter)
         {
             //DocumentInformationDisplay objDRGInfo = new DocumentInformationDisplay();
-            AutoCADManager cadManager = new AutoCADManager();
-            System.Data.DataRow[] dtCurrentData = cadManager.GetExternalRefreces().Select("isroot=true");
+
+            System.Data.DataRow[] dtCurrentData = Helper.cadManager.GetDrawingExternalRefreces().Select("isroot=true");
 
             if (dtCurrentData.Length > 0)
             {
@@ -899,7 +899,7 @@ namespace AutocadPlugIn
                 }
                 else
                 {
-                    ShowMessage.ValMess("Please save this drawing to "+Helper.CompanyName+".");
+                    ShowMessage.ValMess("Please save this drawing to " + Helper.CompanyName + ".");
                     return;
                 }
             }
@@ -922,7 +922,7 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-            RibbonSample.UI_Forms.About about = new RibbonSample.UI_Forms.About();
+            RibbonSample.UI_Forms.frmAbout about = new RibbonSample.UI_Forms.frmAbout();
             about.ShowDialog();
         }
     }
@@ -1189,8 +1189,8 @@ namespace AutocadPlugIn
                         {
                             Directory.CreateDirectory(checkoutPath);
                         }
-                        AutoCADManager objMgr = new AutoCADManager();
-                        objMgr.ChecknCloseOpenedDoc(db.Filename);
+
+                        Helper.cadManager.ChecknCloseOpenedDoc(db.Filename);
 
                         DownloadOpenDocument(Drawing.id, checkoutPath);
 
@@ -1206,8 +1206,7 @@ namespace AutocadPlugIn
                     {
                         if (Convert.ToDateTime(Drawing.updatedon) != Convert.ToDateTime(updatedon))
                         {
-                            AutoCADManager cadManager = new AutoCADManager();
-                            cadManager.UpdateFileProperties(drawingid, db.Filename);
+                            Helper.cadManager.UpdateFileProperties(drawingid, db.Filename);
                         }
 
                     }

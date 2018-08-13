@@ -83,7 +83,7 @@ namespace AutocadPlugIn.UI_Forms
                     savetreeGrid.Nodes.Remove(TreeNode1);
                 }
 
-                dtTreeGridData = Helper.cadManager.GetExternalRefreces1(IsSaveAs);
+                dtTreeGridData = Helper.cadManager.GetDrawingExternalRefreces1(IsSaveAs);
 
 
                 string FoldID = "", FoldPath = "", ProJNmNo = "", OldDWGNo = "";
@@ -253,7 +253,7 @@ namespace AutocadPlugIn.UI_Forms
                             BtnBrowseFolder.Visible = true;
                         }
                         //string LIStatus = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 && !IsSaveAs? "Empty" : "Filled";
-                        string LIStatus = IsSaveAs? dtLayoutInfo==null || dtLayoutInfo.Rows.Count==0 ? "Empty" : "Filled" : Convert.ToString(rw["DrawingId"]).Trim().Length == 0  ? "Empty" : "Filled";
+                        string LIStatus = IsSaveAs ? dtLayoutInfo == null || dtLayoutInfo.Rows.Count == 0 ? "Empty" : "Filled" : Convert.ToString(rw["DrawingId"]).Trim().Length == 0 ? "Empty" : "Filled";
                         if (LIStatus == "Empty")
                         {
                             dtLayoutInfo.Rows.Clear();
@@ -762,9 +762,9 @@ namespace AutocadPlugIn.UI_Forms
                                 }
                                 if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                                 {
-                                    string Sufix = "_"+Count + "_" + objplmo.ObjectNumber;
+                                    string Sufix = "_" + Count + "_" + objplmo.ObjectNumber;
                                     string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim();
-                                    Helper.cadManager.renamelayoutName(objplmo.FilePath, Convert.ToString(dr["FileLayoutName"]).Trim().Replace(Sufix,""), NewLayoutName);
+                                    Helper.cadManager.renamelayoutName(objplmo.FilePath, Convert.ToString(dr["FileLayoutName"]).Trim().Replace(Sufix, ""), NewLayoutName);
                                 }
                             }
 
@@ -773,7 +773,7 @@ namespace AutocadPlugIn.UI_Forms
                         Helper.IncrementProgressBar(1, "Updating file names.");
                         //Helper.CloseProgressBar();
 
-                        Helper.cadManager.UpdateExRefPathInfo2(objCmd.FilePath, objCmd.FilePath, ref objController.plmObjs);
+                        Helper.cadManager.UpdateExRefFileName(objCmd.FilePath, objCmd.FilePath, ref objController.plmObjs);
 
                         Helper.IncrementProgressBar(1, "Uploading file to redbracket.");
 
@@ -942,7 +942,7 @@ namespace AutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                        if(Helper.FileNameCheckForSpecialCharacter(LN))
+                        if (Helper.FileNameCheckForSpecialCharacter(LN))
                         {
                             if (LN.Length < Helper.FileLayoutNameLength)
                             {
@@ -1299,7 +1299,7 @@ namespace AutocadPlugIn.UI_Forms
                     {
                         string FN = Helper.RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
 
-                        if(Helper.FileNameCheckForSpecialCharacter(FN))
+                        if (Helper.FileNameCheckForSpecialCharacter(FN))
                         {
                             if (!objRBC.CheckFileExistance(MyProjectId, FN))
                             {
@@ -1419,10 +1419,8 @@ namespace AutocadPlugIn.UI_Forms
                     #region "Lock Drawings"
                     if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "0")
                     {
-                        ArrayList arDrawingIDs = new ArrayList();
-                        arDrawingIDs.Add(selectedTreeNode.Cells["drawingID"].Value.ToString());
-                        frmLock1 objLock = new frmLock1();
-                        if (!objLock.LockDrawings(arDrawingIDs))
+
+                        if (!Helper.objRBC.LockObject(new List<PLMObject> { new PLMObject() { ObjectId = Convert.ToString(selectedTreeNode.Cells["drawingID"].Value) } }))
                         {
                             selectedTreeNode.ImageIndex = 0;
                             selectedTreeNode.Cells["lockstatus"].Value = "1";
@@ -1922,7 +1920,7 @@ namespace AutocadPlugIn.UI_Forms
                     AssignLayoutInfo(Child);
                 }
             }
-            catch(Exception E)
+            catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
             }
