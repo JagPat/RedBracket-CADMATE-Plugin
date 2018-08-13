@@ -7,9 +7,9 @@ using System.Linq;
 using System.Windows.Forms;
 using AdvancedDataGridView;
 
-using AutocadPlugIn.Properties;
+using RBAutocadPlugIn.Properties;
 
-namespace AutocadPlugIn.UI_Forms
+namespace RBAutocadPlugIn.UI_Forms
 {
     public partial class frmSearch_And_Open : Form
     {

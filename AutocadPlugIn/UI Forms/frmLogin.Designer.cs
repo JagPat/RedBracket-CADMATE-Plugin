@@ -1,4 +1,4 @@
-﻿namespace AutocadPlugIn
+﻿namespace RBAutocadPlugIn
 {
     partial class frmLogin
     {
@@ -271,7 +271,7 @@
             // 
             // panel1
             // 
-            this.panel1.BackgroundImage = global::AutocadPlugIn.Properties.Resources.Login;
+            this.panel1.BackgroundImage = global::RBAutocadPlugIn.Properties.Resources.Login;
             this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(13, 13);

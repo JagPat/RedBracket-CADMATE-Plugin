@@ -6,8 +6,8 @@ using RestSharp;
 using System.Data;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using AutocadPlugIn;
-namespace AutocadPlugIn
+using RBAutocadPlugIn;
+namespace RBAutocadPlugIn
 {
     public class ConnectionController : BaseController
     {

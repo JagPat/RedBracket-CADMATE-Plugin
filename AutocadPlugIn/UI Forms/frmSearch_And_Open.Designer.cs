@@ -1,5 +1,5 @@
 ﻿using AdvancedDataGridView;
-namespace AutocadPlugIn.UI_Forms
+namespace RBAutocadPlugIn.UI_Forms
 {
     partial class frmSearch_And_Open
     {
@@ -264,7 +264,7 @@ namespace AutocadPlugIn.UI_Forms
             this.IsXRefFile.DefaultCellStyle = dataGridViewCellStyle2;
             this.IsXRefFile.FillWeight = 31.94505F;
             this.IsXRefFile.HeaderText = "XRef";
-            this.IsXRefFile.Image = global::AutocadPlugIn.Properties.Resources.BG;
+            this.IsXRefFile.Image = global::RBAutocadPlugIn.Properties.Resources.BG;
             this.IsXRefFile.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Stretch;
             this.IsXRefFile.Name = "IsXRefFile";
             this.IsXRefFile.ReadOnly = true;

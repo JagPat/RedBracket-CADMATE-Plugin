@@ -6,7 +6,7 @@ using System.Windows.Forms;
  
 using AdvancedDataGridView; 
   
-namespace AutocadPlugIn.UI_Forms
+namespace RBAutocadPlugIn.UI_Forms
 {
     public partial class frmLockUnLock : Form
     {

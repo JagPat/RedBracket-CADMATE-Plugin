@@ -143,7 +143,7 @@ namespace RibbonSample.UI_Forms
             this.logoPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.logoPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logoPictureBox.ErrorImage = null;
-            this.logoPictureBox.Image = global::AutocadPlugIn.Properties.Resources.RBName;
+            this.logoPictureBox.Image = global::RBAutocadPlugIn.Properties.Resources.RBName;
             this.logoPictureBox.Location = new System.Drawing.Point(86, 3);
             this.logoPictureBox.Name = "logoPictureBox";
             this.logoPictureBox.Size = new System.Drawing.Size(411, 56);
@@ -154,10 +154,10 @@ namespace RibbonSample.UI_Forms
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = global::AutocadPlugIn.Properties.Resources.bracket;
+            this.pictureBox1.BackgroundImage = global::RBAutocadPlugIn.Properties.Resources.bracket;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.InitialImage = global::AutocadPlugIn.Properties.Resources.bracket;
+            this.pictureBox1.InitialImage = global::RBAutocadPlugIn.Properties.Resources.bracket;
             this.pictureBox1.Location = new System.Drawing.Point(3, 3);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(77, 56);

@@ -4,7 +4,7 @@ using System.Xml;
 using System.IO; 
 using Microsoft.Win32; 
 
-namespace AutocadPlugIn.UI_Forms
+namespace RBAutocadPlugIn.UI_Forms
 {
     public partial class UserSettings : Form
     {

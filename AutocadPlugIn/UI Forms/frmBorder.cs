@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AutocadPlugIn.UI_Forms
+namespace RBAutocadPlugIn.UI_Forms
 {
     public partial class frmBorder : Form
     {

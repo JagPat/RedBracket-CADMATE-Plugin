@@ -13,7 +13,7 @@ using System.Collections;
 using System.Runtime.InteropServices; 
 using AdvancedDataGridView;
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public static class Helper
     {

@@ -1,4 +1,4 @@
-﻿namespace AutocadPlugIn.UI_Forms
+﻿namespace RBAutocadPlugIn.UI_Forms
 {
     partial class frmFolderSelection
     {

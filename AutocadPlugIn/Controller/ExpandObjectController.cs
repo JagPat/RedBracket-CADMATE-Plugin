@@ -6,7 +6,7 @@ using System.Text;
 using AdvancedDataGridView;
 
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class ExpandObjectController : BaseController
     {

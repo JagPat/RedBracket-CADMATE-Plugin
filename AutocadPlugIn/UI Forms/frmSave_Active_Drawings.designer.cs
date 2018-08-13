@@ -1,4 +1,4 @@
-﻿namespace AutocadPlugIn.UI_Forms
+﻿namespace RBAutocadPlugIn.UI_Forms
 {
     partial class frmSave_Active_Drawings
     {
@@ -634,7 +634,7 @@
             // BtnBrowseFolder
             // 
             this.BtnBrowseFolder.HeaderText = "";
-            this.BtnBrowseFolder.Image = global::AutocadPlugIn.Properties.Resources.FolderBrowse;
+            this.BtnBrowseFolder.Image = global::RBAutocadPlugIn.Properties.Resources.FolderBrowse;
             this.BtnBrowseFolder.Name = "BtnBrowseFolder";
             this.BtnBrowseFolder.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.BtnBrowseFolder.Width = 50;

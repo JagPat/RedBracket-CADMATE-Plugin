@@ -1,11 +1,8 @@
 using System;
 using System.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+using System.Collections.Generic; 
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class SaveCommand : Command
     {

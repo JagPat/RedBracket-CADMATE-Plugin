@@ -10,7 +10,7 @@ using ACAPP = Autodesk.AutoCAD.ApplicationServices.Application;
 using System.Data; 
 using Autodesk.AutoCAD.Geometry;
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class ACManager
     {

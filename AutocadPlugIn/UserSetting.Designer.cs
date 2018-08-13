@@ -1,4 +1,4 @@
-﻿namespace AutocadPlugIn.UI_Forms
+﻿namespace RBAutocadPlugIn.UI_Forms
 {
     partial class UserSettings
     {
@@ -388,7 +388,7 @@
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Image = global::AutocadPlugIn.Properties.Resources.download;
+            this.pictureBox1.Image = global::RBAutocadPlugIn.Properties.Resources.download;
             this.pictureBox1.Location = new System.Drawing.Point(10, 10);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox1.Name = "pictureBox1";
@@ -403,7 +403,7 @@
             this.LoginPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.LoginPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LoginPictureBox.ErrorImage = null;
-            this.LoginPictureBox.Image = global::AutocadPlugIn.Properties.Resources.Login;
+            this.LoginPictureBox.Image = global::RBAutocadPlugIn.Properties.Resources.Login;
             this.LoginPictureBox.Location = new System.Drawing.Point(10, 10);
             this.LoginPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.LoginPictureBox.Name = "LoginPictureBox";

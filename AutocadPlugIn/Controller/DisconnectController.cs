@@ -4,7 +4,7 @@
 using System.Windows.Forms;
 
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class DisconnectController : BaseController
     {

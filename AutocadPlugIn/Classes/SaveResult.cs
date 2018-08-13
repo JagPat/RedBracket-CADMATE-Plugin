@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     /// <summary>
     /// Class to handle the save service response.

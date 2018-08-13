@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using RestSharp;
 
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class RBConnector
     {

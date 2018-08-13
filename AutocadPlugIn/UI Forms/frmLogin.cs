@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using System.IO;
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public partial class frmLogin : Form
     {
@@ -173,7 +173,7 @@ namespace AutocadPlugIn
                     }
 
 
-                    AutocadPlugIn.UI_Forms.CheckoutUserSettings CheckOUT = AutocadPlugIn.UI_Forms.UserSettings.createUserSetting().getCheckoutUserSettings();
+                    RBAutocadPlugIn.UI_Forms.CheckoutUserSettings CheckOUT = RBAutocadPlugIn.UI_Forms.UserSettings.createUserSetting().getCheckoutUserSettings();
 
                     CADRibbon cr = new CADRibbon();
 

@@ -8,7 +8,7 @@
     <ProjectGuid>{7FBD7E4A-1DDE-4EC2-AAAD-2DD00347B87C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AutocadPlugIn</RootNamespace>
+    <RootNamespace>RBAutocadPlugIn</RootNamespace>
     <AssemblyName>RBAutocadPlugIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -126,6 +126,7 @@
     <Compile Include="Classes\UserLoginDetails.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ConnectionCommand.cs" />
+    <Compile Include="Commands\DisconnectCommand.cs" />
     <Compile Include="Commands\ExpandObjectCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\LockCommand.cs" />

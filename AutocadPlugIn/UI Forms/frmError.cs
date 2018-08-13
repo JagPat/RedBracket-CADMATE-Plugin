@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public partial class frmError : Form
     {

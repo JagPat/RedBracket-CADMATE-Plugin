@@ -4,7 +4,7 @@ using System.Data;
  
 using AdvancedDataGridView; 
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public abstract class BaseController
     {

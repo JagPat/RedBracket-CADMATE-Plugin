@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class Relationship
     {

@@ -1,4 +1,4 @@
-﻿using AutocadPlugIn.UI_Forms;
+﻿using RBAutocadPlugIn.UI_Forms;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -11,7 +11,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class CADRibbon
     {
@@ -334,7 +334,7 @@ namespace AutocadPlugIn
                     timerVersion.Tick += new System.EventHandler(timerVersion_Tick);
                     timerVersion.Interval = 1000;
                     timerVersion.Start();
-                    AutocadPlugIn.Helper.IsEventAssign = true;
+                    RBAutocadPlugIn.Helper.IsEventAssign = true;
                 }
 
                 Tab.Title = "Redbracket";
@@ -386,8 +386,8 @@ namespace AutocadPlugIn
                     btnConnection.Text = "Log-in";
                     btnConnection.ShowText = true;
                     btnConnection.ShowImage = true;
-                    btnConnection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
-                    btnConnection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.connect);
+                    btnConnection.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.connect);
+                    btnConnection.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.connect);
                     btnConnection.CommandHandler = new Connect();
 
                     Helper.CurrentVersion = "";
@@ -398,8 +398,8 @@ namespace AutocadPlugIn
                     btnConnection.Text = "Log-out";
                     btnConnection.ShowText = true;
                     btnConnection.ShowImage = true;
-                    btnConnection.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
-                    btnConnection.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Disconnect);
+                    btnConnection.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Disconnect);
+                    btnConnection.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Disconnect);
                     btnConnection.CommandHandler = new Disconnect();
                     browseDEnable = true;
                     createDEnable = true;
@@ -424,8 +424,8 @@ namespace AutocadPlugIn
                 Btn_BrowseDrawing.Text = "Open File";
                 Btn_BrowseDrawing.ShowText = true;
                 Btn_BrowseDrawing.ShowImage = true;
-                Btn_BrowseDrawing.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Open);
-                Btn_BrowseDrawing.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Open);
+                Btn_BrowseDrawing.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Open);
+                Btn_BrowseDrawing.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Open);
                 Btn_BrowseDrawing.Size = RibbonItemSize.Large;
                 Btn_BrowseDrawing.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_BrowseDrawing.CommandHandler = new BrowseDrawing();
@@ -451,8 +451,8 @@ namespace AutocadPlugIn
                 Btn_Unlock.Text = "Lock & Unlock";
                 Btn_Unlock.ShowText = true;
                 Btn_Unlock.ShowImage = true;
-                Btn_Unlock.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
-                Btn_Unlock.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.LockUnlock);
+                Btn_Unlock.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.LockUnlock);
+                Btn_Unlock.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.LockUnlock);
                 Btn_Unlock.Size = RibbonItemSize.Large;
                 Btn_Unlock.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_Unlock.CommandHandler = new Unlock();
@@ -463,8 +463,8 @@ namespace AutocadPlugIn
                 Btn_Save.Name = "Save";
                 Btn_Save.ShowText = true;
                 Btn_Save.ShowImage = true;
-                Btn_Save.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
-                Btn_Save.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Save);
+                Btn_Save.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Save);
+                Btn_Save.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Save);
                 Btn_Save.Size = RibbonItemSize.Large;
                 Btn_Save.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_Save.CommandHandler = new Save();
@@ -474,8 +474,8 @@ namespace AutocadPlugIn
                 Btn_Save.Name = "SaveAs";
                 Btn_SaveAS.ShowText = true;
                 Btn_SaveAS.ShowImage = true;
-                Btn_SaveAS.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
-                Btn_SaveAS.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.SaveAs);
+                Btn_SaveAS.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.SaveAs);
+                Btn_SaveAS.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.SaveAs);
                 Btn_SaveAS.Size = RibbonItemSize.Large;
                 Btn_SaveAS.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_SaveAS.CommandHandler = new Save();
@@ -508,8 +508,8 @@ namespace AutocadPlugIn
                 Btn_DrawingInfo.Text = "Drawing \n Info";
                 Btn_DrawingInfo.ShowText = true;
                 Btn_DrawingInfo.ShowImage = true;
-                Btn_DrawingInfo.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.DrawingInfo);
-                Btn_DrawingInfo.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.DrawingInfo);
+                Btn_DrawingInfo.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.DrawingInfo);
+                Btn_DrawingInfo.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.DrawingInfo);
                 Btn_DrawingInfo.Size = RibbonItemSize.Large;
                 Btn_DrawingInfo.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_DrawingInfo.CommandHandler = new DrawingInfo();
@@ -530,8 +530,8 @@ namespace AutocadPlugIn
                 Btn_Help.Text = "Help";
                 Btn_Help.ShowText = true;
                 Btn_Help.ShowImage = true;
-                Btn_Help.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
-                Btn_Help.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Help);
+                Btn_Help.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Help);
+                Btn_Help.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Help);
                 Btn_Help.Size = RibbonItemSize.Large;
                 Btn_Help.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_Help.CommandHandler = new Help();
@@ -541,8 +541,8 @@ namespace AutocadPlugIn
                 Btn_About.Text = "About";
                 Btn_About.ShowText = true;
                 Btn_About.ShowImage = true;
-                Btn_About.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.About);
-                Btn_About.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.About);
+                Btn_About.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.About);
+                Btn_About.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.About);
                 Btn_About.Size = RibbonItemSize.Large;
                 Btn_About.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_About.CommandHandler = new About();
@@ -565,8 +565,8 @@ namespace AutocadPlugIn
                 Btn_Setting.Text = "Setting";
                 Btn_Setting.ShowText = true;
                 Btn_Setting.ShowImage = true;
-                Btn_Setting.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Setting);
-                Btn_Setting.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Setting);
+                Btn_Setting.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);
+                Btn_Setting.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);
                 Btn_Setting.Size = RibbonItemSize.Large;
                 Btn_Setting.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_Setting.CommandHandler = new UserSetting();
@@ -578,8 +578,8 @@ namespace AutocadPlugIn
                 Btn_Refresh.Text = "Refresh";
                 Btn_Refresh.ShowText = true;
                 Btn_Refresh.ShowImage = true;
-                Btn_Refresh.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
-                Btn_Refresh.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
                 Btn_Refresh.Size = RibbonItemSize.Large;
                 Btn_Refresh.Orientation = System.Windows.Controls.Orientation.Vertical;
                 Btn_Refresh.CommandHandler = new Refresh();
@@ -588,8 +588,8 @@ namespace AutocadPlugIn
                 Btn_Refresh_H.Text = "Refresh";
                 Btn_Refresh_H.ShowText = true;
                 Btn_Refresh_H.ShowImage = true;
-                Btn_Refresh_H.Image = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
-                Btn_Refresh_H.LargeImage = Images.getBitmap(AutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh_H.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
+                Btn_Refresh_H.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
                 Btn_Refresh_H.Size = RibbonItemSize.Large;
                 Btn_Refresh_H.Orientation = System.Windows.Controls.Orientation.Horizontal;
                 Btn_Refresh_H.Width = 300;
@@ -740,7 +740,7 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-            AutocadPlugIn.frmLogin mylogin = new AutocadPlugIn.frmLogin();
+            RBAutocadPlugIn.frmLogin mylogin = new RBAutocadPlugIn.frmLogin();
             mylogin.ShowDialog();
         }
     }
@@ -810,7 +810,7 @@ namespace AutocadPlugIn
         {
             try
             {
-                AutocadPlugIn.UI_Forms.frmSearch_And_Open browseDrawing = new AutocadPlugIn.UI_Forms.frmSearch_And_Open();
+                RBAutocadPlugIn.UI_Forms.frmSearch_And_Open browseDrawing = new RBAutocadPlugIn.UI_Forms.frmSearch_And_Open();
                 browseDrawing.ShowDialog();
             }
             catch (System.Exception ex)
@@ -858,7 +858,7 @@ namespace AutocadPlugIn
             try
             {
                 bool FormOpen = true;
-                AutocadPlugIn.UI_Forms.frmSave_Active_Drawings objSave = new AutocadPlugIn.UI_Forms.frmSave_Active_Drawings(ref FormOpen, IsSaveAs);
+                RBAutocadPlugIn.UI_Forms.frmSave_Active_Drawings objSave = new RBAutocadPlugIn.UI_Forms.frmSave_Active_Drawings(ref FormOpen, IsSaveAs);
                 //Save_Active_Drawings objSave = new Save_Active_Drawings();
                 FormOpen = FormOpen ? objSave.FormLoad() : FormOpen;
                 if (FormOpen)
@@ -972,7 +972,7 @@ namespace AutocadPlugIn
 
         public void Execute(object parameter)
         {
-            AutocadPlugIn.UI_Forms.UserSettings MySettings = AutocadPlugIn.UI_Forms.UserSettings.createUserSetting();
+            RBAutocadPlugIn.UI_Forms.UserSettings MySettings = RBAutocadPlugIn.UI_Forms.UserSettings.createUserSetting();
             MySettings.ShowDialog();
         }
     }
@@ -1058,8 +1058,8 @@ namespace AutocadPlugIn
             }
             try
             {
-                //AutocadPlugIn.UI_Forms.UnLock lockForm = new AutocadPlugIn.UI_Forms.UnLock();
-                AutocadPlugIn.UI_Forms.frmLockUnLock lockForm = new AutocadPlugIn.UI_Forms.frmLockUnLock();
+                //RBAutocadPlugIn.UI_Forms.UnLock lockForm = new RBAutocadPlugIn.UI_Forms.UnLock();
+                RBAutocadPlugIn.UI_Forms.frmLockUnLock lockForm = new RBAutocadPlugIn.UI_Forms.frmLockUnLock();
 
                 lockForm.ShowDialog();
 

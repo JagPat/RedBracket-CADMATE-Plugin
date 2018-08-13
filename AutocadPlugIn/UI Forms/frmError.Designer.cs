@@ -1,4 +1,4 @@
-﻿namespace AutocadPlugIn
+﻿namespace RBAutocadPlugIn
 {
     partial class frmError
     {

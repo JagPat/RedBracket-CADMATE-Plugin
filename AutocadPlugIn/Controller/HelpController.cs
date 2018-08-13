@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics; 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
    public class HelpController:BaseController
     {

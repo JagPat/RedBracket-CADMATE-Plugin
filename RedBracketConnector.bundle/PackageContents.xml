@@ -3,7 +3,7 @@
   <CompanyDetails Name="RedBracket, Inc." Phone=" " Url="http://www.redbracket.in" Email="support@redbracket.in" />
   <Components Description="Main">
     <RuntimeRequirements SupportPath="./Contents" OS="Win32|Win64" Platform="AutoCAD*" SeriesMin="R19.0" SeriesMax="R22.0" />
-    <ComponentEntry AppName="AutocadPlugIn" Version="1.0" ModuleName="./Contents/RBAutocadPlugIn.dll" AppDescription="RedBracket Connector Binary" LoadOnAppearance="True" LoadOnAutoCADStartup="True" LoadOnCommandInvocation="True">
+    <ComponentEntry AppName="RBAutocadPlugIn" Version="1.0" ModuleName="./Contents/RBAutocadPlugIn.dll" AppDescription="RedBracket Connector Binary" LoadOnAppearance="True" LoadOnAutoCADStartup="True" LoadOnCommandInvocation="True">
       <Commands GroupName="RedBracket">
         <Command Global="rbribbon" Local="rbribbon" LoadOnAutoCADStartup="True" LoadOnCommandInvocation="True" StartupCommand="True"/>
       </Commands>

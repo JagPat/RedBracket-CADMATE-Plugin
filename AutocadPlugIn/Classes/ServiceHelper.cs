@@ -4,8 +4,8 @@ using System.IO;
 using System.Net;
 using Microsoft.Win32;
 using RestSharp;
-using AutocadPlugIn;
-namespace AutocadPlugIn
+using RBAutocadPlugIn;
+namespace RBAutocadPlugIn
 {
     public static class ServiceHelper
     {

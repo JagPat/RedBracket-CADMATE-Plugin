@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class LockController : BaseController
     {

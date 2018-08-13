@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 
-namespace AutocadPlugIn
+namespace RBAutocadPlugIn
 {
     public class Command
     {
