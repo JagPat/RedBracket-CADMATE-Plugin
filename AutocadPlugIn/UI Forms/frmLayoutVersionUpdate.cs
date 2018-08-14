@@ -80,6 +80,7 @@ namespace RBAutocadPlugIn.UI_Forms
                                    , ""
 
                                    );
+                //Helper.HideProgressBar();
                 node.Expand();
                 node.ReadOnly = true;
                 Hashtable htLayoutInfo =Helper.cadManager.GetLayoutInfo(FilePath);
@@ -132,9 +133,17 @@ namespace RBAutocadPlugIn.UI_Forms
                 }
                 dtLI = Helper.SortTable(dtLI, "NO");
                 foreach (DataRow dr in dtLI.Rows)
-
                 {
-                    string DrawingNO = Convert.ToString(dr["DrawingNo"]).Length > 7 ? Convert.ToString(dr["DrawingNo"]).Substring(2) : "";
+                    string DrawingNO = Convert.ToString(dr["DrawingNo"]) ;
+                    if(DrawingNO.Contains("_"))
+                    {
+                        try
+                        {
+                            DrawingNO = DrawingNO.Substring(DrawingNO.IndexOf("_") + 1);
+                        }
+                        catch { }
+                        
+                    }
                     string LayoutName = Convert.ToString(dr["Name"]);
                     //Helper.CloseProgressBar();
                     bool IsAvailable = false;
@@ -167,10 +176,10 @@ namespace RBAutocadPlugIn.UI_Forms
                                 tempLN = tempLN.Replace(DN, "");
                                 if (tempLN.Contains("_"))
                                 {
-                                    string LN = tempLN.Substring(tempLN.LastIndexOf("_"));
+                                    string LN = tempLN.Substring(tempLN.LastIndexOf("_")+1);
                                     if (DrawingNO == OldDWGNo)
                                     {
-                                        rw2["LayoutName1"] = LayoutName.Replace("_" + Convert.ToString(dr["NO"]) + "_" + DrawingNO, "");
+                                        rw2["LayoutName1"] = LayoutName.Replace("_" +string.Format("{0:00}", Convert.ToDecimal(dr["NO"])) + "_" + DrawingNO, "");
                                     }
                                 }
                             }

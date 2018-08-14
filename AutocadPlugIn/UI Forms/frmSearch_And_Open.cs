@@ -201,9 +201,9 @@ namespace RBAutocadPlugIn.UI_Forms
                 return;
             }
 
-            resultSearchCriteriaResponseList = (from resultSearchCriteriaResponse in resultSearchCriteriaResponseList
-                                                where resultSearchCriteriaResponse.name.EndsWith("dwg")
-                                                select resultSearchCriteriaResponse).ToList();
+            //resultSearchCriteriaResponseList = (from resultSearchCriteriaResponse in resultSearchCriteriaResponseList
+            //                                    where resultSearchCriteriaResponse.name.EndsWith("dwg")
+            //                                    select resultSearchCriteriaResponse).ToList();
 
             if (isSortingRequired)
             {

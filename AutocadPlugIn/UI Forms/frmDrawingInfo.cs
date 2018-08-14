@@ -67,7 +67,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     lbVersionC.Text = Convert.ToString(dtCurrentData[0]["revision"]);
                     lbProjectNameC.Text = Convert.ToString(dtCurrentData[0]["projectname"]);
 
-                    DataRow[] drl = dtProjectDetail.Select("PNAMENO='" + lbProjectNameC.Text + "'");
+                    DataRow[] drl = dtProjectDetail.Select("name='" + lbProjectNameC.Text + "'");
                     if (drl.Length > 0)
                     {
                         ProjectID = Convert.ToString(drl[0]["id"]);

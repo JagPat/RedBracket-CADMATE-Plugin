@@ -746,7 +746,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                         #endregion
 
-                        #region Uploading Layout Name
+                        #region Updating Layout Name
                         Helper.IncrementProgressBar(1, "Updating layout names.");
                         foreach (PLMObject objplmo in objController.plmObjs)
                         {
@@ -762,7 +762,7 @@ namespace RBAutocadPlugIn.UI_Forms
                                 }
                                 if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                                 {
-                                    string Sufix = "_" + Count + "_" + objplmo.ObjectNumber;
+                                    string Sufix = "_" +string.Format("{0:00}", Count) + "_" + objplmo.ObjectNumber;
                                     string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim();
                                     Helper.cadManager.renamelayoutName(objplmo.FilePath, Convert.ToString(dr["FileLayoutName"]).Trim().Replace(Sufix, ""), NewLayoutName);
                                 }

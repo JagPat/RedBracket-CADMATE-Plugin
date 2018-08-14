@@ -334,7 +334,7 @@ namespace RBAutocadPlugIn
 
 
                 }
-                if (IsFileSave)
+                //if (IsFileSave)
                     UnlockObject(plmobjs);
                 return true;
             }
@@ -700,7 +700,7 @@ namespace RBAutocadPlugIn
 
                     if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                     {
-                        string Sufix = Count + "_" + DrawingNO;
+                        string Sufix = string.Format("{0:00}", Count) + "_" + DrawingNO;
                         string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim() + "_" + Sufix;
                         //Helper.cadManager.renamelayoutName(FilePath, Convert.ToString(dr["FileLayoutName"]).Trim(), NewLayoutName);
 
