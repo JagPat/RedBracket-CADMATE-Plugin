@@ -215,6 +215,7 @@ namespace RBAutocadPlugIn
                                 , plmobj.PK//PK
                                 , plmobj.FK //FK
                                 ,plmobj.projectManager
+                                ,plmobj.ObjectDescription
                                 );
                         }
                     }

@@ -289,6 +289,8 @@ namespace RBAutocadPlugIn.UI_Forms
                         //node.Cells["Check"].ReadOnly = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false;
                         node.Cells["Check"].ReadOnly = true;
 
+                        CADDescription.Text = Convert.ToString(rw["versiondesc"]);
+
                         if (rw["drawingid"].ToString() == "")
                         {
                             node.Cells["projectname"].Value = "";
@@ -568,7 +570,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (System.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                ShowMessage.ErrorMess("Exception Occur: " + ex.Message);
                 return;
             }
 
@@ -1430,7 +1432,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
                         selectedTreeNode.Cells["Check"].Value = false;
                         savetreeGrid.RefreshEdit();
-                        MessageBox.Show("This drawing is locked by other user.");
+                        ShowMessage.ErrorMessUD("This drawing is locked by other user.");
 
                         return;
                     }

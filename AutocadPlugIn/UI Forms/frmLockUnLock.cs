@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections; 
+using System.Collections;
 using System.Data;
-using System.Drawing; 
+using System.Drawing;
 using System.Windows.Forms;
- 
-using AdvancedDataGridView; 
-  
+using AdvancedDataGridView;
+
 namespace RBAutocadPlugIn.UI_Forms
 {
     public partial class frmLockUnLock : Form
     {
-        public ArrayList drawings = new ArrayList();
-     
+        public ArrayList drawings = new ArrayList(); 
 
         public frmLockUnLock()
         {
-            InitializeComponent();this.FormBorderStyle = FormBorderStyle.None;
+            InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
         }
 
         private void UnLock_Load(object sender, EventArgs e)
@@ -23,7 +21,7 @@ namespace RBAutocadPlugIn.UI_Forms
             try
             {
                 CancelBtn.UseVisualStyleBackColor = false;
-               CancelBtn.BackColor= this.BackColor= UnLockTree.BackgroundColor = Color.Azure;
+                CancelBtn.BackColor = this.BackColor = UnLockTree.BackgroundColor = Color.Azure;
                 UnLockTree.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 UnLockTree.RowsDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Regular);
                 this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);
@@ -39,7 +37,7 @@ namespace RBAutocadPlugIn.UI_Forms
                 UnLockTree.Nodes.Clear();
 
                 int counter = 0;
-                
+
 
                 dtTreeGridData = Helper.cadManager.GetDrawingExternalRefreces();
 
@@ -51,7 +49,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                 if (lockStatusCon.errorString != null)
                 {
-                    MessageBox.Show(lockStatusCon.errorString);
+                    ShowMessage.ErrorMess(lockStatusCon.errorString);
                     return;
                 }
 
@@ -59,7 +57,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                 foreach (DataRow rw in dtTreeGridData.Rows)
                 {
-                    if (!Helper.cadManager.CheckForCurruntlyOpenDoc(Convert.ToString(rw["filepath"]),false))
+                    if (!Helper.cadManager.CheckForCurruntlyOpenDoc(Convert.ToString(rw["filepath"]), false))
                     {
                         continue;
                     }
@@ -69,7 +67,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                         node = UnLockTree.Nodes.Add("", rw["drawingName"], rw["drawingnumber"], rw["classification"], rw["drawingstate"], rw["revision"],
                             rw["projectname"],
-                            rw["drawingid"], rw["lockstatus"],   rw["lockby"]);
+                            rw["drawingid"], rw["lockstatus"], rw["lockby"]);
 
                         if (rw["lockstatus"].ToString() == "1")
                         {
@@ -79,7 +77,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                         else if (rw["lockstatus"].ToString() == "0")
                         {
-                             node.ImageIndex = 2;
+                            node.ImageIndex = 2;
                             node.Cells[0].Value = "Lock";
                         }
 
@@ -127,14 +125,14 @@ namespace RBAutocadPlugIn.UI_Forms
             }
         }
 
-        
+
 
         private void CancelBtn_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-       
+
 
         private void UnLockTree_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -150,14 +148,14 @@ namespace RBAutocadPlugIn.UI_Forms
                     String id = (string)TreeNode1.Cells["DrawingID"].Value;
                     if (TreeNode1.Cells[0].ReadOnly)
                     {
-                        MessageBox.Show("Drawing " + (string)TreeNode1.Cells[1].Value + "is locked by +" + (string)TreeNode1.Cells["LockedBy"].Value);
+                        ShowMessage.ValMess("Drawing " + (string)TreeNode1.Cells[1].Value + "is locked by +" + (string)TreeNode1.Cells["LockedBy"].Value);
                     }
                     else if (Convert.ToString(TreeNode1.Cells["LockStatus"].Value) == "1")
                     {
                         drawings.Clear();
                         drawings.Add(id);
 
-                       
+
                         UnlockCommand unLockCmd = new UnlockCommand();
                         unLockCmd.DrawingIds = drawings;
 
@@ -169,7 +167,7 @@ namespace RBAutocadPlugIn.UI_Forms
                             ShowMessage.ErrorMess(unLockCnt.errorString);
                             return;
                         }
-                        TreeNode1.ImageIndex=2;
+                        TreeNode1.ImageIndex = 2;
                         TreeNode1.Cells[0].Value = "Lock";
                         TreeNode1.Cells["LockStatus"].Value = "0";
                         TreeNode1.Cells["LockedBy"].Value = "";
@@ -184,7 +182,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         LockCommand LockCmd = new LockCommand();
                         LockCmd.DrawingIds = drawings;
 
-                        LockController  LockCnt = new LockController();
+                        LockController LockCnt = new LockController();
                         LockCnt.Execute(LockCmd);
 
                         if (LockCnt.errorString != null)
@@ -197,12 +195,8 @@ namespace RBAutocadPlugIn.UI_Forms
                         TreeNode1.Cells["LockedBy"].Value = Helper.UserFullName;
                         TreeNode1.ImageIndex = 0;
                         ShowMessage.InfoMess("Succesfully Locked");
-                       
+
                     }
-
-
-                    //this.ExpandNodeForCheck(TreeNode1);
-
                 }
                 catch (Exception E)
                 {
@@ -212,9 +206,9 @@ namespace RBAutocadPlugIn.UI_Forms
             }
         }
 
-       
 
-        
+
+
 
     }
 }

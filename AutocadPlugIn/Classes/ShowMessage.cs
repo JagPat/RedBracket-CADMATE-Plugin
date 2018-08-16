@@ -77,10 +77,11 @@ namespace RBAutocadPlugIn
         }
         public static DialogResult ValMessYN(string Message)
         {
-            DialogResult DR = new DialogResult();
+
+            DialogResult DR = new DialogResult(); 
             Helper.HideProgressBar();
             DR = MessageBox.Show(Message, "System Message", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-            Helper.ShowProgressBar();
+            Helper.ShowProgressBar(); 
             return DR;
         }
     }

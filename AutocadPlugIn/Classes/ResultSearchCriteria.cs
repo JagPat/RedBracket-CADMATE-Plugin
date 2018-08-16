@@ -93,6 +93,8 @@ namespace RBAutocadPlugIn
         public string projectManager { get; set; }
 
         public ResultSearchCriteria[] filebean { get; set; }
+        public string description { get; set; }
+        
 
     }
  

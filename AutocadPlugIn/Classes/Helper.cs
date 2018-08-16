@@ -886,6 +886,7 @@ namespace RBAutocadPlugIn
                 dtDrawingProperty.Columns.Add("PK");
                 dtDrawingProperty.Columns.Add("FK");
                 dtDrawingProperty.Columns.Add("projectManager");
+                dtDrawingProperty.Columns.Add("versiondesc");
             }
             catch (Exception E)
             {
@@ -1209,7 +1210,7 @@ namespace RBAutocadPlugIn
                 dr["PK"] = "";// will be assign later
                 dr["FK"] = "";// will be assign later
                 dr["projectManager"] = Drawing.projectManager;
-
+                dr["versiondesc"] = Drawing.description;
 
                 dtDrawing.Rows.Add(dr);
 

@@ -34,50 +34,37 @@ namespace RBAutocadPlugIn
 
         public RibbonPanel rpMain = new RibbonPanel();
         public Autodesk.Windows.RibbonPanelSource rpsConnection = new RibbonPanelSource();
-        public RibbonButton btnConnection = new RibbonButton();
+        public RibbonButton rbConnection = new RibbonButton();
 
 
-        public RibbonPanel panel2 = new RibbonPanel();
-        public RibbonPanelSource panel2Panel = new RibbonPanelSource();
+        public RibbonPanel rpFileOperations = new RibbonPanel();
+        public RibbonPanelSource rpsFileOperations = new RibbonPanelSource();
 
-        public RibbonButton Btn_BrowseDrawing = new RibbonButton();
-        public RibbonButton Btn_CreateDrawing = new RibbonButton();
-
-        public RibbonPanel Panel3 = new RibbonPanel();
-        public RibbonPanelSource pan3Panel = new RibbonPanelSource();
-
-        public RibbonButton Btn_BrowseBlock = new RibbonButton();
-        public RibbonButton Btn_AddBlock = new RibbonButton();
-
-        public RibbonPanelSource panel4Panel = new RibbonPanelSource();
-        public RibbonPanel panel4 = new RibbonPanel();
+        public RibbonButton rbBrowseDrawing = new RibbonButton();  
 
         public RibbonPanelSource rpsSave = new RibbonPanelSource();
         public RibbonPanel rpSave = new RibbonPanel();
 
-        public RibbonButton Btn_Lock = new RibbonButton();
-        public RibbonButton Btn_Unlock = new RibbonButton();
-        public RibbonButton Btn_Save = new RibbonButton();
-        public RibbonButton Btn_SaveAS = new RibbonButton();
+    
+        public RibbonButton rbLockUnlock = new RibbonButton();
+        public RibbonButton rbSave = new RibbonButton();
+        public RibbonButton rbSaveAS = new RibbonButton();
 
-        public RibbonPanel panel5 = new RibbonPanel();
-        public RibbonPanelSource panel5Panel = new RibbonPanelSource();
+        public RibbonPanel rpHelpnAbout = new RibbonPanel();
+        public RibbonPanelSource rpsHelpnAbout = new RibbonPanelSource();
 
-        public RibbonButton Btn_Help = new RibbonButton();
-        public RibbonButton Btn_About = new RibbonButton();
+        public RibbonButton rbHelp = new RibbonButton();
+        public RibbonButton rbAbout = new RibbonButton();
 
-        public RibbonPanel panel6 = new RibbonPanel();
-        public RibbonPanelSource panel6Panel = new RibbonPanelSource();
+        public RibbonPanel rpSetting = new RibbonPanel();
+        public RibbonPanelSource rpsSetting = new RibbonPanelSource();
 
-        public RibbonButton Btn_Setting = new RibbonButton();
+        public RibbonButton rbSetting = new RibbonButton();
+  
+        public RibbonButton rbDrawingInfo = new RibbonButton();
 
-        public RibbonPanel panel7 = new RibbonPanel();
-        public RibbonPanelSource panel7Panel = new RibbonPanelSource();
-        public RibbonButton pan7button1 = new RibbonButton();
-        public RibbonButton Btn_DrawingInfo = new RibbonButton();
-
-        public RibbonButton Btn_Refresh = new RibbonButton();
-        public RibbonButton Btn_Refresh_H = new RibbonButton();
+      
+        public RibbonButton rbRefresh = new RibbonButton();
 
         public RibbonPanel rpCurrentDI = new RibbonPanel();
         public RibbonPanelSource rpsCurrentDI = new RibbonPanelSource();
@@ -177,7 +164,7 @@ namespace RBAutocadPlugIn
                                 objcr.RBRibbon();
                                 if (Helper.CurrentVersion != Helper.LatestVersion)
                                 {
-                                    Refresh objrfs = new Refresh();
+                                    clsRefresh objrfs = new clsRefresh();
                                     objrfs.Execute(null);
                                 }
                                 Autodesk.AutoCAD.Internal.Utils.PostCommandPrompt();
@@ -297,27 +284,17 @@ namespace RBAutocadPlugIn
                 rpsConnection = new RibbonPanelSource();
                 rpMain = new RibbonPanel();
 
-                panel2 = new RibbonPanel();
-                panel2Panel = new RibbonPanelSource();
-
-                Panel3 = new RibbonPanel();
-                pan3Panel = new RibbonPanelSource();
-
-                panel4Panel = new RibbonPanelSource();
-                panel4 = new RibbonPanel();
+                rpFileOperations = new RibbonPanel();
+                rpsFileOperations = new RibbonPanelSource(); 
 
                 rpsSave = new RibbonPanelSource();
                 rpSave = new RibbonPanel();
 
-                panel5 = new RibbonPanel();
-                panel5Panel = new RibbonPanelSource();
+                rpHelpnAbout = new RibbonPanel();
+                rpsHelpnAbout = new RibbonPanelSource();
 
-                panel6 = new RibbonPanel();
-                panel6Panel = new RibbonPanelSource();
-
-                panel7 = new RibbonPanel();
-                panel7Panel = new RibbonPanelSource();
-
+                rpSetting = new RibbonPanel();
+                rpsSetting = new RibbonPanelSource(); 
 
                 rpCurrentDI = new RibbonPanel();
                 rpsCurrentDI = new RibbonPanelSource();
@@ -376,31 +353,31 @@ namespace RBAutocadPlugIn
                 rpMain.Source = rpsConnection;
                 Tab.Panels.Add(rpMain);
 
-                btnConnection.Orientation = System.Windows.Controls.Orientation.Vertical;
-                btnConnection.Size = RibbonItemSize.Large;
+                rbConnection.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbConnection.Size = RibbonItemSize.Large;
 
 
                 ConnectionController connController = new ConnectionController();
                 if (!connect)
                 {
-                    btnConnection.Text = "Log-in";
-                    btnConnection.ShowText = true;
-                    btnConnection.ShowImage = true;
-                    btnConnection.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.connect);
-                    btnConnection.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.connect);
-                    btnConnection.CommandHandler = new Connect();
+                    rbConnection.Text = "Log-in";
+                    rbConnection.ShowText = true;
+                    rbConnection.ShowImage = true;
+                    rbConnection.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.connect);
+                    rbConnection.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.connect);
+                    rbConnection.CommandHandler = new clsConnect();
 
                     Helper.CurrentVersion = "";
                     Helper.LatestVersion = "";
                 }
                 else
                 {
-                    btnConnection.Text = "Log-out";
-                    btnConnection.ShowText = true;
-                    btnConnection.ShowImage = true;
-                    btnConnection.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Disconnect);
-                    btnConnection.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Disconnect);
-                    btnConnection.CommandHandler = new Disconnect();
+                    rbConnection.Text = "Log-out";
+                    rbConnection.ShowText = true;
+                    rbConnection.ShowImage = true;
+                    rbConnection.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Disconnect);
+                    rbConnection.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Disconnect);
+                    rbConnection.CommandHandler = new clsDisconnect();
                     browseDEnable = true;
                     createDEnable = true;
                     browseBEnable = true;
@@ -411,31 +388,31 @@ namespace RBAutocadPlugIn
                     DrawingInfoEnable = true;
                 }
 
-                rpsConnection.Items.Add(btnConnection);
+                rpsConnection.Items.Add(rbConnection);
 
 
 
-                panel2Panel.Title = "File Operations";
-                panel2.Source = panel2Panel;
-                Tab.Panels.Add(panel2);
+                rpsFileOperations.Title = "File Operations";
+                rpFileOperations.Source = rpsFileOperations;
+                Tab.Panels.Add(rpFileOperations);
 
 
 
-                Btn_BrowseDrawing.Text = "Open File";
-                Btn_BrowseDrawing.ShowText = true;
-                Btn_BrowseDrawing.ShowImage = true;
-                Btn_BrowseDrawing.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Open);
-                Btn_BrowseDrawing.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Open);
-                Btn_BrowseDrawing.Size = RibbonItemSize.Large;
-                Btn_BrowseDrawing.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_BrowseDrawing.CommandHandler = new BrowseDrawing();
-                Btn_BrowseDrawing.IsEnabled = browseDEnable;
+                rbBrowseDrawing.Text = "Open File";
+                rbBrowseDrawing.ShowText = true;
+                rbBrowseDrawing.ShowImage = true;
+                rbBrowseDrawing.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Open);
+                rbBrowseDrawing.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Open);
+                rbBrowseDrawing.Size = RibbonItemSize.Large;
+                rbBrowseDrawing.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbBrowseDrawing.CommandHandler = new clsBrowseDrawing();
+                rbBrowseDrawing.IsEnabled = browseDEnable;
 
 
 
                 RibbonRowPanel pan2row1 = new RibbonRowPanel();
-                pan2row1.Items.Add(Btn_BrowseDrawing);
-                panel2Panel.Items.Add(pan2row1);
+                pan2row1.Items.Add(rbBrowseDrawing);
+                rpsFileOperations.Items.Add(pan2row1);
 
 
 
@@ -448,55 +425,55 @@ namespace RBAutocadPlugIn
 
 
 
-                Btn_Unlock.Text = "Lock & Unlock";
-                Btn_Unlock.ShowText = true;
-                Btn_Unlock.ShowImage = true;
-                Btn_Unlock.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.LockUnlock);
-                Btn_Unlock.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.LockUnlock);
-                Btn_Unlock.Size = RibbonItemSize.Large;
-                Btn_Unlock.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_Unlock.CommandHandler = new Unlock();
-                Btn_Unlock.IsEnabled = UnlockEnable;
+                rbLockUnlock.Text = "Lock & Unlock";
+                rbLockUnlock.ShowText = true;
+                rbLockUnlock.ShowImage = true;
+                rbLockUnlock.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.LockUnlock);
+                rbLockUnlock.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.LockUnlock);
+                rbLockUnlock.Size = RibbonItemSize.Large;
+                rbLockUnlock.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbLockUnlock.CommandHandler = new clsUnlock();
+                rbLockUnlock.IsEnabled = UnlockEnable;
 
 
-                Btn_Save.Text = "Save to redbracket";
-                Btn_Save.Name = "Save";
-                Btn_Save.ShowText = true;
-                Btn_Save.ShowImage = true;
-                Btn_Save.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Save);
-                Btn_Save.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Save);
-                Btn_Save.Size = RibbonItemSize.Large;
-                Btn_Save.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_Save.CommandHandler = new Save();
-                Btn_Save.IsEnabled = SaveEnable;
+                rbSave.Text = "Save to redbracket";
+                rbSave.Name = "Save";
+                rbSave.ShowText = true;
+                rbSave.ShowImage = true;
+                rbSave.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Save);
+                rbSave.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Save);
+                rbSave.Size = RibbonItemSize.Large;
+                rbSave.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbSave.CommandHandler = new clsSave();
+                rbSave.IsEnabled = SaveEnable;
 
-                Btn_SaveAS.Text = "Save As New";
-                Btn_Save.Name = "SaveAs";
-                Btn_SaveAS.ShowText = true;
-                Btn_SaveAS.ShowImage = true;
-                Btn_SaveAS.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.SaveAs);
-                Btn_SaveAS.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.SaveAs);
-                Btn_SaveAS.Size = RibbonItemSize.Large;
-                Btn_SaveAS.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_SaveAS.CommandHandler = new Save();
-                Btn_SaveAS.IsEnabled = SaveEnable;
+                rbSaveAS.Text = "Save As New";
+                rbSave.Name = "SaveAs";
+                rbSaveAS.ShowText = true;
+                rbSaveAS.ShowImage = true;
+                rbSaveAS.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.SaveAs);
+                rbSaveAS.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.SaveAs);
+                rbSaveAS.Size = RibbonItemSize.Large;
+                rbSaveAS.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbSaveAS.CommandHandler = new clsSave();
+                rbSaveAS.IsEnabled = SaveEnable;
 
                 RibbonRowPanel rrpSave = new RibbonRowPanel();
-                rrpSave.Items.Add(Btn_Save);
+                rrpSave.Items.Add(rbSave);
 
                 RibbonRowPanel rrpSaveAS = new RibbonRowPanel();
-                rrpSaveAS.Items.Add(Btn_SaveAS);
+                rrpSaveAS.Items.Add(rbSaveAS);
                 //rpsSave.Items.Add(rrpSave);
 
                 RibbonRowPanel pan4row1 = new RibbonRowPanel();
                 //pan4row1.Items.Add(Btn_Lock);
 
-                pan4row1.Items.Add(Btn_Unlock);
+                pan4row1.Items.Add(rbLockUnlock);
                 //panel4Panel.Items.Add(pan4row1);
 
-                panel2Panel.Items.Add(rrpSave);
-                panel2Panel.Items.Add(rrpSaveAS);
-                panel2Panel.Items.Add(pan4row1);
+                rpsFileOperations.Items.Add(rrpSave);
+                rpsFileOperations.Items.Add(rrpSaveAS);
+                rpsFileOperations.Items.Add(pan4row1);
 
 
                 //Drawing Info
@@ -505,96 +482,88 @@ namespace RBAutocadPlugIn
                 //Tab.Panels.Add(panel7);
 
 
-                Btn_DrawingInfo.Text = "Drawing \n Info";
-                Btn_DrawingInfo.ShowText = true;
-                Btn_DrawingInfo.ShowImage = true;
-                Btn_DrawingInfo.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.DrawingInfo);
-                Btn_DrawingInfo.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.DrawingInfo);
-                Btn_DrawingInfo.Size = RibbonItemSize.Large;
-                Btn_DrawingInfo.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_DrawingInfo.CommandHandler = new DrawingInfo();
-                Btn_DrawingInfo.IsEnabled = DrawingInfoEnable;
+                rbDrawingInfo.Text = "Drawing \n Info";
+                rbDrawingInfo.ShowText = true;
+                rbDrawingInfo.ShowImage = true;
+                rbDrawingInfo.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.DrawingInfo);
+                rbDrawingInfo.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.DrawingInfo);
+                rbDrawingInfo.Size = RibbonItemSize.Large;
+                rbDrawingInfo.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbDrawingInfo.CommandHandler = new clsDrawingInfo();
+                rbDrawingInfo.IsEnabled = DrawingInfoEnable;
 
                 RibbonRowPanel pan7row1 = new RibbonRowPanel();
-                pan7row1.Items.Add(Btn_DrawingInfo);
+                pan7row1.Items.Add(rbDrawingInfo);
                 //panel7Panel.Items.Add(pan7row1);
-                panel2Panel.Items.Add(pan7row1);
+                rpsFileOperations.Items.Add(pan7row1);
 
 
                 //Help and About
-                panel5Panel.Title = "Help & About";
-                panel5.Source = panel5Panel;
-                Tab.Panels.Add(panel5);
+                rpsHelpnAbout.Title = "Help & About";
+                rpHelpnAbout.Source = rpsHelpnAbout;
+                Tab.Panels.Add(rpHelpnAbout);
 
 
-                Btn_Help.Text = "Help";
-                Btn_Help.ShowText = true;
-                Btn_Help.ShowImage = true;
-                Btn_Help.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Help);
-                Btn_Help.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Help);
-                Btn_Help.Size = RibbonItemSize.Large;
-                Btn_Help.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_Help.CommandHandler = new Help();
+                rbHelp.Text = "Help";
+                rbHelp.ShowText = true;
+                rbHelp.ShowImage = true;
+                rbHelp.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Help);
+                rbHelp.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Help);
+                rbHelp.Size = RibbonItemSize.Large;
+                rbHelp.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbHelp.CommandHandler = new clsHelp();
 
 
 
-                Btn_About.Text = "About";
-                Btn_About.ShowText = true;
-                Btn_About.ShowImage = true;
-                Btn_About.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.About);
-                Btn_About.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.About);
-                Btn_About.Size = RibbonItemSize.Large;
-                Btn_About.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_About.CommandHandler = new About();
+                rbAbout.Text = "About";
+                rbAbout.ShowText = true;
+                rbAbout.ShowImage = true;
+                rbAbout.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.About);
+                rbAbout.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.About);
+                rbAbout.Size = RibbonItemSize.Large;
+                rbAbout.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbAbout.CommandHandler = new clsAbout();
 
 
                 RibbonRowPanel pan5row1 = new RibbonRowPanel();
-                pan5row1.Items.Add(Btn_Help);
+                pan5row1.Items.Add(rbHelp);
                 //pan5row1.Items.Add(new RibbonRowBreak());
-                pan5row1.Items.Add(Btn_About);
-                panel5Panel.Items.Add(pan5row1);
+                pan5row1.Items.Add(rbAbout);
+                rpsHelpnAbout.Items.Add(pan5row1);
 
 
 
                 //Setting
-                panel6Panel.Title = "Setting";
-                panel6.Source = panel6Panel;
-                Tab.Panels.Add(panel6);
+                rpsSetting.Title = "Setting";
+                rpSetting.Source = rpsSetting;
+                Tab.Panels.Add(rpSetting);
 
 
-                Btn_Setting.Text = "Setting";
-                Btn_Setting.ShowText = true;
-                Btn_Setting.ShowImage = true;
-                Btn_Setting.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);
-                Btn_Setting.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);
-                Btn_Setting.Size = RibbonItemSize.Large;
-                Btn_Setting.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_Setting.CommandHandler = new UserSetting();
+                rbSetting.Text = "Setting";
+                rbSetting.ShowText = true;
+                rbSetting.ShowImage = true;
+                rbSetting.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);
+                rbSetting.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);
+                rbSetting.Size = RibbonItemSize.Large;
+                rbSetting.Orientation = System.Windows.Controls.Orientation.Vertical;
+                rbSetting.CommandHandler = new clsUserSetting();
 
                 RibbonRowPanel pan6row1 = new RibbonRowPanel();
-                pan6row1.Items.Add(Btn_Setting);
-                panel6Panel.Items.Add(pan6row1);
+                pan6row1.Items.Add(rbSetting);
+                rpsSetting.Items.Add(pan6row1);
 
-                Btn_Refresh.Text = "Refresh";
-                Btn_Refresh.ShowText = true;
-                Btn_Refresh.ShowImage = true;
-                Btn_Refresh.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
-                Btn_Refresh.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
-                Btn_Refresh.Size = RibbonItemSize.Large;
-                Btn_Refresh.Orientation = System.Windows.Controls.Orientation.Vertical;
-                Btn_Refresh.CommandHandler = new Refresh();
-                Btn_Refresh.IsEnabled = LockEnable;
+                 
 
-                Btn_Refresh_H.Text = "Refresh";
-                Btn_Refresh_H.ShowText = true;
-                Btn_Refresh_H.ShowImage = true;
-                Btn_Refresh_H.Image = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
-                Btn_Refresh_H.LargeImage = Images.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
-                Btn_Refresh_H.Size = RibbonItemSize.Large;
-                Btn_Refresh_H.Orientation = System.Windows.Controls.Orientation.Horizontal;
-                Btn_Refresh_H.Width = 300;
-                Btn_Refresh_H.CommandHandler = new Refresh();
-                Btn_Refresh_H.IsEnabled = LockEnable;
+                rbRefresh.Text = "Refresh";
+                rbRefresh.ShowText = true;
+                rbRefresh.ShowImage = true;
+                rbRefresh.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
+                rbRefresh.LargeImage = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
+                rbRefresh.Size = RibbonItemSize.Large;
+                rbRefresh.Orientation = System.Windows.Controls.Orientation.Horizontal;
+                rbRefresh.Width = 300;
+                rbRefresh.CommandHandler = new clsRefresh();
+                rbRefresh.IsEnabled = LockEnable;
                 //pan7row1.Items.Add(Btn_Refresh);
 
 
@@ -642,7 +611,7 @@ namespace RBAutocadPlugIn
 
                 rpsCurrentDI.Items.Add(rrpCurrentDIV);
                 rpsCurrentDI.Items.Add(new RibbonRowBreak());
-                rpsCurrentDI.Items.Add(Btn_Refresh_H);
+                rpsCurrentDI.Items.Add(rbRefresh);
                 //Compare Drawing Info
                 rpsCurrentDI.Title = "Compare Drawing Info";
                 rpCurrentDI.Source = rpsCurrentDI;
@@ -695,29 +664,29 @@ namespace RBAutocadPlugIn
                     }
 
                     //Btn_Save.IsEnabled = false;
-                    Btn_Save.IsEnabled = SaveEnable;
+                    rbSave.IsEnabled = SaveEnable;
                     if (SaveEnable)
                     {
-                        Btn_SaveAS.IsEnabled = true;
+                        rbSaveAS.IsEnabled = true;
                     }
                     else
                     {
-                        Btn_SaveAS.IsEnabled = SaveEnable;
+                        rbSaveAS.IsEnabled = SaveEnable;
                     }
                 }
                 else
                 {
-                    Btn_Save.IsEnabled = SaveEnable;
+                    rbSave.IsEnabled = SaveEnable;
                     if (SaveEnable)
                     {
                         if (V1.Trim().Length == 0 || V2.Trim().Length == 0)
-                            Btn_SaveAS.IsEnabled = false;
+                            rbSaveAS.IsEnabled = false;
                         else
-                            Btn_SaveAS.IsEnabled = true;
+                            rbSaveAS.IsEnabled = true;
                     }
                     else
                     {
-                        Btn_SaveAS.IsEnabled = SaveEnable;
+                        rbSaveAS.IsEnabled = SaveEnable;
                     }
                 }
             }
@@ -729,7 +698,7 @@ namespace RBAutocadPlugIn
     }
 
     //Implemented code for connect functionality
-    public class Connect : System.Windows.Input.ICommand
+    public class clsConnect : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -745,7 +714,7 @@ namespace RBAutocadPlugIn
         }
     }
 
-    public class Disconnect : System.Windows.Input.ICommand
+    public class clsDisconnect : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -766,7 +735,7 @@ namespace RBAutocadPlugIn
 
                     if (controller.errorString != null)
                     {
-                        MessageBox.Show(controller.errorString);
+                        ShowMessage.ErrorMess(controller.errorString);
                         return;
                     }
 
@@ -789,7 +758,7 @@ namespace RBAutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Logout Fail due to " + ex);
+                ShowMessage.ErrorMess("Logout Fail due to " + ex);
                 return;
             }
 
@@ -797,7 +766,7 @@ namespace RBAutocadPlugIn
         #endregion LogOut
     }
 
-    public class BrowseDrawing : System.Windows.Input.ICommand
+    public class clsBrowseDrawing : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -815,14 +784,14 @@ namespace RBAutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex.Message);
+                ShowMessage.ErrorMess("Exception Occur: " + ex.Message);
                 return;
             }
         }
     }
 
 
-    public class Save : System.Windows.Input.ICommand
+    public class clsSave : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -852,7 +821,7 @@ namespace RBAutocadPlugIn
 
             if (!File.Exists(doc.Name))
             {
-                MessageBox.Show("Please Save Document on Local Computer", "Information");
+                ShowMessage.ErrorMessUD("Please Save Document on Local Computer" );
                 return;
             }
             try
@@ -874,7 +843,7 @@ namespace RBAutocadPlugIn
         }
     }
 
-    public class DrawingInfo : System.Windows.Input.ICommand
+    public class clsDrawingInfo : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -911,7 +880,7 @@ namespace RBAutocadPlugIn
         }
     }
 
-    public class About : System.Windows.Input.ICommand
+    public class clsAbout : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -927,7 +896,7 @@ namespace RBAutocadPlugIn
         }
     }
 
-    public class Help : System.Windows.Input.ICommand
+    public class clsHelp : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -949,19 +918,19 @@ namespace RBAutocadPlugIn
                 controller.Execute(objcmd);
                 if (controller.errorString != null)
                 {
-                    MessageBox.Show(controller.errorString);
+                    ShowMessage.ErrorMess(controller.errorString);
                     return;
                 }
             }
             catch (Autodesk.AutoCAD.Runtime.Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                ShowMessage.ErrorMess(ex.Message);
             }
 
         }
     }
 
-    public class UserSetting : System.Windows.Input.ICommand
+    public class clsUserSetting : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -977,7 +946,7 @@ namespace RBAutocadPlugIn
         }
     }
 
-    public class BrowseBlock : System.Windows.Input.ICommand
+    public class clsBrowseBlock : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -998,7 +967,7 @@ namespace RBAutocadPlugIn
 
 
 
-    public class Unlock : System.Windows.Input.ICommand
+    public class clsUnlock : System.Windows.Input.ICommand
     {
         /* lock status 0: not locked,
             *             1: Locked by logged-in User
@@ -1075,7 +1044,7 @@ namespace RBAutocadPlugIn
     }
 
 
-    public class Refresh : System.Windows.Input.ICommand
+    public class clsRefresh : System.Windows.Input.ICommand
     {
         public bool CanExecute(object parameter)
         {
@@ -1096,7 +1065,7 @@ namespace RBAutocadPlugIn
 
             if (!File.Exists(doc.Name))
             {
-                MessageBox.Show("Please Save Document on Local Computer", "Information");
+                ShowMessage.ErrorMessUD("Please Save Document on Local Computer" );
                 return;
             }
             try
@@ -1106,8 +1075,11 @@ namespace RBAutocadPlugIn
 
                 Cursor.Current = Cursors.WaitCursor;
 
-                string drawingid = "", updatedon = "", projectname = "", projectnameOnly = "";
-                string ProjectNo = "", DrawingNO = "", FileType = "", Rev = "", PreFix = "";
+                string drawingid = "", updatedon = "",   projectnameOnly = "";
+                string   DrawingNO = "",  Rev = "", PreFix = "";
+
+
+
                 try
                 {
                     var dbsi = db.SummaryInfo.CustomProperties;
@@ -1121,22 +1093,12 @@ namespace RBAutocadPlugIn
                         {
                             updatedon = Convert.ToString(dbsi.Value);
                         }
-                        else if (Convert.ToString(dbsi.Key) == "projectname")
-                        {
-                            projectname = Convert.ToString(dbsi.Value);
-                        }
-                        else if (Convert.ToString(dbsi.Key) == "projectno")
-                        {
-                            ProjectNo = Convert.ToString(dbsi.Value);
-                        }
+                         
                         else if (Convert.ToString(dbsi.Key) == "drawingnumber")
                         {
                             DrawingNO = Convert.ToString(dbsi.Value);
                         }
-                        else if (Convert.ToString(dbsi.Key) == "filetypeid")
-                        {
-                            FileType = Convert.ToString(dbsi.Value);
-                        }
+                        
                         else if (Convert.ToString(dbsi.Key) == "revision")
                         {
                             Rev = Convert.ToString(dbsi.Value);
@@ -1247,18 +1209,27 @@ namespace RBAutocadPlugIn
         }
     }
 
-    public class Images
+    public class clsImages
     {
-        public static BitmapImage getBitmap(Bitmap image)
+        public static BitmapImage getBitmap(Bitmap bmimage)
         {
-            MemoryStream stream = new MemoryStream();
-            image.Save(stream, ImageFormat.Png);
-            BitmapImage bmp = new BitmapImage();
-            bmp.BeginInit();
-            bmp.StreamSource = stream;
-            bmp.EndInit();
+            try
+            {
+                MemoryStream msstream = new MemoryStream();
+                bmimage.Save(msstream, ImageFormat.Png);
+                BitmapImage bmibmp = new BitmapImage();
+                bmibmp.BeginInit();
+                bmibmp.StreamSource = msstream;
+                bmibmp.EndInit();
+                return bmibmp;
+            }
+            catch (System.Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return null;
 
-            return bmp;
+           
         }
     }
 

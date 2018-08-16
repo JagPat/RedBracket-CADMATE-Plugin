@@ -212,7 +212,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
             if (resultSearchCriteriaResponseList.Count > 50)
             {
-                MessageBox.Show("Search yields more than 50 records. Please add specific search criteria.");
+                ShowMessage.ErrorMessUD("Search yields more than 50 records. Please add specific search criteria.");
                 return;
             }
 
@@ -367,7 +367,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (System.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                ShowMessage.ErrorMess("Exception Occur: " + ex);
                 return;
             }
 
@@ -394,7 +394,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (System.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                ShowMessage.ErrorMess("Exception Occur: " + ex);
                 return;
             }
 
@@ -451,7 +451,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (System.Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Exception Occur: " + ex);
+                ShowMessage.ErrorMess("Exception Occur: " + ex);
                 return;
             }
         }
@@ -575,7 +575,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     String sg_lockStatus = (string)TreeNode1.Cells[8].Value;
                     if (sg_lockStatus == "1" || sg_lockStatus == "2")
                     {
-                        MessageBox.Show("The Item " + TreeNode1.Cells[2].Value.ToString() + " is already Locked by " + TreeNode1.Cells[9].Value.ToString());
+                        ShowMessage.ErrorMessUD("The Item " + TreeNode1.Cells[2].Value.ToString() + " is already Locked by " + TreeNode1.Cells[9].Value.ToString());
                         TreeNode1.Cells[14].Value = false;
                         TreeNode1.Cells[14].ReadOnly = true;
                     }
@@ -598,12 +598,12 @@ namespace RBAutocadPlugIn.UI_Forms
                     String sg_lockStatus = (string)TreeNode1.Cells[8].Value;
                     if (sg_lockStatus == "1")
                     {
-                        MessageBox.Show("The Item " + TreeNode1.Cells[2].Value.ToString() + " is already Locked by you." + TreeNode1.Cells[9].Value.ToString());
+                        ShowMessage.ErrorMessUD("The Item " + TreeNode1.Cells[2].Value.ToString() + " is already Locked by you." + TreeNode1.Cells[9].Value.ToString());
                         TreeNode1.Cells[14].Value = false;
                     }
                     else if (sg_lockStatus == "2")
                     {
-                        MessageBox.Show("The Item " + TreeNode1.Cells[2].Value.ToString() + " is already Locked by " + TreeNode1.Cells[9].Value.ToString() + ".");
+                        ShowMessage.ErrorMessUD("The Item " + TreeNode1.Cells[2].Value.ToString() + " is already Locked by " + TreeNode1.Cells[9].Value.ToString() + ".");
                         TreeNode1.Cells[14].Value = false;
                     }
                     else

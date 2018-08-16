@@ -2186,7 +2186,7 @@ namespace RBAutocadPlugIn
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString(), "Error");
+                ShowMessage.ErrorMess(ex.Message.ToString(), "Error");
             }
         } 
 
