@@ -31,16 +31,18 @@ namespace RBAutocadPlugIn
         {
             Helper.HideProgressBar();
             //MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            frmError objfrmError = new frmError("Unknown Error", Message);
+            frmError objfrmError = new frmError("Unknown Error", Message+Helper.GetErrorStack());
+            Helper.LogError(Message + Helper.GetErrorStack());
             objfrmError.ShowDialog();
             Helper.ShowProgressBar();
-
+            
         }
         public static void ErrorMessUD(string Message)
         {
             Helper.HideProgressBar();
             MessageBox.Show(Message, "System Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            frmError objfrmError = new frmError(Message, Message);
+            frmError objfrmError = new frmError(Message, Message+ Helper.GetErrorStack()); 
+            Helper.LogError(Message + Helper.GetErrorStack());
             //// objfrmError.ShowDialog();
             Helper.ShowProgressBar();
 
@@ -48,6 +50,9 @@ namespace RBAutocadPlugIn
         public static void ErrorMess(string Message, string TMessage)
         {
             Helper.HideProgressBar();
+           
+            TMessage += Helper.GetErrorStack();
+            Helper.LogError(TMessage);
             frmError objfrmError = new frmError(Message, TMessage);
             objfrmError.ShowDialog();
             Helper.ShowProgressBar();
@@ -78,10 +83,10 @@ namespace RBAutocadPlugIn
         public static DialogResult ValMessYN(string Message)
         {
 
-            DialogResult DR = new DialogResult(); 
+            DialogResult DR = new DialogResult();
             Helper.HideProgressBar();
             DR = MessageBox.Show(Message, "System Message", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-            Helper.ShowProgressBar(); 
+            Helper.ShowProgressBar();
             return DR;
         }
     }

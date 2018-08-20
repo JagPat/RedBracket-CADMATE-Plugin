@@ -32,7 +32,7 @@
             this.txtSettingUrl = new System.Windows.Forms.TextBox();
             this.UserNameLabel = new System.Windows.Forms.Label();
             this.txtSettingUserNm = new System.Windows.Forms.TextBox();
-            this.ArasUrlLabel = new System.Windows.Forms.Label();
+            this.UrlLabel = new System.Windows.Forms.Label();
             this.userSettingsCancelbutton = new System.Windows.Forms.Button();
             this.userSettingsSavebtn = new System.Windows.Forms.Button();
             this.groupBox_Checkout = new System.Windows.Forms.GroupBox();
@@ -79,7 +79,7 @@
             // 
             // txtSettingUrl
             // 
-            this.txtSettingUrl.BackColor = System.Drawing.Color.Azure;
+            this.txtSettingUrl.BackColor = Helper.FormBGColor;
             this.txtSettingUrl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtSettingUrl.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSettingUrl.Location = new System.Drawing.Point(243, 48);
@@ -102,7 +102,7 @@
             // 
             // txtSettingUserNm
             // 
-            this.txtSettingUserNm.BackColor = System.Drawing.Color.Azure;
+            this.txtSettingUserNm.BackColor = Helper.FormBGColor;
             this.txtSettingUserNm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtSettingUserNm.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSettingUserNm.Location = new System.Drawing.Point(243, 13);
@@ -110,22 +110,22 @@
             this.txtSettingUserNm.Size = new System.Drawing.Size(194, 21);
             this.txtSettingUserNm.TabIndex = 4;
             // 
-            // ArasUrlLabel
+            // UrlLabel
             // 
-            this.ArasUrlLabel.AutoSize = true;
-            this.ArasUrlLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ArasUrlLabel.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ArasUrlLabel.Location = new System.Drawing.Point(113, 48);
-            this.ArasUrlLabel.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
-            this.ArasUrlLabel.Name = "ArasUrlLabel";
-            this.ArasUrlLabel.Size = new System.Drawing.Size(127, 19);
-            this.ArasUrlLabel.TabIndex = 0;
-            this.ArasUrlLabel.Text = "Redbracket URL : ";
-            this.ArasUrlLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.UrlLabel.AutoSize = true;
+            this.UrlLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.UrlLabel.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.UrlLabel.Location = new System.Drawing.Point(113, 48);
+            this.UrlLabel.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+            this.UrlLabel.Name = "UrlLabel";
+            this.UrlLabel.Size = new System.Drawing.Size(127, 19);
+            this.UrlLabel.TabIndex = 0;
+            this.UrlLabel.Text = "Redbracket URL : ";
+            this.UrlLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // userSettingsCancelbutton
             // 
-            this.userSettingsCancelbutton.BackColor = System.Drawing.Color.Azure;
+            this.userSettingsCancelbutton.BackColor = Helper.FormBGColor;
             this.userSettingsCancelbutton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userSettingsCancelbutton.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.userSettingsCancelbutton.Location = new System.Drawing.Point(226, 3);
@@ -138,7 +138,7 @@
             // 
             // userSettingsSavebtn
             // 
-            this.userSettingsSavebtn.BackColor = System.Drawing.Color.Azure;
+            this.userSettingsSavebtn.BackColor = Helper.FormBGColor;
             this.userSettingsSavebtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userSettingsSavebtn.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.userSettingsSavebtn.Location = new System.Drawing.Point(90, 3);
@@ -193,7 +193,7 @@
             // 
             // txtWorkingDirectory
             // 
-            this.txtWorkingDirectory.BackColor = System.Drawing.Color.Azure;
+            this.txtWorkingDirectory.BackColor = Helper.FormBGColor;
             this.txtWorkingDirectory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtWorkingDirectory.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtWorkingDirectory.Location = new System.Drawing.Point(113, 123);
@@ -204,7 +204,7 @@
             // 
             // lbDriveList
             // 
-            this.lbDriveList.BackColor = System.Drawing.Color.Azure;
+            this.lbDriveList.BackColor = Helper.FormBGColor;
             this.lbDriveList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbDriveList.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbDriveList.FormattingEnabled = true;
@@ -254,7 +254,7 @@
             this.tableLayoutPanel2.Controls.Add(this.LoginPictureBox, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.UserNameLabel, 2, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtSettingUserNm, 3, 1);
-            this.tableLayoutPanel2.Controls.Add(this.ArasUrlLabel, 2, 3);
+            this.tableLayoutPanel2.Controls.Add(this.UrlLabel, 2, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtSettingUrl, 3, 3);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 14);
@@ -425,7 +425,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackColor = System.Drawing.Color.Azure;
+            this.BackColor = Helper.FormBGColor;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(477, 386);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -457,7 +457,7 @@
 
         #endregion
         private System.Windows.Forms.TextBox txtSettingUrl;
-        private System.Windows.Forms.Label ArasUrlLabel;
+        private System.Windows.Forms.Label UrlLabel;
         private System.Windows.Forms.Label UserNameLabel;
         private System.Windows.Forms.TextBox txtSettingUserNm;
         private System.Windows.Forms.PictureBox LoginPictureBox;

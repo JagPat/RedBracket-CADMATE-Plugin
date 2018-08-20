@@ -1973,9 +1973,7 @@ namespace RBAutocadPlugIn
                         if (layoutName != "Model")
                         {
                             LayoutManager.Current.CurrentLayout = layoutName;
-                            Hashtable LayoutData = documentProperties; //new Hashtable();
-                                                                       // ArasConnector.ArasConnector LayoutDetail = new ArasConnector.ArasConnector();
-                                                                       // LayoutData = LayoutDetail.GetLayoutDetail(drawingAttrs["drawingid"].ToString(), layoutName);
+                            Hashtable LayoutData = documentProperties;
 
                             #region "TraverseForTitleblock"
 

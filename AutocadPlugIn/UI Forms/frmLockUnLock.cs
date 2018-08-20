@@ -21,7 +21,7 @@ namespace RBAutocadPlugIn.UI_Forms
             try
             {
                 CancelBtn.UseVisualStyleBackColor = false;
-                CancelBtn.BackColor = this.BackColor = UnLockTree.BackgroundColor = Color.Azure;
+                CancelBtn.BackColor = this.BackColor = UnLockTree.BackgroundColor = Helper.FormBGColor;
                 UnLockTree.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
                 UnLockTree.RowsDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Regular);
                 this.imageStrip.ImageSize = new System.Drawing.Size(17, 17);

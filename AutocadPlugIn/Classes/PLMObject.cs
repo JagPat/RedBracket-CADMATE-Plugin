@@ -45,7 +45,7 @@ namespace RBAutocadPlugIn
         private String objectGeneration;
         private String lockStatus;
         private String lockBy;
-        private String objectStatus; //New OR 'Exists in ARAS'
+        private String objectStatus; 
        
         private bool isCreateNewRevision;
         private bool isManualVersion;
@@ -226,7 +226,7 @@ namespace RBAutocadPlugIn
             get { return this.lockStatus; }
             set { this.lockStatus = value; }
         }
-        public String ObjectStatus //NEW OR Exists in ARAS
+        public String ObjectStatus 
         {
             get { return this.objectStatus; }
             set { this.objectStatus = value; }

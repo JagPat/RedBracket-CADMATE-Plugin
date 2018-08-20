@@ -22,7 +22,7 @@ namespace RBAutocadPlugIn
 
             try
             { 
-                //isConnect = ArasConnector.ArasConnector.Isconnected;
+                
                  
                 isConnect = System.Net.HttpStatusCode.OK== Helper.objRBC.LoginValidation(cmd.UserName, cmd.Passwd, out loggedUserDetails);
 

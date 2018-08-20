@@ -42,12 +42,12 @@ namespace RBAutocadPlugIn.UI_Forms
                 IsXRefFile.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                 IsXRefFile.FillWeight = 1;
                 IsXRefFile.Width = 40;
-                treeGridView1.BackgroundColor = Color.Azure;
+                treeGridView1.BackgroundColor = Helper.FormBGColor;
                 CancelButton.UseVisualStyleBackColor = SearchButton.UseVisualStyleBackColor = FormCancelButton.UseVisualStyleBackColor = OpenDrawingButton.UseVisualStyleBackColor = false;
-                this.BackColor = Color.Azure;
-                treeGridView1.RowsDefaultCellStyle.BackColor = Color.Azure;
+                this.BackColor = Helper.FormBGColor;
+                treeGridView1.RowsDefaultCellStyle.BackColor = Helper.FormBGColor;
                 sg_SearchType.SelectedIndex = 0;
-                DGName.BackColor= textBox_foldername.BackColor= CDProjectName.BackColor = Color.Azure;
+                DGName.BackColor= textBox_foldername.BackColor= CDProjectName.BackColor = Helper.FormBGColor;
 
                 //Read the keys from the user registry and load it to the UI.
 

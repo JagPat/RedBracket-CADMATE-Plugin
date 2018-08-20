@@ -919,7 +919,6 @@ namespace RBAutocadPlugIn
             catch (Exception ex)
             {
                 ShowMessage.ErrorMess(ex.Message);
-                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
             }
             return newplmobjs;
         }
@@ -1366,7 +1365,6 @@ namespace RBAutocadPlugIn
             catch (Exception ex)
             {
                 ShowMessage.ErrorMess(ex.Message);
-                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
             }
             return DrawingProperty;
         }
@@ -1409,7 +1407,6 @@ namespace RBAutocadPlugIn
             catch (Exception ex)
             {
                 ShowMessage.ErrorMess(ex.Message);
-                //throw (new Exceptions.ConnectionException("ArasConnector Exception Message :" + ex.Message));
             }
             return ObjFileInfo;
         }

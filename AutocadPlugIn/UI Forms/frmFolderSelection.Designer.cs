@@ -220,7 +220,7 @@
             this.dgvFolderSelection.AllowUserToAddRows = false;
             this.dgvFolderSelection.AllowUserToDeleteRows = false;
             this.dgvFolderSelection.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dgvFolderSelection.BackgroundColor = System.Drawing.Color.Azure;
+            this.dgvFolderSelection.BackgroundColor = Helper.FormBGColor;
             this.dgvFolderSelection.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFolderSelection.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.FolderName,
@@ -265,7 +265,7 @@
             // frmFolderSelection
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.Color.Azure;
+            this.BackColor = Helper.FormBGColor;
             this.ClientSize = new System.Drawing.Size(800, 416);
             this.Controls.Add(this.tableLayoutPanel3);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

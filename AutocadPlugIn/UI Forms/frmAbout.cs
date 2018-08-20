@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RibbonSample.UI_Forms
+namespace RBAutocadPlugIn
 {
     public partial class frmAbout : Form
     {

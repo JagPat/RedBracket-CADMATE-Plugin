@@ -828,7 +828,7 @@
             // 
             // cmbLayoutStatusC1
             // 
-            this.cmbLayoutStatusC1.BackColor = System.Drawing.Color.Azure;
+            this.cmbLayoutStatusC1.BackColor = Helper.FormBGColor;
             this.cmbLayoutStatusC1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbLayoutStatusC1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbLayoutStatusC1.FormattingEnabled = true;
@@ -853,7 +853,7 @@
             // 
             // cmbLayoutTypeC1
             // 
-            this.cmbLayoutTypeC1.BackColor = System.Drawing.Color.Azure;
+            this.cmbLayoutTypeC1.BackColor = Helper.FormBGColor;
             this.cmbLayoutTypeC1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbLayoutTypeC1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbLayoutTypeC1.FormattingEnabled = true;
@@ -888,7 +888,7 @@
             // 
             // cmbFileTypeC
             // 
-            this.cmbFileTypeC.BackColor = System.Drawing.Color.Azure;
+            this.cmbFileTypeC.BackColor = Helper.FormBGColor;
             this.cmbFileTypeC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbFileTypeC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbFileTypeC.FormattingEnabled = true;
@@ -901,7 +901,7 @@
             // 
             // cmbFileStatusC
             // 
-            this.cmbFileStatusC.BackColor = System.Drawing.Color.Azure;
+            this.cmbFileStatusC.BackColor = Helper.FormBGColor;
             this.cmbFileStatusC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbFileStatusC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbFileStatusC.FormattingEnabled = true;
@@ -927,7 +927,7 @@
             // 
             // cmbLayoutTypeC2
             // 
-            this.cmbLayoutTypeC2.BackColor = System.Drawing.Color.Azure;
+            this.cmbLayoutTypeC2.BackColor = Helper.FormBGColor;
             this.cmbLayoutTypeC2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbLayoutTypeC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbLayoutTypeC2.FormattingEnabled = true;
@@ -940,7 +940,7 @@
             // 
             // cmbLayoutStatusC2
             // 
-            this.cmbLayoutStatusC2.BackColor = System.Drawing.Color.Azure;
+            this.cmbLayoutStatusC2.BackColor = Helper.FormBGColor;
             this.cmbLayoutStatusC2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbLayoutStatusC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbLayoutStatusC2.FormattingEnabled = true;
@@ -1010,7 +1010,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.BackColor = System.Drawing.Color.Azure;
+            this.btnCancel.BackColor = Helper.FormBGColor;
             this.btnCancel.Location = new System.Drawing.Point(216, -3);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(87, 11);
@@ -1022,7 +1022,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.BackColor = System.Drawing.Color.Azure;
+            this.btnSave.BackColor = Helper.FormBGColor;
             this.btnSave.Location = new System.Drawing.Point(110, -3);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(87, 11);
@@ -1132,7 +1132,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Azure;
+            this.BackColor = Helper.FormBGColor;
             this.ClientSize = new System.Drawing.Size(734, 676);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

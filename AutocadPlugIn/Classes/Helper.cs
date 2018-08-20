@@ -10,8 +10,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections;
-using System.Runtime.InteropServices; 
+using System.Runtime.InteropServices;
 using AdvancedDataGridView;
+using System.Diagnostics;
 
 namespace RBAutocadPlugIn
 {
@@ -53,6 +54,7 @@ namespace RBAutocadPlugIn
         {
             try
             {
+
                 objfrmPB = new frmProgressBar();
                 objfrmPB.lblTitle.Text = Title;
                 objfrmPB.lblStatus.Text = Status;
@@ -327,18 +329,18 @@ namespace RBAutocadPlugIn
             string RValue = "";
             try
             {
-                if(dt.Columns.Contains(ValueMember))
+                if (dt.Columns.Contains(ValueMember))
                 {
                     DataRow[] dr = dt.Select(ValueMember + " = '" + Value + "'");
 
                     if (dr.Length > 0)
                     {
-                        
+
                         if (dr.CopyToDataTable().Columns.Contains(DisplayMember))
                             RValue = Convert.ToString(dr[0][DisplayMember]);
                     }
                 }
-                
+
             }
             catch (Exception E)
             {
@@ -1732,6 +1734,45 @@ namespace RBAutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
             return true;
+        }
+
+        public static string GetErrorStack()
+        {
+            string StackString = "";
+            try
+            {
+                StackTrace stack = new StackTrace();
+                StackString = Environment.NewLine + Environment.NewLine + stack.ToString();
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return StackString;
+        }
+
+        public static bool LogError(string ErrorText)
+        {
+
+            try
+            {
+
+                string LogLocation = Path.Combine(Path.GetPathRoot(Application.StartupPath), "RBACC ErrorLog");
+                if (!Directory.Exists(LogLocation))
+                {
+                    Directory.CreateDirectory(LogLocation);
+                }
+
+                File.AppendAllText(LogLocation + "\\ErrorLog" + DateTime.Now.ToString(DateFormat) + ".txt", Environment.NewLine + Environment.NewLine + ">>" + DateTime.Now.ToString(DateTimeFormat) + "   " + UserName + Environment.NewLine + Environment.NewLine + ErrorText);
+
+                return true;
+            }
+            catch (Exception E)
+            {
+                //ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+
         }
     }
 }

@@ -891,7 +891,7 @@ namespace RBAutocadPlugIn
 
         public void Execute(object parameter)
         {
-            RibbonSample.UI_Forms.frmAbout about = new RibbonSample.UI_Forms.frmAbout();
+             frmAbout about = new  frmAbout();
             about.ShowDialog();
         }
     }
