@@ -115,7 +115,7 @@ namespace RBAutocadPlugIn
             // 
             // textBoxDescription
             // 
-            this.textBoxDescription.BackColor = System.Drawing.Color.Blue;
+            this.textBoxDescription.BackColor = System.Drawing.Color.Azure;
             this.textBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxDescription.ForeColor = System.Drawing.Color.Black;
             this.textBoxDescription.Location = new System.Drawing.Point(86, 141);
@@ -245,7 +245,7 @@ namespace RBAutocadPlugIn
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Blue;
+            this.BackColor = System.Drawing.Color.Azure;
             this.ClientSize = new System.Drawing.Size(530, 357);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

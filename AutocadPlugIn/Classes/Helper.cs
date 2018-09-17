@@ -946,7 +946,6 @@ namespace RBAutocadPlugIn
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
-
             }
             return FileName;
         }
@@ -1773,6 +1772,33 @@ namespace RBAutocadPlugIn
                 return false;
             }
 
+        }
+
+        public static string GetCheckoutDirectory(string ProjectName)
+        {
+            string CheckoutDirectory = "";
+            try
+            {
+                string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
+
+
+                if (ProjectName.Trim().Length == 0)
+                {
+                    ProjectName = "My Files";
+                }
+                checkoutPath = Path.Combine(checkoutPath, ProjectName);
+
+                if (!Directory.Exists(checkoutPath))
+                {
+                    Directory.CreateDirectory(checkoutPath);
+                }
+                CheckoutDirectory = checkoutPath;
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+            }
+            return CheckoutDirectory;
         }
     }
 }

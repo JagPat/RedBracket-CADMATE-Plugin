@@ -370,7 +370,7 @@
             // State
             // 
             this.State.FillWeight = 55.89579F;
-            this.State.HeaderText = "FIle Status";
+            this.State.HeaderText = "File Status";
             this.State.Name = "State";
             this.State.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 

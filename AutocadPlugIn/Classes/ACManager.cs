@@ -490,6 +490,8 @@ namespace RBAutocadPlugIn
             System.Data.DataTable dtDrawingInfo = Helper.GetDrawingPropertiesTableStructure();
             try
             {
+                if (!File.Exists(FilePath))
+                    return null;
                 Hashtable hastable = new Hashtable();
 
                 Database Db = new Database(false, true);
@@ -711,11 +713,13 @@ namespace RBAutocadPlugIn
                 ShowMessage.ErrorMess(ex.Message);
             }
         } 
-
+        public static int Pass=0;
         public void UpdateExRefFileName(string ParentFilePath, string FilePath, ref List<PLMObject> plmObjs)
         {
             try
             {
+                 
+               
                 List<string> lstOldFiles = new List<string>();
                 string ParentNewPath = "";
                 bool IsMove = false;
@@ -727,6 +731,7 @@ namespace RBAutocadPlugIn
                     mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                     mainDb.ResolveXrefs(false, false);
                     XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                   
                     for (int i = 0; i < xg.NumNodes; i++)
                     {
                         XrefGraphNode xgn = xg.GetXrefNode(i);
@@ -779,6 +784,7 @@ namespace RBAutocadPlugIn
                                     // this file is not selected to save so no further action is required.
                                     continue;
                                 }
+                                
                                 string ProjectName = "", PreFix = "", oldPreFix = "";
                                 System.Data.DataTable dtDrawing = Helper.cadManager.GetDrawingAttributes(xgn.Database.Filename);
 
@@ -793,7 +799,7 @@ namespace RBAutocadPlugIn
 
                                 string FN = Path.GetFileNameWithoutExtension(xgn.Name);
 
-
+                                
                                 string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
 
 
@@ -802,6 +808,7 @@ namespace RBAutocadPlugIn
                                     ProjectName = "My Files";
                                 }
                                 checkoutPath = Path.Combine(checkoutPath, ProjectName);
+                                
                                 if (!Directory.Exists(checkoutPath))
                                 {
                                     Directory.CreateDirectory(checkoutPath);
@@ -810,10 +817,10 @@ namespace RBAutocadPlugIn
 
                                 path += @"\" + PreFix;
 
-
+                               
                                 if (xgn.Name == FilePath)
                                 {
-
+                                    
                                     string PName = Path.GetFileName(FilePath);
                                     PName = Helper.RemovePreFixFromFileName(PName, oldPreFix);
                                     PName = Helper.RemovePreFixFromFileName(PName, PreFix);
@@ -1252,10 +1259,10 @@ namespace RBAutocadPlugIn
 
                                         string originalpath = btr.PathName;
                                         string s = originalpath.Replace(btr.Name, "").Replace(Path.GetExtension(originalpath), "").Replace("#", "");
-                                        if (s.Contains("_"))
+                                        if (s.Contains("-"))
                                         {
                                             s = s.Remove(s.LastIndexOf('-'));
-                                            if (s.Contains("_"))
+                                            if (s.Contains("-"))
                                                 s = s.Substring(s.LastIndexOf('-') + 1);
                                         }
                                         else

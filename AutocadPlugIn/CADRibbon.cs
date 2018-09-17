@@ -534,12 +534,12 @@ namespace RBAutocadPlugIn
 
 
                 //Setting
-                rpsSetting.Title = "Setting";
+                rpsSetting.Title = "Settings";
                 rpSetting.Source = rpsSetting;
                 Tab.Panels.Add(rpSetting);
 
 
-                rbSetting.Text = "Setting";
+                rbSetting.Text = "Settings";
                 rbSetting.ShowText = true;
                 rbSetting.ShowImage = true;
                 rbSetting.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);

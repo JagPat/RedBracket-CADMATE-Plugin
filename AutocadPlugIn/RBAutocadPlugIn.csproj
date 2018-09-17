@@ -48,6 +48,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>RedBracketLogo.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
       <HintPath>..\Binaries\AcCoreMgd.dll</HintPath>
@@ -280,6 +283,7 @@
     <None Include="Resources\About.ico" />
     <None Include="Resources\BG.png" />
     <None Include="Resources\bracket.jpg" />
+    <Content Include="RedBracketLogo.ico" />
     <Content Include="Resources\CheckoutUserSettings.png" />
     <Content Include="Resources\Connect.png" />
     <Content Include="Resources\Disconnect.png" />
