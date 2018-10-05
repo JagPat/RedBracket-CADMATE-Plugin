@@ -27,6 +27,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RedBracketConnectorSetup", 
 		{7FBD7E4A-1DDE-4EC2-AAAD-2DD00347B87C} = {7FBD7E4A-1DDE-4EC2-AAAD-2DD00347B87C}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoGraphy", "CryptoGraphy\CryptoGraphy.csproj", "{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{20103B48-FC75-4FCF-BE5D-843570228EE7}.Release|Any CPU.ActiveCfg = Release
 		{20103B48-FC75-4FCF-BE5D-843570228EE7}.V2003Debug|Any CPU.ActiveCfg = Debug
 		{20103B48-FC75-4FCF-BE5D-843570228EE7}.V2007Debug|Any CPU.ActiveCfg = Debug
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Office2003|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Office2003|Any CPU.Build.0 = Release|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Office2007|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Office2007|Any CPU.Build.0 = Release|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.V2003Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.V2003Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.V2007Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA40CFF-CE66-4623-BA6D-9E76FEFE9076}.V2007Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

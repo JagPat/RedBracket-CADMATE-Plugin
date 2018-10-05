@@ -407,7 +407,7 @@ namespace RBAutocadPlugIn
                 ShowMessage.ErrorMess(E.Message); return true;
             }
         }
-        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project)
+        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project,string FolderID)
         {
             try
             {
@@ -441,6 +441,8 @@ namespace RBAutocadPlugIn
                 keyValuePairs.Add(Keys);
 
                 Keys = new KeyValuePair<string, string>("source", "Computer");
+                keyValuePairs.Add(Keys);
+                Keys = new KeyValuePair<string, string>("folderidString", FolderID==string.Empty|| FolderID == null ?"0":FolderID);
                 keyValuePairs.Add(Keys);
 
                 string IsNew = "";
@@ -657,8 +659,7 @@ namespace RBAutocadPlugIn
                 {
                     Count++;
                     if (Convert.ToString(dr["IsFile"]) == "1")
-                    {
-
+                    { 
                         continue;
                     }
                     else if ((Convert.ToString(dr["ChangeVersion"]) == "False"))
@@ -1236,6 +1237,7 @@ namespace RBAutocadPlugIn
             ResultSearchCriteria ObjFileInfo = null;
             try
             {
+              
                 KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
                 //KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
 

@@ -11,6 +11,7 @@ namespace RBAutocadPlugIn.UI_Forms
 {
     public partial class frmDrawingInfo : Form
     {
+        //Public scope variable declaration and initialization
         public string DrawingID1 = ""; 
         RBConnector objRBC = new RBConnector();
         bool IsFilePropertiesChanged = false;
@@ -21,6 +22,7 @@ namespace RBAutocadPlugIn.UI_Forms
         string FilePath = "";
         string PreFix = "";
         bool IsLayoutinLocalFile = false;
+        string FolderID = "";
         public frmDrawingInfo()
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
@@ -31,13 +33,16 @@ namespace RBAutocadPlugIn.UI_Forms
             LoadFlag = true;
             try
             {
+                //hiding this form and showing progress form so that user have clear idea that data in form is being loaded
                 Cursor.Current = Cursors.WaitCursor;
                 this.Hide();
+
                 int LocalFileLayoutCount = 0;
                 int FileInfoRowCount = 0;
 
  
                 Helper.GetProgressBar(5, "Fetching File Info in Progress...", "Fetching local file info.");
+                //declaring a panelsaperator
                 Panel pnlSaperator = new Panel() { BackColor = Helper.clrParentPopupBorderColor, Margin = new Padding(3), Dock = DockStyle.Fill };
                 // Get Current File Info from Custum Properties and Display
                 DataRow[] dtCurrentData =Helper.cadManager.GetDrawingExternalRefreces().Select("isroot=true");
@@ -46,8 +51,9 @@ namespace RBAutocadPlugIn.UI_Forms
                     Helper.IncrementProgressBar(1, "Filling local file info.");
                     FilePath = Convert.ToString(dtCurrentData[0]["filepath"]);
                     PreFix = Convert.ToString(dtCurrentData[0]["prefix"]);
-                    DataTable dtProjectDetail = objRBC.GetProjectDetail();
+                   
 
+                    //Filling combo boxes
                     Helper.FIllCMB(cmbFileTypeC, objRBC.GetFIleType(), "name", "id", true);
                     Helper.FIllCMB(cmbLayoutTypeC1, objRBC.GetFIleType(), "name", "id", true);
                     Helper.FIllCMB(cmbLayoutTypeC2, objRBC.GetFIleType(), "name", "id", true);
@@ -56,6 +62,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     Helper.FIllCMB(cmbLayoutStatusC1, objRBC.GetFIleStatus(), "statusname", "id", true, false);
                     Helper.FIllCMB(cmbLayoutStatusC2, objRBC.GetFIleStatus(), "statusname", "id", true, false);
                     FileID = lbDrawingIDC.Text = DrawingID1 = Convert.ToString(dtCurrentData[0]["drawingid"]);
+                    FolderID =    Convert.ToString(dtCurrentData[0]["folderid"]);
                     if (DrawingID1.Trim().Length == 0)
                     {
                         ShowMessage.ValMess("Please save this drawing to RedBracket."); this.Close(); Cursor.Current = Cursors.Default;
@@ -67,6 +74,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     lbVersionC.Text = Convert.ToString(dtCurrentData[0]["revision"]);
                     lbProjectNameC.Text = Convert.ToString(dtCurrentData[0]["projectname"]);
 
+                    DataTable dtProjectDetail = objRBC.GetProjectDetail();
                     DataRow[] drl = dtProjectDetail.Select("name='" + lbProjectNameC.Text + "'");
                     if (drl.Length > 0)
                     {
@@ -521,7 +529,7 @@ namespace RBAutocadPlugIn.UI_Forms
                 if (IsFilePropertiesChanged)
                 {
 
-                    if (objRBC.UpdateFileProperties(FileID, Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue), ProjectID))
+                    if (objRBC.UpdateFileProperties(FileID, Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue), ProjectID, FolderID))
                     {
                         //cadManager.UpdateFileProperties( Convert.ToString(cmbFileTypeC.Text), Convert.ToString(cmbFileStatusC.Text), Convert.ToString(cmbFileTypeC.SelectedValue), Convert.ToString(cmbFileStatusC.SelectedValue));
                         cmbFileTypeC.Tag = cmbFileTypeC.SelectedValue;

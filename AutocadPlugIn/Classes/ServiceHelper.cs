@@ -49,7 +49,14 @@ namespace RBAutocadPlugIn
                 request.RequestFormat = dataFormat;
 
                 request.AddBody(postData);
-                return restClient.Execute(request);
+                //return restClient.Execute(request);
+
+                IRestResponse restRequest = restClient.Execute(request);
+
+                //Helper.LogServiceCall(restRequest.ResponseUri + Environment.NewLine + Environment.NewLine + restRequest.Content + Environment.NewLine + Environment.NewLine + restRequest.ErrorMessage);
+                Helper.LogServiceCall(restRequest, relevantAddress );
+
+                return restRequest;
             }
             catch (WebException webException)
             {
@@ -87,7 +94,11 @@ namespace RBAutocadPlugIn
                     }
                 }
 
-                return restClient.Execute(new RestRequest(relevantAddress, Method.GET));
+
+                IRestResponse restRequest = restClient.Execute(new RestRequest(relevantAddress, Method.GET));
+                //Helper.LogServiceCall(restRequest.ResponseUri + Environment.NewLine + Environment.NewLine + restRequest.Content + Environment.NewLine + Environment.NewLine + restRequest.ErrorMessage);
+                Helper.LogServiceCall(restRequest, relevantAddress );
+                return restRequest;
             }
             catch (WebException webException)
             {
@@ -140,14 +151,17 @@ namespace RBAutocadPlugIn
                 var request = new RestRequest(relevantAddress, Method.POST);
 
                 fileName = Helper.RemovePreFixFromFileName(Path.GetFileName(filePath), PreFix);
-          
+
                 if (IsFileUpload)
                     request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
                 //else
                 //    request.AddFile("files", "");
 
+                IRestResponse restRequest = restClient.Execute(request);
 
-                return restClient.Execute(request);
+                //Helper.LogServiceCall(restRequest.ResponseUri + Environment.NewLine + Environment.NewLine + restRequest.Content + Environment.NewLine + Environment.NewLine + restRequest.ErrorMessage);
+                Helper.LogServiceCall(restRequest, relevantAddress );
+                return restRequest;
             }
             catch (WebException webException)
             {
@@ -156,54 +170,6 @@ namespace RBAutocadPlugIn
         }
 
 
-        public static IRestResponse UpdateObject(string baseAddress, string relevantAddress, string filePath, bool addUserNametoUrl = true, List<KeyValuePair<string, string>> urlParameters = null, String PreFix = null)
-        {
-            try
-            {
-                //var restClient = new RestClient("https://test.redbracket.in:8090");
-                string fileName = "";
-                string FIleid = "";
-                var restClient = new RestClient(baseAddress);
-                int count = 0;
-                if (addUserNametoUrl)
-                {
-                    relevantAddress += "?userName=" + Helper.GetValueRegistry("LoginSettings", "UserName").ToString();
-                }
 
-                if (urlParameters != null)
-                {
-                    foreach (KeyValuePair<string, string> urlParameter in urlParameters)
-                    {
-                        if (urlParameter.Key == "")
-                        {
-                            FIleid = urlParameter.Value;
-                        }
-
-                        if (count == 0 && !addUserNametoUrl)
-                        {
-                            relevantAddress += ("?" + urlParameter.Key + "=" + urlParameter.Value);
-                        }
-                        else
-                        {
-                            relevantAddress += ("&" + urlParameter.Key + "=" + urlParameter.Value);
-                        }
-
-                        count++;
-                    }
-                }
-
-                var request = new RestRequest(relevantAddress, Method.POST);
-
-                fileName = Helper.RemovePreFixFromFileName(Path.GetFileName(filePath), PreFix);
-                 
-                request.AddFile("files", Helper.GetFileDataBytes(filePath), fileName);
-
-                return restClient.Execute(request);
-            }
-            catch (WebException webException)
-            {
-                throw new WebException("Invalid response from the server.", webException.InnerException);
-            }
-        }
     }
 }

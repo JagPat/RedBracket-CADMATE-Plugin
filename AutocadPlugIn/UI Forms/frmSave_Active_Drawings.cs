@@ -43,7 +43,7 @@ namespace RBAutocadPlugIn.UI_Forms
             if (System.Convert.ToInt16(obj) != 0)
             {
                 OpenForm = false;
-                 ValMess("Please save all documents to process further.");
+                ValMess("Please save all documents to process further.");
                 return;
             }
             // cadManager.SaveActiveDrawing();
@@ -63,12 +63,12 @@ namespace RBAutocadPlugIn.UI_Forms
 
                 //  cadManager.SaveAllOpenDoc();
                 Cursor.Current = Cursors.WaitCursor;
-                this.BackColor =  FormBGColor;
-                CADDescription.BackColor = submit.BackColor = cancel.BackColor = savetreeGrid.BackgroundColor =  FormBGColor;
+                this.BackColor = FormBGColor;
+                CADDescription.BackColor = submit.BackColor = cancel.BackColor = savetreeGrid.BackgroundColor = FormBGColor;
 
                 savetreeGrid.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Verdana", 9, FontStyle.Bold);
-                this.imageStrip.ImageSize = new  Size(17, 17);
-                this.imageStrip.TransparentColor =  Color.Magenta;
+                this.imageStrip.ImageSize = new Size(17, 17);
+                this.imageStrip.TransparentColor = Color.Magenta;
                 this.imageStrip.ImageSize = new Size(17, 17);
                 this.imageStrip.Images.AddStrip(LockImageStrip1);
                 savetreeGrid.ImageList = imageStrip;
@@ -85,7 +85,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     savetreeGrid.Nodes.Remove(TreeNode1);
                 }
 
-                dtTreeGridData =  cadManager.GetDrawingExternalRefreces1(IsSaveAs);
+                dtTreeGridData = cadManager.GetDrawingExternalRefreces1(IsSaveAs);
 
 
                 string FoldID = "", FoldPath = "", ProJNmNo = "", OldDWGNo = "";
@@ -93,7 +93,7 @@ namespace RBAutocadPlugIn.UI_Forms
                 {
                     if (Convert.ToString(dtTreeGridData.Rows[i]["DrawingId"]).Trim().Length == 0 || IsSaveAs)
                     {
-                        dtTreeGridData.Rows[i]["drawingstate"] =  FirstStatusName;
+                        dtTreeGridData.Rows[i]["drawingstate"] = FirstStatusName;
 
 
                     }
@@ -157,13 +157,13 @@ namespace RBAutocadPlugIn.UI_Forms
                         {
 
 
-                            decimal LatestVersion = Convert.ToDecimal( GetLatestVersion(Convert.ToString(dtTreeGridData.Rows[i]["DrawingNumber"])));
+                            decimal LatestVersion = Convert.ToDecimal(GetLatestVersion(Convert.ToString(dtTreeGridData.Rows[i]["DrawingNumber"])));
 
                             if (LatestVersion == 0)
                             {
                                 if (!IsSaveAs)
                                 {
-                                    if ( InfoYNMess("Following file no longer exist on server. do you want to update it as new ?\n" + Convert.ToString(dtTreeGridData.Rows[i]["filepath"]).Trim()) == DialogResult.No || IsSaveAs)
+                                    if (InfoYNMess("Following file no longer exist on server. do you want to update it as new ?\n" + Convert.ToString(dtTreeGridData.Rows[i]["filepath"]).Trim()) == DialogResult.No || IsSaveAs)
                                     {
                                         return false;
                                     }
@@ -190,7 +190,7 @@ namespace RBAutocadPlugIn.UI_Forms
                             }
                             else if (CurrentVersion < LatestVersion)
                             {
-                                if ( InfoYNMess("Newer version file\n" + Convert.ToString(dtTreeGridData.Rows[i]["DrawingName"]) + "\n is already available on server, Are you sure you want to upload ?") == DialogResult.No)
+                                if (InfoYNMess("Newer version file\n" + Convert.ToString(dtTreeGridData.Rows[i]["DrawingName"]) + "\n is already available on server, Are you sure you want to upload ?") == DialogResult.No)
                                 {
                                     dtTreeGridData.Rows[i]["sourceid"] = "false";
                                     if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true")
@@ -216,7 +216,7 @@ namespace RBAutocadPlugIn.UI_Forms
                 dtTreeGridData = lockStatusCon.getLockStatus(lockStatusCmd);
                 if (lockStatusCon.errorString != null)
                 {
-                     ErrorMess(lockStatusCon.errorString);
+                    ErrorMess(lockStatusCon.errorString);
                     this.Close();
                     return false;
                 }
@@ -224,9 +224,9 @@ namespace RBAutocadPlugIn.UI_Forms
                 #region CreateTreeGrid
 
 
-                 FIllCMB(cadtype, objRBC.GetFIleType(), "name", "id", true);
-                 FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true, IsSortByDisplayMember: false);
-                 FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true, "My Files");
+                FIllCMB(cadtype, objRBC.GetFIleType(), "name", "id", true);
+                FIllCMB(State, objRBC.GetFIleStatus(), "statusname", "id", true, IsSortByDisplayMember: false);
+                FIllCMB(ProjectName, objRBC.GetProjectDetail(), "PNAMENO", "id", true, "My Files");
 
 
 
@@ -382,7 +382,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
                 LoadFlag = false;
                 Cursor.Current = Cursors.Default;
                 return false;
@@ -396,12 +396,12 @@ namespace RBAutocadPlugIn.UI_Forms
         {
             try
             {
-                DataTable dtChild =  RowFilter( RowFilter(dtDrawing, "PK", "FK", "<>"), "FK", Convert.ToString(rw1["PK"]));
+                DataTable dtChild = RowFilter(RowFilter(dtDrawing, "PK", "FK", "<>"), "FK", Convert.ToString(rw1["PK"]));
                 foreach (DataRow rw in dtChild.Rows)
                 {
                     System.Data.DataTable dtLayoutInfo = GetdtLayoutInfo(rw);
                     string LIStatus = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 ? "Empty" : "Filled";
-                                                                            //  as per suggested by email dated  sep 7 2018 by mahesh saraswti
+                    //  as per suggested by email dated  sep 7 2018 by mahesh saraswti
                     TreeGridNode node1 = node.Nodes.Add(LIStatus, /*Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true :*/ false, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
                           rw["drawingstate"].ToString(), rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(),
                            rw["lockstatus"].ToString(), rw["sourceid"].ToString(), rw["isroot"].ToString(), rw["Layouts"], rw["projectnameno"]
@@ -465,13 +465,13 @@ namespace RBAutocadPlugIn.UI_Forms
                     AssigndtLayoutInfoToTag(node1, dtLayoutInfo);
 
                     AddNode(dtTreeGridData, rw, node1, OldDWGNo);
-                    node1.Expand();
-                    node1.Cells["Check"].ReadOnly = Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || IsSaveAs ? true : false;
+                    node1.Expand();                 //accourding to email on sep 7 2018
+                    node1.Cells["Check"].ReadOnly = /*Convert.ToString(rw["DrawingId"]).Trim().Length == 0 || */IsSaveAs ? true : false;
                 }
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
 
@@ -516,7 +516,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         dr["LayoutID"] = obj.id;
                         dr["LayoutType"] = obj.typename;
                         if (IsSaveAs)
-                            dr["LayoutStatus"] =  FirstStatusName;
+                            dr["LayoutStatus"] = FirstStatusName;
                         else
                             dr["LayoutStatus"] = obj.statusname;
                         dr["Version"] = obj.versionno;
@@ -525,7 +525,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         dr["TypeID"] = obj.typeId;
 
                         if (IsSaveAs)
-                            dr["StatusID"] =  FirstStatusID;
+                            dr["StatusID"] = FirstStatusID;
                         else
                             dr["StatusID"] = obj.statusId;
                         dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
@@ -537,7 +537,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         dr["UpdatedBy"] = obj.updatedby;
                         dr["UpdatedOn"] = obj.updatedon;
                         if (IsSaveAs)
-                            dr["LayoutStatusOld"] =  FirstStatusName;
+                            dr["LayoutStatusOld"] = FirstStatusName;
                         else
                             dr["LayoutStatusOld"] = obj.statusname;
                         dtLayoutInfo.Rows.Add(dr);
@@ -548,7 +548,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return dtLayoutInfo;
         }
@@ -573,7 +573,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (System.Exception ex)
             {
-                 ErrorMess("Exception Occur: " + ex.Message);
+                ErrorMess("Exception Occur: " + ex.Message);
                 return;
             }
 
@@ -581,7 +581,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
         private void submit_Click(object sender, EventArgs e)
         {
-             CheckFileInfoFlag = true;
+            CheckFileInfoFlag = true;
             try
             {
 
@@ -600,16 +600,16 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
                         selectedTreeGridNodes.Add(treeGridNode);
                         PBValue++; PBValue++; PBValue++;
-                         GetSellectedNode(treeGridNode, ref PBValue, 3);
+                        GetSellectedNode(treeGridNode, ref PBValue, 3);
                     }
                 }
 
 
                 if (selectedTreeGridNodes.Count < 1)
                 {
-                     ValMess("Please select at least one file to save.");
+                    ValMess("Please select at least one file to save.");
                     this.Cursor = Cursors.Default;
-                     CheckFileInfoFlag = false;
+                    CheckFileInfoFlag = false;
                     return;
                 }
                 #region LayoutTable Settlement
@@ -623,20 +623,20 @@ namespace RBAutocadPlugIn.UI_Forms
                 {
                     if (Name_Length_Duplication_Check(selectedTreeGridNodes[0]))
                     {
-                        this.Cursor = Cursors.Default;  CheckFileInfoFlag = true;
+                        this.Cursor = Cursors.Default; CheckFileInfoFlag = true;
                         return;
                     }
 
                 }
                 #endregion
 
-                 GetProgressBar(PBValue, "File Save in Progress...", "");
-                 IncrementProgressBar(1, "Checking file existance on server.");
+                GetProgressBar(PBValue, "File Save in Progress...", "");
+                IncrementProgressBar(1, "Checking file existance on server.");
 
                 #region Check for File existance in server
                 if (!CheckFileExistance1(selectedTreeGridNodes[0]) || !CheckFileExistance(selectedTreeGridNodes[0]))
                 {
-                     CloseProgressBar(); Cursor.Current = Cursors.Default;  CheckFileInfoFlag = true;
+                    CloseProgressBar(); Cursor.Current = Cursors.Default; CheckFileInfoFlag = true;
                     return;
                 }
                 #endregion
@@ -650,8 +650,13 @@ namespace RBAutocadPlugIn.UI_Forms
 
                 htAllDrawing.Clear();
                 AllDrawing.Clear();
-                GenFileInfoDT(selectedTreeGridNodes[0]);
-                GenFileInfo(selectedTreeGridNodes[0]);
+                if (!GenFileInfoDT(selectedTreeGridNodes[0]) || !GenFileInfo(selectedTreeGridNodes[0]))
+                {
+                    ShowMessage.ErrorMess("File extension not found, please check.");
+                    this.Cursor = Cursors.Default; CheckFileInfoFlag = true;
+                    return;
+                }
+
 
                 foreach (var key in htAllDrawing.Keys)
                 {
@@ -663,7 +668,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
 
                 // to ask user want to delete file after save or not.
-                if ( InfoYNMess("Would you like to delete local file/files" + Environment.NewLine + " after saving it to RedBracket ?") == DialogResult.Yes)
+                if (InfoYNMess("Would you like to delete local file/files" + Environment.NewLine + " after saving it to RedBracket ?") == DialogResult.Yes)
                 {
                     PBValue++;
                     Is_Delete = true;
@@ -680,9 +685,9 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
                         if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
                         {
-                             InfoMess("You dont have edit permission for this file.");
-                             CloseProgressBar();
-                            this.Cursor = Cursors.Default;  CheckFileInfoFlag = true;
+                            InfoMess("You dont have edit permission for this file.");
+                            CloseProgressBar();
+                            this.Cursor = Cursors.Default; CheckFileInfoFlag = true;
                             return;
                         }
                     }
@@ -696,7 +701,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
 
 
-                     IncrementProgressBar(1, "Uploading file properties.");
+                    IncrementProgressBar(1, "Uploading file properties.");
 
                     // save properties in RB
                     Is_Save = objController.ExecuteSave(objCmd, false, lstdtLayoutInfo);
@@ -709,50 +714,50 @@ namespace RBAutocadPlugIn.UI_Forms
 
 
                         #region Add Title Block 
-                        if ( TitleBlockFlag)
+                        if (TitleBlockFlag)
                         {
-                             IncrementProgressBar(1, "Updating Title block Attributes.");
+                            IncrementProgressBar(1, "Updating Title block Attributes.");
                             DataTable dtFileInfo = objController.dtDrawingProperty.Copy();
                             foreach (PLMObject item in objController.plmObjs)
                             {
-                                bool IsDocOpend =  cadManager.OpenDocSilently(item.FilePath);
+                                bool IsDocOpend = cadManager.OpenDocSilently(item.FilePath);
 
 
-                                 cadManager.AddingAttributeToABlock(item.FilePath,  DrawingAttributes, item.ObjectName, false);
+                                cadManager.AddingAttributeToABlock(item.FilePath, DrawingAttributes, item.ObjectName, false);
                                 DataTable dtLayoutInfo = item.dtLayoutInfo.Copy();
                                 foreach (DataRow dr in dtLayoutInfo.Rows)
                                 {
                                     if (Convert.ToString(dr["IsFile"]) == "0")
-                                         cadManager.AddingAttributeToABlock(item.FilePath,  LayoutAttributes, Convert.ToString(dr["FileLayoutName"]), true);
+                                        cadManager.AddingAttributeToABlock(item.FilePath, LayoutAttributes, Convert.ToString(dr["FileLayoutName"]), true);
                                 }
                                 if (IsDocOpend)
                                 {
-                                     cadManager.CloseDocSilently(item.FilePath);
+                                    cadManager.CloseDocSilently(item.FilePath);
                                 }
                             }
                         }
                         #endregion
 
-                         IncrementProgressBar(1, "Updating new properties to local file.");
+                        IncrementProgressBar(1, "Updating new properties to local file.");
                         // CloseProgressBar();
 
                         // Update document info into document for future referance 
                         if (objController.dtDrawingProperty.Rows.Count > 0)
                         {
-                             cadManager.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
+                            cadManager.UpdateExRefInfo(objCmd.FilePath, objController.dtDrawingProperty);
                         }
 
 
 
                         #region Close Files
-                         IncrementProgressBar(1, "Closing open files.");
-                         cadManager.ChecknCloseOpenedDoc(FilePath);
+                        IncrementProgressBar(1, "Closing open files.");
+                        cadManager.ChecknCloseOpenedDoc(FilePath);
                         CloseFile(currentTreeGrdiNode);
 
                         #endregion
 
                         #region Updating Layout Name
-                         IncrementProgressBar(1, "Updating layout names.");
+                        IncrementProgressBar(1, "Updating layout names.");
                         foreach (PLMObject objplmo in objController.plmObjs)
                         {
                             // CloseProgressBar();
@@ -767,20 +772,20 @@ namespace RBAutocadPlugIn.UI_Forms
                                 }
                                 if (Convert.ToString(dr["LayoutID"]).Trim().Length == 0)
                                 {
-                                    string Sufix = "_" +string.Format("{0:00}", Count) + "_" + objplmo.ObjectNumber;
+                                    string Sufix = "_" + string.Format("{0:00}", Count) + "_" + objplmo.ObjectNumber;
                                     string NewLayoutName = Convert.ToString(dr["LayoutName1"]).Trim();
-                                     cadManager.renamelayoutName(objplmo.FilePath, Convert.ToString(dr["FileLayoutName"]).Trim().Replace(Sufix, ""), NewLayoutName);
+                                    cadManager.renamelayoutName(objplmo.FilePath, Convert.ToString(dr["FileLayoutName"]).Trim().Replace(Sufix, ""), NewLayoutName);
                                 }
                             }
 
                         }
                         #endregion
-                         IncrementProgressBar(1, "Updating file names.");
+                        IncrementProgressBar(1, "Updating file names.");
                         // CloseProgressBar();
 
-                         cadManager.UpdateExRefFileName(objCmd.FilePath, objCmd.FilePath, ref objController.plmObjs);
+                        cadManager.UpdateExRefFileName(objCmd.FilePath, objCmd.FilePath, ref objController.plmObjs);
 
-                         IncrementProgressBar(1, "Uploading file to redbracket.");
+                        IncrementProgressBar(1, "Uploading file to redbracket.");
 
 
                         // save File in RB
@@ -795,14 +800,14 @@ namespace RBAutocadPlugIn.UI_Forms
 
                     if (Is_Save && IsSaveAs)
                     {
-                         IncrementProgressBar(1, "Deleting old files.");
+                        IncrementProgressBar(1, "Deleting old files.");
                         File.Delete(objController.plmObjs[0].Oldfilepath);
                         DeleteFile(currentTreeGrdiNode, objController.plmObjs, true);
                     }
                     // To delete file
                     if (Is_Delete && Is_Save)
                     {
-                         IncrementProgressBar(1, "Deleting local files.");
+                        IncrementProgressBar(1, "Deleting local files.");
                         File.Delete(objController.plmObjs[0].Oldfilepath);
                         File.Delete(objController.plmObjs[0].FilePath);
                         DeleteFile(currentTreeGrdiNode, objController.plmObjs, false);
@@ -810,31 +815,31 @@ namespace RBAutocadPlugIn.UI_Forms
 
                     }
                 }
-                 IncrementProgressBar(PBValue, "");
+                IncrementProgressBar(PBValue, "");
                 this.Cursor = Cursors.Default;
                 if (Is_Save)
                 {
-                     CloseProgressBar();
-                     InfoMess("Save operation successfully completed.");
-                    this.Close();  CheckFileInfoFlag = true;
+                    CloseProgressBar();
+                    InfoMess("Save operation successfully completed.");
+                    this.Close(); CheckFileInfoFlag = true;
                     return;
                 }
                 else
                 {
-                     CloseProgressBar();
-                     ErrorMessUD("Save operation unsuccessfully completed.");  CheckFileInfoFlag = true;
+                    CloseProgressBar();
+                    ErrorMessUD("Save operation unsuccessfully completed."); CheckFileInfoFlag = true;
                     return;
                 }
 
             }
             catch (Exception ex)
             {
-                 CloseProgressBar();
-                 ErrorMess(ex.Message);
+                CloseProgressBar();
+                ErrorMess(ex.Message);
                 this.Cursor = Cursors.Default;
             }
             this.Cursor = Cursors.Default;
-             CheckFileInfoFlag = true;
+            CheckFileInfoFlag = true;
         }
 
 
@@ -854,7 +859,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return true;
+                ErrorMess(E.Message); return true;
             }
             return false;
         }
@@ -885,7 +890,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return true;
+                ErrorMess(E.Message); return true;
             }
             return false;
         }
@@ -917,7 +922,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return true;
+                ErrorMess(E.Message); return true;
             }
             return false;
         }
@@ -929,33 +934,33 @@ namespace RBAutocadPlugIn.UI_Forms
                 //File name and layout out name length validation
                 for (int i = 0; i < dtLayoutInfo.Rows.Count; i++)
                 {
-                    string FN =  RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
+                    string FN = RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
                     string LN = Convert.ToString(dtLayoutInfo.Rows[i]["FileLayoutName"]);
 
                     if (Convert.ToString(dtLayoutInfo.Rows[i]["IsFile"]) == "1")
                     {
-                        if (FN.Length <  FileLayoutNameLength)
+                        if (FN.Length < FileLayoutNameLength)
                         {
 
                         }
                         else
                         {
-                             ErrorMessUD(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File name length exceeds maximum limit.");
+                            ErrorMessUD(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File name length exceeds maximum limit.");
                             this.Cursor = Cursors.Default;
                             return true;
                         }
                     }
                     else
                     {
-                        if ( FileNameCheckForSpecialCharacter(LN))
+                        if (FileNameCheckForSpecialCharacter(LN))
                         {
-                            if (LN.Length <  FileLayoutNameLength)
+                            if (LN.Length < FileLayoutNameLength)
                             {
 
                             }
                             else
                             {
-                                 ErrorMessUD(LN + "\n Layout name length exceeds maximum limit. of file " + Environment.NewLine + FN);
+                                ErrorMessUD(LN + "\n Layout name length exceeds maximum limit. of file " + Environment.NewLine + FN);
                                 this.Cursor = Cursors.Default;
                                 return true;
                             }
@@ -970,7 +975,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return true;
+                ErrorMess(E.Message); return true;
             }
             return false;
         }
@@ -1001,7 +1006,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return true;
+                ErrorMess(E.Message); return true;
             }
             return false;
         }
@@ -1031,7 +1036,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return true;
+                ErrorMess(E.Message); return true;
             }
             return false;
         }
@@ -1051,7 +1056,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public string GetProjectID(TreeGridNode ParentNode)
@@ -1066,7 +1071,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return ProjectID;
         }
@@ -1082,7 +1087,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return ProjectNo;
         }
@@ -1098,7 +1103,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return ProjectName;
         }
@@ -1114,7 +1119,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return ProjectNameNo;
         }
@@ -1127,24 +1132,24 @@ namespace RBAutocadPlugIn.UI_Forms
 
                     ProjectID = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
-                    ProjectNameNo =  FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "PNAMENO");
-                    ProjectName =  FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "name");
-                    ProjectNo =  FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "number");
+                    ProjectNameNo = FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "PNAMENO");
+                    ProjectName = FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "name");
+                    ProjectNo = FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "number");
 
                 }
                 catch
                 {
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
 
-                    ProjectID =  FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                    ProjectNameNo =  FindIDInCMB((System.Data.DataTable)c.DataSource, "PNAMENO", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                    ProjectName =  FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                    ProjectNo =  FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    ProjectID = FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    ProjectNameNo = FindIDInCMB((System.Data.DataTable)c.DataSource, "PNAMENO", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    ProjectName = FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    ProjectNo = FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
                 }
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public string GetFileStatus(TreeGridNode selectedTreeNode, bool IsOld = false)
@@ -1160,7 +1165,7 @@ namespace RBAutocadPlugIn.UI_Forms
                 {
                     decimal d = Convert.ToDecimal(selectedTreeNode.Cells[CN].Value);
                     //FileStatus = Convert.ToString(selectedTreeNode.Cells["State"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["State"].Value));
-                    FileStatus =  FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
+                    FileStatus = FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells[CN].Value), "statusname");
                 }
                 catch
                 {
@@ -1171,7 +1176,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return FileStatus;
         }
@@ -1188,7 +1193,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return null;
         }
@@ -1204,7 +1209,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return null;
         }
@@ -1219,7 +1224,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
 
         }
@@ -1234,7 +1239,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
 
         }
@@ -1288,7 +1293,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public bool FileNameDuplicationCheck(TreeGridNode currentTreeGrdiNode)
@@ -1302,9 +1307,9 @@ namespace RBAutocadPlugIn.UI_Forms
                 {
                     if (File.Exists(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()))
                     {
-                        string FN =  RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
+                        string FN = RemovePreFixFromFileName(Path.GetFileName(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim()), Convert.ToString(currentTreeGrdiNode.Cells["prefix"].Value).Trim());
 
-                        if ( FileNameCheckForSpecialCharacter(FN))
+                        if (FileNameCheckForSpecialCharacter(FN))
                         {
                             if (!objRBC.CheckFileExistance(MyProjectId, FN))
                             {
@@ -1321,7 +1326,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                         ErrorMessUD(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File does not exists.");
+                        ErrorMessUD(Convert.ToString(currentTreeGrdiNode.Cells["filepath"].Value).Trim() + "\n File does not exists.");
                         this.Cursor = Cursors.Default;
                         return true;
                     }
@@ -1330,7 +1335,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return true;
+                ErrorMess(E.Message); return true;
             }
         }
 
@@ -1371,7 +1376,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public void CloseFile(TreeGridNode ParentNode)
@@ -1383,7 +1388,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     if ((bool)childNode.Cells["Check"].FormattedValue)
                     {
 
-                         cadManager.ChecknCloseOpenedDoc(Convert.ToString(childNode.Cells["filepath"].Value));
+                        cadManager.ChecknCloseOpenedDoc(Convert.ToString(childNode.Cells["filepath"].Value));
 
                         CloseFile(childNode);
                     }
@@ -1391,7 +1396,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
 
@@ -1425,7 +1430,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     if (selectedTreeNode.Cells["lockstatus"].Value.ToString() == "0")
                     {
 
-                        if (! objRBC.LockObject(new List<PLMObject> { new PLMObject() { ObjectId = Convert.ToString(selectedTreeNode.Cells["drawingID"].Value) } }))
+                        if (!objRBC.LockObject(new List<PLMObject> { new PLMObject() { ObjectId = Convert.ToString(selectedTreeNode.Cells["drawingID"].Value) } }))
                         {
                             selectedTreeNode.ImageIndex = 0;
                             selectedTreeNode.Cells["lockstatus"].Value = "1";
@@ -1435,7 +1440,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
                         selectedTreeNode.Cells["Check"].Value = false;
                         savetreeGrid.RefreshEdit();
-                         ErrorMessUD("This drawing is locked by other user.");
+                        ErrorMessUD("This drawing is locked by other user.");
 
                         return;
                     }
@@ -1451,7 +1456,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                             if (!Convert.ToBoolean(selectedTreeNode.Cells["isletest"].Value))
                             {
-                                if ( ValMessYN("This file is not latest file, Do you want to upload it anyway ?.") == DialogResult.Yes)
+                                if (ValMessYN("This file is not latest file, Do you want to upload it anyway ?.") == DialogResult.Yes)
                                 {
 
                                 }
@@ -1463,7 +1468,7 @@ namespace RBAutocadPlugIn.UI_Forms
                             }
                             if (Convert.ToBoolean(selectedTreeNode.Cells["hasStatusClosed"].Value))
                             {
-                                if ( ValMessYN("This file is closed, Do you want to make new revision ?.") == DialogResult.Yes)
+                                if (ValMessYN("This file is closed, Do you want to make new revision ?.") == DialogResult.Yes)
                                 {
 
                                 }
@@ -1481,7 +1486,7 @@ namespace RBAutocadPlugIn.UI_Forms
                             {
                                 if (!Convert.ToBoolean(selectedTreeNode.Cells["isEditable"].Value))
                                 {
-                                     InfoMess("This file is not editable. so you can not save it.");
+                                    InfoMess("This file is not editable. so you can not save it.");
                                     selectedTreeNode.Cells["check"].Value = false;
                                     savetreeGrid.RefreshEdit();
                                     return;
@@ -1491,7 +1496,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                         }
                         //if (Convert.ToString(selectedTreeNode.Cells["isroot"].Value) == "1")
-                        if(!selectedTreeNode.Cells["check"].ReadOnly)
+                        if (!selectedTreeNode.Cells["check"].ReadOnly)
                         {
                             FillLayoutInfoFromUser(selectedTreeNode);
                         }
@@ -1515,7 +1520,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         FolderID = FolderID == string.Empty || FolderID == "0" || FolderID == "-1" ? "0" : FolderID;
                         ProjectName = ProjectName == string.Empty ? "My Files" : ProjectName;
                         Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult1 = GetStackFolderSearchReasultFromTag(selectedTreeNode);
-                        Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult =  CopyStack(StackFolderSearchReasult1);
+                        Stack<List<clsFolderSearchReasult>> StackFolderSearchReasult = CopyStack(StackFolderSearchReasult1);
                         if (StackFolderSearchReasult.Count == 0)
                         {
                             List<clsFolderSearchReasult> objFolderSearchResult1 = objRBC.SearchFolder(MyProjectId, "0");
@@ -1528,7 +1533,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                             if (objFolderSearchResult == null)
                             {
-                                 InfoMess("No folder found inside project " + ProjectName); return;
+                                InfoMess("No folder found inside project " + ProjectName); return;
                             }
                             else
                             {
@@ -1540,7 +1545,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         }
 
                         Stack<List<clsFolderSearchReasult>> TStackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
-                        TStackFolderSearchReasult =  CopyStack(StackFolderSearchReasult);
+                        TStackFolderSearchReasult = CopyStack(StackFolderSearchReasult);
 
 
                         frmFolderSelection objFolderSelection = new frmFolderSelection(FolderID, MyProjectId, StackFolderSearchReasult, FolderPath);
@@ -1581,7 +1586,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
 
         }
@@ -1640,7 +1645,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public void AssignFolderPath(TreeGridNode ParentNode, TreeGridNode CurrentNode, frmFolderSelection objFolderSelection)
@@ -1660,7 +1665,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public void ChangeNodeTagValue(TreeGridNode ParentNode, TreeGridNode CurrentNode, DataTable dtLayoutInfo)
@@ -1679,7 +1684,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public void ChangeNodeValue(TreeGridNode ParentNode, TreeGridNode CurrentNode)
@@ -1710,10 +1715,10 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
-        public void GenFileInfo(TreeGridNode tgnParent)
+        public bool GenFileInfo(TreeGridNode tgnParent)
         {
             try
             {
@@ -1722,14 +1727,18 @@ namespace RBAutocadPlugIn.UI_Forms
                 {
                     if ((bool)tgnChild.Cells["Check"].Value)
                     {
-                        GenFileInfoDT(tgnChild);
-                        GenFileInfo(tgnChild);
+                        if (GenFileInfoDT(tgnChild))
+                            GenFileInfo(tgnChild);
+                        else
+                            return false;
                     }
                 }
+                return true;
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
+                return false;
             }
         }
         public bool CheckFileExistance(TreeGridNode tgnParent)
@@ -1758,7 +1767,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return false;
+                ErrorMess(E.Message); return false;
             }
             return true;
         }
@@ -1770,9 +1779,9 @@ namespace RBAutocadPlugIn.UI_Forms
                 string FP = Convert.ToString(CurrentNode.Cells["filepath"].Value);
                 if (ObjectId.Trim().Length > 0)
                 {
-                    if (! objRBC.CheckFileExistance(ObjectId))
+                    if (!objRBC.CheckFileExistance(ObjectId))
                     {
-                        if ( InfoYNMess("Following file no longer exist on server. do you want to update it as new ?") == DialogResult.No)
+                        if (InfoYNMess("Following file no longer exist on server. do you want to update it as new ?") == DialogResult.No)
                         {
                             return false;
                         }
@@ -1785,11 +1794,11 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return false;
+                ErrorMess(E.Message); return false;
             }
             return true;
         }
-        public void GenFileInfoDT(TreeGridNode selectedTreeNode)
+        public bool GenFileInfoDT(TreeGridNode selectedTreeNode)
         {
             try
             {
@@ -1828,8 +1837,8 @@ namespace RBAutocadPlugIn.UI_Forms
 
                     MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["projectname"];
-                    MyProjectNo =  FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "number");
-                    MyProjectName =  FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "name");
+                    MyProjectNo = FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "number");
+                    MyProjectName = FindValueInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value)), "name");
                 }
                 catch
                 {
@@ -1837,9 +1846,9 @@ namespace RBAutocadPlugIn.UI_Forms
 
                     //c.Value =  FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "name");
                     //MyProjectId = Convert.ToString(selectedTreeNode.Cells["projectname"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["projectname"].Value));
-                    MyProjectId =  FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                    MyProjectNo =  FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
-                    MyProjectName =  FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    MyProjectId = FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    MyProjectNo = FindIDInCMB((System.Data.DataTable)c.DataSource, "number", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
+                    MyProjectName = FindIDInCMB((System.Data.DataTable)c.DataSource, "name", Convert.ToString(selectedTreeNode.Cells["projectname"].Value), "PNAMENO");
                 }
 
                 try
@@ -1854,7 +1863,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     FileType = Convert.ToString(c.Value);
                     // c.Value =  FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["cadtype"].Value), "name");
                     //FileTypeID = Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
-                    FileTypeID =  FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["cadtype"].Value), "name");
+                    FileTypeID = FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["cadtype"].Value), "name");
                 }
                 try
                 {
@@ -1866,7 +1875,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     DataGridViewComboBoxCell c = (DataGridViewComboBoxCell)selectedTreeNode.Cells["State"];
                     //c.Value =  FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
                     //FileTypeID = Convert.ToString(selectedTreeNode.Cells["cadtype"].Value) == string.Empty ? "0" : Convert.ToString(Convert.ToDecimal(selectedTreeNode.Cells["cadtype"].Value));
-                    FileStatusID =  FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
+                    FileStatusID = FindIDInCMB((System.Data.DataTable)c.DataSource, "id", Convert.ToString(selectedTreeNode.Cells["State"].Value), "statusname");
                 }
 
                 if (MyProjectId == "0" || MyProjectId == "-1")
@@ -1900,18 +1909,27 @@ namespace RBAutocadPlugIn.UI_Forms
                 AllDrawing.Add(DI);
                 try
                 {
-                    htAllDrawing.Add(selectedTreeNode.Cells["filepath"].Value, DI);
+                    if (Path.GetExtension(Convert.ToString(selectedTreeNode.Cells["filepath"].Value)).Length > 0)
+                    {
+                        htAllDrawing.Add(selectedTreeNode.Cells["filepath"].Value, DI);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
                 }
                 catch
                 {
 
                 }
 
-
+                return true;
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
+                return false;
             }
         }
 
@@ -1928,7 +1946,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         public void AssignLayoutInfo1(TreeGridNode CurrentNode)
@@ -1958,7 +1976,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
         private void Save_Active_Drawings_Resize(object sender, EventArgs e)
@@ -2003,7 +2021,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         {
                             if (!Convert.ToBoolean(selectedTreeNode.Cells["canEditStatus"].Value))
                             {
-                                 InfoMess("You dont have permission to change status of this file.");
+                                InfoMess("You dont have permission to change status of this file.");
                             }
                         }
 
@@ -2012,7 +2030,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
 
@@ -2075,7 +2093,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
 
@@ -2103,7 +2121,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message); return false;
+                ErrorMess(E.Message); return false;
             }
             return true;
         }
@@ -2160,7 +2178,7 @@ namespace RBAutocadPlugIn.UI_Forms
                 }
                 else if (OldStatusTypeClosed && !NewStatusTypeCLosed)
                 {
-                    if ( ValMessYN(FileName + "Changing file status from '" + GetFileStatus(selectedTreeNode, true) + "' to '" + GetFileStatus(selectedTreeNode) + "' will lead to creation of new revision, \n Do you want to proceeds anyway ?") == DialogResult.No)
+                    if (ValMessYN(FileName + "Changing file status from '" + GetFileStatus(selectedTreeNode, true) + "' to '" + GetFileStatus(selectedTreeNode) + "' will lead to creation of new revision, \n Do you want to proceeds anyway ?") == DialogResult.No)
                     {
                         selectedTreeNode.Cells["State"].Value = selectedTreeNode.Cells["OldState"].Value;
                     }
@@ -2174,7 +2192,7 @@ namespace RBAutocadPlugIn.UI_Forms
                 {
                     if (!IsAllLayoutClose(selectedTreeNode))
                     {
-                         ValMess("You can not change status to '" + GetFileStatus(selectedTreeNode) + "' unless all layouts are in Close state.");
+                        ValMess("You can not change status to '" + GetFileStatus(selectedTreeNode) + "' unless all layouts are in Close state.");
 
 
                         selectedTreeNode.Cells["State"].Value = selectedTreeNode.Cells["OldState"].Value;
@@ -2195,7 +2213,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             LoadFlag = false;
             return true;
@@ -2240,7 +2258,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return false;
         }
@@ -2272,7 +2290,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
             return false;
         }
@@ -2289,7 +2307,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
 
@@ -2347,7 +2365,7 @@ namespace RBAutocadPlugIn.UI_Forms
             }
             catch (Exception E)
             {
-                 ErrorMess(E.Message);
+                ErrorMess(E.Message);
             }
         }
 

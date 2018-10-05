@@ -245,23 +245,27 @@ namespace RBAutocadPlugIn
 
                 System.Data.DataTable dtDrawing = Helper.cadManager.GetDrawingAttributes(Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.Filename);
 
-                if (dtDrawing.Rows.Count > 0)
+                if(dtDrawing !=null)
                 {
-                    drawingid = Convert.ToString(dtDrawing.Rows[0]["DrawingId"]);
-                    Rev = Convert.ToString(dtDrawing.Rows[0]["revision"]);
-                    DrawingNO = Convert.ToString(dtDrawing.Rows[0]["DrawingNumber"]);
+                    if (dtDrawing.Rows.Count > 0)
+                    {
+                        drawingid = Convert.ToString(dtDrawing.Rows[0]["DrawingId"]);
+                        Rev = Convert.ToString(dtDrawing.Rows[0]["revision"]);
+                        DrawingNO = Convert.ToString(dtDrawing.Rows[0]["DrawingNumber"]);
 
-                    Helper.CurrentVersion = CurrentVersion = Helper.VerTextAdjustment(Rev);
-                    Helper.LatestVersion = LatestVersion = Helper.GetLatestVersion(DrawingNO);
-                }
+                        Helper.CurrentVersion = CurrentVersion = Helper.VerTextAdjustment(Rev);
+                        Helper.LatestVersion = LatestVersion = Helper.GetLatestVersion(DrawingNO);
+                    }
 
-                if (drawingid.Trim().Length == 0)
-                {
-                    //write code to hide current drawing information panel.
-                    Helper.CurrentVersion = "";
-                    Helper.LatestVersion = "";
-                    return;
+                    if (drawingid.Trim().Length == 0)
+                    {
+                        //write code to hide current drawing information panel.
+                        Helper.CurrentVersion = "";
+                        Helper.LatestVersion = "";
+                        return;
+                    }
                 }
+               
 
 
             }

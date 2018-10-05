@@ -13,6 +13,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using AdvancedDataGridView;
 using System.Diagnostics;
+using RestSharp;
 
 namespace RBAutocadPlugIn
 {
@@ -162,7 +163,7 @@ namespace RBAutocadPlugIn
                 registryKey = registryKey.OpenSubKey(subKeyName, true);
 
                 if (registryKey != null)
-                {
+                {                    
                     return registryKey.GetValue(keyName);
                 }
             }
@@ -1756,15 +1757,57 @@ namespace RBAutocadPlugIn
             try
             {
 
-                string LogLocation = Path.Combine(Path.GetPathRoot(Application.StartupPath), "RBACC ErrorLog");
+                string LogLocation = Path.Combine(Path.GetPathRoot(Application.StartupPath), "RBACC Logs");
                 if (!Directory.Exists(LogLocation))
                 {
                     Directory.CreateDirectory(LogLocation);
                 }
 
-                File.AppendAllText(LogLocation + "\\ErrorLog" + DateTime.Now.ToString(DateFormat) + ".txt", Environment.NewLine + Environment.NewLine + ">>" + DateTime.Now.ToString(DateTimeFormat) + "   " + UserName + Environment.NewLine + Environment.NewLine + ErrorText);
+                File.AppendAllText(LogLocation + "\\ErrorLog_" + DateTime.Now.ToString(DateFormat) + ".txt", Environment.NewLine + Environment.NewLine + ">>" + DateTime.Now.ToString(DateTimeFormat) + "   " + UserName + Environment.NewLine + Environment.NewLine + ErrorText);
 
                 return true;
+            }
+            catch (Exception E)
+            {
+                //ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+
+        }
+
+        //public static bool LogServiceCall(string Text)
+        public static bool LogServiceCall(IRestResponse restRequest, string servicename)
+        {
+
+
+            try
+            {
+                string ServiceLog = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "IsServiceLog"));
+                if(ServiceLog !=null && ServiceLog == "1")
+                {
+                    servicename = servicename.Substring(servicename.Contains("/") ? servicename.LastIndexOf("/") + 1 : 0);
+                    if (servicename.Contains("?"))
+                        servicename = servicename.Substring(0, servicename.IndexOf("?"));
+                    string Text = restRequest.ResponseUri + Environment.NewLine + Environment.NewLine + restRequest.Content + Environment.NewLine + Environment.NewLine + restRequest.ErrorMessage;
+                    Text = Environment.NewLine + Environment.NewLine + ">>" + DateTime.Now.ToString(DateTimeFormat) + "   " + UserName + Environment.NewLine + Environment.NewLine + Text;
+                    Text = Convert.ToBase64String(Encoding.ASCII.GetBytes(Text));
+                    string LogLocation = Path.Combine(Path.GetPathRoot(Application.StartupPath), "RBACC Logs");
+                    if (!Directory.Exists(LogLocation))
+                    {
+                        Directory.CreateDirectory(LogLocation);
+                    }
+
+                    servicename = "";
+
+                    //File.AppendAllText(LogLocation + "\\ServiceCall_" + servicename + "_" + DateTime.Now.ToString("ddMMMyyhhmmsstt") + ".txt", Text );
+                    File.AppendAllText(LogLocation + "\\ServiceCallLog_" + DateTime.Now.ToString("ddMMMyy") + ".txt", Text + " ");
+                    //File.WriteAllBytes(LogLocation + "\\ServiceCall_" + DateTime.Now.ToString(DateTimeFormat.Replace(":","")) + ".txt", Encoding.ASCII.GetBytes(Convert.ToBase64String(Encoding.ASCII.GetBytes(Text))));
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception E)
             {
