@@ -1,9 +1,0 @@
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\bin\Debug\CryptoGraphy.exe
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\bin\Debug\CryptoGraphy.pdb
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\obj\Debug\CryptoGraphy.csprojAssemblyReference.cache
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\obj\Debug\CryptoGraphy.Dycript.resources
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\obj\Debug\CryptoGraphy.Properties.Resources.resources
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\obj\Debug\CryptoGraphy.csproj.GenerateResource.cache
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\obj\Debug\CryptoGraphy.csproj.CoreCompileInputs.cache
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\obj\Debug\CryptoGraphy.exe
-F:\Work\SourceControl\AutoCADIntegration\CryptoGraphy\obj\Debug\CryptoGraphy.pdb

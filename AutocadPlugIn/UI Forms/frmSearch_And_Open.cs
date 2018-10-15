@@ -89,6 +89,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
+
             treeGridView1.Nodes.Clear();
             this.Cursor = Cursors.WaitCursor;
 

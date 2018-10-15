@@ -386,10 +386,13 @@ namespace RBAutocadPlugIn
                         {
                             try
                             {
+                                Helper.CheckFileInfoFlag = false;
                                 ACAPP.DocumentManager.MdiActiveDocument.CloseAndSave(FilePath);
+                                Helper.CheckFileInfoFlag = true;
                             }
                             catch
                             {
+                                Helper.CheckFileInfoFlag = true;
                                 //doc.CloseAndSave(FilePath);
                             }
                         }

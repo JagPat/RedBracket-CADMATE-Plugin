@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using System.Collections;
 
 namespace RBAutocadPlugIn
 {
@@ -40,12 +41,12 @@ namespace RBAutocadPlugIn
         public RibbonPanel rpFileOperations = new RibbonPanel();
         public RibbonPanelSource rpsFileOperations = new RibbonPanelSource();
 
-        public RibbonButton rbBrowseDrawing = new RibbonButton();  
+        public RibbonButton rbBrowseDrawing = new RibbonButton();
 
         public RibbonPanelSource rpsSave = new RibbonPanelSource();
         public RibbonPanel rpSave = new RibbonPanel();
 
-    
+
         public RibbonButton rbLockUnlock = new RibbonButton();
         public RibbonButton rbSave = new RibbonButton();
         public RibbonButton rbSaveAS = new RibbonButton();
@@ -60,10 +61,10 @@ namespace RBAutocadPlugIn
         public RibbonPanelSource rpsSetting = new RibbonPanelSource();
 
         public RibbonButton rbSetting = new RibbonButton();
-  
+
         public RibbonButton rbDrawingInfo = new RibbonButton();
 
-      
+
         public RibbonButton rbRefresh = new RibbonButton();
 
         public RibbonPanel rpCurrentDI = new RibbonPanel();
@@ -245,7 +246,7 @@ namespace RBAutocadPlugIn
 
                 System.Data.DataTable dtDrawing = Helper.cadManager.GetDrawingAttributes(Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database.Filename);
 
-                if(dtDrawing !=null)
+                if (dtDrawing != null)
                 {
                     if (dtDrawing.Rows.Count > 0)
                     {
@@ -265,7 +266,7 @@ namespace RBAutocadPlugIn
                         return;
                     }
                 }
-               
+
 
 
             }
@@ -289,7 +290,7 @@ namespace RBAutocadPlugIn
                 rpMain = new RibbonPanel();
 
                 rpFileOperations = new RibbonPanel();
-                rpsFileOperations = new RibbonPanelSource(); 
+                rpsFileOperations = new RibbonPanelSource();
 
                 rpsSave = new RibbonPanelSource();
                 rpSave = new RibbonPanel();
@@ -298,7 +299,7 @@ namespace RBAutocadPlugIn
                 rpsHelpnAbout = new RibbonPanelSource();
 
                 rpSetting = new RibbonPanel();
-                rpsSetting = new RibbonPanelSource(); 
+                rpsSetting = new RibbonPanelSource();
 
                 rpCurrentDI = new RibbonPanel();
                 rpsCurrentDI = new RibbonPanelSource();
@@ -556,7 +557,7 @@ namespace RBAutocadPlugIn
                 pan6row1.Items.Add(rbSetting);
                 rpsSetting.Items.Add(pan6row1);
 
-                 
+
 
                 rbRefresh.Text = "Refresh";
                 rbRefresh.ShowText = true;
@@ -825,7 +826,7 @@ namespace RBAutocadPlugIn
 
             if (!File.Exists(doc.Name))
             {
-                ShowMessage.ErrorMessUD("Please Save Document on Local Computer" );
+                ShowMessage.ErrorMessUD("Please Save Document on Local Computer");
                 return;
             }
             try
@@ -895,7 +896,7 @@ namespace RBAutocadPlugIn
 
         public void Execute(object parameter)
         {
-             frmAbout about = new  frmAbout();
+            frmAbout about = new frmAbout();
             about.ShowDialog();
         }
     }
@@ -1059,6 +1060,7 @@ namespace RBAutocadPlugIn
 
         public void Execute(object parameter)
         {
+            Helper.CheckFileInfoFlag = false;
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             Editor ed = doc.Editor;
@@ -1069,7 +1071,7 @@ namespace RBAutocadPlugIn
 
             if (!File.Exists(doc.Name))
             {
-                ShowMessage.ErrorMessUD("Please Save Document on Local Computer" );
+                ShowMessage.ErrorMessUD("Please Save Document on Local Computer"); Helper.CheckFileInfoFlag = true;
                 return;
             }
             try
@@ -1079,43 +1081,29 @@ namespace RBAutocadPlugIn
 
                 Cursor.Current = Cursors.WaitCursor;
 
-                string drawingid = "", updatedon = "",   projectnameOnly = "";
-                string   DrawingNO = "",  Rev = "", PreFix = "";
+                string drawingid = "", updatedon = "", projectnameOnly = "";
+                string DrawingNO = "", Rev = "", PreFix = "";
 
 
 
                 try
                 {
-                    var dbsi = db.SummaryInfo.CustomProperties;
-                    while (dbsi.MoveNext())
+                    
+                    System.Data.DataTable dtDrawing = Helper.cadManager.GetDrawingAttributes(db.Filename);
+                    if (dtDrawing != null)
                     {
-                        if (Convert.ToString(dbsi.Key) == "drawingid")
+                        if (dtDrawing.Rows.Count > 0)
                         {
-                            drawingid = Convert.ToString(dbsi.Value);
-                        }
-                        else if (Convert.ToString(dbsi.Key) == "modifiedon")
-                        {
-                            updatedon = Convert.ToString(dbsi.Value);
-                        }
-                         
-                        else if (Convert.ToString(dbsi.Key) == "drawingnumber")
-                        {
-                            DrawingNO = Convert.ToString(dbsi.Value);
-                        }
-                        
-                        else if (Convert.ToString(dbsi.Key) == "revision")
-                        {
-                            Rev = Convert.ToString(dbsi.Value);
-                        }
-                        else if (Convert.ToString(dbsi.Key) == "projectid")
-                        {
-                            projectnameOnly = Convert.ToString(dbsi.Value);
-                        }
-                        else if (Convert.ToString(dbsi.Key) == "prefix")
-                        {
-                            PreFix = Convert.ToString(dbsi.Value);
+                            drawingid = Convert.ToString(dtDrawing.Rows[0]["DrawingId"]);
+                            Rev = Convert.ToString(dtDrawing.Rows[0]["revision"]);
+                            DrawingNO = Convert.ToString(dtDrawing.Rows[0]["DrawingNumber"]);
+                            updatedon = Convert.ToString(dtDrawing.Rows[0]["modifiedon"]);
+                            projectnameOnly = Convert.ToString(dtDrawing.Rows[0]["projectid"]);
+                            PreFix = Convert.ToString(dtDrawing.Rows[0]["prefix"]);
                         }
                     }
+
+                     
 
 
                 }
@@ -1125,7 +1113,7 @@ namespace RBAutocadPlugIn
                 }
                 if (drawingid.Trim().Length == 0 || updatedon.Trim().Length == 0)
                 {
-                    Cursor.Current = Cursors.Default;
+                    Cursor.Current = Cursors.Default; Helper.CheckFileInfoFlag = true;
                     return;
                 }
 
@@ -1144,18 +1132,10 @@ namespace RBAutocadPlugIn
                 {
                     if (ShowMessage.InfoYNMess("RedBracket has updated version of this file, do you want to download it ?." + Environment.NewLine + "Your changes  in current file will be lost.") == DialogResult.Yes)
                     {
-                        string checkoutPath = Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath").ToString();
-                        string ProjectName = projectnameOnly;
-                        if (ProjectName.Trim().Length == 0)
-                        {
-                            ProjectName = "MyFiles";
-                        }
-                        checkoutPath = Path.Combine(checkoutPath, ProjectName);
-                        if (!Directory.Exists(checkoutPath))
-                        {
-                            Directory.CreateDirectory(checkoutPath);
-                        }
-
+                        string checkoutPath = "";
+                      
+                       
+                        checkoutPath= Helper.GetCheckoutDirectory(projectnameOnly);
                         Helper.cadManager.ChecknCloseOpenedDoc(db.Filename);
 
                         DownloadOpenDocument(Drawing.id, checkoutPath);
@@ -1163,6 +1143,7 @@ namespace RBAutocadPlugIn
                     }
                     else
                     {
+                        Helper.CheckFileInfoFlag = true;
                         return;
                     }
                 }
@@ -1187,6 +1168,7 @@ namespace RBAutocadPlugIn
                 ed.WriteMessage("\nProblem reading/processing CAD File\"{0}\": {1}", doc.Name, ex.Message);
             }
             Cursor.Current = Cursors.Default;
+            Helper.CheckFileInfoFlag = true;
         }
 
 
@@ -1202,7 +1184,7 @@ namespace RBAutocadPlugIn
                     Helper.DownloadFile(obj.id);
                 }
 
-                Helper.DownloadFile(fileId);
+                Helper.DownloadFile(fileId, "true");
 
             }
             catch (System.Exception E)
@@ -1233,7 +1215,7 @@ namespace RBAutocadPlugIn
             }
             return null;
 
-           
+
         }
     }
 

@@ -804,6 +804,10 @@ namespace RBAutocadPlugIn.UI_Forms
                         File.Delete(objController.plmObjs[0].Oldfilepath);
                         DeleteFile(currentTreeGrdiNode, objController.plmObjs, true);
                     }
+                    if (!Is_Save)
+                    {
+                        //DeleteFileFromDB(objController.plmObjs);
+                    }
                     // To delete file
                     if (Is_Delete && Is_Save)
                     {
@@ -1372,6 +1376,31 @@ namespace RBAutocadPlugIn.UI_Forms
                         DeleteFile(childNode, plmObjs, IsSaveAs);
                     }
                 }
+
+            }
+            catch (Exception E)
+            {
+                ErrorMess(E.Message);
+            }
+        }
+        public void DeleteFileFromDB(List<PLMObject> plmObjs)
+        {
+            try
+            {
+
+
+                foreach (PLMObject obj in plmObjs)
+                {
+                    if (obj.PK.Length > 0)
+                    {
+
+                        if (!objRBC.DeleteFileNLayoutDetail(obj.PK))
+                            break; 
+                    }
+                }
+
+
+
 
             }
             catch (Exception E)

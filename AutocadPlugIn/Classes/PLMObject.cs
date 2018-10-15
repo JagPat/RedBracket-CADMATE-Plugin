@@ -263,7 +263,8 @@ namespace RBAutocadPlugIn
         public String projectManager { get; set; }
         public String originalFileID { get; set; }
         public String TempFilePath { get; set; }
-
+        public bool IsFileSaveSuccessfulPK { get; set; }
+        public bool IsFileSaveSuccessfulFK { get; set; }
         public List<Relationship> FromRelationships
         {
             get { return this.fromRelationships; }

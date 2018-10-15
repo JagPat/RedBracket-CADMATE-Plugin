@@ -163,7 +163,7 @@ namespace RBAutocadPlugIn
                 registryKey = registryKey.OpenSubKey(subKeyName, true);
 
                 if (registryKey != null)
-                {                    
+                {
                     return registryKey.GetValue(keyName);
                 }
             }
@@ -960,8 +960,8 @@ namespace RBAutocadPlugIn
             {
                 ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(FileID);
 
-
-                string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), IsTemp ? "Temp" : Drawing.projectname == null || Drawing.projectname == string.Empty ? "My Files" : Drawing.projectname);
+                string checkoutPath =Helper.GetCheckoutDirectory(Drawing.projectname);
+               //string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), IsTemp ? "Temp" : Drawing.projectname == null || Drawing.projectname == string.Empty ? "My Files" : Drawing.projectname);
                 DirectoryInfo di = new DirectoryInfo(checkoutPath);
                 di = Directory.Exists(checkoutPath) ? di : Directory.CreateDirectory(checkoutPath);
                 string PreFix = Helper.GetPreFix(Drawing.versionno, Drawing.projectNumber, Drawing.fileNo, Drawing.type == null ? string.Empty : Drawing.type.name == null ? string.Empty : Drawing.type.name);
@@ -1085,11 +1085,26 @@ namespace RBAutocadPlugIn
                 }
                 else
                 {
+
                     if (!IsTemp)
                     {
                         cadManager.SetAttributesXrefFiles(DrawingProperty, FilePath);
                         cadManager.UpdateLayoutAttributeXrefFile(DrawingProperty, FilePath, false);
                     }
+                }
+
+                System.Data.DataTable dtDrawing1 = Helper.cadManager.GetDrawingAttributes(FilePath);
+                string drawingid = string.Empty;
+                if (dtDrawing1 != null)
+                {
+                    if (dtDrawing1.Rows.Count > 0)
+                    {
+                        drawingid = Convert.ToString(dtDrawing1.Rows[0]["DrawingId"]);
+                    }
+                }
+                if(drawingid.Length==0)
+                {
+                    ShowMessage.ErrorMessUD("File has error in custom properties, please download again.");
                 }
             }
             catch (Exception E)
@@ -1783,7 +1798,7 @@ namespace RBAutocadPlugIn
             try
             {
                 string ServiceLog = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "IsServiceLog"));
-                if(ServiceLog !=null && ServiceLog == "1")
+                if (ServiceLog != null && ServiceLog == "1")
                 {
                     servicename = servicename.Substring(servicename.Contains("/") ? servicename.LastIndexOf("/") + 1 : 0);
                     if (servicename.Contains("?"))

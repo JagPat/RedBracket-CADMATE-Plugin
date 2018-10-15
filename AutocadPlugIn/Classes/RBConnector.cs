@@ -29,6 +29,7 @@ namespace RBAutocadPlugIn
                 //}
                 bool IsParentNew = false;
                 string ParentFileID = "";
+
                 foreach (PLMObject obj in plmobjs)
                 {
 
@@ -198,9 +199,31 @@ namespace RBAutocadPlugIn
                     //checking if service call was successful or not.
                     if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
+                        if (IsFileSave)
+                        {
+                            obj.IsFileSaveSuccessfulPK = false;
+                            string PK = "";
+                            foreach (PLMObject obj1 in plmobjs)
+                            {
+                                if (obj1.FilePath == obj.FilePath)
+                                {
+                                    PK = obj1.PK;
+                                    break;
+                                }
+                            }
+                            foreach (PLMObject obj1 in plmobjs)
+                            {
+                                if (PK == obj1.FK)
+                                {
+                                    obj1.IsFileSaveSuccessfulPK = false;
+                                }
+                            }
+                            DeleteFileNLayoutDetail(obj.PK);
+                        }
                         //ShowMessage.InfoMess(restResponse.Content);
                         //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
                         ShowMessage.ErrorMess("Some error occurred while uploading file.", restResponse);
+
                         return false;
                     }
                     else if (restResponse.Content.Trim().Length > 0)
@@ -278,6 +301,8 @@ namespace RBAutocadPlugIn
 
                                     if (!IsFileSave)
                                     {
+
+
                                         obj.ObjectNumber = Drawing.fileNo == null ? string.Empty : Drawing.fileNo;
                                         //Helper.IncrementProgressBar(1, "Uploading layout properties." + Path.GetFileNameWithoutExtension(obj.FilePath));
                                         List<LayoutInfo> LayoutInfolst = SaveUpdateLayoutInfo(obj.dtLayoutInfo, obj.ObjectProjectId, obj.ObjectId, obj.ObjectNumber, obj.FilePath);
@@ -312,7 +337,27 @@ namespace RBAutocadPlugIn
                                         obj.originalFileID = Drawing.originalFileId;
                                         obj.LayoutInfo = Helper.GetLayoutInfo(LayoutInfolst);
                                     }
+                                    else
+                                    {
+                                        obj.IsFileSaveSuccessfulPK = true;
 
+                                        string PK = "";
+                                        foreach (PLMObject obj1 in plmobjs)
+                                        {
+                                            if (obj1.FilePath == obj.FilePath)
+                                            {
+                                                PK = obj1.PK;
+                                                break;
+                                            }
+                                        }
+                                        foreach (PLMObject obj1 in plmobjs)
+                                        {
+                                            if (PK == obj1.FK)
+                                            {
+                                                obj1.IsFileSaveSuccessfulPK = true;
+                                            }
+                                        }
+                                    }
 
 
 
@@ -335,7 +380,7 @@ namespace RBAutocadPlugIn
 
                 }
                 //if (IsFileSave)
-                    UnlockObject(plmobjs);
+                UnlockObject(plmobjs);
                 return true;
             }
             catch (Exception E)
@@ -354,6 +399,7 @@ namespace RBAutocadPlugIn
                 {
                     return false;
                 }
+
                 List<KeyValuePair<string, string>> keyValuePairs = new List<KeyValuePair<string, string>>();
                 KeyValuePair<string, string> Keys = new KeyValuePair<string, string>();
 
@@ -407,7 +453,7 @@ namespace RBAutocadPlugIn
                 ShowMessage.ErrorMess(E.Message); return true;
             }
         }
-        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project,string FolderID)
+        public bool UpdateFileProperties(string FileID, string Type, string Status, string Project, string FolderID)
         {
             try
             {
@@ -442,7 +488,7 @@ namespace RBAutocadPlugIn
 
                 Keys = new KeyValuePair<string, string>("source", "Computer");
                 keyValuePairs.Add(Keys);
-                Keys = new KeyValuePair<string, string>("folderidString", FolderID==string.Empty|| FolderID == null ?"0":FolderID);
+                Keys = new KeyValuePair<string, string>("folderidString", FolderID == string.Empty || FolderID == null ? "0" : FolderID);
                 keyValuePairs.Add(Keys);
 
                 string IsNew = "";
@@ -551,7 +597,7 @@ namespace RBAutocadPlugIn
                 RestResponse restResponse;
                 //service calling 
 
-                if (LayoutID ==null|| LayoutID.Trim().Length==0)
+                if (LayoutID == null || LayoutID.Trim().Length == 0)
                 {
                     return false;
                 }
@@ -659,7 +705,7 @@ namespace RBAutocadPlugIn
                 {
                     Count++;
                     if (Convert.ToString(dr["IsFile"]) == "1")
-                    { 
+                    {
                         continue;
                     }
                     else if ((Convert.ToString(dr["ChangeVersion"]) == "False"))
@@ -1237,7 +1283,7 @@ namespace RBAutocadPlugIn
             ResultSearchCriteria ObjFileInfo = null;
             try
             {
-              
+
                 KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
                 //KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", "11760c31-d3fb-4acb-9675-551915493fd5");
 
@@ -1645,6 +1691,49 @@ namespace RBAutocadPlugIn
                 {
                     ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
                     return ObjFileInfo == null || ObjFileInfo.id == null || ObjFileInfo.id.Trim().Length == 0 ? false : true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ShowMessage.ErrorMess(ex.Message);
+            }
+            return false;
+        }
+
+        public bool DeleteFileNLayoutDetail(String drawingid)
+        {
+            SaveResult ObjFileInfo = null;
+            try
+            {
+                List<KeyValuePair<string, string>> urlParameters = new List<KeyValuePair<string, string>>();
+
+                KeyValuePair<string, string> L = new KeyValuePair<string, string>("fileId", drawingid);
+                urlParameters.Add(L);
+
+                L = new KeyValuePair<string, string>("status", "file");
+                urlParameters.Add(L);
+                L = new KeyValuePair<string, string>("user", Helper.UserName);
+                urlParameters.Add(L);
+
+
+                RestResponse restResponse = (RestResponse)ServiceHelper.PostData(Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
+                    "/AutocadFiles/removesingledocument", DataFormat.Json,
+                    null, false, urlParameters);
+
+
+                //Helper.CloseProgressBar();
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    if (restResponse.StatusCode != System.Net.HttpStatusCode.InternalServerError)
+                        ShowMessage.ErrorMess("Some error occurred while fetching file information.", restResponse);
+                    return false;
+                }
+                else
+                {
+                    ObjFileInfo = JsonConvert.DeserializeObject<SaveResult>(restResponse.Content);
+                    return ObjFileInfo == null || ObjFileInfo.message == null || ObjFileInfo.message.Trim().Length == 0 ? false : true;
 
                 }
 

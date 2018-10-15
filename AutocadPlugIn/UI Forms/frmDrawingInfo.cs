@@ -141,6 +141,7 @@ namespace RBAutocadPlugIn.UI_Forms
                                 {
                                     FileInfoRowCount = CRC;
                                 }
+                                //adding new rows in panel for layout info when there is more than 2 layout.
                                 tlpMain.RowCount += 6;
                                 tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
                                 tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
@@ -149,6 +150,7 @@ namespace RBAutocadPlugIn.UI_Forms
                                 tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
                                 tlpMain.RowStyles.Add(new RowStyle(SizeType.Absolute, 14));
 
+                                //adding controls for layout info
                                 Panel pnl = pnlSaperator;
                                 tlpMain.Controls.Add(new Label() { Text = "Layout Name", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = "Layout No", Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, CRC++);
