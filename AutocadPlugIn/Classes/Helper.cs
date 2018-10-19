@@ -926,7 +926,6 @@ namespace RBAutocadPlugIn
             catch (Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
-                return PreFix;
             }
 
             return PreFix;

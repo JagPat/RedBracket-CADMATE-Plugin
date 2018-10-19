@@ -1260,13 +1260,15 @@ namespace RBAutocadPlugIn
                                         BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
                                         mainDb.XrefEditEnabled = true;
 
-                                        string originalpath = btr.PathName;
-                                        string s = originalpath.Replace(btr.Name, "").Replace(Path.GetExtension(originalpath), "").Replace("#", "");
+                                        string originalpath =Path.GetFileNameWithoutExtension(btr.PathName);
+                                        string s = originalpath.Replace(btr.Name, "").Replace("#", "");
                                         if (s.Contains("-"))
                                         {
                                             s = s.Remove(s.LastIndexOf('-'));
-                                            if (s.Contains("-"))
-                                                s = s.Substring(s.LastIndexOf('-') + 1);
+                                             
+                                            //if (s.Contains("-"))
+                                            //    s = s.Substring(s.LastIndexOf('-') + 1);
+                                         
                                         }
                                         else
                                         {
@@ -2274,7 +2276,22 @@ namespace RBAutocadPlugIn
             {
                 acCurDb.ReadDwgFile(ParentFilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                 //acCurDb = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
-
+                // to set model as a current space otherwise xref may add to any of layout. behaviour unexpected and uncontroled otherwise.
+                Transaction tr = acCurDb.TransactionManager.StartTransaction();
+                using (tr)
+                {
+                    DBDictionary layoutDict = tr.GetObject(acCurDb.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+                    foreach (DBDictionaryEntry de in layoutDict)
+                    {
+                        String layoutName = de.Key;
+                        if (layoutName == "Model")
+                        { 
+                                break; 
+                        }
+                        
+                    }
+                    tr.Commit();
+                }
                 using (Transaction acTrans = acCurDb.TransactionManager.StartTransaction())
                 {
                     // Create a reference to a DWG file
