@@ -223,7 +223,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                 TreeGridNode treeGridNode = treeGridView1.Nodes.Add(
                     null,
-                    null,
+                    resultSearchCriteriaRecord.filebean==null?null:"+",
                      resultSearchCriteriaRecord.name,
                     Resources.BG,
                     //resultSearchCriteriaRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.eriaRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) :InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
@@ -270,7 +270,7 @@ namespace RBAutocadPlugIn.UI_Forms
             {
                 TreeGridNode treeGridNode = parentTreeGridNode.Nodes.Add(
                                                 null,
-                                                null,
+                                                resultSearchCriteriaChildRecord.filebean == null ? null : "+",
                                                 resultSearchCriteriaChildRecord.name,
                                                   //resultSearchCriteriaChildRecord.name == null ? new Bitmap(1, 1) : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? new Bitmap(1, 1) : Resources.ReferenceImage,
                                                   resultSearchCriteriaChildRecord.name == null ? Resources.BG : resultSearchCriteriaChildRecord.name.ToLowerInvariant().EndsWith("dwg", StringComparison.InvariantCulture) ? Resources.Xref1 : Resources.BG,
