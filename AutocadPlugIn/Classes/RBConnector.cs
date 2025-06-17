@@ -197,7 +197,13 @@ namespace RBAutocadPlugIn
 
 
                     //checking if service call was successful or not.
-                    if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                    if (restResponse.StatusCode == System.Net.HttpStatusCode.BadGateway)
+                    {
+                        ShowMessage.ErrorMess("File must have extension. Please check file", restResponse);
+
+                        return false;
+                    }
+                    else if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                     {
                         if (IsFileSave)
                         {
@@ -417,8 +423,12 @@ namespace RBAutocadPlugIn
                                 Helper.GetValueRegistry("LoginSettings", "Url").ToString(),
                                 "/AutocadFiles/uploadXRef", DataFormat.Json, null,
                                      true, keyValuePairs);
-
-                if (restResponse1.StatusCode != System.Net.HttpStatusCode.OK)
+                if (restResponse1.StatusCode == System.Net.HttpStatusCode.BadGateway)
+                {
+                    ShowMessage.ErrorMess("File must have extension. Please check file", restResponse1);
+                    return false;
+                }
+                else if (restResponse1.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     //ShowMessage.InfoMess(restResponse.Content);
                     //ShowMessage.InfoMess(restResponse.ResponseUri.ToString());
@@ -511,7 +521,14 @@ namespace RBAutocadPlugIn
                                      true, keyValuePairs);
 
                 //checking if service call was successful or not.
-                if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+
+                if (restResponse.StatusCode == System.Net.HttpStatusCode.BadGateway)
+                {
+                    ShowMessage.ErrorMess("File must have extension. Please check file", restResponse);
+                    return false;
+                }
+
+                else if (restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     ShowMessage.ErrorMess("Some error occurred while updating file properties.", restResponse);
                     return false;
@@ -735,7 +752,7 @@ namespace RBAutocadPlugIn
 
                         objLI.typeId = Convert.ToString(dr["TypeID"]).Trim();
                         objLI.typename = Convert.ToString(dr["LayoutType"]).Trim();
-                        objLI.versionno = Convert.ToString(dr["Version"]).Trim();
+                        objLI.versionNo = Convert.ToString(dr["Version"]).Trim();
 
                         LayoutInfolst.Add(objLI);
                         continue;
@@ -833,7 +850,7 @@ namespace RBAutocadPlugIn
                         objLI.type = Drawing.type;
                         objLI.typeId = Drawing.type == null ? "0" : Convert.ToString(Drawing.type.id);
                         objLI.typename = Drawing.type == null ? "" : Convert.ToString(Drawing.type.name);
-                        objLI.versionno = Drawing.versionno;
+                        objLI.versionNo = Drawing.versionno;
 
                         LayoutInfolst.Add(objLI);
                     }
@@ -1303,6 +1320,7 @@ namespace RBAutocadPlugIn
                 else
                 {
                     ObjFileInfo = JsonConvert.DeserializeObject<ResultSearchCriteria>(restResponse.Content);
+                    //Helper.HideProgressBar();
                     try
                     {
                         ObjFileInfo.folderid = ObjFileInfo.folder == null ? string.Empty : ObjFileInfo.folder.id;
@@ -1583,6 +1601,34 @@ namespace RBAutocadPlugIn
             }
             return null;
         }
+        public string GetVersionInfo()
+        {
+            try
+            {
+
+
+                RestResponse restResponse = (RestResponse)ServiceHelper.GetData(Convert.ToString(Helper.GetValueRegistry("LoginSettings", "Url")), "/AutocadFiles/getMSIVersion", false, null);
+
+                if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    ShowMessage.ErrorMess("Some error while getting verion info.", restResponse);
+                    return null;
+                }
+                else
+                {
+                    var versionInfo = JsonConvert.DeserializeObject<clsVersionInfo>(restResponse.Content);
+                    Helper.LatestVersionFileName = versionInfo.fileName;
+                    return versionInfo.version;
+                }
+
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message);
+
+            }
+            return null;
+        }
 
         public List<ResultSearchCriteria> SearchLatest5File()
         {
@@ -1645,6 +1691,8 @@ namespace RBAutocadPlugIn
                     email = UserName,
                     password = Passwd
                 }, false);
+
+
                 if (restResponse == null || restResponse.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     ShowMessage.ErrorMess("Some error occurred while fetching latest records.", restResponse);

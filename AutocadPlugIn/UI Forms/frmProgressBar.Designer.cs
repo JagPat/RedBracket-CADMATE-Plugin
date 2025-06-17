@@ -161,6 +161,7 @@
             this.Name = "frmProgressBar";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmProgressBar";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.frmProgressBar_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlTop.ResumeLayout(false);

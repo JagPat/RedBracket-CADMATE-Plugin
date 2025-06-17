@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ApplicationPackage SchemaVersion="1.0" ProductType="Application" Name="RedBracket Connector" AppVersion="1.0" Description="RedBracket Connector for AutoCAD" Author="RedBracket, Inc." Icon="./Contents/Resources/RedBracketLogo.ico" OnlineDocumentation="http://www.redbracket.in" HelpFile="" ProductCode="{96427274-D969-4082-BC74-3CA2136A48DD}" FriendlyVersion="1.0" SupportedLocales="Enu" AutodeskProduct="AutoCAD">
-  <CompanyDetails Name="RedBracket, Inc." Phone=" " Url="http://www.redbracket.in" Email="support@redbracket.in" />
+<ApplicationPackage SchemaVersion="1.5" ProductType="Application" Name="RedBracket Connector" AppVersion="1.0" Description="RedBracket Connector for AutoCAD" Author="RedBracket Digital" Icon="./Contents/Resources/RedBracketLogo.ico" OnlineDocumentation="https://pro.redbracket.in" HelpFile="" ProductCode="{96427274-D969-4082-BC74-3CA2136A48DD}" FriendlyVersion="1.5" SupportedLocales="Enu" AutodeskProduct="AutoCAD">
+  <CompanyDetails Name="RedBracket Digital" Phone=" " Url="https://pro.redbracket.in" Email="help@redbracket.in" />
   <Components Description="Main">
     <RuntimeRequirements SupportPath="./Contents" OS="Win32|Win64" Platform="AutoCAD*" SeriesMin="R19.0" SeriesMax="R22.0" />
-    <ComponentEntry AppName="RBAutocadPlugIn" Version="1.0" ModuleName="./Contents/RBAutocadPlugIn.dll" AppDescription="RedBracket Connector Binary" LoadOnAppearance="True" LoadOnAutoCADStartup="True" LoadOnCommandInvocation="True">
+    <ComponentEntry AppName="RBAutocadPlugIn" Version="1.5" ModuleName="./Contents/RBAutocadPlugIn.dll" AppDescription="RedBracket Connector Binary" LoadOnAppearance="True" LoadOnAutoCADStartup="True" LoadOnCommandInvocation="True">
       <Commands GroupName="RedBracket">
         <Command Global="rbribbon" Local="rbribbon" LoadOnAutoCADStartup="True" LoadOnCommandInvocation="True" StartupCommand="True"/>
       </Commands>

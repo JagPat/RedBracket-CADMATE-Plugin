@@ -97,7 +97,7 @@ namespace RBAutocadPlugIn
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(411, 17);
             this.labelVersion.TabIndex = 0;
-            this.labelVersion.Text = "Version  : 1.0.0";
+            this.labelVersion.Text = "Version  : ";
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.labelVersion.Click += new System.EventHandler(this.labelVersion_Click);
             // 
@@ -110,7 +110,7 @@ namespace RBAutocadPlugIn
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(411, 17);
             this.labelCopyright.TabIndex = 21;
-            this.labelCopyright.Text = "Copyright  :  2018 Redbracket Digital Pvt Ltd";
+            this.labelCopyright.Text = "Copyright  :  Redbracket Digital Pvt Ltd";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxDescription

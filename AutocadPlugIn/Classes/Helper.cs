@@ -32,6 +32,9 @@ namespace RBAutocadPlugIn
 
         public static string CurrentVersion = "";
         public static string LatestVersion = "";
+        public static string LatestVersionFileName = "";
+        public static string ApplicationCurrentVersion = "1.6";
+        public static string ApplicationLatestVersion = "";
 
         public static bool IsRenameChild = true;
         public static RBConnector objRBC = new RBConnector();
@@ -55,7 +58,7 @@ namespace RBAutocadPlugIn
         {
             try
             {
-
+                
                 objfrmPB = new frmProgressBar();
                 objfrmPB.lblTitle.Text = Title;
                 objfrmPB.lblStatus.Text = Status;
@@ -63,6 +66,7 @@ namespace RBAutocadPlugIn
                 objfrmPB.pbProcess.Maximum = MaxValue;
                 objfrmPB.TopMost = true;
                 objfrmPB.Show();
+                objfrmPB.lblStatus.Refresh();
                 objfrmPB.pbProcess.Refresh();
                 objfrmPB.Refresh();
                 IsPBActive = true;
@@ -355,12 +359,13 @@ namespace RBAutocadPlugIn
             string RValue = "";
             try
             {
+               
                 DataRow[] dr = dt.Select(DisplayMember + " = '" + Value + "'");
-
                 if (dr.Length > 0)
                 {
                     RValue = Convert.ToString(dr[0][ValueMember]);
                 }
+                 
             }
             catch (Exception E)
             {
@@ -440,6 +445,7 @@ namespace RBAutocadPlugIn
                         foreach (LayoutInfo objLI1 in objLI)
                         {
                             int Count = Convert.ToInt16(objLI1.fileNo.Contains("_") ? objLI1.fileNo.Substring(0, objLI1.fileNo.IndexOf("_")) : "0");
+                          
                             DrawingProperty.Add("Layout_" + Count + "_Name", objLI1.name);
                             DrawingProperty.Add("Layout_" + Count + "_Number", objLI1.fileNo);
                             DrawingProperty.Add("Layout_" + Count + "_Type", objLI1.typename);
@@ -470,10 +476,16 @@ namespace RBAutocadPlugIn
         }
         public static LayoutInfo FindLayoutDetail(Hashtable ht, string LayoutName)
         {
+            //Helper.HideProgressBar();
             LayoutInfo objLayoutInfo = new LayoutInfo();
             try
             {
                 string LayoutInfo1 = Convert.ToString(ht["layoutinfo"]);
+             //   MessageBox.Show(LayoutInfo1);
+                //using (StreamWriter outputFile = new StreamWriter(@"D:\autocad\AutoCADIntegration\WriteLines2.txt", true))
+                //{
+                //    outputFile.WriteLine("layout info : "+LayoutInfo1);                     
+                //}
                 if (LayoutInfo1.Trim().Length > 0)
                 {
                     List<LayoutInfo> objLI = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LayoutInfo>>(LayoutInfo1);
@@ -587,7 +599,7 @@ namespace RBAutocadPlugIn
                             dr["StatusID"] = obj.statusId == null || obj.statusId == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.id) : obj.statusId;
                             dr["LayoutStatus"] = obj.statusname == null || obj.statusname == string.Empty ? obj.status == null ? string.Empty : Convert.ToString(obj.status.statusname) : obj.statusname;
                             dr["TypeID"] = obj.typeId == null || obj.typeId == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.id) : obj.typeId;
-                            dr["Version"] = obj.versionno;
+                            dr["Version"] = obj.versionNo;
                             dr["ACLayoutID"] = obj.layoutId == null ? string.Empty : obj.layoutId;
                             dr["LayoutType"] = obj.typename == null || obj.typename == string.Empty ? obj.type == null ? string.Empty : Convert.ToString(obj.type.name) : obj.typename;
                             dr["Seq"] = obj.fileNo.Contains("_") ? obj.fileNo.Substring(0, obj.fileNo.IndexOf("_")) : "0";
@@ -621,7 +633,7 @@ namespace RBAutocadPlugIn
                     objLI.statusId = Convert.ToString(dr["StatusID"]);
                     objLI.statusname = Convert.ToString(dr["LayoutStatus"]);
                     objLI.typeId = Convert.ToString(dr["TypeID"]);
-                    objLI.versionno = Convert.ToString(dr["Version"]);
+                    objLI.versionNo = Convert.ToString(dr["Version"]);
                     objLI.layoutId = Convert.ToString(dr["ACLayoutID"]);
                     objLI.typename = Convert.ToString(dr["LayoutType"]);
 
@@ -741,7 +753,7 @@ namespace RBAutocadPlugIn
                         LayoutInfos += @"""versionNo""";
                         LayoutInfos += @":";
                         LayoutInfos += @"""";
-                        LayoutInfos += obj.versionno;
+                        LayoutInfos += obj.versionNo;
                         LayoutInfos += @"""";
                         LayoutInfos += @",";
 
@@ -953,12 +965,13 @@ namespace RBAutocadPlugIn
         public static string DownloadFile(string FileID, string IsRoot = "false", bool IsTemp = false, List<string> DownloadedFiles = null, string ParentFilePath = "", List<clsDownloadedFiles> lstobjDownloadedFiles = null, string ParentPreFix = "")
         {
 
+            //Helper.HideProgressBar();
             Hashtable DrawingProperty = new Hashtable();
             string FilePath = "";
             try
             {
                 ResultSearchCriteria Drawing = objRBC.GetDrawingInformation(FileID);
-
+               
                 string checkoutPath =Helper.GetCheckoutDirectory(Drawing.projectname);
                //string checkoutPath = Path.Combine(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath")), IsTemp ? "Temp" : Drawing.projectname == null || Drawing.projectname == string.Empty ? "My Files" : Drawing.projectname);
                 DirectoryInfo di = new DirectoryInfo(checkoutPath);
@@ -1183,7 +1196,7 @@ namespace RBAutocadPlugIn
                 String LayoutInfos = "";
                 LayoutInfos = Helper.GetLayoutInfo(Drawing.fileLayout);
                 #endregion
-
+                //MessageBox.Show(""+Drawing.projectname);
                 dr["DrawingId"] = Drawing.id;
 
                 dr["DrawingName"] = Drawing.name;
@@ -1711,7 +1724,7 @@ namespace RBAutocadPlugIn
 
         }
 
-        public static bool FileNameCheckForSpecialCharacter(string FileName)
+        public static bool FileNameCheckForSpecialCharacter(string FileName,bool IsLayout=false)
         {
             try
             {
@@ -1720,7 +1733,15 @@ namespace RBAutocadPlugIn
                 {
                     if (FileName.Contains(character))
                     {
-                        ShowMessage.ValMess("File name must not contain following character.\n" + @InvalidCharacterString);
+                        if(IsLayout)
+                        {
+                            ShowMessage.ValMess("Layout name must not contain following character.\n" + @InvalidCharacterString);
+                        }
+                        else
+                        {
+                            ShowMessage.ValMess("File name must not contain following character.\n" + @InvalidCharacterString);
+                        }
+                        
                         return false;
                     }
                 }
@@ -1788,7 +1809,29 @@ namespace RBAutocadPlugIn
             }
 
         }
+        public static bool LogBugFinding(string ErrorText)
+        {
 
+            try
+            {
+
+                string LogLocation = Path.Combine(Path.GetPathRoot(Application.StartupPath), "RBACC Bug Finding");
+                if (!Directory.Exists(LogLocation))
+                {
+                    Directory.CreateDirectory(LogLocation);
+                }
+
+                File.AppendAllText(LogLocation + "\\Log_" + DateTime.Now.ToString(DateFormat) + ".txt", Environment.NewLine + Environment.NewLine + ">>" + DateTime.Now.ToString(DateTimeFormat) + "   " + UserName + Environment.NewLine + Environment.NewLine + ErrorText);
+
+                return true;
+            }
+            catch (Exception E)
+            {
+                //ShowMessage.ErrorMess(E.Message);
+                return false;
+            }
+
+        }
         //public static bool LogServiceCall(string Text)
         public static bool LogServiceCall(IRestResponse restRequest, string servicename)
         {

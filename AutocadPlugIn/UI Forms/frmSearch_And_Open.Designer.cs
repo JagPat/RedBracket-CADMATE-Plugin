@@ -318,7 +318,7 @@ namespace RBAutocadPlugIn.UI_Forms
             this.Generation.Name = "Generation";
             this.Generation.ReadOnly = true;
             this.Generation.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Generation.Width = 51;
+            this.Generation.Width = 52;
             // 
             // ProjectId
             // 

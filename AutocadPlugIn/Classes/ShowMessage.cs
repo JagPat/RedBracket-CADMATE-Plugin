@@ -65,11 +65,15 @@ namespace RBAutocadPlugIn
                              restResponse.Content;
             if (restResponse.StatusCode == 0)
             {
-                Message = "No internet.\n Please check your internet connection.";
+                Message = "No internet.\n Please check your internet connection. OR Please check your URL";
             }
             else if (restResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                Message = "Unauthorize access.";
+                Message = "Invalid Username or Password .";
+            }
+            else if (restResponse.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                Message = "You are not associated with any company account. Please join/create account";
             }
             ErrorMess(Message, TMessage);
 

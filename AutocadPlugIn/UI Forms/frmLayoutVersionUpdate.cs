@@ -23,12 +23,13 @@ namespace RBAutocadPlugIn.UI_Forms
         public string ProjectID = "";
         public string FilePath = "";
         public string OldDWGNo = "";
+        string CurDWGNo = "";
 
         public DataTable dtLayoutInfo = new DataTable();
         RBConnector objRBC = new RBConnector();
          
         public frmLayoutVersionUpdate(string Fileid = "", string FileName = "", string FileType = "", string FileStatus = "", string FileVersion = "",
-            string ProjectID = "", string FilePath = "", string OldDWGNo = "")
+            string ProjectID = "", string FilePath = "", string OldDWGNo = "", string CurDWGNo = "")
         {
             InitializeComponent(); this.FormBorderStyle = FormBorderStyle.None;
             this.Fileid = Fileid;
@@ -39,6 +40,7 @@ namespace RBAutocadPlugIn.UI_Forms
             this.ProjectID = ProjectID;
             this.FilePath = FilePath;
             this.OldDWGNo = OldDWGNo;
+            this.CurDWGNo = CurDWGNo;
             pnlTop.BackColor = pnlRight.BackColor = pnlLeft.BackColor = pnlBottom.BackColor = Helper.clrChildPopupBorderColor;
         }
 
@@ -99,18 +101,19 @@ namespace RBAutocadPlugIn.UI_Forms
                     dr["Name"] = LayoutName;
                     dr["ACLayoutID"] = LayoutID1;
                     string tempLN = LayoutName;
-                    if (LayoutName.Contains("_") && LayoutName.Contains(OldDWGNo))
+                    if (LayoutName.Contains("_") && LayoutName.Contains(OldDWGNo)&& OldDWGNo.Length>0)
                     {
                         LayoutName = LayoutName.Substring(0, LayoutName.LastIndexOf("_"));
                         if (LayoutName.Contains("_"))
                         {
                             LayoutName = LayoutName.Substring(0, LayoutName.LastIndexOf("_"));
+
                         }
                     }
 
                     dr["BasicLayoutName"] = LayoutName;
-                    
-                    if (tempLN.Contains("_"))
+              
+                    if (tempLN.Contains("_")&& tempLN.Contains(CurDWGNo))
                     {
                         string DN = tempLN.Substring(tempLN.LastIndexOf("_"));
                         tempLN = tempLN.Replace(DN, "");

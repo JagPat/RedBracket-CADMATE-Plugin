@@ -23,7 +23,7 @@ namespace RBAutocadPlugIn
 
         private void About_Load(object sender, EventArgs e)
         {
-
+            labelVersion.Text = "Version  : " + Helper.ApplicationCurrentVersion;
         }
 
         private void labelVersion_Click(object sender, EventArgs e)

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Text;
-using System.Windows.Forms; 
+using System.Windows.Forms;
 using Microsoft.Win32;
 using System.IO;
+using System.Net;
+using System.Diagnostics;
 
 namespace RBAutocadPlugIn
 {
@@ -18,13 +20,19 @@ namespace RBAutocadPlugIn
         {
             try
             {
-
-
-                txt_username.Text = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "UserName"));
-                txt_url.Text = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "Url"));
-                if (Helper.IsSavePassword)
+                if (IsThisVersionLatest())
                 {
-                    txt_Password.Text = Encoding.UTF8.GetString(Convert.FromBase64String(Convert.ToString(Helper.GetValueRegistry("LoginSettings", "Password"))));
+
+                    txt_username.Text = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "UserName"));
+                    txt_url.Text = Convert.ToString(Helper.GetValueRegistry("LoginSettings", "Url"));
+                    if (Helper.IsSavePassword)
+                    {
+                        txt_Password.Text = Encoding.UTF8.GetString(Convert.FromBase64String(Convert.ToString(Helper.GetValueRegistry("LoginSettings", "Password"))));
+                    }
+                }
+                else
+                {
+                    this.Close();
                 }
 
             }
@@ -33,6 +41,89 @@ namespace RBAutocadPlugIn
                 ShowMessage.ErrorMess(E.Message);
             }
             txt_Password.Focus();
+        }
+        public bool IsThisVersionLatest()
+        {
+            try
+            {
+                Helper.ApplicationLatestVersion = Helper.objRBC.GetVersionInfo();
+                if (Helper.ApplicationLatestVersion == null)
+                {
+                    return true;
+                }
+                Decimal L = Convert.ToDecimal(Helper.ApplicationLatestVersion);
+                decimal C = Convert.ToDecimal(Helper.ApplicationCurrentVersion);
+                if (L>C)
+                {
+                    string checkoutPath = Directory.GetParent(Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"))) + @"\Setup";
+                    if (!Directory.Exists(checkoutPath))
+                    {
+                        Directory.CreateDirectory(checkoutPath);
+                    }
+                    string FilePath = checkoutPath + @"\" + Helper.LatestVersionFileName;
+                    if (!File.Exists(FilePath))
+                    {
+                        if (ShowMessage.InfoYNMess("You are using outdated version of connector. Please download and install latest version. " + Environment.NewLine +
+                            "Do you want to download latest version ?") == DialogResult.Yes)
+                        {
+                            using (var client = new WebClient())
+                            {
+                                //Helper.objfrmPB.pbProcess.Value = 1;
+                                //Helper.objfrmPB.pbProcess.Minimum = 1;
+                                //Helper.objfrmPB.pbProcess.Maximum = 1;
+                                //Helper.ShowProgressBar("");
+                                Helper.GetProgressBar(10, "Downloading Latest Version", "");
+                                Helper.IncrementProgressBar(1, "");
+                                Helper.IncrementProgressBar(1, "");
+                                Helper.IncrementProgressBar(1, "");
+                                Helper.IncrementProgressBar(1, "");
+                                Helper.IncrementProgressBar(1, "");
+                                Helper.IncrementProgressBar(1, "");
+                                Helper.IncrementProgressBar(1, "");
+                                Helper.objfrmPB.Refresh();
+                                //Helper.ShowProgressBar();
+
+                                Cursor.Current = Cursors.WaitCursor;
+                                client.DownloadFile(Helper.GetValueRegistry("LoginSettings", "Url").ToString() + "data/" + Helper.LatestVersionFileName, FilePath);
+                                Helper.IncrementProgressBar(3, "");
+                                Cursor.Current = Cursors.Default;
+                                Helper.CloseProgressBar();
+                              
+                                if (ShowMessage.InfoYNMess("Latest version has been successfully downloaded at " + Environment.NewLine + FilePath + Environment.NewLine +
+                                     "Please uninstall current version before installing new version."
+                                    + Environment.NewLine + "Do you want to open file location and install ?") == DialogResult.Yes)
+                                {
+                                    Process.Start("explorer.exe", checkoutPath);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        if (ShowMessage.InfoYNMess("Latest version has been successfully downloaded at " + Environment.NewLine + FilePath + Environment.NewLine +
+                                   "Please uninstall current version before installing new version."
+                                    + Environment.NewLine + "Do you want to open file location and install ?") == DialogResult.Yes)
+                        {
+                            Process.Start("explorer.exe", checkoutPath);
+                        }
+                    }
+
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch (Exception E)
+            {
+                ShowMessage.ErrorMess(E.Message); return false;
+            }
         }
 
         private void LogIn_KeyPress(object sender, KeyPressEventArgs e)
@@ -157,6 +248,7 @@ namespace RBAutocadPlugIn
                             {
                                 Directory.CreateDirectory(WorkDir);
 
+
                             }
                             Helper.SetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath", WorkDir);
 
@@ -185,9 +277,9 @@ namespace RBAutocadPlugIn
                     cr.SaveEnable = true;
                     cr.RBRibbon();
                 }
-                Helper.CloseProgressBar(); 
-                this.Cursor = Cursors.Default; 
-                this.Close(); 
+                Helper.CloseProgressBar();
+                this.Cursor = Cursors.Default;
+                this.Close();
             }
             catch (Exception E)
             {
@@ -200,7 +292,7 @@ namespace RBAutocadPlugIn
             try
             {
                 if (loggedUserDetails == null)
-                { 
+                {
                     return;
                 }
 

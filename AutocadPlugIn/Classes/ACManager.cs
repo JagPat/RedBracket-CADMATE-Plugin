@@ -1,13 +1,13 @@
-﻿using System; 
-using System.IO; 
+﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using System.Windows.Forms; 
-using Autodesk.AutoCAD.EditorInput; 
+using System.Windows.Forms;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices; 
-using ACAPP = Autodesk.AutoCAD.ApplicationServices.Application; 
-using System.Data; 
+using Autodesk.AutoCAD.DatabaseServices;
+using ACAPP = Autodesk.AutoCAD.ApplicationServices.Application;
+using System.Data;
 using Autodesk.AutoCAD.Geometry;
 
 namespace RBAutocadPlugIn
@@ -59,6 +59,7 @@ namespace RBAutocadPlugIn
         {
             try
             {
+                //Helper.HideProgressBar();
 
                 Database mainDb = new Database(false, true);
                 using (mainDb)
@@ -274,10 +275,13 @@ namespace RBAutocadPlugIn
                                                         ar.TextString = ar.TextString == null || ar.TextString == string.Empty ? drawingAttrs["drawingstate"] == null ? string.Empty : Convert.ToString(drawingAttrs["drawingstate"]) : ar.TextString;
                                                         ar.DowngradeOpen();
                                                     }
+
                                                     if (layoutName != "Model")
                                                     {
+
                                                         if (ar.Tag.ToUpper() == "LAYOUTNAME")
                                                         {
+
                                                             ar.UpgradeOpen();
                                                             ar.TextString = layoutName;
                                                             ar.DowngradeOpen();
@@ -287,34 +291,44 @@ namespace RBAutocadPlugIn
                                                         {
                                                             if (ar.Tag.ToUpper() == "LAYOUTNUMBER")
                                                             {
+
                                                                 ar.UpgradeOpen();
                                                                 ar.TextString = objLI.fileNo == null ? string.Empty : objLI.fileNo;
                                                                 ar.DowngradeOpen();
                                                             }
+
                                                             if (ar.Tag.ToUpper() == "CREATEDBY")
                                                             {
+
                                                                 ar.UpgradeOpen();
                                                                 ar.TextString = objLI.createdby == null ? string.Empty : objLI.createdby; //drawingAttrs["createdby"].ToString();
                                                                 ar.DowngradeOpen();
                                                             }
+
                                                             if (ar.Tag.ToUpper() == "MODIFIEDBY")
                                                             {
+
                                                                 ar.UpgradeOpen();
                                                                 ar.TextString = objLI.updatedby == null ? string.Empty : objLI.updatedby; //drawingAttrs["modifiedby"].ToString();
                                                                 ar.DowngradeOpen();
                                                             }
+
                                                             if (ar.Tag.ToUpper() == "CREATEDON")
                                                             {
+
                                                                 ar.UpgradeOpen();
                                                                 ar.TextString = objLI.created0n == null ? string.Empty : Helper.FormatDate(objLI.created0n); //drawingAttrs["createdon"].ToString().Substring(0, 10); 
                                                                 ar.DowngradeOpen();
                                                             }
+
                                                             if (ar.Tag.ToUpper() == "MODIFIEDON")
                                                             {
+
                                                                 ar.UpgradeOpen();
                                                                 ar.TextString = objLI.updatedon == null ? string.Empty : Helper.FormatDate(objLI.updatedon);//drawingAttrs["modifiedon"].ToString().Substring(0,10);
                                                                 ar.DowngradeOpen();
                                                             }
+
                                                             if (ar.Tag.ToUpper() == "LAYOUTSTATE")
                                                             {
                                                                 ar.UpgradeOpen();
@@ -348,10 +362,12 @@ namespace RBAutocadPlugIn
                                                             }
                                                             if (ar.Tag.ToUpper() == "LAYOUTVER")
                                                             {
+
                                                                 ar.UpgradeOpen();
-                                                                ar.TextString = objLI.versionno == null ? string.Empty : objLI.versionno; //drawingAttrs["revision"].ToString();
+                                                                ar.TextString = objLI.versionNo == null ? string.Empty : objLI.versionNo; //drawingAttrs["revision"].ToString();
                                                                 ar.DowngradeOpen();
                                                             }
+
                                                         }
 
                                                     }
@@ -613,7 +629,7 @@ namespace RBAutocadPlugIn
 
 
         }
-         
+
         public void UpdateFileProperties(string FileID, string FilePath)
         {
             try
@@ -688,7 +704,7 @@ namespace RBAutocadPlugIn
                     SetAttributesXrefFiles(DocProperties, fileName);
                     UpdateLayoutAttributeXrefFile(DocProperties, fileName, true);
                     ACAPP.DocumentManager.Open(fileName, false);
-                     
+
                 }
                 else if (openMode == "Edit")
                 {
@@ -715,14 +731,14 @@ namespace RBAutocadPlugIn
             {
                 ShowMessage.ErrorMess(ex.Message);
             }
-        } 
-        public static int Pass=0;
+        }
+        public static int Pass = 0;
         public void UpdateExRefFileName(string ParentFilePath, string FilePath, ref List<PLMObject> plmObjs)
         {
             try
             {
-                 
-               
+                //Helper.HideProgressBar();
+
                 List<string> lstOldFiles = new List<string>();
                 string ParentNewPath = "";
                 bool IsMove = false;
@@ -734,7 +750,7 @@ namespace RBAutocadPlugIn
                     mainDb.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                     mainDb.ResolveXrefs(false, false);
                     XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
-                   
+
                     for (int i = 0; i < xg.NumNodes; i++)
                     {
                         XrefGraphNode xgn = xg.GetXrefNode(i);
@@ -787,7 +803,7 @@ namespace RBAutocadPlugIn
                                     // this file is not selected to save so no further action is required.
                                     continue;
                                 }
-                                
+
                                 string ProjectName = "", PreFix = "", oldPreFix = "";
                                 System.Data.DataTable dtDrawing = Helper.cadManager.GetDrawingAttributes(xgn.Database.Filename);
 
@@ -802,7 +818,7 @@ namespace RBAutocadPlugIn
 
                                 string FN = Path.GetFileNameWithoutExtension(xgn.Name);
 
-                                
+
                                 string checkoutPath = Convert.ToString(Helper.GetValueRegistry("CheckoutSettings", "CheckoutDirectoryPath"));
 
 
@@ -811,7 +827,7 @@ namespace RBAutocadPlugIn
                                     ProjectName = "My Files";
                                 }
                                 checkoutPath = Path.Combine(checkoutPath, ProjectName);
-                                
+
                                 if (!Directory.Exists(checkoutPath))
                                 {
                                     Directory.CreateDirectory(checkoutPath);
@@ -820,10 +836,10 @@ namespace RBAutocadPlugIn
 
                                 path += @"\" + PreFix;
 
-                               
+
                                 if (xgn.Name == FilePath)
                                 {
-                                    
+
                                     string PName = Path.GetFileName(FilePath);
                                     PName = Helper.RemovePreFixFromFileName(PName, oldPreFix);
                                     PName = Helper.RemovePreFixFromFileName(PName, PreFix);
@@ -1037,48 +1053,52 @@ namespace RBAutocadPlugIn
                         }
                         else if (XrefStatus.FileNotFound == xgn.XrefStatus)
                         {
-                            Database xdb = mainDb;
-                            DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(ParentFilePath));
-                            FileInfo[] Files = di.GetFiles("*.dwg");
-                            foreach (var item in Files)
+                            if (Path.GetExtension(xgn.Name) == "dwg")
                             {
-                                if (item.FullName.Contains(xgn.Name))
+                                Database xdb = mainDb;
+                                DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(ParentFilePath));
+                                FileInfo[] Files = di.GetFiles("*.dwg");
+                                foreach (var item in Files)
                                 {
-                                    newpath = item.FullName;
-                                    break;
+                                    if (item.FullName.Contains(xgn.Name))
+                                    {
+                                        newpath = item.FullName;
+                                        break;
+                                    }
+                                }
+
+                                if (xdb != null)
+                                {
+
+
+
+
+                                    Transaction tr = xdb.TransactionManager.StartTransaction();
+
+
+                                    using (tr)
+                                    {
+                                        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
+                                        mainDb.XrefEditEnabled = true;
+                                        if (File.Exists(newpath))
+                                        {
+                                            string TnewPath = @".\" + Path.GetFileName(newpath);
+                                            btr.PathName = TnewPath;
+                                        }
+                                        else
+                                        {
+                                            ShowMessage.ErrorMessUD("File not found.\n" + newpath); return;
+                                        }
+
+                                        tr.Commit();
+
+
+
+                                        UpdateExRefFileName(ParentFilePath, newpath, ref plmObjs);
+                                    }
                                 }
                             }
 
-                            if (xdb != null)
-                            {
-
-
-
-
-                                Transaction tr = xdb.TransactionManager.StartTransaction();
-
-
-                                using (tr)
-                                {
-                                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
-                                    mainDb.XrefEditEnabled = true;
-                                    if (File.Exists(newpath))
-                                    {
-                                        string TnewPath = @".\" + Path.GetFileName(newpath);
-                                        btr.PathName = TnewPath;
-                                    }
-                                    else
-                                    {
-                                        ShowMessage.ErrorMessUD("File not found.\n" + newpath); return;
-                                    }
-
-                                    tr.Commit();
-
-
-
-                                    UpdateExRefFileName(ParentFilePath, newpath, ref plmObjs);
-                                }
-                            }
                         }
 
                         if (File.Exists(OldChildPath) && OldChildPath != newpath)
@@ -1260,15 +1280,15 @@ namespace RBAutocadPlugIn
                                         BlockTableRecord btr = (BlockTableRecord)tr.GetObject(xgn.BlockTableRecordId, OpenMode.ForWrite);
                                         mainDb.XrefEditEnabled = true;
 
-                                        string originalpath =Path.GetFileNameWithoutExtension(btr.PathName);
+                                        string originalpath = Path.GetFileNameWithoutExtension(btr.PathName);
                                         string s = originalpath.Replace(btr.Name, "").Replace("#", "");
                                         if (s.Contains("-"))
                                         {
                                             s = s.Remove(s.LastIndexOf('-'));
-                                             
+
                                             //if (s.Contains("-"))
                                             //    s = s.Substring(s.LastIndexOf('-') + 1);
-                                         
+
                                         }
                                         else
                                         {
@@ -1554,10 +1574,18 @@ namespace RBAutocadPlugIn
             System.Data.DataTable dtTreeGrid = Helper.GetDrawingPropertiesTableStructure();
             try
             {
-
+                System.Data.DataTable dtFilePathList = new System.Data.DataTable();
+                dtFilePathList.Columns.Add("ParentFile", typeof(string));
+                dtFilePathList.Columns.Add("ChildFile", typeof(string));
+                dtFilePathList.Columns.Add("LevelNo", typeof(int));
+                dtFilePathList.AcceptChanges();
                 Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
                 int RefCount = 2;
-                GetDrawingExternalRefreces(doc.Name, "0", ref dtTreeGrid, ref RefCount, IsSaveAsNew);
+                if(GetDrawingExternalRefreces(doc.Name, "0", ref dtTreeGrid, ref RefCount,ref dtFilePathList, doc.Name, IsSaveAsNew )==null)
+                {
+                    dtTreeGrid = null;
+                }
+
             }
             catch (System.Exception E)
             {
@@ -1566,122 +1594,242 @@ namespace RBAutocadPlugIn
             return dtTreeGrid;
         }
 
-        public System.Data.DataTable GetDrawingExternalRefreces(string FilePath, String Parent, ref System.Data.DataTable dtTreeGrid, ref int RefCount, bool IsSaveAsNew = false)
+
+        public System.Data.DataTable GetDrawingExternalRefreces(string FilePath, String Parent, ref System.Data.DataTable dtTreeGrid, ref int RefCount, ref System.Data.DataTable dtFilePathList,string ParentFileName, bool IsSaveAsNew = false)
         {
 
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
 
-
-            Database Db = new Database(false, true);
-            Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
-            Editor ed = doc.Editor;
-            try
+            if (!File.Exists(FilePath))
             {
-                Database mainDb = new Database(false, true);
-                String rootid = "";
-                using (mainDb)
-                {
-                    mainDb.ReadDwgFile(Db.Filename, FileOpenMode.OpenForReadAndAllShare, true, null);
-                    mainDb.ResolveXrefs(false, false);
-                    XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
-                    for (int i = 0; i < xg.NumNodes; i++)
-                    {
+                //Helper.LogBugFinding("File Not Exist");
+            }
+            else
+            {
+                
 
-                        XrefGraphNode xgn = xg.GetXrefNode(i);
-                        if (xgn.IsNested && i > 0)
+                System.Data.DataTable dtTemp = Helper.RowFilter(dtFilePathList.DefaultView.ToTable().Copy(), "ParentFile", FilePath);
+                 if(dtTemp.Rows.Count>0)
+                {
+                    ShowMessage.ErrorMessUD("Circular referance detected in Xref files,\n Please remove circular referance and try uploading again.");
+                    return null;
+                }
+                else
+                {
+                    DataRow dr = dtFilePathList.NewRow();
+                    dr["ParentFile"] = ParentFileName;
+                    dr["ChildFile"] = FilePath;
+
+                    dtFilePathList.Rows.Add(dr);
+                    dtFilePathList.AcceptChanges();
+                }
+
+                Database Db = new Database(false, true);
+                //Helper.LogBugFinding("ReadDwgFile"); 
+                Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
+                //Helper.LogBugFinding("ReadDwgFile"); 
+                Editor ed = doc.Editor;
+                try
+                {
+                    Database mainDb = new Database(false, true);
+                    String rootid = "";
+                    using (mainDb)
+                    {
+                        //Helper.LogBugFinding("ReadDwgFile Xref");
+                        mainDb.ReadDwgFile(Db.Filename, FileOpenMode.OpenForReadAndAllShare, true, null);
+                        //Helper.LogBugFinding("ReadDwgFile Xref");
+                        mainDb.ResolveXrefs(false, false);
+                        XrefGraph xg = mainDb.GetHostDwgXrefGraph(false);
+                        for (int i = 0; i < xg.NumNodes; i++)
                         {
-                            continue;
-                        }
-                        switch (xgn.XrefStatus)
-                        {
-                            case XrefStatus.Unresolved:
-                                ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
-                                break;
-                            case XrefStatus.Unloaded:
-                                ed.WriteMessage("\nUnloaded xref \"{0}\"", xgn.Name);
-                                break;
-                            case XrefStatus.Unreferenced:
-                                ed.WriteMessage("\nUnreferenced xref \"{0}\"", xgn.Name);
-                                break;
-                            case XrefStatus.Resolved:
-                                {
-                                    Database xdb = xgn.Database;
-                                    if (xdb != null)
+
+                            XrefGraphNode xgn = xg.GetXrefNode(i);
+                            if (xgn.IsNested && i > 0)
+                            {
+                                continue;
+                            }
+                            switch (xgn.XrefStatus)
+                            {
+                                case XrefStatus.Unresolved:
+                                    ed.WriteMessage("\nUnresolved xref \"{0}\"", xgn.Name);
+                                    break;
+                                case XrefStatus.Unloaded:
+                                    ed.WriteMessage("\nUnloaded xref \"{0}\"", xgn.Name);
+                                    break;
+                                case XrefStatus.Unreferenced:
+                                    ed.WriteMessage("\nUnreferenced xref \"{0}\"", xgn.Name);
+                                    break;
+                                case XrefStatus.Resolved:
                                     {
-                                        Transaction tr = xdb.TransactionManager.StartTransaction();
-                                        String drawingName;
-                                        String[] str = new String[14];
-                                        using (tr)
+                                        Database xdb = xgn.Database;
+                                        if (xdb != null)
                                         {
-                                            String Layouts = "";
-                                            DBDictionary layoutDict = tr.GetObject(xdb.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
-                                            foreach (DBDictionaryEntry de in layoutDict)
+                                            Transaction tr = xdb.TransactionManager.StartTransaction();
+                                            String drawingName;
+                                            String[] str = new String[14];
+                                            using (tr)
                                             {
-                                                String layoutName = de.Key;
-                                                if (layoutName != "Model")
+                                                String Layouts = "";
+                                                DBDictionary layoutDict = tr.GetObject(xdb.LayoutDictionaryId, OpenMode.ForRead) as DBDictionary;
+                                                foreach (DBDictionaryEntry de in layoutDict)
                                                 {
-                                                    Layouts += de.Key.ToString() + "$";
+                                                    String layoutName = de.Key;
+                                                    if (layoutName != "Model")
+                                                    {
+                                                        Layouts += de.Key.ToString() + "$";
+                                                    }
+                                                    else
+                                                    {
+                                                        continue;
+                                                    }
+                                                }
+
+                                                if (xgn.Name.Contains("\\"))
+                                                {
+                                                    str = xgn.Name.Split('\\');
+                                                    drawingName = str[str.Length - 1];
                                                 }
                                                 else
                                                 {
-                                                    continue;
-                                                }
-                                            }
-
-                                            if (xgn.Name.Contains("\\"))
-                                            {
-                                                str = xgn.Name.Split('\\');
-                                                drawingName = str[str.Length - 1];
-                                            }
-                                            else
-                                            {
-                                                drawingName = xgn.Name;
-                                            }
-
-                                            if (i == 0)
-                                            {
-                                                if (Parent != "0")
-                                                {
-                                                    continue;
+                                                    drawingName = xgn.Name;
                                                 }
 
-                                                Hashtable rootdrawingAttrs = new Hashtable();
-
-                                                IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
-                                                while (en.MoveNext())
+                                                if (i == 0)
                                                 {
-                                                    rootdrawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
-                                                }
-                                                rootid = "";
-                                                String childrens = "";
-                                                for (int j = 0; j < xgn.NumIn; j++)
-                                                {
-                                                    int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
-                                                    if (tempInt.Equals(-1))
-                                                        continue;
-                                                    String MyName = xg.GetXrefNode(tempInt).Name;
-                                                    String[] str1 = new String[14];
-                                                    if (xg.GetXrefNode(tempInt).Name.Contains("\\"))
+                                                    if (Parent != "0")
                                                     {
-                                                        str1 = xg.GetXrefNode(tempInt).Name.Split('\\');
-                                                        MyName = str1[str1.Length - 1];
+                                                        continue;
                                                     }
-                                                    if (j == xgn.NumIn - 1)
-                                                        childrens += MyName;
+
+                                                    Hashtable rootdrawingAttrs = new Hashtable();
+
+                                                    IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
+                                                    while (en.MoveNext())
+                                                    {
+                                                        rootdrawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
+                                                    }
+                                                    rootid = "";
+                                                    String childrens = "";
+                                                    for (int j = 0; j < xgn.NumIn; j++)
+                                                    {
+                                                        int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
+                                                        if (tempInt.Equals(-1))
+                                                            continue;
+                                                        String MyName = xg.GetXrefNode(tempInt).Name;
+                                                        String[] str1 = new String[14];
+                                                        if (xg.GetXrefNode(tempInt).Name.Contains("\\"))
+                                                        {
+                                                            str1 = xg.GetXrefNode(tempInt).Name.Split('\\');
+                                                            MyName = str1[str1.Length - 1];
+                                                        }
+                                                        if (j == xgn.NumIn - 1)
+                                                            childrens += MyName;
+                                                        else
+                                                            childrens += MyName + ",";
+                                                    }
+                                                    if (rootdrawingAttrs.Count != 0)
+                                                    {
+                                                        try
+                                                        {
+                                                            rootid = rootdrawingAttrs["drawingid"].ToString();
+
+
+                                                            dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
+
+                                                            int RowIndex = dtTreeGrid.Rows.Count - 1;
+                                                            if (RowIndex < 0)
+                                                            {
+                                                                DataRow dr = dtTreeGrid.NewRow();
+                                                                dr["DrawingName"] = drawingName;
+                                                                dr["filepath"] = xgn.Database.Filename.ToString();
+                                                                dr["sourceid"] = childrens;
+                                                                dr["isroot"] = "true";
+                                                                dr["Layouts"] = Layouts.ToString();
+                                                                dtTreeGrid.Rows.Add(dr);
+                                                                RowIndex = dtTreeGrid.Rows.Count - 1;
+                                                            }
+                                                            dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Name;
+                                                            dtTreeGrid.Rows[RowIndex]["isroot"] = "true";
+
+                                                            if (IsSaveAsNew)
+                                                            {
+                                                                dtTreeGrid.Rows[RowIndex]["DrawingName"] = Helper.RemovePreFixFromFileName(Path.GetFileName(xgn.Name), Convert.ToString(dtTreeGrid.Rows[RowIndex]["prefix"]));
+                                                                dtTreeGrid.Rows[RowIndex]["DrawingId"] = "";
+                                                            }
+                                                            if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim().Length == 0)
+                                                            {
+                                                                Parent = "1";
+                                                            }
+                                                            else
+                                                            {
+                                                                Parent = Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim();
+                                                            }
+                                                            dtTreeGrid.Rows[RowIndex]["PK"] = Parent;
+                                                            dtTreeGrid.Rows[RowIndex]["FK"] = Parent;
+                                                        }
+                                                        catch (System.Exception E)
+                                                        {
+
+                                                        }
+                                                    }
                                                     else
-                                                        childrens += MyName + ",";
+                                                    {
+                                                        Parent = "1";
+                                                        DataRow dr = dtTreeGrid.NewRow();
+                                                        dr["DrawingName"] = drawingName;
+                                                        dr["filepath"] = xgn.Database.Filename.ToString();
+                                                        dr["sourceid"] = childrens;
+                                                        dr["isroot"] = "true";
+                                                        dr["Layouts"] = Layouts.ToString();
+                                                        dr["PK"] = Parent;
+                                                        dr["FK"] = Parent;
+                                                        dtTreeGrid.Rows.Add(dr);
+
+                                                    }
                                                 }
-                                                if (rootdrawingAttrs.Count != 0)
+                                                else
                                                 {
+                                                    String childrens = "";
+                                                    string PK = "";
                                                     try
                                                     {
-                                                        rootid = rootdrawingAttrs["drawingid"].ToString();
-
-
-                                                        dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, rootdrawingAttrs);
-
+                                                        PK = Convert.ToString(++RefCount);
+                                                    }
+                                                    catch
+                                                    {
+                                                        PK = Convert.ToString(i + 1);
+                                                    }
+                                                    for (int j = 0; j < xgn.NumIn; j++)
+                                                    {
+                                                        int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
+                                                        if (tempInt.Equals(-1))
+                                                            continue;
+                                                        String MyName = xg.GetXrefNode(tempInt).Name;
+                                                        String[] str1 = new String[14];
+                                                        if (xg.GetXrefNode(tempInt).Name.Contains("\\"))
+                                                        {
+                                                            str1 = xg.GetXrefNode(tempInt).Name.Split('\\');
+                                                            MyName = str1[str1.Length - 1];
+                                                        }
+                                                        if (j == xgn.NumIn - 1)
+                                                            childrens += MyName;
+                                                        else
+                                                            childrens += MyName + ",";
+                                                    }
+                                                    Hashtable drawingAttrs = new Hashtable();
+                                                    IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
+                                                    while (en.MoveNext())
+                                                    {
+                                                        drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
+                                                    }
+                                                    if (drawingAttrs.Count != 0)
+                                                    {
+                                                        int RowDiff = dtTreeGrid.Rows.Count;
+                                                        dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
+                                                        RowDiff = dtTreeGrid.Rows.Count - RowDiff;
                                                         int RowIndex = dtTreeGrid.Rows.Count - 1;
-                                                        if (RowIndex < 0)
+
+                                                        if (RowDiff == 0)
                                                         {
                                                             DataRow dr = dtTreeGrid.NewRow();
                                                             dr["DrawingName"] = drawingName;
@@ -1692,152 +1840,69 @@ namespace RBAutocadPlugIn
                                                             dtTreeGrid.Rows.Add(dr);
                                                             RowIndex = dtTreeGrid.Rows.Count - 1;
                                                         }
-                                                        dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Name;
-                                                        dtTreeGrid.Rows[RowIndex]["isroot"] = "true";
+                                                        dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Database.Filename;
+
+                                                        if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["isroot"]).ToLower() == "true")
+                                                        {
+                                                            dtTreeGrid.Rows[RowIndex]["IsNewXref"] = "true";
+                                                        }
+                                                        dtTreeGrid.Rows[RowIndex]["isroot"] = "false";
 
                                                         if (IsSaveAsNew)
-                                                        {
                                                             dtTreeGrid.Rows[RowIndex]["DrawingName"] = Helper.RemovePreFixFromFileName(Path.GetFileName(xgn.Name), Convert.ToString(dtTreeGrid.Rows[RowIndex]["prefix"]));
-                                                            dtTreeGrid.Rows[RowIndex]["DrawingId"] = "";
-                                                        }
-                                                        if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim().Length == 0)
+
+
+                                                        if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim().Length != 0)
                                                         {
-                                                            Parent = "1";
+                                                            PK = Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim();
                                                         }
-                                                        else
-                                                        {
-                                                            Parent = Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim();
-                                                        }
-                                                        dtTreeGrid.Rows[RowIndex]["PK"] = Parent;
+                                                        dtTreeGrid.Rows[RowIndex]["PK"] = PK;
                                                         dtTreeGrid.Rows[RowIndex]["FK"] = Parent;
                                                     }
-                                                    catch (System.Exception E)
-                                                    {
 
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    Parent = "1";
-                                                    DataRow dr = dtTreeGrid.NewRow();
-                                                    dr["DrawingName"] = drawingName;
-                                                    dr["filepath"] = xgn.Database.Filename.ToString();
-                                                    dr["sourceid"] = childrens;
-                                                    dr["isroot"] = "true";
-                                                    dr["Layouts"] = Layouts.ToString();
-                                                    dr["PK"] = Parent;
-                                                    dr["FK"] = Parent;
-                                                    dtTreeGrid.Rows.Add(dr);
-
-                                                }
-                                            }
-                                            else
-                                            {
-                                                String childrens = "";
-                                                string PK = "";
-                                                try
-                                                {
-                                                    PK = Convert.ToString(++RefCount);
-                                                }
-                                                catch
-                                                {
-                                                    PK = Convert.ToString(i + 1);
-                                                }
-                                                for (int j = 0; j < xgn.NumIn; j++)
-                                                {
-                                                    int tempInt = IsXRefNodeEqual(xg, xgn.In(j));
-                                                    if (tempInt.Equals(-1))
-                                                        continue;
-                                                    String MyName = xg.GetXrefNode(tempInt).Name;
-                                                    String[] str1 = new String[14];
-                                                    if (xg.GetXrefNode(tempInt).Name.Contains("\\"))
-                                                    {
-                                                        str1 = xg.GetXrefNode(tempInt).Name.Split('\\');
-                                                        MyName = str1[str1.Length - 1];
-                                                    }
-                                                    if (j == xgn.NumIn - 1)
-                                                        childrens += MyName;
                                                     else
-                                                        childrens += MyName + ",";
-                                                }
-                                                Hashtable drawingAttrs = new Hashtable();
-                                                IDictionaryEnumerator en = xgn.Database.SummaryInfo.CustomProperties;
-                                                while (en.MoveNext())
-                                                {
-                                                    drawingAttrs.Add(en.Key, en.Value == null ? string.Empty : Convert.ToString(en.Value));
-                                                }
-                                                if (drawingAttrs.Count != 0)
-                                                {
-                                                    int RowDiff = dtTreeGrid.Rows.Count;
-                                                    dtTreeGrid = Helper.AddRowDrawingPropertiesTable(dtTreeGrid, drawingAttrs);
-                                                    RowDiff = dtTreeGrid.Rows.Count - RowDiff;
-                                                    int RowIndex = dtTreeGrid.Rows.Count - 1;
-
-                                                    if (RowDiff == 0)
                                                     {
                                                         DataRow dr = dtTreeGrid.NewRow();
-                                                        dr["DrawingName"] = drawingName;
+                                                        dr["DrawingName"] = xgn.Name;
                                                         dr["filepath"] = xgn.Database.Filename.ToString();
                                                         dr["sourceid"] = childrens;
-                                                        dr["isroot"] = "true";
+                                                        dr["isroot"] = "false";
                                                         dr["Layouts"] = Layouts.ToString();
+                                                        dr["IsNewXref"] = "true";
+                                                        dr["PK"] = PK;
+                                                        dr["FK"] = Parent;
                                                         dtTreeGrid.Rows.Add(dr);
-                                                        RowIndex = dtTreeGrid.Rows.Count - 1;
                                                     }
-                                                    dtTreeGrid.Rows[RowIndex]["filepath"] = xgn.Database.Filename;
 
-                                                    if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["isroot"]).ToLower() == "true")
+                                                    if (GetDrawingExternalRefreces(xgn.Database.Filename, PK, ref dtTreeGrid, ref RefCount, ref dtFilePathList, FilePath, IsSaveAsNew) == null)
+                                                        return null ;
+                                                    else
                                                     {
-                                                        dtTreeGrid.Rows[RowIndex]["IsNewXref"] = "true";
+                                                        DataView dv = dtFilePathList.Copy().DefaultView;
+                                                        dv.RowFilter="ParentFile <>'"+ xgn.Database.Filename + "'";
+                                                        dtFilePathList = dv.ToTable().Copy();
+                                                        dtFilePathList.AcceptChanges();
                                                     }
-                                                    dtTreeGrid.Rows[RowIndex]["isroot"] = "false";
 
-                                                    if (IsSaveAsNew)
-                                                        dtTreeGrid.Rows[RowIndex]["DrawingName"] = Helper.RemovePreFixFromFileName(Path.GetFileName(xgn.Name), Convert.ToString(dtTreeGrid.Rows[RowIndex]["prefix"]));
-
-
-                                                    if (Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim().Length != 0)
-                                                    {
-                                                        PK = Convert.ToString(dtTreeGrid.Rows[RowIndex]["DrawingId"]).Trim();
-                                                    }
-                                                    dtTreeGrid.Rows[RowIndex]["PK"] = PK;
-                                                    dtTreeGrid.Rows[RowIndex]["FK"] = Parent;
                                                 }
-
-                                                else
-                                                {
-                                                    DataRow dr = dtTreeGrid.NewRow();
-                                                    dr["DrawingName"] = xgn.Name;
-                                                    dr["filepath"] = xgn.Database.Filename.ToString();
-                                                    dr["sourceid"] = childrens;
-                                                    dr["isroot"] = "false";
-                                                    dr["Layouts"] = Layouts.ToString();
-                                                    dr["IsNewXref"] = "true";
-                                                    dr["PK"] = PK;
-                                                    dr["FK"] = Parent;
-                                                    dtTreeGrid.Rows.Add(dr);
-                                                }
-
-                                                GetDrawingExternalRefreces(xgn.Database.Filename, PK, ref dtTreeGrid, ref RefCount, IsSaveAsNew);
-
+                                                tr.Commit();
                                             }
-                                            tr.Commit();
                                         }
+                                        break;
                                     }
-                                    break;
-                                }
-                        }//Switch Complete
-                    }//For Complete                    
-                }//Complete MainDB
-            }
-            catch (System.Exception ex)
-            {
-                ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", Db.Filename, ex.Message);
-                ShowMessage.ErrorMess(ex.Message);
+                            }//Switch Complete
+                        }//For Complete                    
+                    }//Complete MainDB
+                }
+                catch (System.Exception ex)
+                {
+                    ed.WriteMessage("\nProblem reading/processing \"{0}\": {1}", Db.Filename, ex.Message);
+                    ShowMessage.ErrorMess(ex.Message);
+                }
             }
             return dtTreeGrid;
         }
-        
+
         public Hashtable GetLayoutInfo(string FilePath)
         {
             string Layouts = "";
@@ -1945,7 +2010,7 @@ namespace RBAutocadPlugIn
             catch { }
             return LayoutInfo;
         }
-         
+
         public int IsXRefNodeEqual(XrefGraph xrGraph, GraphNode grNode)
         {
             for (int i = 0; i < xrGraph.NumNodes; i++)
@@ -1954,8 +2019,8 @@ namespace RBAutocadPlugIn
                     return i;
             }
             return -1;
-        } 
-        
+        }
+
         public void UpdateDrawingLayoutAttribute(Hashtable documentProperties = null)
         {
             try
@@ -2198,7 +2263,7 @@ namespace RBAutocadPlugIn
             {
                 ShowMessage.ErrorMess(ex.Message.ToString(), "Error");
             }
-        } 
+        }
 
         public bool CheckForCurruntlyOpenDoc(string FilePath, bool MakeActive = true)
         {
@@ -2265,8 +2330,8 @@ namespace RBAutocadPlugIn
             {
                 ShowMessage.ErrorMess(E.Message);
             }
-        } 
-       
+        }
+
         public void AttachingExternalReference(string ParentFilePath, string XrefFilePath, string Prefix)
         {
             // Get the current database and start a transaction
@@ -2285,10 +2350,10 @@ namespace RBAutocadPlugIn
                     {
                         String layoutName = de.Key;
                         if (layoutName == "Model")
-                        { 
-                                break; 
+                        {
+                            break;
                         }
-                        
+
                     }
                     tr.Commit();
                 }
@@ -2320,44 +2385,49 @@ namespace RBAutocadPlugIn
                 }
                 acCurDb.SaveAs(ParentFilePath, DwgVersion.Current);
             }
-        } 
+        }
 
         public void renamelayoutName(String FilePath, string OldLayoutName, string NewLayoutName)
-        { 
+        {
             try
-            { 
+            {
                 Database Db = new Database(false, true);
                 Db.ReadDwgFile(FilePath, FileOpenMode.OpenForReadAndAllShare, true, null);
                 //get the Layout name
 
                 if (Db != null)
-                { 
+                {
                     using (Db)
-                    { 
-                        Transaction tr = Db.TransactionManager.StartTransaction(); 
+                    {
+                        Transaction tr = Db.TransactionManager.StartTransaction();
                         using (tr)
-                        { 
+                        {
                             DBDictionary layoutDict = tr.GetObject(Db.LayoutDictionaryId, OpenMode.ForWrite) as DBDictionary;
+                            int count = 0;
                             foreach (DBDictionaryEntry de in layoutDict)
                             {
                                 String layoutName = de.Key;
                                 if (layoutName != "Model")
                                 {
 
-                                    Layout layout = tr.GetObject(de.Value, OpenMode.ForWrite) as Layout; 
+                                    Layout layout = tr.GetObject(de.Value, OpenMode.ForWrite) as Layout;
 
-                                    if (layout.LayoutName == OldLayoutName || layout.LayoutName.Contains(OldLayoutName))
+                                    if (layout.LayoutName == OldLayoutName)
                                     {
                                         layout.LayoutName = NewLayoutName;
-
+                                        count = 1;
                                         break;
-                                    } 
+                                    }
                                 }
                                 else
                                 {
                                     continue;
                                 }
-                            } 
+                            }
+                            if (count == 0)
+                            {
+
+                            }
                             tr.Commit();
                         }
                         Db.SaveAs(FilePath, DwgVersion.Current);
@@ -2368,9 +2438,9 @@ namespace RBAutocadPlugIn
             catch (System.Exception E)
             {
                 ShowMessage.ErrorMess(E.Message);
-            }  
+            }
         }
-      
+
         public void AddingAttributeToABlock(String FilePath, List<string> Attributes, string LayoutName, bool IsLayout)
         {
             // Get the current database and start a transaction

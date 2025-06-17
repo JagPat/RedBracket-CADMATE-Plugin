@@ -86,7 +86,10 @@ namespace RBAutocadPlugIn.UI_Forms
                 }
 
                 dtTreeGridData = cadManager.GetDrawingExternalRefreces1(IsSaveAs);
-
+                if (dtTreeGridData == null)
+                {
+                    return false;
+                }
 
                 string FoldID = "", FoldPath = "", ProJNmNo = "", OldDWGNo = "";
                 for (int i = 0; i < dtTreeGridData.Rows.Count; i++)
@@ -105,14 +108,16 @@ namespace RBAutocadPlugIn.UI_Forms
                         IsParentNew = true;
                     }
 
-
+                    //   MessageBox.Show("" + dtTreeGridData.Rows[i]);
 
                     if (Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "true" &&
                         Convert.ToString(dtTreeGridData.Rows[i]["DrawingId"]).Trim().Length > 0)
                     {
                         FoldID = Convert.ToString(dtTreeGridData.Rows[i]["folderid"]);
                         FoldPath = Convert.ToString(dtTreeGridData.Rows[i]["folderpath"]);
+                        // MessageBox.Show("" + dtTreeGridData.Rows[i]["ProjectNameNo"]);
                         ProJNmNo = Convert.ToString(dtTreeGridData.Rows[i]["ProjectNameNo"]);
+                        //   MessageBox.Show(""+ProJNmNo);
                     }
 
                     if (!IsParentNew && Convert.ToString(dtTreeGridData.Rows[i]["isroot"]).ToLower() == "false" &&
@@ -260,7 +265,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         {
                             dtLayoutInfo.Rows.Clear();
                         }
-
+                        //    MessageBox.Show(""+rw["projectnameno"]);
                         node = savetreeGrid.Nodes.Add(LIStatus, true, rw["drawingName"].ToString(), rw["drawingnumber"].ToString(), rw["Classification"].ToString(),
                            rw["drawingstate"].ToString(),
                             rw["drawingid"].ToString(), rw["filepath"].ToString(), rw["type"].ToString(), rw["lockstatus"].ToString(), rw["sourceid"].ToString()
@@ -292,15 +297,17 @@ namespace RBAutocadPlugIn.UI_Forms
                         node.Cells["Check"].ReadOnly = true;
 
                         CADDescription.Text = Convert.ToString(rw["versiondesc"]);
-
+                        //   MessageBox.Show(rw["drawingid"].ToString());
                         if (rw["drawingid"].ToString() == "")
                         {
+                            //   MessageBox.Show("1");
                             node.Cells["projectname"].Value = "";
                             node.Cells["projectname"].ReadOnly = false;
                             node.Cells["drawingnumber"].Value = "AutoFill";
                         }
                         else
                         {
+                            //  MessageBox.Show("2");
                             node.Cells["projectname"].ReadOnly = true;
                             node.Cells["State"].ReadOnly = !Convert.ToBoolean(rw["caneditstatus"]);
                         }
@@ -435,6 +442,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
                         if (IsParentNew)
                         {
+                            //  MessageBox.Show("parent " + IsParentNew);
                             node1.Cells["projectname"].Value = "";
                             node1.Cells["FolderPath"].Value = "";
                             node1.Cells["FolderID"].Value = "";
@@ -519,7 +527,7 @@ namespace RBAutocadPlugIn.UI_Forms
                             dr["LayoutStatus"] = FirstStatusName;
                         else
                             dr["LayoutStatus"] = obj.statusname;
-                        dr["Version"] = obj.versionno;
+                        dr["Version"] = obj.versionNo;
                         dr["Description"] = obj.description;
                         dr["IsFile"] = "0";
                         dr["TypeID"] = obj.typeId;
@@ -685,7 +693,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
                         if (!Convert.ToBoolean(Convert.ToString(currentTreeGrdiNode.Cells["isEditable"].Value).ToLower()))
                         {
-                            InfoMess("You dont have edit permission for this file.");
+                            InfoMess("You don't have edit permission for this file.");
                             CloseProgressBar();
                             this.Cursor = Cursors.Default; CheckFileInfoFlag = true;
                             return;
@@ -701,8 +709,8 @@ namespace RBAutocadPlugIn.UI_Forms
 
 
 
-                    IncrementProgressBar(1, "Uploading file properties.");
-
+                    IncrementProgressBar(1, "Saving file properties on server.");
+                    //Helper.HideProgressBar();
                     // save properties in RB
                     Is_Save = objController.ExecuteSave(objCmd, false, lstdtLayoutInfo);
 
@@ -757,7 +765,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         #endregion
 
                         #region Updating Layout Name
-                        IncrementProgressBar(1, "Updating layout names.");
+                        IncrementProgressBar(1, "Updating layout names in file.");
                         foreach (PLMObject objplmo in objController.plmObjs)
                         {
                             // CloseProgressBar();
@@ -785,18 +793,12 @@ namespace RBAutocadPlugIn.UI_Forms
 
                         cadManager.UpdateExRefFileName(objCmd.FilePath, objCmd.FilePath, ref objController.plmObjs);
 
-                        IncrementProgressBar(1, "Uploading file to redbracket.");
+                        IncrementProgressBar(1, "Uploading file to server.");
 
 
                         // save File in RB
                         Is_Save = objController.ExecuteSave(objCmd, true);
-
-
-
-
                     }
-
-
 
                     if (Is_Save && IsSaveAs)
                     {
@@ -806,7 +808,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     }
                     if (!Is_Save)
                     {
-                        //DeleteFileFromDB(objController.plmObjs);
+                        DeleteFileFromDB(objController.plmObjs);
                     }
                     // To delete file
                     if (Is_Delete && Is_Save)
@@ -956,7 +958,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     }
                     else
                     {
-                        if (FileNameCheckForSpecialCharacter(LN))
+                        if (FileNameCheckForSpecialCharacter(LN,true))
                         {
                             if (LN.Length < FileLayoutNameLength)
                             {
@@ -1395,7 +1397,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
 
                         if (!objRBC.DeleteFileNLayoutDetail(obj.PK))
-                            break; 
+                            break;
                     }
                 }
 
@@ -1560,17 +1562,7 @@ namespace RBAutocadPlugIn.UI_Forms
                             StackFolderSearchReasult.Clear();
                             StackFolderSearchReasult.Push(objFolderSearchResult);
 
-                            if (objFolderSearchResult == null)
-                            {
-                                InfoMess("No folder found inside project " + ProjectName); return;
-                            }
-                            else
-                            {
-                                if (StackFolderSearchReasult.Count == 0)
-                                {
-                                    StackFolderSearchReasult.Push(objFolderSearchResult);
-                                }
-                            }
+
                         }
 
                         Stack<List<clsFolderSearchReasult>> TStackFolderSearchReasult = new Stack<List<clsFolderSearchReasult>>();
@@ -1589,6 +1581,7 @@ namespace RBAutocadPlugIn.UI_Forms
                             {
                                 LoadFlag = true;
                                 AssignFolderPath(savetreeGrid.Nodes[0], selectedTreeNode, objFolderSelection);
+                                AssignStackFolderSearchReasultToTag(selectedTreeNode, StackFolderSearchReasult);
                                 LoadFlag = false;
                             }
                             else
@@ -1638,7 +1631,8 @@ namespace RBAutocadPlugIn.UI_Forms
                         Convert.ToString(selectedTreeNode.Cells["revision"].Value),
                         MyProjectId,
                         Convert.ToString(selectedTreeNode.Cells["filepath"].Value),
-                        Convert.ToString(selectedTreeNode.Cells["DrawingNumberOld"].Value));
+                        Convert.ToString(selectedTreeNode.Cells["DrawingNumberOld"].Value),
+                        Convert.ToString(selectedTreeNode.Cells["DrawingNumber"].Value));
                 objfrm.dtLayoutInfo = dtLayoutInfo.Copy();
                 if (IsShow)
                 {
@@ -1730,7 +1724,7 @@ namespace RBAutocadPlugIn.UI_Forms
                     {
                         ChildNode.Cells["cadtype"].Value = CurrentNode.Cells["cadtype"].Value;
                         ChildNode.Cells["State"].Value = CurrentNode.Cells["State"].Value;
-                        ChildNode.Cells["Check"].Value = CurrentNode.Cells["Check"].Value;
+                        ChildNode.Cells["Check"].Value =!Convert.ToBoolean(CurrentNode.Cells["Check"].Value);
                         ChildNode.Cells["FolderID"].Value = CurrentNode.Cells["FolderID"].Value;
                         ChildNode.Cells["FolderPath"].Value = CurrentNode.Cells["FolderPath"].Value;
                         LoadFlag = true;
@@ -2396,6 +2390,11 @@ namespace RBAutocadPlugIn.UI_Forms
             {
                 ErrorMess(E.Message);
             }
+        }
+
+        private void pnlTop_Paint(object sender, PaintEventArgs e)
+        {
+
         }
 
 

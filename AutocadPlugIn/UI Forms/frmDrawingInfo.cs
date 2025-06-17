@@ -115,7 +115,7 @@ namespace RBAutocadPlugIn.UI_Forms
                                 lbLayoutNameC1.Tag = objLI1.id;
                                 lbLayoutNoC1.Text = Convert.ToString(objLI1.fileNo);
                                 lbLayoutNoC1.Tag = objLI1.description;
-                                lbLayoutVersionC1.Text = Convert.ToString(objLI1.versionno);
+                                lbLayoutVersionC1.Text = Convert.ToString(objLI1.versionNo);
                                 object o = objLI1.statusId == null || objLI1.statusId == string.Empty ? 0 : Convert.ToInt16(objLI1.statusId);
                                 cmbLayoutStatusC1.Tag = cmbLayoutStatusC1.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty || objLI1.statusId == "0" ? -1 : Convert.ToInt16(objLI1.statusId);
                                 cmbLayoutTypeC1.Tag = cmbLayoutTypeC1.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty || objLI1.typeId == "0" ? -1 : Convert.ToInt16(objLI1.typeId);
@@ -126,7 +126,7 @@ namespace RBAutocadPlugIn.UI_Forms
                                 lbLayoutNameC2.Tag = objLI1.id;
                                 lbLayoutNoC2.Text = Convert.ToString(objLI1.fileNo);
                                 lbLayoutNoC2.Tag = objLI1.description;
-                                lbLayoutVersionC2.Text = Convert.ToString(objLI1.versionno);
+                                lbLayoutVersionC2.Text = Convert.ToString(objLI1.versionNo);
                                 cmbLayoutStatusC2.Tag = cmbLayoutStatusC2.SelectedValue = objLI1.statusId == null || objLI1.statusId == string.Empty || objLI1.statusId == "0" ? -1 : Convert.ToInt16(objLI1.statusId);
                                 cmbLayoutTypeC2.Tag = cmbLayoutTypeC2.SelectedValue = objLI1.typeId == null || objLI1.typeId == string.Empty || objLI1.typeId == "0" ? -1 : Convert.ToInt16(objLI1.typeId);
 
@@ -163,7 +163,7 @@ namespace RBAutocadPlugIn.UI_Forms
                                 CRC -= 6;
                                 tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNameC" + count, Tag = objLI1.id, AutoEllipsis = true }, 1, CRC++);
                                 tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutNoC" + count, Tag = objLI1.description, AutoEllipsis = true }, 1, CRC++);
-                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 1, CRC++);
+                                tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionNo), Font = font, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 1, CRC++);
                                 tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutStatusC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
                                 tlpMain.Controls.Add(new ComboBox() { Font = font1, Name = "cmbLayoutTypeC" + count, Dock = DockStyle.Fill, Margin = new Padding(0) }, 1, CRC++);
 
@@ -284,7 +284,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         {
                             lbLayoutNameL1.Text = Convert.ToString(objLI1.name);
                             lbLayoutNoL1.Text = Convert.ToString(objLI1.fileNo);
-                            lbLayoutVersionL1.Text = Convert.ToString(objLI1.versionno);
+                            lbLayoutVersionL1.Text = Convert.ToString(objLI1.versionNo);
                             lbLayoutStatusL1.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
 
                             lbLayoutTypeL1.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
@@ -294,7 +294,7 @@ namespace RBAutocadPlugIn.UI_Forms
                         {
                             lbLayoutNameL2.Text = Convert.ToString(objLI1.name);
                             lbLayoutNoL2.Text = Convert.ToString(objLI1.fileNo);
-                            lbLayoutVersionL2.Text = Convert.ToString(objLI1.versionno);
+                            lbLayoutVersionL2.Text = Convert.ToString(objLI1.versionNo);
                             lbLayoutStatusL2.Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname);
                             lbLayoutTypeL2.Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name);
                         }
@@ -331,7 +331,7 @@ namespace RBAutocadPlugIn.UI_Forms
 
                             tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 2, CRC++);
                             tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.fileNo), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 2, CRC++);
-                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionno), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 2, CRC++);
+                            tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.versionNo), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, AutoEllipsis = true }, 2, CRC++);
                             tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.status == null ? string.Empty : objLI1.status.statusname == null ? string.Empty : objLI1.status.statusname), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutStatusL" + count1, AutoEllipsis = true }, 2, CRC++);
                             tlpMain.Controls.Add(new Label() { Text = Convert.ToString(objLI1.type == null ? string.Empty : objLI1.type.name == null ? string.Empty : objLI1.type.name), Font = font1, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill, Name = "lbLayoutTypeL" + count1, AutoEllipsis = true }, 2, CRC++);
 

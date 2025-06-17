@@ -39,9 +39,11 @@
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtWorkingDirectory = new System.Windows.Forms.TextBox();
             this.lbDriveList = new System.Windows.Forms.ListBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox_Login = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.LoginPictureBox = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlTop = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
@@ -50,19 +52,17 @@
             this.pnlRight = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.LoginPictureBox = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox_Checkout.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox_Login.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlTop.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // CheckoutDirLabel
@@ -79,7 +79,7 @@
             // 
             // txtSettingUrl
             // 
-            this.txtSettingUrl.BackColor = Helper.FormBGColor;
+            this.txtSettingUrl.BackColor = System.Drawing.Color.Azure;
             this.txtSettingUrl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtSettingUrl.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSettingUrl.Location = new System.Drawing.Point(243, 48);
@@ -102,7 +102,7 @@
             // 
             // txtSettingUserNm
             // 
-            this.txtSettingUserNm.BackColor = Helper.FormBGColor;
+            this.txtSettingUserNm.BackColor = System.Drawing.Color.Azure;
             this.txtSettingUserNm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtSettingUserNm.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSettingUserNm.Location = new System.Drawing.Point(243, 13);
@@ -125,7 +125,7 @@
             // 
             // userSettingsCancelbutton
             // 
-            this.userSettingsCancelbutton.BackColor = Helper.FormBGColor;
+            this.userSettingsCancelbutton.BackColor = System.Drawing.Color.Azure;
             this.userSettingsCancelbutton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userSettingsCancelbutton.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.userSettingsCancelbutton.Location = new System.Drawing.Point(226, 3);
@@ -138,7 +138,7 @@
             // 
             // userSettingsSavebtn
             // 
-            this.userSettingsSavebtn.BackColor = Helper.FormBGColor;
+            this.userSettingsSavebtn.BackColor = System.Drawing.Color.Azure;
             this.userSettingsSavebtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userSettingsSavebtn.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.userSettingsSavebtn.Location = new System.Drawing.Point(90, 3);
@@ -193,7 +193,7 @@
             // 
             // txtWorkingDirectory
             // 
-            this.txtWorkingDirectory.BackColor = Helper.FormBGColor;
+            this.txtWorkingDirectory.BackColor = System.Drawing.Color.Azure;
             this.txtWorkingDirectory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtWorkingDirectory.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtWorkingDirectory.Location = new System.Drawing.Point(113, 123);
@@ -204,7 +204,7 @@
             // 
             // lbDriveList
             // 
-            this.lbDriveList.BackColor = Helper.FormBGColor;
+            this.lbDriveList.BackColor = System.Drawing.Color.Azure;
             this.lbDriveList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbDriveList.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbDriveList.FormattingEnabled = true;
@@ -215,6 +215,20 @@
             this.lbDriveList.Size = new System.Drawing.Size(326, 56);
             this.lbDriveList.TabIndex = 18;
             this.lbDriveList.SelectedIndexChanged += new System.EventHandler(this.lbDriveList_SelectedIndexChanged);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox1.Image = global::RBAutocadPlugIn.Properties.Resources.download;
+            this.pictureBox1.Location = new System.Drawing.Point(10, 10);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.tableLayoutPanel4.SetRowSpan(this.pictureBox1, 3);
+            this.pictureBox1.Size = new System.Drawing.Size(100, 90);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 15;
+            this.pictureBox1.TabStop = false;
             // 
             // label1
             // 
@@ -269,6 +283,21 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(453, 98);
             this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // LoginPictureBox
+            // 
+            this.LoginPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.LoginPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LoginPictureBox.ErrorImage = null;
+            this.LoginPictureBox.Image = global::RBAutocadPlugIn.Properties.Resources.Login;
+            this.LoginPictureBox.Location = new System.Drawing.Point(10, 10);
+            this.LoginPictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.LoginPictureBox.Name = "LoginPictureBox";
+            this.tableLayoutPanel2.SetRowSpan(this.LoginPictureBox, 4);
+            this.LoginPictureBox.Size = new System.Drawing.Size(100, 80);
+            this.LoginPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.LoginPictureBox.TabIndex = 9;
+            this.LoginPictureBox.TabStop = false;
             // 
             // tableLayoutPanel1
             // 
@@ -384,35 +413,6 @@
             this.tableLayoutPanel5.Size = new System.Drawing.Size(447, 42);
             this.tableLayoutPanel5.TabIndex = 15;
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Image = global::RBAutocadPlugIn.Properties.Resources.download;
-            this.pictureBox1.Location = new System.Drawing.Point(10, 10);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.tableLayoutPanel4.SetRowSpan(this.pictureBox1, 3);
-            this.pictureBox1.Size = new System.Drawing.Size(100, 90);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 15;
-            this.pictureBox1.TabStop = false;
-            // 
-            // LoginPictureBox
-            // 
-            this.LoginPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.LoginPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LoginPictureBox.ErrorImage = null;
-            this.LoginPictureBox.Image = global::RBAutocadPlugIn.Properties.Resources.Login;
-            this.LoginPictureBox.Location = new System.Drawing.Point(10, 10);
-            this.LoginPictureBox.Margin = new System.Windows.Forms.Padding(0);
-            this.LoginPictureBox.Name = "LoginPictureBox";
-            this.tableLayoutPanel2.SetRowSpan(this.LoginPictureBox, 4);
-            this.LoginPictureBox.Size = new System.Drawing.Size(100, 80);
-            this.LoginPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.LoginPictureBox.TabIndex = 9;
-            this.LoginPictureBox.TabStop = false;
-            // 
             // panel1
             // 
             this.panel1.Location = new System.Drawing.Point(3, 3);
@@ -425,7 +425,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackColor = Helper.FormBGColor;
+            this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(477, 386);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -441,16 +441,16 @@
             this.groupBox_Checkout.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox_Login.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.LoginPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }

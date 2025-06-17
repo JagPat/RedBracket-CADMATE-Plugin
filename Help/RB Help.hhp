@@ -1,6 +1,15 @@
 [OPTIONS]
-Contents file=F:\Help\RedBracket_UserGuide.hhc
-Index file=F:\Help\RedBracket_UserGuide.hhk
+Compatibility=1.1 or later
+Compiled file=RB Help.chm
+Contents file=RedBracket_UserGuide.hhc
+Default topic=index.htm
+Display compile progress=No
+Index file=RedBracket_UserGuide.hhk
+Language=0x409 English (United States)
+
 
 [FILES]
 index.htm
+
+[INFOTYPES]
+

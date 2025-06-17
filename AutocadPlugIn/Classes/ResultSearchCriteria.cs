@@ -94,10 +94,10 @@ namespace RBAutocadPlugIn
 
         public ResultSearchCriteria[] filebean { get; set; }
         public string description { get; set; }
-        
+
 
     }
- 
+
     public class clsDownloadedFiles
     {
         public string MainFilePath { set; get; }
@@ -226,7 +226,7 @@ namespace RBAutocadPlugIn
 
         public string createdby { set; get; }
 
-        public string versionno { set; get; }
+        public string versionNo { set; get; }
 
         public string projectname { set; get; }
 
@@ -297,4 +297,14 @@ namespace RBAutocadPlugIn
         public string CoreStatus { set; get; }
 
     }
-}
+    public class clsVersionInfo
+    {
+        public string fileName { set; get; }
+        public string releaseDate { set; get; }
+        public string Id { set; get; }
+        public string version { set; get; }
+    }
+
+     
+    
+    }

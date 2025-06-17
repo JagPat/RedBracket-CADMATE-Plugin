@@ -1,9 +1,10 @@
 using System;
 using System.Data;
-using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
-using System.Text;
+using System.Windows.Forms;
+using Gssoft.Gscad.ApplicationServices;
+using Gssoft.Gscad.DatabaseServices;
+using Gssoft.Gscad.EditorInput;
 
 namespace RBAutocadPlugIn
 {
@@ -16,8 +17,8 @@ namespace RBAutocadPlugIn
             set { this.drawingIds = value; }
         }
 
-        private DataTable drawingInfo;
-        public DataTable DrawingInfo
+        private System.Data.DataTable drawingInfo;
+        public System.Data.DataTable DrawingInfo
         {
             get { return this.drawingInfo; }
             set { this.drawingInfo = value; }

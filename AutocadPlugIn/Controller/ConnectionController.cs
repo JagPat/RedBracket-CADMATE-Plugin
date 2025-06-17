@@ -41,6 +41,8 @@ namespace RBAutocadPlugIn
             }
             catch (System.Exception ex)
             {
+
+               
                 errorString = ex.Message;
                 return;
             }

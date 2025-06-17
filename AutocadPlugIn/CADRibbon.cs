@@ -1,92 +1,543 @@
-﻿using RBAutocadPlugIn.UI_Forms;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
-using Autodesk.Windows;
+using RBAutocadPlugIn.UI_Forms;
+
+// GRX SDK .NET API namespaces
+using Gssoft.Gscad.ApplicationServices;
+using Gssoft.Gscad.DatabaseServices;
+using Gssoft.Gscad.EditorInput;
+using Gssoft.Gscad.Runtime;
+
+// System namespaces
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 using System.Collections;
+using System.Diagnostics;
+
+// Command namespaces
+using RBAutocadPlugIn.Commands;
 
 namespace RBAutocadPlugIn
 {
     public class CADRibbon
     {
-        public static bool ribbonStatus = false;
-        public static bool connect = false;
-        public bool browseDEnable = false;
-        public bool createDEnable = false;
-        public bool browseBEnable = false;
-        public bool createBEnable = false;
-        public bool LockEnable = false;
-        public bool UnlockEnable = false;
-        public bool SaveEnable = false;
-        public bool DrawingInfoEnable = false;
+        // Status flags
+        public static bool IsConnected = false;
+        public bool BrowseDrawingEnabled = false;
+        public bool CreateDrawingEnabled = false;
+        public bool BrowseBlockEnabled = false;
+        public bool CreateBlockEnabled = false;
+        public bool LockEnabled = false;
+        public bool UnlockEnabled = false;
+        public bool SaveEnabled = false;
+        public bool DrawingInfoEnabled = false;
+        
+        // Timer for version checking
         public Timer timerVersion = new Timer();
-        //Button structure in ribbon
-
-        public Autodesk.Windows.RibbonControl ribbonControl = Autodesk.Windows.ComponentManager.Ribbon;
-        public RibbonTab Tab = new RibbonTab();
-
-
-        public RibbonPanel rpMain = new RibbonPanel();
-        public Autodesk.Windows.RibbonPanelSource rpsConnection = new RibbonPanelSource();
-        public RibbonButton rbConnection = new RibbonButton();
-
-
-        public RibbonPanel rpFileOperations = new RibbonPanel();
-        public RibbonPanelSource rpsFileOperations = new RibbonPanelSource();
-
-        public RibbonButton rbBrowseDrawing = new RibbonButton();
-
-        public RibbonPanelSource rpsSave = new RibbonPanelSource();
-        public RibbonPanel rpSave = new RibbonPanel();
-
-
-        public RibbonButton rbLockUnlock = new RibbonButton();
-        public RibbonButton rbSave = new RibbonButton();
-        public RibbonButton rbSaveAS = new RibbonButton();
-
-        public RibbonPanel rpHelpnAbout = new RibbonPanel();
-        public RibbonPanelSource rpsHelpnAbout = new RibbonPanelSource();
-
-        public RibbonButton rbHelp = new RibbonButton();
-        public RibbonButton rbAbout = new RibbonButton();
-
-        public RibbonPanel rpSetting = new RibbonPanel();
-        public RibbonPanelSource rpsSetting = new RibbonPanelSource();
-
-        public RibbonButton rbSetting = new RibbonButton();
-
-        public RibbonButton rbDrawingInfo = new RibbonButton();
-
-
-        public RibbonButton rbRefresh = new RibbonButton();
-
-        public RibbonPanel rpCurrentDI = new RibbonPanel();
-        public RibbonPanelSource rpsCurrentDI = new RibbonPanelSource();
-        public RibbonLabel lblCurrentFileVersion = new RibbonLabel();
-        public RibbonLabel lblCurrentFileVersion1 = new RibbonLabel();
-        public RibbonLabel lblCurrentFileVersionRB = new RibbonLabel();
-        public RibbonLabel lblCurrentFileVersionRB1 = new RibbonLabel();
-        public RibbonLabel txtCurrentFileVersion = new RibbonLabel();
-        public RibbonLabel txtCurrentFileVersionRB = new RibbonLabel();
-
+        
+        // Version information
         public string CurrentVersion = "";
         public string LatestVersion = "";
+        
+        // Main toolbar
+        private ToolStrip toolStrip;
+        
+        // ToolStrip buttons
+        private ToolStripButton btnConnect;
+        private ToolStripButton btnBrowseDrawing;
+        private ToolStripButton btnSave;
+        private ToolStripButton btnLockUnlock;
+        private ToolStripButton btnDrawingInfo;
+        private ToolStripButton btnHelp;
+        private ToolStripButton btnAbout;
+        private ToolStripButton btnUserSetting;
+        private ToolStripButton btnRefresh;
+        
+        // Status strip for version info
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel lblVersionInfo;
+        
+        // Reference to the main form (if needed)
+        private Form mainForm;
 
+        /// <summary>
+        /// Initializes a new instance of the CADRibbon class
+        /// </summary>
+        public CADRibbon(Form parentForm = null)
+        {
+            mainForm = parentForm;
+            InitializeToolbar();
+        }
 
+        /// <summary>
+        /// Initializes the toolbar and its controls
+        /// </summary>
+        private void InitializeToolbar()
+        {
+            // Create the main toolbar
+            toolStrip = new ToolStrip();
+            toolStrip.GripStyle = ToolStripGripStyle.Hidden;
+            toolStrip.Dock = DockStyle.Top;
+            toolStrip.AutoSize = false;
+            toolStrip.Height = 60; // Standard toolbar height
+            toolStrip.Padding = new Padding(2);
+            toolStrip.RenderMode = ToolStripRenderMode.System;
+            
+            // Set a default font that works well with the application
+            toolStrip.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            
+            // Set up the toolbar appearance
+            toolStrip.BackColor = SystemColors.Control;
+            toolStrip.Renderer = new ToolStripProfessionalRenderer();
+            
+            // Create buttons with proper image scaling
+            // ImageScaling is set on individual ToolStripItems, not on the ToolStrip itself
+            CreateToolbarButtons();
 
+            // Create status strip for version info
+            statusStrip = new StatusStrip();
+            lblVersionInfo = new ToolStripStatusLabel();
+            statusStrip.Items.Add(lblVersionInfo);
 
+            // Add controls to the main form if provided
+            if (mainForm != null)
+            {
+                mainForm.Controls.Add(toolStrip);
+                mainForm.Controls.Add(statusStrip);
+                statusStrip.Dock = DockStyle.Bottom;
+            }
+        }
 
+        /// <summary>
+        /// Creates and configures the toolbar buttons
+        /// </summary>
+        private void CreateToolbarButtons()
+        {
+            // Connect button
+            btnConnect = CreateButton("Connect", "Connect to the system", "connect.png");
+            btnConnect.Click += (s, e) => new ConnectCommand().Execute(null);
+            toolStrip.Items.Add(btnConnect);
 
-        //[assembly: CommandClass(typeof(DocumentActevatedEvent.MyCommands))]
-        //[assembly: ExtensionApplication(typeof(DocumentActevatedEvent.MyCommands))]
+            // Browse Drawing button
+            btnBrowseDrawing = CreateButton("Browse Drawing", "Browse for drawing", "browse.png");
+            btnBrowseDrawing.Click += (s, e) => new BrowseDrawingCommand().Execute(null);
+            toolStrip.Items.Add(btnBrowseDrawing);
 
+            // Save button
+            btnSave = CreateButton("Save", "Save the current drawing", "save.png");
+            btnSave.Click += (s, e) => new SaveCommand().Execute(null);
+            toolStrip.Items.Add(btnSave);
+
+            // Lock/Unlock button
+            btnLockUnlock = CreateButton("Lock", "Lock/Unlock drawing", "lock.png");
+            btnLockUnlock.Click += (s, e) => 
+            {
+                if (LockEnabled)
+                    new LockCommand().Execute(null);
+                else
+                    new UnlockCommand().Execute(null);
+            };
+            toolStrip.Items.Add(btnLockUnlock);
+
+            // Drawing Info button
+            btnDrawingInfo = CreateButton("Drawing Info", "Show drawing information", "info.png");
+            btnDrawingInfo.Click += (s, e) => new DrawingInfoCommand().Execute(null);
+            toolStrip.Items.Add(btnDrawingInfo);
+
+            // Add a separator
+            toolStrip.Items.Add(new ToolStripSeparator());
+
+            // Help button
+            btnHelp = CreateButton("Help", "Show help", "help.png");
+            btnHelp.Click += (s, e) => new HelpCommand().Execute(null);
+            toolStrip.Items.Add(btnHelp);
+
+            // About button
+            btnAbout = CreateButton("About", "About this application", "about.png");
+            btnAbout.Click += (s, e) => new AboutCommand().Execute(null);
+            toolStrip.Items.Add(btnAbout);
+
+            // User Settings button
+            btnUserSetting = CreateButton("Settings", "User settings", "settings.png");
+            btnUserSetting.Click += (s, e) => new UserSettingsCommand().Execute(null);
+            toolStrip.Items.Add(btnUserSetting);
+
+            // Refresh button
+            btnRefresh = CreateButton("Refresh", "Refresh the view", "refresh.png");
+            btnRefresh.Click += (s, e) => new RefreshCommand().Execute(null);
+            toolStrip.Items.Add(btnRefresh);
+        }
+
+        /// <summary>
+        /// Helper method to create a standardized toolbar button
+        /// </summary>
+        private ToolStripButton CreateButton(string text, string tooltip, string imageName)
+        {
+            var button = new ToolStripButton();
+            button.Text = text;
+            button.ToolTipText = tooltip;
+            button.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+            button.TextImageRelation = TextImageRelation.ImageAboveText;
+            button.AutoSize = false;
+            button.Height = 50;
+            button.Width = 70;
+            button.ImageScaling = ToolStripItemImageScaling.None;
+            
+            // Try to load the image if it exists
+            try
+            {
+                // Look for the image in the application directory
+                string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", imageName);
+                if (File.Exists(imagePath))
+                {
+                    // Explicitly use System.Drawing.Image to avoid ambiguity
+                    button.Image = System.Drawing.Image.FromFile(imagePath);
+                }
+                else
+                {
+                    // Use a default system image if the file doesn't exist
+                    button.Image = SystemIcons.Information.ToBitmap();
+                }
+            }
+            catch
+            {
+                // If there's an error loading the image, just continue without it
+                button.Image = null;
+            }
+            
+            return button;
+        }
+
+        /// <summary>
+        /// Updates the UI state based on the current connection status
+        /// </summary>
+        public void UpdateUIState()
+        {
+            // Update button states based on connection status
+            btnBrowseDrawing.Enabled = IsConnected && BrowseDrawingEnabled;
+            btnSave.Enabled = IsConnected && SaveEnabled;
+            
+            // Update lock/unlock button
+            if (LockEnabled)
+            {
+                btnLockUnlock.Text = "Lock";
+                btnLockUnlock.ToolTipText = "Lock the current drawing";
+                // Update image if needed
+            }
+            else if (UnlockEnabled)
+            {
+                btnLockUnlock.Text = "Unlock";
+                btnLockUnlock.ToolTipText = "Unlock the current drawing";
+                // Update image if needed
+            }
+            
+            btnLockUnlock.Enabled = IsConnected && (LockEnabled || UnlockEnabled);
+            btnDrawingInfo.Enabled = IsConnected && DrawingInfoEnabled;
+            
+            // Always enable these buttons
+            btnHelp.Enabled = true;
+            btnAbout.Enabled = true;
+            btnUserSetting.Enabled = true;
+            btnRefresh.Enabled = true;
+            
+            // Update version info in status bar
+            UpdateVersionInfo();
+        }
+
+        /// <summary>
+        /// Updates the version information in the status bar
+        /// </summary>
+        private void UpdateVersionInfo()
+        {
+            if (!string.IsNullOrEmpty(CurrentVersion))
+            {
+                string versionText = $"Version: {CurrentVersion}";
+                if (!string.IsNullOrEmpty(LatestVersion) && CurrentVersion != LatestVersion)
+                {
+                    versionText += $" (New version {LatestVersion} available)";
+                }
+                lblVersionInfo.Text = versionText;
+            }
+        }
+
+        /// <summary>
+        /// Shows a message to the user
+        /// </summary>
+        public void ShowMessage(string message, string caption, MessageBoxIcon icon = MessageBoxIcon.Information)
+        {
+            if (mainForm != null && !mainForm.IsDisposed && mainForm.InvokeRequired)
+            {
+                mainForm.Invoke(new Action(() => MessageBox.Show(mainForm, message, caption, MessageBoxButtons.OK, icon)));
+            }
+            else
+            {
+                MessageBox.Show(mainForm, message, caption, MessageBoxButtons.OK, icon);
+            }
+        }
+
+        /// <summary>
+        /// Shows an error message to the user
+        /// </summary>
+        public void ShowError(string message, string caption = "Error")
+        {
+            ShowMessage(message, caption, MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Shows a warning message to the user
+        /// </summary>
+        public void ShowWarning(string message, string caption = "Warning")
+        {
+            ShowMessage(message, caption, MessageBoxIcon.Warning);
+        }
+
+        /// <summary>
+        /// Shows a confirmation dialog to the user
+        /// </summary>
+        public DialogResult ShowConfirm(string message, string caption, MessageBoxButtons buttons = MessageBoxButtons.YesNo)
+        {
+            return MessageBox.Show(message, caption, buttons, MessageBoxIcon.Question);
+        }
+
+        /// <summary>
+        /// Disposes of resources used by the CADRibbon
+        /// </summary>
+        public void Dispose()
+        {
+            try
+            {
+                // Stop and dispose the version check timer
+                if (timerVersion != null)
+                {
+                    timerVersion.Stop();
+                    timerVersion.Dispose();
+                }
+
+                // Dispose toolbar controls
+                if (toolStrip != null)
+                {
+                    toolStrip.Items.Clear();
+                    toolStrip.Dispose();
+                }
+
+                if (statusStrip != null)
+                {
+                    statusStrip.Items.Clear();
+                    statusStrip.Dispose();
+                }
+
+                // Dispose button images
+                DisposeButtonImages();
+            }
+            catch (Exception ex)
+            {
+                // Log error if logging is available
+                System.Diagnostics.Debug.WriteLine($"Error disposing CADRibbon: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Disposes of button images
+        /// </summary>
+        private void DisposeButtonImages()
+        {
+            // Dispose of any button images that need explicit cleanup
+            var buttons = new[] { btnConnect, btnBrowseDrawing, btnSave, btnLockUnlock, 
+                                 btnDrawingInfo, btnHelp, btnAbout, btnUserSetting, btnRefresh };
+            
+            foreach (var button in buttons)
+            {
+                if (button?.Image != null)
+                {
+                    button.Image.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the connection status and UI
+        /// </summary>
+        public void SetConnectionStatus(bool isConnected)
+        {
+            IsConnected = isConnected;
+            btnConnect.Text = isConnected ? "Disconnect" : "Connect";
+            btnConnect.ToolTipText = isConnected ? "Disconnect from the system" : "Connect to the system";
+            
+            // Update UI based on new connection state
+            UpdateUIState();
+        }
+
+        /// <summary>
+        /// Updates the lock status and UI
+        /// </summary>
+        public void SetLockStatus(bool isLocked, string lockedByUser = null)
+        {
+            LockEnabled = !isLocked;
+            UnlockEnabled = isLocked;
+            
+            // Update lock/unlock button
+            if (isLocked)
+            {
+                btnLockUnlock.Text = "Unlock";
+                btnLockUnlock.ToolTipText = $"Unlock the current drawing (Locked by {lockedByUser ?? "another user"})";
+                // Update image if needed
+            }
+            else
+            {
+                btnLockUnlock.Text = "Lock";
+                btnLockUnlock.ToolTipText = "Lock the current drawing";
+                // Update image if needed
+            }
+            
+            btnLockUnlock.Enabled = IsConnected && (LockEnabled || UnlockEnabled);
+        }
+
+        /// <summary>
+        /// Shows the main form (if available)
+        /// </summary>
+        public void Show()
+        {
+            if (mainForm != null && !mainForm.IsDisposed)
+            {
+                mainForm.Show();
+                mainForm.BringToFront();
+            }
+        }
+
+        /// <summary>
+        /// Hides the main form (if available)
+        /// </summary>
+        public void Hide()
+        {
+            if (mainForm != null && !mainForm.IsDisposed)
+            {
+                mainForm.Hide();
+            }
+        }
+
+        /// <summary>
+        /// Command to initialize the ribbon UI
+        /// </summary>
+        [CommandMethod("RBRibbon")]
+        public void RBRibbon()
+        {
+            try
+            {
+                // This method is kept for backward compatibility
+                // The ribbon is now initialized in the constructor
+                UpdateUIState();
+                
+                // Show a message to indicate the command was executed
+                var doc = Gssoft.Gscad.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                if (doc != null)
+                {
+                    doc.Editor.WriteMessage("\nRedBracket CAD Integration is ready. Use the toolbar for commands.\n");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ShowError($"Failed to initialize CAD integration: {ex.Message}");
+                Debug.WriteLine($"RBRibbon error: {ex}");
+            }
+        }
+
+        /// <summary>
+        /// Command to show the about dialog
+        /// </summary>
+        [CommandMethod("RBAbout")]
+        public void RBAbout()
+        {
+            try
+            {
+                new AboutCommand().Execute(null);
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Failed to show about dialog: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Command to show the help dialog
+        /// </summary>
+        [CommandMethod("RBHelp")]
+        public void RBHelp()
+        {
+            try
+            {
+                new HelpCommand().Execute(null);
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Failed to show help: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Command to show user settings
+        /// </summary>
+        [CommandMethod("RBUserSettings")]
+        public void RBUserSettings()
+        {
+            try
+            {
+                new UserSettingsCommand().Execute(null);
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Failed to show user settings: {ex.Message}");
+            }
+        }
+        /// </summary>
+        public void UpdateConnectionStatus(bool isConnected)
+        {
+            IsConnected = isConnected;
+            
+            if (btnConnect != null)
+            {
+                btnConnect.Text = isConnected ? "Disconnect" : "Connect";
+                btnConnect.ToolTipText = isConnected ? "Disconnect from the system" : "Connect to the system";
+            }
+            
+            // Update other UI elements based on connection status
+            UpdateUIState();
+        }
+
+        /// <summary>
+        /// Updates the state of UI elements based on the current application state
+        /// </summary>
+        public void UpdateUIState()
+        {
+            if (btnBrowseDrawing != null)
+                btnBrowseDrawing.Enabled = IsConnected && BrowseDrawingEnabled;
+                
+            if (btnSave != null)
+                btnSave.Enabled = IsConnected && SaveEnabled;
+                
+            if (btnLockUnlock != null)
+            {
+                btnLockUnlock.Enabled = IsConnected && (LockEnabled || UnlockEnabled);
+                btnLockUnlock.Text = LockEnabled ? "Lock" : "Unlock";
+                btnLockUnlock.ToolTipText = LockEnabled ? "Lock the drawing" : "Unlock the drawing";
+            }
+            
+            if (btnDrawingInfo != null)
+                btnDrawingInfo.Enabled = IsConnected && DrawingInfoEnabled;
+        }
+
+        /// <summary>
+        /// Updates the version information in the status bar
+        /// </summary>
+        public void UpdateVersionInfo(string currentVersion, string latestVersion)
+        {
+            CurrentVersion = currentVersion;
+            LatestVersion = latestVersion;
+            
+            if (lblVersionInfo != null)
+            {
+                lblVersionInfo.Text = $"Current Version: {currentVersion} | Latest Version: {latestVersion}";
+            }
+        }
 
         public class MyCommands : IExtensionApplication
         {
@@ -137,6 +588,10 @@ namespace RBAutocadPlugIn
 
             private void DocumentManager_DocumentActivated(object sender, DocumentCollectionEventArgs e)
             {
+                //Following code will commented as per instruction of Mahesh Saraswati on date 23-02-2019
+                //because of System hangs while we fetch file info every time user change tab
+                // right now its not commented 
+                //this event requires to be changed as one time per file.
                 try
                 {
                     CADRibbon objcr = new CADRibbon();
@@ -366,6 +821,7 @@ namespace RBAutocadPlugIn
                 if (!connect)
                 {
                     rbConnection.Text = "Log-in";
+                    rbConnection.ToolTip = "Connect to server";
                     rbConnection.ShowText = true;
                     rbConnection.ShowImage = true;
                     rbConnection.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.connect);
@@ -378,6 +834,7 @@ namespace RBAutocadPlugIn
                 else
                 {
                     rbConnection.Text = "Log-out";
+                    rbConnection.ToolTip = "Disconnect from server";
                     rbConnection.ShowText = true;
                     rbConnection.ShowImage = true;
                     rbConnection.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Disconnect);
@@ -404,6 +861,7 @@ namespace RBAutocadPlugIn
 
 
                 rbBrowseDrawing.Text = "Open File";
+                rbBrowseDrawing.ToolTip = "Search & Open existing file from server";
                 rbBrowseDrawing.ShowText = true;
                 rbBrowseDrawing.ShowImage = true;
                 rbBrowseDrawing.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Open);
@@ -431,6 +889,7 @@ namespace RBAutocadPlugIn
 
 
                 rbLockUnlock.Text = "Lock & Unlock";
+                rbLockUnlock.ToolTip = "Lock/Unlock the current file on the server";
                 rbLockUnlock.ShowText = true;
                 rbLockUnlock.ShowImage = true;
                 rbLockUnlock.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.LockUnlock);
@@ -442,6 +901,7 @@ namespace RBAutocadPlugIn
 
 
                 rbSave.Text = "Save to redbracket";
+                rbSave.ToolTip = "Save the current drawing to server";
                 rbSave.Name = "Save";
                 rbSave.ShowText = true;
                 rbSave.ShowImage = true;
@@ -453,6 +913,7 @@ namespace RBAutocadPlugIn
                 rbSave.IsEnabled = SaveEnable;
 
                 rbSaveAS.Text = "Save As New";
+                rbSaveAS.ToolTip = "Save a copy of current drawing as a new file";
                 rbSave.Name = "SaveAs";
                 rbSaveAS.ShowText = true;
                 rbSaveAS.ShowImage = true;
@@ -488,6 +949,7 @@ namespace RBAutocadPlugIn
 
 
                 rbDrawingInfo.Text = "Drawing \n Info";
+                rbDrawingInfo.ToolTip = "Shows information of current version and latest version on server";
                 rbDrawingInfo.ShowText = true;
                 rbDrawingInfo.ShowImage = true;
                 rbDrawingInfo.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.DrawingInfo);
@@ -510,6 +972,7 @@ namespace RBAutocadPlugIn
 
 
                 rbHelp.Text = "Help";
+                rbHelp.ToolTip = "Display help document";
                 rbHelp.ShowText = true;
                 rbHelp.ShowImage = true;
                 rbHelp.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Help);
@@ -521,6 +984,7 @@ namespace RBAutocadPlugIn
 
 
                 rbAbout.Text = "About";
+                rbAbout.ToolTip = "Information about redbracket and user license";
                 rbAbout.ShowText = true;
                 rbAbout.ShowImage = true;
                 rbAbout.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.About);
@@ -545,6 +1009,7 @@ namespace RBAutocadPlugIn
 
 
                 rbSetting.Text = "Settings";
+                rbSetting.ToolTip = "Sets username, server URL and check-out drive";
                 rbSetting.ShowText = true;
                 rbSetting.ShowImage = true;
                 rbSetting.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Setting);
@@ -560,6 +1025,7 @@ namespace RBAutocadPlugIn
 
 
                 rbRefresh.Text = "Refresh";
+                rbRefresh.ToolTip = "Checks & Updates file and layout information from the server";
                 rbRefresh.ShowText = true;
                 rbRefresh.ShowImage = true;
                 rbRefresh.Image = clsImages.getBitmap(RBAutocadPlugIn.Properties.Resources.Refresh);
@@ -716,6 +1182,7 @@ namespace RBAutocadPlugIn
         {
             RBAutocadPlugIn.frmLogin mylogin = new RBAutocadPlugIn.frmLogin();
             mylogin.ShowDialog();
+            
         }
     }
 
