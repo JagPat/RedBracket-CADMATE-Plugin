@@ -1,0 +1,95 @@
+# Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# CAD specific files
+*.dwl
+*.dwl2
+*.bak
+*.sv$
+*.dmp
+*.dmp2
+*.lsp
+*.scr
+*.fas
+*.vlx
+*.bundle
+*.bundle/**
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Package files
+*.nupkg
+*.ncrunchsolution
+*.ncrunchproject
+
+# Local development settings
+appsettings.Development.json
+appsettings.Local.json
+
+# Ignore all build output directories
+**/bin/
+**/obj/
+**/Debug/
+**/Release/
+
+# Keep these files in source control
+!**/bin/Placeholder.txt
+!**/obj/Placeholder.txt
