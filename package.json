@@ -1,0 +1,33 @@
+{
+  "name": "redbracket-autocad-plugin",
+  "version": "1.5.0",
+  "description": "RedBracket AutoCAD Plugin for CADMATE 2025 Integration",
+  "main": "index.js",
+  "scripts": {
+    "build": "msbuild CADPlugIns.sln /p:Configuration=Release /p:Platform=x64",
+    "build:debug": "msbuild CADPlugIns.sln /p:Configuration=Debug /p:Platform=x64",
+    "clean": "msbuild CADPlugIns.sln /t:Clean",
+    "restore": "nuget restore CADPlugIns.sln",
+    "dev": "echo 'This is a C# AutoCAD plugin project. Use Visual Studio or run npm run build to compile the plugin.' && echo 'Built files will be in AutocadPlugIn/bin/x64/Release/' && npm run build:debug",
+    "start": "npm run dev",
+    "install": "echo 'No Node.js dependencies to install for this C# project.'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "keywords": [
+    "autocad",
+    "cadmate",
+    "plugin",
+    "csharp",
+    "redbracket"
+  ],
+  "author": "RedBracket",
+  "license": "PROPRIETARY",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
