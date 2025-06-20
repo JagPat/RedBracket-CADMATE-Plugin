@@ -98,6 +98,9 @@ bld/
 appsettings.Development.json
 appsettings.Local.json
 
+# Temporary development files
+dev-server.js
+
 # Redbracket specific
 /RedBracketConnector.bundle/Contents/*.dll
 /RedBracketConnector.bundle/Contents/*.exe
