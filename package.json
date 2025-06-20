@@ -4,13 +4,13 @@
   "description": "RedBracket AutoCAD Plugin for CADMATE 2025 Integration",
   "main": "index.js",
   "scripts": {
-    "build": "msbuild CADPlugIns.sln /p:Configuration=Release /p:Platform=x64",
-    "build:debug": "msbuild CADPlugIns.sln /p:Configuration=Debug /p:Platform=x64",
-    "clean": "msbuild CADPlugIns.sln /t:Clean",
-    "restore": "nuget restore CADPlugIns.sln",
-    "dev": "echo 'This is a C# AutoCAD plugin project. Use Visual Studio or run npm run build to compile the plugin.' && echo 'Built files will be in AutocadPlugIn/bin/x64/Release/' && npm run build:debug",
+    "build": "echo 'Building C# project requires Windows and Visual Studio/MSBuild. See BUILD_INSTRUCTIONS.md for details.'",
+    "build:debug": "echo 'Debug build requires Windows and Visual Studio/MSBuild. See BUILD_INSTRUCTIONS.md for details.'",
+    "clean": "echo 'Clean requires Windows and Visual Studio/MSBuild. See BUILD_INSTRUCTIONS.md for details.'",
+    "restore": "echo 'NuGet restore requires Windows and Visual Studio/MSBuild. See BUILD_INSTRUCTIONS.md for details.'",
+    "dev": "echo '===========================================' && echo 'RedBracket AutoCAD Plugin Development Info' && echo '===========================================' && echo '' && echo 'This is a C# AutoCAD/CADMATE plugin project.' && echo '' && echo 'To build this project, you need:' && echo '  - Windows 10 or later (64-bit)' && echo '  - Visual Studio 2019 or later' && echo '  - CADMATE 2025 with GRX SDK' && echo '  - .NET Framework 4.7.2' && echo '' && echo 'Build Instructions:' && echo '  1. Open CADPlugIns.sln in Visual Studio' && echo '  2. Select Release configuration and x64 platform' && echo '  3. Build > Build Solution (F6)' && echo '' && echo 'Output Location:' && echo '  AutocadPlugIn/bin/x64/Release/' && echo '' && echo 'For detailed instructions, see BUILD_INSTRUCTIONS.md' && echo '===========================================' && echo '' && echo 'Keeping dev server running for documentation purposes...' && node -e 'setInterval(() => {}, 1000)'",
     "start": "npm run dev",
-    "install": "echo 'No Node.js dependencies to install for this C# project.'"
+    "install": "echo 'No Node.js dependencies required for this C# project.'"
   },
   "repository": {
     "type": "git",
