@@ -1,0 +1,49 @@
+RedBracket CADMATE 2025 Plugin - File Transfer Checklist
+===========================================================
+
+COPY ALL THESE FILES/FOLDERS to your Windows machine:
+
+📁 ESSENTIAL FOLDERS:
+[ ] AutocadPlugIn/                    # Complete source code
+[ ] grxsdk/                          # GRX SDK for CADMATE 2025
+[ ] Binaries/                        # Dependencies (RestSharp, Newtonsoft.Json, etc.)
+[ ] RedBracketConnector/             # Connector library
+[ ] Help/                            # Documentation
+
+📄 ESSENTIAL FILES:
+[ ] CADPlugIns.sln                   # Visual Studio solution file
+[ ] *.csproj                         # All project files
+[ ] BUILD_INSTRUCTIONS.md            # Original build instructions
+[ ] README.txt                       # User documentation
+
+📜 DEPLOYMENT SCRIPTS (the ones I created for you):
+[ ] Verify_Build_Prerequisites.bat    # Checks Windows environment
+[ ] Build_RedBracket_Plugin.bat      # Automated build script
+[ ] Create_Installation_Package.bat   # Creates deployment ZIP
+[ ] Test_Plugin_Installation.bat     # Tests plugin installation
+[ ] Prepare_For_Windows_Build.bat    # Windows preparation script
+[ ] DEPLOYMENT_GUIDE.md              # Complete deployment guide
+[ ] IMMEDIATE_NEXT_STEPS.md          # Quick reference
+
+📋 OPTIONAL BUT HELPFUL:
+[ ] Install_RedBracket_Plugin.bat    # Original installer
+[ ] RedBracket_Plugin_Installer.bat  # Original installer variant
+[ ] WEB_DEVELOPERS_README.md         # Project info
+
+TRANSFER METHOD SUGGESTIONS:
+- USB drive
+- Network share
+- Cloud storage (Google Drive, OneDrive, etc.)
+- Git repository
+- Compressed ZIP file
+
+After transfer, your Windows folder should look like:
+RedBracket_Plugin/
+├── AutocadPlugIn/
+├── grxsdk/
+├── Binaries/
+├── CADPlugIns.sln
+├── Verify_Build_Prerequisites.bat
+├── Build_RedBracket_Plugin.bat
+├── Create_Installation_Package.bat
+└── [all other files listed above]
